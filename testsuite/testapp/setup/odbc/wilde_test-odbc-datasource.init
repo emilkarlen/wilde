@@ -1,0 +1,10 @@
+[wilde_test]
+Driver       = MySQL
+Description  = MySQL ODBC DSN for wilde_test
+Server       = localhost
+Port         =
+User         = developer
+Password     =
+Database     = wilde_test
+Option       = 3
+Socket       = 

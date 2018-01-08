@@ -1,0 +1,418 @@
+BODY
+{
+  color             : #000000;
+  /* background-color  : #D8D9D4; */
+  /* background-color  : #CCCDC8; */
+/*   background-color  : #DCDDDC; */
+/*   background-color  : #ECEDEC; */
+  font-family       : sans-serif;
+}
+
+/******************************************************************************
+* - messages -
+******************************************************************************/
+
+DIV._cPg._rT._error
+{
+  background-color  : gray;
+  border-width      : thick;
+  border-style      : solid;
+  border-color      : 600000;
+  text-align        : left;
+  font-style        : italic;
+}
+
+/* DIV._cPg._rT._error */
+/* { */
+/*   background-color  : gray; */
+/*   border-width      : medium; */
+/*   border-style      : solid; */
+/*   border-color      : darkred; */
+/*   text-align        : left; */
+/*   font-style        : italic; */
+/* } */
+
+/* .error_explanation */
+/* { */
+/*   color             : red; */
+/* /\*   font-style        : italic; *\/ */
+/* } */
+
+/* .attention */
+/* { */
+/*   font-weight       : bold; */
+/* /\*   font-style        : italic; *\/ */
+/* } */
+
+/* .error_value */
+/* { */
+/*   margin            : 10pt; */
+/*   padding           : 5pt; */
+/*   border-width      : thin; */
+/*   border-style      : solid; */
+/*   background-color  : white; */
+/* } */
+
+
+/*****************************************************************************/
+/* - a -*/
+/*****************************************************************************/
+
+
+
+._a
+{
+  background-color  : #A0A0A0;
+  border-color      : #A0A0A0;
+  text-align        : center;
+}
+
+TH._a
+{
+  font-style        : italic;
+  text-align        : left;
+}
+
+._a A:link
+{
+  color             : inherit;
+  text-decoration   : none;
+}
+
+._a A:hover
+{
+  text-decoration   : none;
+}
+
+._a A:visited
+{
+  color             : inherit;
+  text-decoration   : none;
+}
+
+
+/******************************************************************************
+* - refattr -
+******************************************************************************/
+
+
+A._refattr:link
+{
+  color             : inherit;
+  text-decoration   : inherit;
+}
+
+A._refattr:visited
+{
+  color             : inherit;
+  text-decoration   : none;
+}
+
+A._refattr:hover
+{
+  text-decoration   : underline;
+}
+
+
+/*****************************************************************************/
+/* - btn -*/
+/*****************************************************************************/
+
+
+A._btn._txt
+{
+  /* background-color  : #B0B0B0; */
+  border-radius     : 4px;
+  padding           : 1px;
+  margin-right      : 4px;
+  font-size         : 90%;
+}
+
+A._btn._txt:link
+{
+  color             : #393948;
+  text-decoration   : none;
+}
+
+A._btn._txt:visited
+{
+  color             : #4E5B62;
+  text-decoration   : none;
+}
+
+A._btn:hover
+{
+  color             : white;
+  background-color  : #606060;
+}
+
+A._btn._img
+{
+  border-radius     : 4px;
+}
+
+
+/******************************************************************************
+* - TABLE -
+******************************************************************************/
+
+
+TABLE
+{
+  border-collapse   : collapse;
+  border-color      : #202020;
+  border-width      : 2pt;
+  border-style      : solid;
+}
+
+TABLE._form
+{
+  padding           : 10pt;
+  border-color      : #000000;
+  border-width      : thin;
+  border-style      : none; /* groove; */
+}
+
+TABLE._weO._m1
+{
+  border-width      : medium;
+}
+
+
+/******************************************************************************
+* - TR, TH , TD -
+******************************************************************************/
+
+
+TH
+{
+  /* border            : 1px solid #B0B0B0; */
+  border-style      : none;
+  vertical-align    : top;
+  padding           : 0px 5px;
+}
+
+TD
+{
+  /* border            : 1px solid #F5F5F5; */
+  border-style      : none;
+  vertical-align    : top;
+  padding           : 0px 5px;
+}
+
+TD._rV._uI
+{
+  vertical-align    : top;
+  border-style      : none;
+}
+
+TH._cC._rT
+{
+  /* color             : #000000; */
+  /* background-color  : #9999cc; */
+  text-align        : center;
+  font-weight       : bold;
+  font-size         : 125%;
+}
+
+TABLE._form > TR > TD {
+  border-style      : none;
+}
+
+._rl_dependent_component TH._cC._rT {
+  font-style        : italic;
+}
+
+
+/******************************************************************************
+* - DIV -
+******************************************************************************/
+
+
+DIV._cPg._rT
+{
+  /* color             : #000000; */
+  /* background-color  : #7D89AC; */
+  margin-bottom     : 20px;
+  border-radius     : 0.2em;
+  border-style      : none;
+  padding           : 10px;
+  text-align        : center;
+  font-size         : 200%;
+  font-weight       : bold;
+  font-variant      : small-caps;
+}
+
+._cPg._error DIV._cPg._rT
+{
+  border-radius     : 0;
+  background-color  : gray;
+  border-width      : medium;
+  border-style      : solid;
+  border-color      : red;
+  text-align        : left;
+  font-style        : italic;
+}
+
+DIV._cC._btn
+{
+  margin            : 10px;
+}
+
+/******************************************************************************
+* - PRE -
+******************************************************************************/
+
+PRE
+{
+  margin            : 0px;
+  font-family       : monospace;
+}
+
+/******************************************************************************
+* - ... -
+******************************************************************************/
+
+._uP
+{
+  text-align        : left;
+}
+
+._weA ._rT
+{
+  color             : #000000;
+  background-color  : #ccccff;
+  font-weight       : bold;
+  font-style        : italic;
+}
+
+._weA._rT
+{
+  color             : #000000;
+  background-color  : #ccccff;
+  font-weight       : bold;
+  font-style        : italic;
+}
+
+._mN TH._rT
+{
+  /* color             : #000000; */
+  /* background-color  : #ccccff; */
+  font-weight       : bold;
+  font-style        : italic;
+}
+
+._rV._uI
+{
+  color             : #000000;
+  background-color  : #cccccc;
+}
+
+._rV._uP
+{
+  color             : #000000;
+  background-color  : #FCFCFC;
+}
+
+/* Sequences : even rows. */
+._spE ._rV._uP
+{
+  background-color  : #F3F3F3;
+}
+
+._cC._uP ._spE TD
+{
+  background-color  : #FCFCFC;
+}
+
+._cC._uP ._spE TD._a
+{
+  background-color  : #B0B0B0;
+  text-align        : center;
+}
+
+/* Sequences : odd rows. */
+._spO ._rV._uP
+{
+  background-color  : #EEEEEE;
+}
+
+._cC._uP ._spO TD
+{
+  background-color  : #F5F5F5;
+}
+
+._cC._uP ._spO TD._a
+{
+  background-color  : #B0B0B0;
+  text-align        : center;
+}
+
+/*                                                                                                                                                  
+  Value Presentation (attribte) in an input form.                                                                                                   
+  Use same style as for Value Input.  Otherwise, the form background will switch                                                                    
+  style for individual attributes (the Input attributes), which look very bad.                                                                      
+  Note: If the Value becomes difficult to read, the text style may need to be                                                                       
+  adjusted.                                                                                                                                         
+*/
+._cC._uI ._rV._uP
+{
+  color             : #000000;
+  background-color  : #cccccc;
+  border-style      : none;
+}
+
+._summary
+{
+  background-color  : #C3C4C3;
+  border-color      : #C3C4C3;
+  font-weight       : bold;
+}
+
+._summary TD
+{
+  border-color      : #B3B4B3;
+}
+
+._summary ._comment
+{
+  font-weight       : normal;
+  font-style        : italic;
+  font-size         : 85%;
+}
+
+IMG
+{
+  border: 0px;
+}
+
+HR
+{
+  color             : #000000;
+  background-color  : #cccccc;
+  width             : 600px;
+  border            : 0px;
+  height            : 1px;
+}
+
+/*****************************************************************************/
+/* - application styles -*/
+/*****************************************************************************/
+
+
+.simple_datatypes {
+  background-color : blue;
+}
+
+.reference {
+  background-color : red;
+}
+
+.auto_inc {
+  background-color : green;
+}
+
+.character_encoding_experiment {
+  background-color : lightgreen;
+}
+

@@ -1,0 +1,48 @@
+Name:                wilde-hs-testapp
+Version:             1.0
+Description:         Test app for dvlp of wilde-hs
+License:             GPL
+License-file:        LICENSE
+Author:              Emil Karlén
+Maintainer:          emil@fsf.org
+Build-Type:          Simple
+Cabal-Version:       >=1.10
+
+Executable testapp.cgi
+  Main-is:           testapp-cgi.hs
+  ghc-options:       -threaded -fwarn-unused-imports
+  hs-source-dirs:    src , ../../src
+  Build-Depends:     base >= 3 && < 5, array, filepath, process, containers,
+                     mtl, transformers, convertible,
+                     pretty,
+                     html, cgi, parsec, time, old-locale,
+                     bytestring, utf8-string,
+                     wai-extra, blaze-builder, http-types, wai,
+                     HDBC, HDBC-odbc, HDBC-mysql
+  Default-Language:  Haskell2010
+
+Executable testapp-wai-warp
+  Main-is:           testapp-wai-warp.hs
+  ghc-options:       -threaded -fwarn-unused-imports
+  hs-source-dirs:    src , ../../src
+  Build-Depends:     base >= 3 && < 5, array, filepath, process, containers,
+                     mtl, transformers, convertible,
+                     pretty,
+                     html, cgi, parsec, time, old-locale,
+                     bytestring, utf8-string,
+                     wai-extra, blaze-builder, http-types, wai,
+                     warp,
+                     HDBC, HDBC-odbc, HDBC-mysql
+  Default-Language:  Haskell2010
+
+Executable testapp-tool
+  Main-is:           testapp-tool.hs
+  ghc-options:       -threaded
+  hs-source-dirs:    src , ../../src
+  Build-Depends:     base >= 3 && < 5, array, filepath, process, containers,
+                     mtl, transformers, convertible,
+                     pretty,
+                     html, cgi, parsec, time, old-locale,
+                     bytestring, utf8-string,
+                     HDBC, HDBC-odbc
+  Default-Language:  Haskell2010

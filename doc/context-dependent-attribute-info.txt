@@ -1,0 +1,60 @@
+-*- org -*-
+
+* Spån
+
+** Troligtivs
+Vilken info som finns om en attributtyp beror helt och hållet på
+sammanhanget.  Dvs i ObjectType anges AttributeType enbart som en godtycklig
+typ.
+Behövs parametrisering i ObjectType - dvs ObjectType anger vilka typparametrar
+som använd för AttributeType?  Förhoppningsvis behövs inte det - det motverkar
+syftet med det sammanhangsberoende - typparametrarna beror ju även de på
+sammanhanget.
+
+** liknande annotering av ObjectType?
+Vore en liknande annotering av ObjectType vettig?  Även på den finns info som
+är klart sammanhangsberoende, t ex namnet på databas-tabellen.
+
+Ev kan typsynonymer för ObjectType som inklderar både annotering av OT och AT
+användas.
+
+* Uppgifter
+** TODO För varje tjänst: ta reda på vilken info som behövs
+** DONE Dela upp tjänsterna i återanvändbara komponenter med "atomär" funktion
+T ex CreateOne:
+- Generera inmatningsformulär
+- Läs in objekt (ObjForCreate) från formulär
+- Spara i databas
+- Läs från databas
+- Presentera
+
+De "atomära funktionerna" är IO för de olika medierna:
+- databas		: Input, Output
+- presentation		: Output
+- användarinteraktion	: Input, Output
+
+Varje (nu befintligt) AF är en kombination av dessa.
+
+** TODO Definiera en datastruktur för varje "atomär" funktion
+** TODO Impl de "atomära funktionerna" i termer av dess info
+** TODO Anpassa app-constr funk till datan för varje atomär funk
+Så att man enkelt kan skapa info enbart för de funk man behöver.  T ex för
+cashflow så används ju en OT enbart för inmatning via UI.
+* Tillvägagångssätt
+** TODO Välj ut en "atomär funktion" att börja bryta ut
+** TODO Impl denna ATMF med info från AT:s annotation
+Skriv en alt impl så att befintlig kod inte störs.
+Skippa OT-info i detta skede.
+** TODO Upprepa oavnstående punkter för alla funk
+Ignorera OT-info pss som ovan.
+** TODO Använd de nya impl som de riktiga impl
+** TODO Flytta infon från AT-annotation till att vara den enda AT-infon
+** TODO Flytta OT-info på liknande sätt
+
+* Design
+** En ATMF måste kunna tillhandahålla info som gör efterföljande ATMF möjliga
+Ett användningsfall består av fler ATMF.  För att kunna köra ett AF på en OT
+behövs alltså info för alla ATMF som används av AF:et.
+T ex: AF:et presentera ett O som finns i dbn: ATMF:en som läser upp O från db
+måste skapa dessa O med en OT (varje O innehåller ju dess OT) med vars hjälp
+det går att presentera O:t (dvs presentation output).

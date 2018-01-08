@@ -1,0 +1,376 @@
+BODY
+{
+  color             : #000000;
+  background-color  : #D8D9D4;
+  /* background-color  : #CCCDC8; */
+/*   background-color  : #DCDDDC; */
+/*   background-color  : #ECEDEC; */
+  font-family       : sans-serif;
+}
+
+/******************************************************************************
+* - messages -
+******************************************************************************/
+
+.error_explanation
+{
+  color             : red;
+/*   font-style        : italic; */
+}
+
+.attention
+{
+  font-weight       : bold;
+/*   font-style        : italic; */
+}
+
+.error_value
+{
+  margin            : 10pt;
+  padding           : 5pt;
+  border-width      : thin;
+  border-style      : solid;
+  background-color  : white;
+}
+
+
+/*****************************************************************************/
+/* - a -*/
+/*****************************************************************************/
+
+
+
+.a
+{
+  background-color  : #A0A0A0;
+  border-color      : #A0A0A0;
+  text-align        : center;
+}
+
+TH.a
+{
+  font-style        : italic;
+  text-align        : left;
+}
+
+.a A:link
+{
+  color             : inherit;
+  text-decoration   : none;
+}
+
+.a A:hover
+{
+  text-decoration   : none;
+}
+
+.a A:visited
+{
+  color             : inherit;
+  text-decoration   : none;
+}
+
+
+/******************************************************************************
+* - refattr -
+******************************************************************************/
+
+
+A.refattr:link
+{
+  color             : inherit;
+  text-decoration   : inherit;
+}
+
+A.refattr:visited
+{
+  color             : inherit;
+  text-decoration   : none;
+}
+
+A.refattr:hover
+{
+  text-decoration   : underline;
+}
+
+
+/*****************************************************************************/
+/* - btn -*/
+/*****************************************************************************/
+
+
+A.btn.txt
+{
+  background-color  : #B0B0B0;
+  border-radius     : 4px;
+  padding           : 2px;
+  margin-right      : 4px;
+  font-size         : 90%;
+}
+
+A.btn.txt:link
+{
+  color             : #393948;
+  text-decoration   : none;
+}
+
+A.btn.txt:visited
+{
+  color             : #4E5B62;
+  text-decoration   : none;
+}
+
+A.btn.txt:hover
+{
+  color             : white;
+  background-color  : #606060;
+}
+
+
+/******************************************************************************
+* - TABLE -
+******************************************************************************/
+
+
+TABLE
+{
+  border-collapse   : collapse;
+  border-color      : #202020;
+  border-width      : 2pt;
+  border-style      : solid;
+}
+
+TABLE.form
+{
+  padding           : 10pt;
+  border-color      : #000000;
+  border-width      : thin;
+  border-style      : none; /* groove; */
+}
+
+TABLE.weO.m1
+{
+  border-width      : medium;
+}
+
+
+/******************************************************************************
+* - TR, TH , TD -
+******************************************************************************/
+
+
+TH
+{
+  border            : 1px solid #B0B0B0;
+  vertical-align    : top;
+  padding           : 0px 5px;
+}
+
+TD
+{
+  border            : 1px solid #D0D0D0;
+  vertical-align    : top;
+  padding           : 0px 5px;
+}
+
+TD.rV.uI
+{
+  vertical-align    : top;
+  border-style      : none;
+}
+
+TH.cC.rT
+{
+  color             : #000000;
+  background-color  : #9999cc;
+  text-align        : center;
+  font-weight       : bold;
+  font-size         : 125%;
+}
+
+TABLE.form > TR > TD {
+  border-style      : none;
+}
+
+.rl_shared_comp TH.cC.rT {
+  font-style        : italic;
+}
+
+
+/******************************************************************************
+* - DIV -
+******************************************************************************/
+
+
+DIV.cPg.rT
+{
+  color             : #000000;
+  background-color  : #7D89AC;
+  margin-bottom     : 20px;
+  border-radius     : 0.2em;
+  border-style      : none;
+  padding           : 10px;
+  text-align        : center;
+  font-size         : 200%;
+  font-weight       : bold;
+  font-variant      : small-caps;
+}
+
+.cPg.error DIV.cPg.rT
+{
+  background-color  : gray;
+  border-width      : thin;
+  border-style      : solid;
+  border-color      : red;
+  text-align        : left;
+  font-style        : italic;
+}
+
+DIV.cC.btn
+{
+  margin            : 10px;
+}
+
+/******************************************************************************
+* - PRE -
+******************************************************************************/
+
+PRE
+{
+  margin            : 0px;
+  font-family       : monospace;
+}
+
+/******************************************************************************
+* - ... -
+******************************************************************************/
+
+.uP
+{
+  text-align        : left;
+}
+
+.weA .rT
+{
+  color             : #000000;
+  background-color  : #ccccff;
+  font-weight       : bold;
+  font-style        : italic;
+}
+
+.mN TH.rT
+{
+  color             : #000000;
+  background-color  : #ccccff;
+  font-weight       : bold;
+  font-style        : italic;
+}
+
+.rV.uI
+{
+  color             : #000000;
+  background-color  : #cccccc;
+}
+
+.rV.uP
+{
+  color             : #000000;
+  background-color  : #F0F0F0;
+}
+
+/* Sequences : even rows. */
+.spE .rV.uP
+{
+  background-color  : #F3F3F3;
+}
+
+.cC.uP .spE TD
+{
+  background-color  : #F3F3F3;
+}
+
+.cC.uP .spE TD.a
+{
+  background-color  : #A0A0A0;
+  text-align        : center;
+}
+
+/* Sequences : odd rows. */
+.spO .rV.uP
+{
+  background-color  : #EEEEEE;
+}
+
+.cC.uP .spO TD
+{
+  background-color  : #EEEEEE;
+}
+
+.cC.uP .spO TD.a
+{
+  background-color  : #A0A0A0;
+  text-align        : center;
+}
+
+/*                                                                                                                                                  
+  Value Presentation (attribte) in an input form.                                                                                                   
+  Use same style as for Value Input.  Otherwise, the form background will switch                                                                    
+  style for individual attributes (the Input attributes), which look very bad.                                                                      
+  Note: If the Value becomes difficult to read, the text style may need to be                                                                       
+  adjusted.                                                                                                                                         
+*/
+.cC.uI .rV.uP
+{
+  color             : #000000;
+  background-color  : #cccccc;
+  border-style      : none;
+}
+
+.summary
+{
+  background-color  : #B3B4B3;
+  border-color      : #B3B4B3;
+  font-weight       : bold;
+}
+
+.summary TD
+{
+  border-color      : #B3B4B3;
+}
+
+.summary .comment
+{
+  font-weight       : normal;
+  font-style        : italic;
+  font-size         : 85%;
+}
+
+IMG
+{
+  border: 0px;
+}
+
+HR
+{
+  color             : #000000;
+  background-color  : #cccccc;
+  width             : 600px;
+  border            : 0px;
+  height            : 1px;
+}
+/*** -simple_datatypes- ***/
+.cPg.ot_simple_datatypes DIV.cPg.rT {
+  background-color : red;
+  color : green;
+}
+.cC.ot_simple_datatypes TH.cC.rT {
+  background-color : red;
+  color : green;
+}
+/*** -simple_datatypes2- ***/
+.cPg.ot_simple_datatypes2 DIV.cPg.rT {
+  background-color : blue;
+}
+.cC.ot_simple_datatypes2 TH.cC.rT {
+  background-color : blue;
+}

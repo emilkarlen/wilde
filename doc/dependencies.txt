@@ -1,0 +1,7 @@
+Libraries:
+- html		(Text.Html)		[html-1.0.1.2]
+- cgi		(Network.CGI)		[cgi-3001.1.8.2]
+- hdbc		(Database.HDBC)		[HDBC-2.2.6.1]
+- HDBC-mysql	(Database.HDBC.MySQL)	[HDBC-mysql-0.6.6.0
+- hsql-mysql    unfortunately, should be removed
+]

@@ -1,0 +1,55 @@
+<html>
+<head>
+  <title>Wilde Test Application</title>
+</head>
+<body>
+<h1>Object Types and Services</h1>
+
+<h2>Global services</h2>
+
+<h3>Simple services</h3>
+
+<ul>
+    <li><a href="/wilde-hs/cgi-bin/testapp.cgi?_srvc=ok">Just OK</a></li>
+    <li><a href="/wilde-hs/cgi-bin/testapp.cgi?_srvc=error">Just error</a></li>
+    <li><a href="/wilde-hs/cgi-bin/testapp.cgi?_srvc=ask-if-cont">Ask if to continue</a></li>
+</ul>
+
+<h3>Invalid requests</h3>
+
+<ul>
+  <li><a href="/wilde-hs/cgi-bin/testapp.cgi?_ot=nonexisting_objecttype">Service not specified</a></li>
+  <li><a href="/wilde-hs/cgi-bin/testapp.cgi?_ot=nonexisting_objecttype&_srvc=ShowMany">Non-existing Objecttype</a></li>
+</ul>
+
+<h2>Object Type services</h2>
+
+<table border=1>
+  <tr>
+    <td>Simple Datatypes</td>
+    <td><a href="/wilde-hs/cgi-bin/testapp.cgi?_ot=simple_datatypes&_srvc=ShowMany">All</a></td>
+    <td><a href="/wilde-hs/cgi-bin/testapp.cgi?_ot=simple_datatypes&_srvc=CreateOne">New</a></td>
+    <td><a href="/wilde-hs/cgi-bin/testapp.cgi?_ot=simple_datatypes&_srvc=CreateOne&object.sString=test&object.sString._role=Default">New/d</a></td>
+    <td><a href="/wilde-hs/cgi-bin/testapp.cgi?_ot=simple_datatypes&_srvc=ShowSelection">Find</a></td>
+  </tr>
+  <tr>
+    <td>Auto Increment PK</td>
+    <td><a href="/wilde-hs/cgi-bin/testapp.cgi?_ot=auto_inc&_srvc=ShowMany">All</a></td>
+    <td><a href="/wilde-hs/cgi-bin/testapp.cgi?_ot=auto_inc&_srvc=CreateOne">New</a></td>
+    <td><a href="/wilde-hs/cgi-bin/testapp.cgi?_ot=auto_inc&_srvc=ShowSelection">Find</a></td>
+  </tr>
+  <tr>
+    <td>Character Encoding Experiment</td>
+    <td><a href="/wilde-hs/cgi-bin/testapp.cgi?_ot=character_encoding_experiment&_srvc=ShowMany">All</a></td>
+    <td><a href="/wilde-hs/cgi-bin/testapp.cgi?_ot=character_encoding_experiment&_srvc=CreateOne">New</a></td>
+    <td><a href="/wilde-hs/cgi-bin/testapp.cgi?_ot=character_encoding_experiment&_srvc=ShowSelection">Find</a></td>
+  </tr>
+  <tr>
+    <td>Reference</td>
+    <td><a href="/wilde-hs/cgi-bin/testapp.cgi?_ot=reference&_srvc=ShowMany">All</a></td>
+    <td><a href="/wilde-hs/cgi-bin/testapp.cgi?_ot=reference&_srvc=CreateOne">New</a></td>
+    <td><a href="/wilde-hs/cgi-bin/testapp.cgi?_ot=reference&_srvc=ShowSelection">Find</a></td>
+  </tr>
+</table>
+</body>
+</html>

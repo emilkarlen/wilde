@@ -1,0 +1,29 @@
+- *~
+- *.hi
+- *.o
+- *.cgi
+- *.vpp~*
+- /haddock/
+- /TAGS
+- dist/
+- tmp/
+
+- /sandbox/join-test
+- /testapp/src/testapp.cgi
+
+- /testsuite/tests/testsuit
+
+
+###############################################################################
+# Autotools
+###############################################################################
+
+- Makefile
+- Makefile.in
+- aclocal.m4
+- autom4te.cache
+- config.log
+- config.status
+- configure
+- install-sh
+- missing

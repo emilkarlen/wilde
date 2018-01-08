@@ -1,0 +1,16 @@
+#
+# Apache configuration file.
+#
+# INSTALLATION
+#
+# Put the file in the conf.d/ or conf-enabled subdirectory of the Apache configuration directory.
+#
+
+<Directory @abs_top_builddir@/testsuite/testapp/>
+	Options Indexes FollowSymLinks
+	AllowOverride None
+	Require all granted
+</Directory>
+
+Alias       /wilde-hs/html     "@abs_top_builddir@/testsuite/testapp/html/"
+ScriptAlias /wilde-hs/cgi-bin/ "@abs_top_builddir@/testsuite/testapp/dist/build/testapp.cgi/"

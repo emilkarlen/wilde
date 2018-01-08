@@ -1,0 +1,255 @@
+Name:      wilde
+Version:   0.5
+License:             GPL
+License-file:        LICENSE
+Build-Type:          Simple
+Cabal-Version:       >=1.10
+Author:              Emil Karlén (emil@member.fsf.org)
+Maintainer:          emil@member.fsf.org
+Stability:           experimental
+Bug-Reports:         mailto:emil@member.fsf.org
+Synopsis:            Library for implementing simple database-oriented CGI Web applications
+Description:         Library for implementing simple administrative CGI Web applications
+Category:            Web
+
+Library
+  Default-Language:  Haskell2010
+  ghc-options:       -fwarn-unused-imports
+-- -Wall
+  Hs-Source-Dirs:    src
+  Build-Depends:
+    base >= 3,
+    containers,
+    pretty,
+    convertible,
+    transformers,
+    HDBC >= 2,
+    parsec >= 3,
+    old-locale >= 1,
+    time >= 1,
+    array,
+    html >= 1.0.1.2,
+    cgi  >= 3001.1.8,
+    mtl,
+    -- WAI
+    bytestring,
+    utf8-string,
+    blaze-builder,
+    http-types,
+    wai
+  Exposed-Modules:
+    Wilde.Application.ApplicationConfiguration
+    Wilde.Application.ApplicationServices
+    Wilde.Application.ApplicationInput
+    Wilde.Application.ObjectModelServiceLink
+    Wilde.Application.ObjectTypeService
+    Wilde.Application.PopUp
+    Wilde.Application.Service
+    Wilde.Application.ServiceLink
+    Wilde.Application.StandardServices
+    Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAndDbIo
+    Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAndDbIo.UserInteraction
+    Wilde.ApplicationConstruction.AttributeTypeConfiguration.DdlAtAnnotation
+    Wilde.ApplicationConstruction.GenericStringRepIo
+    Wilde.ApplicationConstruction.Presentation.Presentation
+    Wilde.ApplicationConstruction.Database.DatabaseUtils
+    Wilde.ApplicationConstruction.Database.AttributeTypeDatabaseInfo
+    Wilde.ApplicationConstruction.Database.DatabaseColumnTypes
+    Wilde.ApplicationConstruction.ObjectModel.AttributeType
+    Wilde.ApplicationConstruction.ObjectModel.ObjectType
+    Wilde.ApplicationConstruction.ObjectModel.StandardPrimaryKey
+    Wilde.ApplicationConstruction.ObjectModel.ReferenceAttributeType
+    Wilde.ApplicationConstruction.ObjectModel.IdNameObjectType
+    Wilde.ApplicationConstruction.ObjectTypeConfiguration.Database
+    Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAndDbIo.Configuration
+    Wilde.ApplicationConstruction.ObjectTypeConfiguration.ObjectTypeWithAtDdlInformation
+    Wilde.ApplicationConstruction.UserInteraction.Io
+    Wilde.ApplicationConstruction.UserInteraction.FixAndDefaultResolver.FixAndDefaultCollection
+    Wilde.ApplicationConstruction.UserInteraction.Input.EvaluateExpression
+    Wilde.ApplicationConstruction.UserInteraction.Input.DateParser
+    Wilde.ApplicationConstruction.UserInteraction.Input.UserInteractionInputers
+    Wilde.ApplicationConstruction.UserInteraction.Input.WildeSqlInputer
+    Wilde.ApplicationConstruction.UserInteraction.Input.SqlExprParser
+    Wilde.ApplicationConstruction.UserInteraction.Input.ParsedSqlExpr2WildeSqlExpr
+    Wilde.ApplicationConstruction.UserInteraction.Output.LabelAndWidget
+    Wilde.ApplicationConstruction.UserInteraction.Output.ObjectListSetup
+    Wilde.ApplicationConstruction.UserInteraction.Output.ReferringObjectsComponent
+    Wilde.ApplicationConstruction.UserInteraction.Output.ObjectDependentComponent
+    Wilde.ApplicationConstruction.UserInteraction.Output.AttributeTypesListFooter
+    Wilde.ApplicationConstruction.UserInteraction.Output.SpecialComponents
+    Wilde.ApplicationConstruction.UserInteraction.Output.StandardFilterExpression
+    Wilde.ApplicationConstruction.UserInteraction.Widgets
+    Wilde.ApplicationConstruction.Service.ObjectTypeServiceUtils
+    Wilde.ApplicationConstruction.Service.ServiceTools
+    Wilde.ApplicationConstruction.Service.ServiceUtils
+    Wilde.ApplicationConstruction.Service.StepService
+    Wilde.ApplicationConstruction.StandardServices.ShowMany
+    Wilde.ApplicationConstruction.StandardServices.CreateOneFrom
+    Wilde.ApplicationConstruction.StandardServices.DeleteOne
+    Wilde.ApplicationConstruction.StandardServices.ShowSelection
+    Wilde.ApplicationConstruction.StandardServices.ShowManyUtils
+    Wilde.ApplicationConstruction.StandardServices.UpdateOne
+    Wilde.ApplicationConstruction.StandardServices.CreateOne
+    Wilde.ApplicationConstruction.StandardServices.ShowOne
+    Wilde.ApplicationConstruction.StandardServices.CreateOneUtils
+    Wilde.ApplicationConstruction.StandardServices.UpdateConfigTools
+    Wilde.ApplicationConstruction.StandardServices.Tools
+    Wilde.ApplicationConstruction.StandardServices
+    Wilde.ApplicationConstruction.StandardServices.SingleObjectServiceCommon
+    Wilde.ApplicationConstruction.ElementSetUtils
+    Wilde.ApplicationTool.ApplicationModel
+    Wilde.ApplicationTool.Main
+    Wilde.ApplicationTool.DefaultCommands
+    Wilde.ApplicationTool.Command
+    Wilde.ApplicationTool.Commands.Check
+    Wilde.ApplicationTool.Commands.Database
+    Wilde.ApplicationTool.Commands.OrderCreateTables
+    Wilde.ApplicationTool.Commands.SqlDdl
+    Wilde.ApplicationTool.Commands.DatabaseUtils
+    Wilde.ApplicationTool.Commands.Utils
+    Wilde.ApplicationTool.ErrorHandling
+    Wilde.ApplicationTool.FlagsAndOptions
+    Wilde.ApplicationTool.FlagLookup.ForMisc
+    Wilde.ApplicationTool.FlagLookup.ForObjectType
+    Wilde.ApplicationTool.FlagLookup.Utils
+    Wilde.Database.SqlJoin
+    Wilde.Database.Sql
+    Wilde.Database.SqlDdlInfo
+    Wilde.Database.SqlMisc
+    Wilde.Database.Executor
+    Wilde.WildeUi.WildeComponent
+    Wilde.WildeUi.LayoutValues
+    Wilde.WildeUi.LayoutComponents
+    Wilde.WildeUi.TableUtils
+    Wilde.WildeUi.UiPrimitives
+    Wilde.WildeUi.StdValueTypes
+    Wilde.WildeUi.StdValues
+    Wilde.Media.Translations
+    Wilde.Media.WildeStyleType
+    Wilde.Media.WildeValue
+    Wilde.Media.Database
+    Wilde.Media.Database.Monad
+    Wilde.Media.CustomEnvironment
+    Wilde.Media.ElementSet
+    Wilde.Media.Presentation
+    Wilde.Media.WildeStyle
+    Wilde.Media.GenericStringRep
+    Wilde.Media.WildeMedia
+    Wilde.Media.UserInteraction
+    Wilde.Media.UserInteraction.Input
+    Wilde.Media.UserInteraction.Output
+    Wilde.Media.UserInteraction.Io
+    Wilde.Media.Element
+    Wilde.Media.MonadWithInputMedia
+    Wilde.Render.AbstractTableToHtml
+    Wilde.Render.RenderAsHtml
+    Wilde.Render.Cgi.ElementSetIo
+    Wilde.Render.Cgi.VariableNames
+    Wilde.Render.Cgi.ServerVariables
+    Wilde.Render.UserInteractionRendering
+    Wilde.Render.ServiceLink
+    Wilde.Render.StyleForHtml
+    Wilde.GenericUi.Component
+    Wilde.GenericUi.Components
+    Wilde.GenericUi.Style
+    Wilde.GenericUi.AbstractTable
+    Wilde.GenericUi.Value
+    Wilde.GenericUi.Widget
+    Wilde.Database.BackEndDdl
+    Wilde.Database.DmlRendering
+    Wilde.Driver.Application.Cgi
+    Wilde.Driver.Application.Html
+    Wilde.Driver.Application.CgiHtml
+    Wilde.Driver.Application.Cgi.ApplicationMain
+    Wilde.Driver.Application.Wai.Application
+    Wilde.Driver.Database.MySQL.Renderer
+    Wilde.Driver.Database.MySQL.ApplicationObjectModelTools
+    Wilde.Driver.Database.MySQL.DmlExcutor
+    Wilde.Driver.Database.RenderDdlUtils
+    Wilde.Driver.UserInteraction.StandardServiceLinkRenderer
+    Wilde.Driver.UserInteraction.Translation.En
+    Wilde.Driver.UserInteraction.Translation.Se
+    Wilde.ObjectModel.Presentation
+    Wilde.ObjectModel.Presentation.FooterRowsConstructor
+    Wilde.ObjectModel.ObjectModelUtils
+    Wilde.ObjectModel.GenericStringRep
+    Wilde.ObjectModel.ObjectModel
+    Wilde.ObjectModel.AttributeTypeListSetup.WithAnnotation
+    Wilde.ObjectModel.AttributeTypeListSetup.SansAnnotation
+    Wilde.ObjectModel.AttributeTypeListSetup.Common
+    Wilde.ObjectModel.Database
+    Wilde.ObjectModel.Database.Output
+    Wilde.ObjectModel.Database.Utils
+    Wilde.ObjectModel.Database.Execution.Delete
+    Wilde.ObjectModel.Database.Execution.Insert
+    Wilde.ObjectModel.Database.Execution.InsertAndSelect
+    Wilde.ObjectModel.Database.Execution.SelectSansPresentationInfo
+    Wilde.ObjectModel.Database.Execution.SelectWithPresentationInfo
+    Wilde.ObjectModel.Database.Execution.Update
+    Wilde.ObjectModel.Database.Execution.Utils
+    Wilde.ObjectModel.Database.InputExistingSansPresentationInfo
+    Wilde.ObjectModel.Database.Sql.SansPresentationInfo
+    Wilde.ObjectModel.Database.Sql.WithPresentationInfo
+    Wilde.ObjectModel.Database.JoinUtils
+    Wilde.ObjectModel.DatabaseAndPresentation
+    Wilde.ObjectModel.UserInteraction
+    Wilde.ObjectModel.UserInteraction.Common
+    Wilde.ObjectModel.UserInteraction.Input.Common
+    Wilde.ObjectModel.UserInteraction.Input.ForCreate
+    Wilde.ObjectModel.UserInteraction.Input.ForExisting
+    Wilde.ObjectModel.UserInteraction.OutputTypes
+    Wilde.ObjectModel.UserInteraction.Output.Common
+    Wilde.ObjectModel.UserInteraction.Output.CreateCommon
+    Wilde.ObjectModel.UserInteraction.Output.ExistingCommon
+    Wilde.ObjectModel.UserInteraction.Output.ForCreate
+    Wilde.ObjectModel.UserInteraction.Output.ForCreateFrom
+    Wilde.ObjectModel.UserInteraction.Output.ForExisting
+    Wilde.ObjectModel.UserInteraction.Output.ForExistingCreateViaUi
+    Wilde.Utils.ListUtils
+    Wilde.Utils.TextHtmlUtils
+    Wilde.Utils.Debug
+    Wilde.Utils.Empty
+    Wilde.Utils.NonEmptyList
+    Wilde.Utils.Utils
+    Wilde.Utils.AnyValue
+    Wilde.Utils.AnyValue2
+
+Test-Suite unit-tests
+  Type:              exitcode-stdio-1.0
+  Hs-Source-Dirs:    src, testsuite/tests, testsuite/testapp/src
+  Main-Is:           testsuit.hs
+  Other-Modules:
+    TestSuit
+    TestResources.TestUtils
+    TestResources.UserInteractionOutputMonadUtils
+    TestResources.TestData
+    TestResources.ReferenceObjectType
+    Wilde.DdlUtils
+    Wilde.Media.Test
+    Wilde.Media.ElementTest
+    Wilde.Media.ElementSetTest
+    Wilde.Render.Cgi.ElementSetIoTest
+    Wilde.ApplicationTool.ApplicationToolTest
+    Wilde.ApplicationConstruction.StandardServices.WildeSqlInputerTest
+    Wilde.ApplicationConstruction.ObjectTypeTest
+    Wilde.ApplicationConstruction.SqlExprParserTest
+    Wilde.Utils.ListUtilsTest
+    TestApplication
+
+  Build-Depends:
+    HUnit,
+    base >= 3,
+    containers,
+    pretty,
+    convertible,
+    transformers,
+    HDBC >= 2,
+    parsec >= 3,
+    old-locale >= 1,
+    time >= 1,
+    array,
+    html >= 1.0.1.2,
+    cgi  >= 3001.1.8,
+    mtl,
+    HDBC-odbc
+  Default-Language:  Haskell2010
