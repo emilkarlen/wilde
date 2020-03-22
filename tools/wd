@@ -1,0 +1,4 @@
+#!/bin/sh
+
+SRC=/home/karlen/vcs/wilde-hs
+haskell-module-dependencies $@ --format ps -i ${SRC} "Cashflow" ${SRC}/cashflow-hs.cgi.hs

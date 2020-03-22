@@ -1,0 +1,31 @@
+#!/bin/bash
+
+readonly here=$(dirname $0)
+
+readonly root=$(realpath ${here}/../..)
+
+if [ "_$1" = "_--help" -o "_$1" = "_-h" -o "_$1" = "_-?" ]; then
+    echo "Applies move-modules to all Haskell source files under ${root}" >&2
+    echo "See ${here}/move-modules for more information" >&2
+    exit
+fi
+
+readonly sourceDirs="${root}/Wilde ${root}/cashflow ${root}/testsuite"
+
+readonly mover=${here}/move-modules
+
+readonly tmpfile=/tmp/apply-move-modules-tmp-$$.hs
+
+find ${root} -name '*.hs' | {
+# # find test -name '*.hs' | {
+# find ${here}/../testsuite/tests -name '*.hs' | {
+    while read fileName; do
+	echo ${fileName}
+	${mover} $* < ${fileName} > ${tmpfile}
+	if [ $? == 0 ]; then
+	    cp -d ${tmpfile} ${fileName}
+	else
+	    echo "ERROR" >&2
+	fi
+    done
+}
