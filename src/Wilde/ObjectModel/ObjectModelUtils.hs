@@ -42,8 +42,6 @@ module Wilde.ObjectModel.ObjectModelUtils
          anyOApplyM,
          toAnyForOtAndArg,
 
-         anyValueEC2anyValue,
-         
          castToAttributeType,
 
          lookupObjectTypeAny,
@@ -89,16 +87,6 @@ import Wilde.Utils.Utils
 import qualified Wilde.Utils.AnyValue as AnyValue
 
 import Wilde.ObjectModel.ObjectModel
-
-
--------------------------------------------------------------------------------
--- - Utilities related to AnyValue -
--------------------------------------------------------------------------------
-
-
-anyValueEC2anyValue :: (forall e c b . t e c -> u b)
-                    -> Any t -> AnyValue.Container u
-anyValueEC2anyValue = undefined
 
 
 -------------------------------------------------------------------------------
