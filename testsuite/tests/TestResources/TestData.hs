@@ -20,6 +20,8 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -- | Test data that is shared by many tests.
 module TestResources.TestData
        (
+         noDbIo,
+         
          elementKeyPrefixes,
 
          -- * A Test Object Type
@@ -71,10 +73,16 @@ import           Wilde.ApplicationConstruction.ObjectModel.ReferenceAttributeTyp
 import qualified Wilde.ApplicationConstruction.AttributeTypeConfiguration.DdlAtAnnotation as DdlAtAnnotation
 import qualified Wilde.ApplicationConstruction.ObjectTypeConfiguration.Database as OtDbConfig
 
+import qualified Wilde.Media.Database as DB
+
 
 -------------------------------------------------------------------------------
 -- - implementation -
 -------------------------------------------------------------------------------
+
+
+noDbIo :: DB.DatabaseIo a
+noDbIo = error "Database IO should not be used"
 
 
 -------------------------------------------------------------------------------
@@ -174,8 +182,8 @@ otPkName = ObjectType
 inputWidth :: Int
 inputWidth = 10
 
-at_pk   = at_PrimaryKeyType inputWidth     ColumnPk   noDefault "ID"
-at_name = at_String         inputWidth 100 ColumnName noDefault "Name"
+at_pk   = at_PrimaryKeyType             inputWidth ColumnPk   noDefault "ID"
+at_name = at_String_forDefaultDbIo  100 inputWidth ColumnName noDefault "Name"
 
 dbPkNameTable :: DatabaseTable
 dbPkNameTable = DatabaseTable

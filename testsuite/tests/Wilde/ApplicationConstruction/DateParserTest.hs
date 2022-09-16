@@ -26,7 +26,7 @@ module Wilde.ApplicationConstruction.DateParserTest
 import Data.Time.Calendar
 import Data.Time.Format
 
-import System.Locale
+import System.Locale hiding (TimeLocale, defaultTimeLocale)
 
 import qualified Wilde.ApplicationConstruction.UserInteraction.Input.DateParser
 

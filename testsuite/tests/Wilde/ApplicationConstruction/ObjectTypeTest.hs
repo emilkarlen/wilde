@@ -181,8 +181,8 @@ test_string =
   okInputs invalidSyntaxInputs
   valueMissingForMandatory_NothingForOptional
   where
-    checkMandatory = testInputSingleValueAttribute $ OT.at_String          TD.inputWidth 100 Field OT.noDefault "title"
-    checkOptional  = testInputSingleValueAttribute $ OT.at_String_optional TD.inputWidth 100 Field OT.noDefault "title"
+    checkMandatory = testInputSingleValueAttribute $ OT.at_String          TD.noDbIo 100 TD.inputWidth Field OT.noDefault "title"
+    checkOptional  = testInputSingleValueAttribute $ OT.at_String_optional TD.noDbIo 100 TD.inputWidth Field OT.noDefault "title"
 
     okInputs :: [([UiI.ElementValue],String)]
     okInputs = singletonInputs
