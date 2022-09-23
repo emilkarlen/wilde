@@ -32,7 +32,6 @@ module Wilde.ApplicationConstruction.UserInteraction.FixAndDefaultResolver.FixAn
 
 
 import Data.List
-import Data.Monoid hiding (Any)
 
 import qualified Wilde.Media.GenericStringRep as Gsr
 import qualified Wilde.Media.UserInteraction.Output as UiO

@@ -47,8 +47,6 @@ module Wilde.Media.WildeStyleType
 -------------------------------------------------------------------------------
 
 
-import Data.Monoid
-
 import Wilde.GenericUi.Style
 import Wilde.Render.StyleForHtml
 import Wilde.Utils.TextHtmlUtils

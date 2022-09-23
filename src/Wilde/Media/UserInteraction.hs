@@ -107,8 +107,6 @@ module Wilde.Media.UserInteraction
 -------------------------------------------------------------------------------
 
 
-import Data.Monoid
-
 import Wilde.Utils.Empty
 
 import Wilde.GenericUi.Widget

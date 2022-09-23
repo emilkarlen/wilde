@@ -155,7 +155,6 @@ import Data.Word
 import Data.Int
 
 import Data.Time.Calendar (Day)
-import Data.Time
 
 import Database.HDBC.Types
 import Database.HDBC.ColTypes

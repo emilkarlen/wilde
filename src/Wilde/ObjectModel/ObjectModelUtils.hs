@@ -84,7 +84,6 @@ module Wilde.ObjectModel.ObjectModelUtils
 import Data.List
 
 import Wilde.Utils.Utils
-import qualified Wilde.Utils.AnyValue as AnyValue
 
 import Wilde.ObjectModel.ObjectModel
 
