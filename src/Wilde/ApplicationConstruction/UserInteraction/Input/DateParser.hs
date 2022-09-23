@@ -70,7 +70,7 @@ parseEmlFormat timeLocale mbFormatString baseDay s =
    maybe
    (emlParse $ filter (not . isSpace) s)
    Right
-   (parseTime timeLocale formatString s)
+   (parseTimeM True timeLocale formatString s)
   where
     emlParse :: String -- ^ input without any whitespace
              -> ParseResult Day
