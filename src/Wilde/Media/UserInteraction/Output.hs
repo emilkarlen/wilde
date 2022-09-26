@@ -77,7 +77,7 @@ module Wilde.Media.UserInteraction.Output
 
 
 import Control.Monad.Trans
-import Control.Monad.Trans.Error
+import Control.Monad.Trans.Except
 import Control.Monad.Trans.Reader
 
 import Database.HDBC.Types (ConnWrapper)
@@ -147,7 +147,7 @@ envButtonTexter = trButtonTexter . Presentation.outTranslations . envOutputing
 type PopUpButtonTexter = PopUp.Button -> String
 
 newtype UserInteractionOutputMonad a =
-  UserInteractionOutputMonad (ErrorT UserInteractionOutputError (ReaderT UserInteractionOutputEnvironment IO) a)
+  UserInteractionOutputMonad (ExceptT UserInteractionOutputError (ReaderT UserInteractionOutputEnvironment IO) a)
 
 instance MonadWithInputMedia UserInteractionOutputMonad where
   getInputMedia = fmap envMedia getEnv
@@ -206,7 +206,7 @@ class ToUserInteractionOutputMonad m where
 run :: UserInteractionOutputEnvironment
     -> UserInteractionOutputMonad a
     -> IO (UserInteractionOutputResult a)
-run env (UserInteractionOutputMonad errT) = runReaderT (runErrorT errT) env
+run env (UserInteractionOutputMonad errT) = runReaderT (runExceptT errT) env
 
 getEnv :: UserInteractionOutputMonad UserInteractionOutputEnvironment
 getEnv = UserInteractionOutputMonad $ lift ask
@@ -220,7 +220,7 @@ getEnvs = UserInteractionOutputMonad . lift . asks
 throwErr :: Presentation.ToPresentationError err
          => err 
          -> UserInteractionOutputMonad a
-throwErr err = UserInteractionOutputMonad $ throwError (Presentation.toError err)
+throwErr err = UserInteractionOutputMonad $ throwE (Presentation.toError err)
 
 -- | Corresponds to 'Control.Monad.Trans.Error's catchError.
 catchErr :: UserInteractionOutputMonad a                                    -- ^ The computation that can throw an error.
@@ -232,7 +232,7 @@ catchErr m handler =
     handlerErrT err = let (UserInteractionOutputMonad errT) = handler err
                       in  errT
   in
-   UserInteractionOutputMonad $ catchError errT handlerErrT
+   UserInteractionOutputMonad $ catchE errT handlerErrT
 
 instance ToUserInteractionOutputMonad Presentation.Monad where
   toUserInteractionOutputMonad m =
@@ -259,10 +259,10 @@ instance Presentation.ToPresentationError err => ToUserInteractionOutputMonad (E
   toUserInteractionOutputMonad (Right ok) = return ok
 
 instance Presentation.ToPresentationError err =>
-         ToUserInteractionOutputMonad (ErrorT err IO) where
+         ToUserInteractionOutputMonad (ExceptT err IO) where
   toUserInteractionOutputMonad m =
     do
-      res <- liftIO $ runErrorT m
+      res <- liftIO $ runExceptT m
       toUserInteractionOutputMonad res
 
 instance ToUserInteractionOutputMonad DBIO.DatabaseMonad where

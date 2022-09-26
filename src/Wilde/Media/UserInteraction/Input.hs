@@ -61,7 +61,7 @@ import Prelude hiding (Monad)
 
 import qualified Control.Monad as MMonad
 import qualified Control.Monad.Trans as MTrans
-import qualified Control.Monad.Trans.Error as MError
+import qualified Control.Monad.Trans.Except as MExcept
 import qualified Control.Monad.Trans.Reader as MReader
 
 import qualified Wilde.Media.ElementSet as ES
@@ -88,9 +88,6 @@ data Error = UnclassifiedError   UnclassifiedError
 -- | Type for reading from user interaction input.
 type Result a = Either Error a
 
-instance MError.Error Error where
-  strMsg = ImplementationError
-
 -- | Class for the error "sub types" of UserInteractionOutputError.
 class ToError a where
   toError :: a -> Error
@@ -99,7 +96,7 @@ instance ToError Error where
   toError = id
 
 newtype Monad a =
-  Monad (MError.ErrorT Error (MReader.ReaderT Environment IO) a)
+  Monad (MExcept.ExceptT Error (MReader.ReaderT Environment IO) a)
 
 data Environment =
   Environment
@@ -152,26 +149,26 @@ throwElementLookupError err = throwErr $ MediaLookupError err
 
 -- | Runs a 'Monad'.
 run :: Environment
-       -> Monad a 
-       -> IO (Either Error a)
-run env (Monad errT) =
-  MReader.runReaderT (MError.runErrorT errT) env
+    -> Monad a 
+    -> IO (Either Error a)
+run env (Monad m) =
+  MReader.runReaderT (MExcept.runExceptT m) env
 
--- | Corresponds to 'Control.Monad.Trans.Error's throwError.
+-- | Corresponds to 'Control.Monad.Trans.Except's throwE.
 throwErr :: ToError err => err -> Monad a
-throwErr err = Monad $ MError.throwError (toError err)
+throwErr err = Monad $ MExcept.throwE (toError err)
 
--- | Corresponds to 'Control.Monad.Trans.Error's catchError.
-catchErr :: Monad a               -- ^ The computation that can throw an error.
-            -> (Error -> Monad a) -- ^ Error handler
-            -> Monad a
+-- | Corresponds to 'Control.Monad.Trans.Except's catchE.
+catchErr :: Monad a            -- ^ The computation that can throw an error.
+         -> (Error -> Monad a) -- ^ Error handler
+         -> Monad a
 catchErr m handler =
   let
     (Monad errT) = m
     handlerErrT err = let (Monad errT) = handler err
                       in  errT
   in
-   Monad $ MError.catchError errT handlerErrT
+   Monad $ MExcept.catchE errT handlerErrT
 
 instance MTrans.MonadIO Monad where
   liftIO = Monad . MTrans.lift . MTrans.lift
@@ -182,6 +179,7 @@ class ToMonad m where
 instance ToError err => ToMonad (Either err) where
   toMonad (Left err) = throwErr err
   toMonad (Right x)  = return x
+
 -- | Integrates monads of type "IO (Either err a)"
 -- into the Monad monad
 liftIOWithError :: ToError err
@@ -194,12 +192,12 @@ liftIOWithError io =
       Left err -> throwErr err
       Right ok -> return ok
 
--- | Integrates monads of type "ErrorT err IO"
+-- | Integrates monads of type "ExceptT err IO"
 -- into the Monad monad
 liftIOWithErrorT :: ToError err
-                 => MError.ErrorT err IO a
+                 => MExcept.ExceptT err IO a
                  -> Monad a
 liftIOWithErrorT io =
   do
-    res <- MTrans.liftIO $ MError.runErrorT io
+    res <- MTrans.liftIO $ MExcept.runExceptT io
     either throwErr return res

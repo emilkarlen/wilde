@@ -45,7 +45,7 @@ module Wilde.Media.Database.Monad
 import qualified Control.Monad.Error.Class as ME
 
 import Control.Monad.Trans
-import Control.Monad.Trans.Error
+import Control.Monad.Trans.Except
 import Control.Monad.Trans.Reader
 
 import Data.Convertible.Base
@@ -62,12 +62,12 @@ import Wilde.Media.CustomEnvironment
 -------------------------------------------------------------------------------
 
 
-newtype DatabaseMonad a = DatabaseMonad (ErrorT DatabaseError (ReaderT ES.ElementSet IO) a)
+newtype DatabaseMonad a = DatabaseMonad (ExceptT DatabaseError (ReaderT ES.ElementSet IO) a)
 
 
 instance ME.MonadError DatabaseError DatabaseMonad where
-  throwError e = DatabaseMonad $ throwError e
-  catchError (DatabaseMonad m) handler = DatabaseMonad $ catchError m handler'
+  throwError e = DatabaseMonad $ throwE e
+  catchError (DatabaseMonad m) handler = DatabaseMonad $ catchE m handler'
     where
       handler' e =
         let
@@ -98,7 +98,7 @@ instance MonadWithCustomEnvironment DatabaseMonad where
 runDatabase :: ES.ElementSet
             -> DatabaseMonad a
             -> IO (Either DatabaseError a)
-runDatabase customEnvironment (DatabaseMonad m) = runReaderT (runErrorT m) customEnvironment
+runDatabase customEnvironment (DatabaseMonad m) = runReaderT (runExceptT m) customEnvironment
 
 class ToDatabaseError a where
   toDatabaseError :: a -> DatabaseError
@@ -132,10 +132,10 @@ instance ToDatabaseError e => ToDatabaseMonad (Either e) where
 class ToDatabaseMonad m where
   toDatabaseMonad :: m a -> DatabaseMonad a
 
-instance ToDatabaseError e => ToDatabaseMonad (ErrorT e IO) where
+instance ToDatabaseError e => ToDatabaseMonad (ExceptT e IO) where
   toDatabaseMonad m =
     do
-      res <- liftIO $ runErrorT m
+      res <- liftIO $ runExceptT m
       toDatabaseMonad res
 
 instance ToDatabaseMonad TranslationMonad where

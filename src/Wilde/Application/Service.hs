@@ -111,7 +111,7 @@ module Wilde.Application.Service
 
 
 import Control.Monad.Trans
-import Control.Monad.Trans.Error
+import Control.Monad.Trans.Except
 import Control.Monad.Trans.Reader
 
 
@@ -195,13 +195,10 @@ instance ToServiceError UiI.Error where
   toServiceError (UiI.UnclassifiedError   err)      = UnclassifiedError err
   toServiceError (UiI.MediaLookupError info)        = UiMediaLookupError info
 
-instance Error ServiceError where
-  strMsg = UnclassifiedError . WM.unclassifiedError
-
 -- | Corresponds to 'Control.Monad.Trans.Error's throwError.
 throwErr :: ToServiceError err
          => err -> ServiceMonad a
-throwErr = ServiceMonad . throwError . toServiceError
+throwErr = ServiceMonad . throwE . toServiceError
 
 -- | Corresponds to 'Control.Monad.Trans.Error's catchError.
 catchErr :: ServiceMonad a                      -- ^ The computation that can throw an error.
@@ -213,7 +210,7 @@ catchErr m handler =
     handlerErrT err = let (ServiceMonad errT) = handler err
                       in  errT
   in
-   ServiceMonad $ catchError errT handlerErrT
+   ServiceMonad $ catchE errT handlerErrT
 
 
 -------------------------------------------------------------------------------
@@ -331,13 +328,13 @@ getConn =
 -------------------------------------------------------------------------------
 
 
-newtype ServiceMonad a = ServiceMonad (ErrorT ServiceError (ReaderT ServiceEnvironment IO) a)
+newtype ServiceMonad a = ServiceMonad (ExceptT ServiceError (ReaderT ServiceEnvironment IO) a)
 
 -- | Executes a computation in the Service Monad.
 runService :: ServiceEnvironment
            -> ServiceMonad a
            -> IO (Either ServiceError a)
-runService env (ServiceMonad m) = runReaderT (runErrorT m) env
+runService env (ServiceMonad m) = runReaderT (runExceptT m) env
 
 instance Monad ServiceMonad where
   return = ServiceMonad . return

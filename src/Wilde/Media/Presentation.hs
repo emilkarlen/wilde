@@ -75,7 +75,7 @@ import Prelude hiding (Monad)
 
 import qualified Control.Monad as MMonad
 import qualified Control.Monad.Trans as MTrans
-import qualified Control.Monad.Trans.Error as MError
+import qualified Control.Monad.Trans.Except as MExcept
 import qualified Control.Monad.Trans.Reader as MReader
 
 import Database.HDBC.Types (ConnWrapper)
@@ -134,7 +134,7 @@ envStandardServiceLinkRenderer :: Environment
 envStandardServiceLinkRenderer = outStandardServiceLinkRenderer . envOutputing
 
 newtype Monad a =
-  Monad (MError.ErrorT Error (MReader.ReaderT Environment IO) a)
+  Monad (MExcept.ExceptT Error (MReader.ReaderT Environment IO) a)
 
 instance MonadWithCustomEnvironment Monad where
   getCustomEnvironment = fmap envCustomEnvironment getEnv
@@ -150,9 +150,6 @@ instance MonadWithCustomEnvironmentAndLookup Monad where
 
 throwElementLookupError :: ES.ElementLookupError -> Monad a
 throwElementLookupError err = throwErr $ MediaLookupError err
-
-instance MError.Error Error where
-  strMsg = ImplementationError
 
 -- | Class for the error "sub types" of Error.
 class ToPresentationError a where
@@ -207,7 +204,7 @@ class ToPresentationMonad m where
 run :: Environment
     -> Monad a
     -> IO (Result a)
-run env (Monad errT) = MReader.runReaderT (MError.runErrorT errT) env
+run env (Monad errT) = MReader.runReaderT (MExcept.runExceptT errT) env
 
 getEnv :: Monad Environment
 getEnv = Monad $ MTrans.lift MReader.ask
@@ -219,7 +216,7 @@ getEnvs = Monad . MTrans.lift . MReader.asks
 -- | Corresponds to 'Control.Monad.Trans.Error's throwError.
 throwErr :: ToPresentationError err
          => err -> Monad a
-throwErr err = Monad $ MError.throwError (toError err)
+throwErr err = Monad $ MExcept.throwE (toError err)
 
 -- | Corresponds to 'Control.Monad.Trans.Error's catchError.
 catchErr :: Monad a                                    -- ^ The computation that can throw an error.
@@ -231,17 +228,17 @@ catchErr m handler =
     handlerErrT err = let (Monad errT) = handler err
                       in  errT
   in
-   Monad $ MError.catchError errT handlerErrT
+   Monad $ MExcept.catchE errT handlerErrT
 
 instance ToPresentationError err => ToPresentationMonad (Either err) where
   toPresentationMonad (Left err) = throwErr err
   toPresentationMonad (Right ok) = return ok
 
 instance ToPresentationError err =>
-         ToPresentationMonad (MError.ErrorT err IO) where
+         ToPresentationMonad (MExcept.ExceptT err IO) where
   toPresentationMonad m =
     do
-      res <- MTrans.liftIO $ MError.runErrorT m
+      res <- MTrans.liftIO $ MExcept.runExceptT m
       toPresentationMonad res
 
 instance ToPresentationMonad DBIO.DatabaseMonad where

@@ -47,7 +47,7 @@ module Wilde.Media.Database
 import qualified Control.Monad.Error.Class as ME
 
 import Control.Monad.Trans
-import Control.Monad.Trans.Error
+import Control.Monad.Trans.Except
 import Control.Monad.Trans.Reader
 
 import Data.Convertible.Base
@@ -113,23 +113,17 @@ data TranslationError = UnknownTranslationError String
                       | ImplementationTranslationError String
                       deriving Show
 
-instance Error TranslationError where
-  strMsg s = ImplementationTranslationError s
-
 data DatabaseError = DbTranslationError TranslationError
                    | DbNoRows      String (Maybe (Mismatch Int))
                    | DbTooManyRows String (Maybe (Mismatch Int))
                    | DbUnclassifiedError String
                      deriving Show
 
-instance Error DatabaseError where
-  strMsg = DbUnclassifiedError
-
-newtype TranslationMonad a = TranslationMonad (ErrorT TranslationError (Reader ES.ElementSet) a)
+newtype TranslationMonad a = TranslationMonad (ExceptT TranslationError (Reader ES.ElementSet) a)
 
 instance ME.MonadError TranslationError TranslationMonad where
-  throwError e = TranslationMonad $ throwError e
-  catchError (TranslationMonad m) handler = TranslationMonad $ catchError m handler'
+  throwError e = TranslationMonad $ throwE e
+  catchError (TranslationMonad m) handler = TranslationMonad $ catchE m handler'
     where
       handler' e =
         let (TranslationMonad m) = handler e
@@ -155,4 +149,4 @@ instance MonadWithCustomEnvironment TranslationMonad where
 runTranslation :: ES.ElementSet
                -> TranslationMonad a
                -> Either TranslationError a
-runTranslation env (TranslationMonad m) = runReader (runErrorT m) env
+runTranslation env (TranslationMonad m) = runReader (runExceptT m) env
