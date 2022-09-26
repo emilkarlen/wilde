@@ -16,6 +16,7 @@ dist-newstyle
 ###############################################################################
 
 dist/
+build-logs/
 tmp/
 dependencies/
 not-needed/
