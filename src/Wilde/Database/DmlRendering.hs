@@ -37,6 +37,8 @@ import Text.PrettyPrint
 
 import Wilde.Database.Sql
 
+import Prelude hiding ((<>))
+
 
 -------------------------------------------------------------------------------
 -- - implementation -

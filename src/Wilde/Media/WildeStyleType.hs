@@ -102,11 +102,11 @@ withAdjustedStyle (WildeStyling styling) f =
 withNeutralWildeStyle :: a -> WildeStyling a
 withNeutralWildeStyle = WildeStyling . Styling neutral
 
---type WildeStyling a = Styling WildeStyle
+instance Semigroup WildeStyle where
+    (WildeStyle xs) <> (WildeStyle ys) = WildeStyle (xs ++ ys)
 
 instance Monoid WildeStyle where
     mempty = WildeStyle []
-    mappend (WildeStyle x) (WildeStyle y) = WildeStyle (x ++ y)
 
 instance STYLE WildeStyle where
 

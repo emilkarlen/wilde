@@ -119,10 +119,12 @@ data FixedAndDefaultValues atConf dbTable =
   , fadvDefaulted :: AttributeWidgetDefaultValues atConf dbTable
   }
 
+instance Semigroup (FixedAndDefaultValues atConf dbTable) where 
+  (FixedAndDefaultValues f1 d1) <> (FixedAndDefaultValues f2 d2) =
+    FixedAndDefaultValues (f1 ++ f2) (d1 ++ d2)
+
 instance Monoid (FixedAndDefaultValues atConf dbTable) where 
   mempty = FixedAndDefaultValues [] []
-  mappend (FixedAndDefaultValues f1 d1) (FixedAndDefaultValues f2 d2) =
-    FixedAndDefaultValues (f1 ++ f2) (d1 ++ d2)
 
 
 -------------------------------------------------------------------------------

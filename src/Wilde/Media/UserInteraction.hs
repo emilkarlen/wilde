@@ -199,13 +199,15 @@ data FormBlock = FormBlock
                    formBlockInteraction :: [FormBlockRow],
                    formBlockMetaValues  :: [Element]
                  }
+instance Semigroup FormBlock where
+  fp1 <> fp2 = FormBlock
+               { formBlockInteraction = concatMap formBlockInteraction [fp1,fp2]
+               , formBlockMetaValues  = concatMap formBlockMetaValues  [fp1,fp2]
+               }
+  
 
 instance Monoid FormBlock where
-  mempty          = FormBlock [] []
-  mappend fp1 fp2 = FormBlock
-                    { formBlockInteraction = concatMap formBlockInteraction [fp1,fp2]
-                    , formBlockMetaValues  = concatMap formBlockMetaValues  [fp1,fp2]
-                    }
+  mempty = FormBlock [] []
   
 
 -- | One row of a 'FormBlock'.
@@ -301,10 +303,12 @@ data FormBlocksAndMetas =
     fbamBlocks :: [FormBlock]
   }
 
+instance Semigroup FormBlocksAndMetas where
+  (FormBlocksAndMetas mL bL) <> (FormBlocksAndMetas mR bR) =
+    (FormBlocksAndMetas (mL ++ mR) (bL ++ bR))
+
 instance Monoid FormBlocksAndMetas where
   mempty = FormBlocksAndMetas [] []
-  mappend (FormBlocksAndMetas mL bL) (FormBlocksAndMetas mR bR) =
-    (FormBlocksAndMetas (mL ++ mR) (bL ++ bR))
 
 instance EMPTY FormBlocksAndMetas where
   empty = FormBlocksAndMetas [] []

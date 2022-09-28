@@ -34,6 +34,8 @@ module Wilde.Driver.Database.RenderDdlUtils
 -------------------------------------------------------------------------------
 
 
+import Prelude hiding ((<>))
+
 import Data.List
 
 import Control.Monad.Reader
