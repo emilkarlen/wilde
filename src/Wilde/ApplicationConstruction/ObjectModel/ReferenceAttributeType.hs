@@ -18,6 +18,7 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
 {-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE MonoLocalBinds #-}
 
 -------------------------------------------------------------------------------
 -- | AttributeType:s for references/foreign keys.
