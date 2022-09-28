@@ -178,4 +178,4 @@ renderColumn (BackEndColumnInfo name typ extras) =
     colTypeTranslator <- getColTypeTranslator
     case colTypeTranslator typ of
       Right typeString -> return $ [name,typeString] ++ extras
-      Left  errMsg     -> fail errMsg
+      Left  errMsg     -> error errMsg

@@ -108,7 +108,7 @@ colTypeTranslator colDesc = fmap (++nullModifier) typ
       -- Global unique identifier
       SqlGUIDT -> int
       SqlUnknownT s -> return s
-    notImplemented = fail $ "Not implemented: MySQL translation of column type " ++
+    notImplemented = error $ "Not implemented: MySQL translation of column type " ++
                      (show (colType colDesc))
     nullModifier :: String
     nullModifier = maybe "" mkNullable $ colNullable colDesc
@@ -128,7 +128,7 @@ colTypeTranslator colDesc = fmap (++nullModifier) typ
     sizeMissing = "MySQL: size is missing: " ++ show colDesc
 
     withSize :: (Int -> String) -> Either RenderDdlUtils.ErrorMessage String
-    withSize mkType = maybe (fail sizeMissing) (return . mkType) (colSize colDesc)
+    withSize mkType = maybe (error sizeMissing) (return . mkType) (colSize colDesc)
 
 mkChar :: Int -> String
 mkChar size = "CHAR(" ++ show size ++ ")"
