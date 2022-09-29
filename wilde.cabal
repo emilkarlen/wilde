@@ -18,8 +18,8 @@ Library
 -- -Wall
   Hs-Source-Dirs:    src
   Build-Depends:
-    base          ==4.14.1.0,
-    containers    ==0.6.2.1,
+    base          ==4.14.3.0,
+    containers    ==0.6.5.1,
     transformers  ==0.5.6.2,
     mtl           ==2.2.2,
     array         ==0.5.4.0,
@@ -29,13 +29,13 @@ Library
     old-locale    ==1.0.0.7,
     time          ==1.9.3,
     html          ==1.0.1.2,
-    cgi           ,
+    cgi           ==3001.5.0.0,
     wai           ==3.2.3,
     bytestring    ==0.10.12.0,
     utf8-string   ==1.0.2,
     http-types    ==0.12.3,
-    blaze-builder ==0.4.2.1,
-    HDBC          ==2.4.0.3
+    blaze-builder ==0.4.2.2,
+    HDBC          ==2.4.0.4
   Exposed-Modules:
     Wilde.Application.ApplicationConfiguration
     Wilde.Application.ApplicationServices
