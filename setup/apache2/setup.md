@@ -12,3 +12,4 @@ Install this file into /etc/apache2/conf-available/ and symlink to from
 
     Alias /style/ /var/www/style/
     Alias /icon/ /var/www/icon/
+
