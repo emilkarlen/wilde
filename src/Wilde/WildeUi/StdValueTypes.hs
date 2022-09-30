@@ -56,8 +56,7 @@ import Data.Word
 
 import qualified Text.Html as Html
 
--- TODO : ta bort det här beroendet - formEncode.
-import Network.CGI
+import Network.HTTP.Base (urlEncodeVars)
 
 import Wilde.Media.WildeValue
 
@@ -267,7 +266,7 @@ instance VALUE a => VALUE (WwwLinkValue a) where
     where
       url = if null urlArgs
             then urlBase
-            else urlBase ++ "?" ++ (formEncode (map toMandatoryValue urlArgs))
+            else urlBase ++ "?" ++ (urlEncodeVars (map toMandatoryValue urlArgs))
       domEventAttrs = [Html.HtmlAttr (show event) jsPgm | (event,jsPgm) <- domEvents]
 
 -- | If the value has a non-neutral style, then it is applied to the

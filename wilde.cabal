@@ -29,7 +29,7 @@ Library
     old-locale    ==1.0.0.7,
     time          ==1.9.3,
     html          ==1.0.1.2,
-    cgi           ==3001.5.0.0,
+    HTTP          ==4000.3.16,
     wai           ==3.2.3,
     bytestring    ==0.10.12.1,
     utf8-string   ==1.0.2,
@@ -159,7 +159,6 @@ Library
     Wilde.Driver.Application.Cgi
     Wilde.Driver.Application.Html
     Wilde.Driver.Application.CgiHtml
-    Wilde.Driver.Application.Cgi.ApplicationMain
     Wilde.Driver.Application.Wai.Application
     Wilde.Driver.Database.MySQL.Renderer
     Wilde.Driver.Database.MySQL.ApplicationObjectModelTools
