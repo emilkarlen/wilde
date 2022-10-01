@@ -32,49 +32,50 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 module Wilde.ApplicationConstruction.Database.DatabaseColumnTypes
        (
          -- * Convenience types
-         
+
          DatabaseColumnType(..),
-         
+
          -- * Construction of 'Database.OutputerWithConnection'
-         
+
          mkOutputerWithConnection,
-         
+
          -- * Info for some types
-       
+
          -- ** Numbers
-         
+
          -- *** Int
-         
+
        int,
        int_optional,
-         
+
        int32,
        int32_optional,
-         
+
        int64,
        int64_optional,
-         
+
          -- *** Word
-       
+
        word32,
        word32_optional,
-         
+
        word64,
        word64_optional,
-         
+
          -- *** Floating point
-         
+
        double,
        double_optional,
-         
+
          -- ** Strings
-         
+
          -- *** Variable length String with given max size
-         
+
 
        string,
        string_forDbIo,
        dbIo_string_default,
+       dbIo_string_byteString_utf8,
        colDesc_string,
 
        string_optional,
@@ -82,24 +83,24 @@ module Wilde.ApplicationConstruction.Database.DatabaseColumnTypes
 
        dbIo_string_optional_default,
        colDesc_string_optional,
-         
+
          -- *** Variable length String with impl dependent max size
-         
+
        longString,
        longString_optional,
-         
+
        longString_forDefaultDbIo,
        longString_optional_forDefaultDbIo,
-         
+
          -- ** Misc
-         
+
          -- *** Bool
-         
+
        bool,
        bool_optional,
-                  
+
          -- *** Date
-         
+
        day,
        day_optional,
 
@@ -124,6 +125,7 @@ import Data.Typeable
 import Data.Word
 import Data.Int
 import Data.Time.Calendar (Day)
+import qualified Data.ByteString.UTF8 as BsUtf8
 
 import Database.HDBC.ColTypes
 import Database.HDBC
@@ -155,7 +157,7 @@ data DatabaseColumnType a =
 
 
 int :: DatabaseColumnType Int
-int = 
+int =
   DatabaseColumnType
   {
     databaseIo        = dbIo_convertible
@@ -172,7 +174,7 @@ int_optional = mkOptional int
 
 
 int32 :: DatabaseColumnType Int32
-int32 = 
+int32 =
   DatabaseColumnType
   {
     databaseIo        = dbIo_convertible
@@ -189,7 +191,7 @@ int32_optional = mkOptional int32
 
 
 int64 :: DatabaseColumnType Int64
-int64 = 
+int64 =
   DatabaseColumnType
   {
     databaseIo        = dbIo_convertible
@@ -206,7 +208,7 @@ int64_optional = mkOptional int64
 
 
 word32 :: DatabaseColumnType Word32
-word32 = 
+word32 =
   DatabaseColumnType
   {
     databaseIo        = dbIo_convertible
@@ -223,7 +225,7 @@ word32_optional = mkOptional word32
 
 
 word64 :: DatabaseColumnType Word64
-word64 = 
+word64 =
   DatabaseColumnType
   {
     databaseIo        = dbIo_convertible
@@ -240,7 +242,7 @@ word64_optional = mkOptional word64
 
 
 double :: DatabaseColumnType Double
-double = 
+double =
   DatabaseColumnType
   {
     databaseIo        = dbIo_convertible
@@ -260,36 +262,37 @@ string :: Int -- ^ Max string length
        -> DatabaseColumnType String
 string = string_forDbIo dbIo_string_default
 
-dbIo_string_default :: DatabaseIo String
-dbIo_string_default = dbIo_convertible
-
 string_forDbIo :: DatabaseIo String
                -> Int -- ^ Max string length
                -> DatabaseColumnType String
-string_forDbIo dbIo maxLen = 
+string_forDbIo dbIo maxLen =
   DatabaseColumnType
   {
     databaseIo        = dbIo
   , columnDescription = colDesc_string maxLen
   }
 
+dbIo_string_default :: DatabaseIo String
+dbIo_string_default = dbIo_string_byteString_utf8
+
 colDesc_string :: Int -- ^ Max string length
                -> SqlColDesc
 colDesc_string maxLen = SqlColDesc SqlVarCharT (Just maxLen) Nothing Nothing (Just False)
 
+
+-------------------------------------------------------------------------------
+-- - Maybe String -
+-------------------------------------------------------------------------------
+
+
 string_optional :: Int -- ^ Max string length
                 -> DatabaseColumnType (Maybe String)
-string_optional maxLen = 
-  DatabaseColumnType
-  {
-    databaseIo        = dbIo_string_optional_default
-  , columnDescription = colDesc_string_optional maxLen
-  }
+string_optional maxLen = string_optional_forDbIo dbIo_string_optional_default maxLen
 
 string_optional_forDbIo :: DatabaseIo (Maybe String)
                         -> Int -- ^ Max string length
                         -> DatabaseColumnType (Maybe String)
-string_optional_forDbIo dbIo maxLen = 
+string_optional_forDbIo dbIo maxLen =
   DatabaseColumnType
   {
     databaseIo        = dbIo
@@ -297,12 +300,35 @@ string_optional_forDbIo dbIo maxLen =
   }
 
 dbIo_string_optional_default :: DatabaseIo (Maybe String)
-dbIo_string_optional_default = dbIo_mkOptional dbIo_convertible
+dbIo_string_optional_default = dbIo_mkOptional dbIo_string_default
 
 colDesc_string_optional :: Int -- ^ Max string length
                         -> SqlColDesc
 colDesc_string_optional = colDesc_mkOptional . colDesc_string
 
+-- | `DatabaseIo` for a String, stored as
+-- a `ByteString` and encoded using UTF-8
+dbIo_string_byteString_utf8 :: DatabaseIo String
+dbIo_string_byteString_utf8 =
+  DatabaseIo
+  {
+    dbOutputer = dbO_string_byteString_utf8
+  , dbInputer  = dbI_string_byteString_utf8
+  }
+
+dbI_string_byteString_utf8 :: DatabaseInputer String
+dbI_string_byteString_utf8 [sqlValue] = case sqlValue of
+  (SqlString x)     -> return x
+  (SqlByteString x) -> return $ BsUtf8.toString x
+  sqlValue          -> Left $
+                       invalidSqlValuesError
+                       "String"
+                       ["SqlString","SqlByteString"]
+                       sqlValue
+dbI_string_byteString_utf8 sqlValues = Left $ numberOfSqlValuesError "String" sqlValues
+
+dbO_string_byteString_utf8 :: DatabaseOutputer String
+dbO_string_byteString_utf8 x = return [SqlByteString $ BsUtf8.fromString x]
 
 -------------------------------------------------------------------------------
 -- - LongString -
@@ -312,7 +338,7 @@ colDesc_string_optional = colDesc_mkOptional . colDesc_string
 -- | A long string.  Max length is implementation dependent.
 longString :: DatabaseIo String
            -> DatabaseColumnType String
-longString dbIo = 
+longString dbIo =
   DatabaseColumnType
   {
     databaseIo        = dbIo
@@ -325,7 +351,7 @@ longString_optional = mkOptional . longString
 
 -- | A long string.  Max length is implementation dependent.
 longString_forDefaultDbIo :: DatabaseColumnType String
-longString_forDefaultDbIo = 
+longString_forDefaultDbIo =
   DatabaseColumnType
   {
     databaseIo        = dbIo_string_default
@@ -362,10 +388,10 @@ dbIo_Bool =
   where
     outputer :: DatabaseOutputer Bool
     outputer x = return [SqlWord32 (if x then 1 else 0)]
-    
+
     inputer  :: DatabaseInputer Bool
     inputer [x] = safeFromSql x
-    inputer xs  = Left $ numberOfSqlValuesError "Bool" xs 
+    inputer xs  = Left $ numberOfSqlValuesError "Bool" xs
 
 
 -------------------------------------------------------------------------------
@@ -374,7 +400,7 @@ dbIo_Bool =
 
 
 day :: DatabaseColumnType Day
-day = 
+day =
   DatabaseColumnType
   {
     databaseIo        = dbIo_convertible
@@ -410,7 +436,7 @@ dbIo_convertible =
              => DatabaseInputer a
      inputer [sqlValue] = safeFromSql sqlValue
      inputer xs = inputTooManyValues undefined xs
-     
+
 dbIo_convertible_optional :: (Typeable a,Convertible SqlValue a,Convertible a SqlValue)
                           => DatabaseIo (Maybe a)
 dbIo_convertible_optional =
@@ -423,7 +449,7 @@ dbIo_convertible_optional =
     outputer :: (Convertible SqlValue a,Convertible a SqlValue)
              => DatabaseOutputer (Maybe a)
     outputer x = do
-      v <- ((maybe (return SqlNull) safeConvert) x) 
+      v <- maybe (return SqlNull) safeConvert x
       return [v]
 
     inputer :: (Typeable a,Convertible SqlValue a)
@@ -431,7 +457,7 @@ dbIo_convertible_optional =
     inputer [SqlNull]  = return Nothing
     inputer [sqlValue] = fmap Just $ safeFromSql sqlValue
     inputer xs         = inputTooManyValues undefined xs
-    
+
 
 -------------------------------------------------------------------------------
 -- - Utilities related to DatabaseColumnType -
@@ -454,9 +480,9 @@ mkOptional (DatabaseColumnType dbIo colDesc)  =
     databaseIo        = dbIo_mkOptional dbIo
   , columnDescription = colDesc_mkOptional colDesc
   }
-  
+
 dbIo_mkOptional :: Typeable a
-                => DatabaseIo a 
+                => DatabaseIo a
                 -> DatabaseIo (Maybe a)
 dbIo_mkOptional (DatabaseIo outputer_m inputer_m) =
    DatabaseIo
@@ -466,19 +492,19 @@ dbIo_mkOptional (DatabaseIo outputer_m inputer_m) =
    }
   where
     outputer x = do
-      vs <- (maybe (return [SqlNull]) outputer_m) x 
+      vs <- (maybe (return [SqlNull]) outputer_m) x
       return vs
 
     inputer [SqlNull]  = return Nothing
     inputer [sqlValue] = fmap Just $ inputer_m [sqlValue]
     inputer xs         = inputTooManyValues undefined xs
-    
+
 -- | Transforms a 'SqlColDesc' for a mandatory typ to one for the
 -- corresponding optional type.
 colDesc_mkOptional :: SqlColDesc -- ^ For the mandatory type - Null is not allowed
                    -> SqlColDesc
 colDesc_mkOptional x = x { colNullable = Just True }
-  
+
 
 -------------------------------------------------------------------------------
 -- - Utilities related to integral types -
@@ -525,12 +551,12 @@ inputTooManyValues :: (Typeable a)
 inputTooManyValues valueForTypeOf xs = Left $ numberOfSqlValuesError typeDesc xs
   where
     typeDesc = show $ typeOf valueForTypeOf
-     
+
 -- | Constructs a ConvertError for the error "invalid number of SQL values".
 numberOfSqlValuesError :: String
-                       -> [SqlValue] 
+                       -> [SqlValue]
                        -> ConvertError
-numberOfSqlValuesError destTypeDescr actualInput = 
+numberOfSqlValuesError destTypeDescr actualInput =
   ConvertError
   {
     convSourceValue  = show actualInput
@@ -544,7 +570,7 @@ invalidSqlValuesError :: String
                       -> [String]
                       -> SqlValue
                       -> ConvertError
-invalidSqlValuesError destTypeDescr expectedTypes actualInput = 
+invalidSqlValuesError destTypeDescr expectedTypes actualInput =
   ConvertError
   {
     convSourceValue  = show actualInput

@@ -31,11 +31,17 @@ module Wilde.ApplicationConstruction.ObjectModel.IdNameObjectType
          -- module Wilde.ApplicationConstruction.ObjectModel.AttributeType,
          -- module Wilde.ApplicationConstruction.ObjectModel.ObjectType,
 
+        -- * Complete configuration for the obect type
+
          Configuration(..),
+
+        -- * Types for the db table and native objects
 
          Table(..),
          IdNameNative(..),
-         
+
+        -- * Type synonyms
+
          IdNameType,
          IdNameObjectType,
          IdNameObjectTypeSetup,
@@ -44,6 +50,8 @@ module Wilde.ApplicationConstruction.ObjectModel.IdNameObjectType
          IdNameObjectType_ddl,
          IdNameObjectTypeSetup_ddl,
          IdNamePresStrSpec_ddl,
+
+        -- * Variants of the object type setup
 
          ot_IdName,
          ot_IdName_andNameAt,
@@ -104,7 +112,7 @@ data IdNameNative =
     idValue   :: PrimaryKeyType
   , nameValue :: String
   }
-  
+
 type IdNameType              = (PrimaryKeyType,String)
 
 type IdNameObjectType      dbTable = IdNameO_woAtAnn ObjectType      dbTable
@@ -119,7 +127,7 @@ type IdNamePresStrSpec_ddl     dbTable = ReferencePresentationSpec OtDbConfig.Co
 data Table = Id
            | Name
            deriving Show
-                        
+
 instance SQL_IDENTIFIER Table where
   sqlIdentifier Id   = "id"
   sqlIdentifier Name = "name"
@@ -170,9 +178,9 @@ ots_and_rps_IdName :: (SQL_IDENTIFIER dbTable)
 ots_and_rps_IdName config =
   (
     refPresSpec_4_stringAt atName,
-    (objectTypeSetup ot (objectTypeTitle config))
+    objectTypeSetup ot (objectTypeTitle config)
     `withObjectListDisplaySetup`
-    (OLS.ObjectListDisplaySetup [anyAtName] [anyAtName] (return Nothing))
+    OLS.ObjectListDisplaySetup [anyAtName] [anyAtName] (return Nothing)
    )
   where
     anyAtName   = Any atName
@@ -199,7 +207,7 @@ ot_IdName_andNameAt config =
            OtDbConfig.Configuration
            {
              OtDbConfig.databaseTable               = DatabaseTable (dbTableName config)
-           , OtDbConfig.getIdOfInsertedIntoDatabase = (getIdOfInserted config)
+           , OtDbConfig.getIdOfInsertedIntoDatabase = getIdOfInserted config
            }
          }
     atPk     = at_PrimaryKey_dbAutogen 5 (colPk config)

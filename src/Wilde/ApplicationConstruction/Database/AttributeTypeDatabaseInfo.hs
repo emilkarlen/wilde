@@ -115,13 +115,13 @@ module Wilde.ApplicationConstruction.Database.AttributeTypeDatabaseInfo
 -------------------------------------------------------------------------------
 
 
-import Data.Word
-import Data.Int
+import Data.Word ( Word32, Word64 )
+import Data.Int ( Int32, Int64 )
 import Data.Time.Calendar (Day)
 
-import Data.Typeable
+import Data.Typeable ( Typeable )
 
-import Database.HDBC.ColTypes
+import Database.HDBC.ColTypes ( SqlColDesc )
 
 import qualified Wilde.Utils.NonEmptyList as NonEmpty
 
@@ -130,7 +130,7 @@ import Wilde.Media.Database
 import qualified Wilde.ObjectModel.Database as Database
 
 import           Wilde.Database.SqlDdlInfo
-import           Wilde.Database.Sql
+import Wilde.Database.Sql ( SQL_IDENTIFIER )
 
 import qualified Wilde.ApplicationConstruction.Database.DatabaseColumnTypes as DbCol
 
@@ -347,30 +347,34 @@ double_optional = atDbIo_forSingleColumn DbCol.double_optional
 -------------------------------------------------------------------------------
 
 
+-- | A mandatory String column, with "default" `DatabaseIo`
 string :: (SQL_IDENTIFIER dbTable)
        => Int -- ^ Max string length
-       -> dbTable
+       -> dbTable -- ^ Column (of the table)
        -> AttributeTypeDatabaseInfo_same dbTable String
 string maxLen = atDbIo_forSingleColumn (DbCol.string maxLen)
 
+-- | An optional String column, with "default" `DatabaseIo`
 string_optional :: (SQL_IDENTIFIER dbTable)
                 => Int -- ^ Max string length
-                -> dbTable
+                -> dbTable -- ^ Column (of the table)
                 -> AttributeTypeDatabaseInfo_same_optional dbTable String
 string_optional maxLen = atDbIo_forSingleColumn (DbCol.string_optional maxLen)
 
 
+-- | A mandatory String column, for a given `DatabaseIo`
 string_forDbIo :: (SQL_IDENTIFIER dbTable)
                => DatabaseIo String
                -> Int -- ^ Max string length
-               -> dbTable
+               -> dbTable -- ^ Column (of the table)
                -> AttributeTypeDatabaseInfo_same dbTable String
 string_forDbIo dbIo maxLen = atDbIo_forSingleColumn (DbCol.string_forDbIo dbIo maxLen)
 
+-- | An optional String column, for a given `DatabaseIo`
 string_optional_forDbIo :: (SQL_IDENTIFIER dbTable)
                         => DatabaseIo (Maybe String)
                         -> Int -- ^ Max string length
-                        -> dbTable
+                        -> dbTable -- ^ Column (of the table)
                         -> AttributeTypeDatabaseInfo_same_optional dbTable String
 string_optional_forDbIo dbIo maxLen = atDbIo_forSingleColumn (DbCol.string_optional_forDbIo dbIo maxLen)
 
