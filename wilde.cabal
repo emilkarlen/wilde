@@ -215,7 +215,7 @@ Library
 Test-Suite unit-tests
   Type:              exitcode-stdio-1.0
   Hs-Source-Dirs:    src, testsuite/tests, testsuite/testapp/src
-  Main-Is:           testsuit.hs
+  Main-Is:           test-suit.hs
   Other-Modules:
     TestSuit
     TestResources.TestUtils
@@ -246,9 +246,11 @@ Test-Suite unit-tests
     old-locale    ,
     time          ,
     array         ,
+    utf8-string   ,
     html          ,
     cgi           ,
     bytestring    ,
+    HTTP          ,
     HDBC          ,
     HDBC-odbc     
   Default-Language:  Haskell2010
