@@ -16,137 +16,140 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -}
-
 {-# LANGUAGE FlexibleInstances #-}
 
 -------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+
 -- | Media and monad for presentation.
 --
 -- Import qualified.
--------------------------------------------------------------------------------
 module Wilde.Media.Presentation
-       (
-         module ES,
-         module Wilde.Media.CustomEnvironment,
-         
-         -- * The monad
-         
-         Monad,
-         Result,
-         Error(..),
-         
-         -- * Monad Execution
-         
-         run,
+  ( module ES,
+    module Wilde.Media.CustomEnvironment,
 
-         -- * Monad Environment
-         
-         Environment(..),
-         Outputing(..),
-         
-         envStandardServiceLinkRenderer,
-         
-         getEnvs,
-         
-         -- * Error handling
-         
-         throwErr,
-         catchErr,
-         ToPresentationError(..),
-         liftIOWithError,
-         
-         -- * Utilities
-         
-         ToPresentationMonad(..),
-         
-         toPresentationMonadWithConn,
-         toPresentationMonadWithCar,
-       )
-       where
+    -- * The monad
+    Monad,
+    Result,
+    Error (..),
 
+    -- * Monad Execution
+    run,
 
+    -- * Monad Environment
+    Environment (..),
+    Outputing (..),
+    CustomServiceLinkRenderer,
+    envStandardServiceLinkRenderer,
+    getCustomServiceLinkRenderer,
+    getEnvs,
+
+    -- * Error handling
+    throwErr,
+    catchErr,
+    ToPresentationError (..),
+    liftIOWithError,
+
+    -- * Utilities
+    ToPresentationMonad (..),
+    toPresentationMonadWithConn,
+    toPresentationMonadWithCar,
+  )
+where
 
 -------------------------------------------------------------------------------
 -- - import -
 -------------------------------------------------------------------------------
 
-
-import Prelude hiding (Monad)
-
 import qualified Control.Monad as MMonad
 import qualified Control.Monad.Trans as MTrans
 import qualified Control.Monad.Trans.Except as MExcept
 import qualified Control.Monad.Trans.Reader as MReader
-
 import Database.HDBC.Types (ConnWrapper)
-
+import Wilde.Application.ServiceLink
+import qualified Wilde.Application.StandardServices as StandardServices
 import qualified Wilde.Database.Executor as DbExecutor
-
-import qualified Wilde.Media.ElementSet as ES
 import Wilde.Media.CustomEnvironment
-import Wilde.Media.WildeMedia
 import Wilde.Media.Database hiding (ObjectModelError)
 import qualified Wilde.Media.Database.Monad as DBIO
-
-import           Wilde.Media.Translations
-import qualified Wilde.Application.StandardServices as StandardServices
-
+import qualified Wilde.Media.ElementSet as ES
+import Wilde.Media.Translations
+import Wilde.Media.WildeMedia
+import qualified Wilde.Media.WildeValue as WildeValue
+import Wilde.WildeUi.StdValueTypes
+import Prelude hiding (Monad)
 
 -------------------------------------------------------------------------------
 -- - implementation -
 -------------------------------------------------------------------------------
 
+-------------------------------------------------------------------------------
+-- - Errors -
+-------------------------------------------------------------------------------
 
 -- | All types of errors that can occurr.
-data Error = DatabaseError DatabaseError
-           | UnclassifiedError UnclassifiedError                    
-           | ObjectModelError String
-           | MediaLookupError ES.ElementLookupError
-           | ImplementationError String
-           deriving Show
+data Error
+  = DatabaseError DatabaseError
+  | UnclassifiedError UnclassifiedError
+  | ObjectModelError String
+  | MediaLookupError ES.ElementLookupError
+  | ImplementationError String
+  deriving (Show)
+
+-------------------------------------------------------------------------------
+-- - Environment and monad -
+-------------------------------------------------------------------------------
 
 type Result a = Either Error a
 
-data Environment =
-  Environment
-  {
-    envCustomEnvironment :: ES.ElementSet
-  , envDbConfiguration   :: DbExecutor.Configuration
-  , envOutputing         :: Outputing
+data Environment = Environment
+  { envCustomEnvironment :: ES.ElementSet,
+    envDbConfiguration :: DbExecutor.Configuration,
+    envOutputing :: Outputing
   }
+
+-- | Renders a link to a global service.
+type CustomServiceLinkRenderer = ServiceSpecification -> WildeStyling LinkLabel -> [GenericParameter] -> WildeValue.AnySVALUE
 
 -- | Part of the 'Environment' that contains
 -- functionality for outputing.
-data Outputing =
-  Outputing
-  {
-    outTranslations                :: Translations
+data Outputing = Outputing
+  { outTranslations :: Translations,
     -- | Renderer for the \"standard\" services.
     --
     -- NOTE: See "Wilde.Application.StandardServices".
-  , outStandardServiceLinkRenderer :: StandardServices.StandardServiceLinkRenderer
+    outStandardServiceLinkRenderer :: StandardServices.StandardServiceLinkRenderer,
+    outGetCustomServiceLinkRenderer :: Monad CustomServiceLinkRenderer
   }
 
--- | Gets the 'StandardServices.StandardServiceLinkRenderer' from a
+-- | Gets the 'StandardServices.StandardServiceLinkRenderer' from the
 -- 'Environment'.
-envStandardServiceLinkRenderer :: Environment 
-                               -> StandardServices.StandardServiceLinkRenderer
+envStandardServiceLinkRenderer ::
+  Environment ->
+  StandardServices.StandardServiceLinkRenderer
 envStandardServiceLinkRenderer = outStandardServiceLinkRenderer . envOutputing
 
-newtype Monad a =
-  Monad (MExcept.ExceptT Error (MReader.ReaderT Environment IO) a)
+-- | Gets the 'CustomServiceLinkRenderer'.
+getCustomServiceLinkRenderer :: Monad CustomServiceLinkRenderer
+getCustomServiceLinkRenderer = do
+  getIt <- getEnvs $ outGetCustomServiceLinkRenderer . envOutputing
+  getIt
+
+newtype Monad a
+  = Monad (MExcept.ExceptT Error (MReader.ReaderT Environment IO) a)
 
 instance MonadWithCustomEnvironment Monad where
   getCustomEnvironment = fmap envCustomEnvironment getEnv
-  
+
 instance MonadWithCustomEnvironmentAndLookup Monad where
   inCustomEnvironment = ES.integrateLookup integration
     where
-      integration = ES.ElementSetMonadIntegration
-        {
-          ES.getElementSet = getCustomEnvironment
-        , ES.throwError    = throwElementLookupError
-        }
+      integration =
+        ES.ElementSetMonadIntegration
+          { ES.getElementSet = getCustomEnvironment,
+            ES.throwError = throwElementLookupError
+          }
 
 throwElementLookupError :: ES.ElementLookupError -> Monad a
 throwElementLookupError err = throwErr $ MediaLookupError err
@@ -169,7 +172,7 @@ instance ToPresentationError UnclassifiedError where
 
 instance ToPresentationError GeneralError where
   toError (GeneralUnclassifiedError s) = UnclassifiedError (unclassifiedError s)
-  toError (GeneralObjectModelError  s) = ObjectModelError s
+  toError (GeneralObjectModelError s) = ObjectModelError s
 
 instance ToPresentationError ObjectAndObjectTypeMismatchError where
   toError (ObjectAndObjectTypeMismatchError descr cause) =
@@ -178,9 +181,10 @@ instance ToPresentationError ObjectAndObjectTypeMismatchError where
 instance MMonad.Monad Monad where
   return = Monad . return
   (Monad m) >>= f = Monad $
-                    do a <- m
-                       let Monad m' = f a
-                       m'
+    do
+      a <- m
+      let Monad m' = f a
+      m'
 
 instance Applicative Monad where
   pure = Monad . pure
@@ -194,16 +198,17 @@ instance MTrans.MonadIO Monad where
 
 instance DbExecutor.MonadWithDatabaseConfiguration Monad where
   getDatabaseConfiguration = getEnvs envDbConfiguration
-  
+
 -- | \"Computations\" (e.g. monads) that are instances of this class
 -- can be integrated into the 'Monad'.
 class ToPresentationMonad m where
   toPresentationMonad :: m a -> Monad a
 
 -- | Runs a 'Monad' computation.
-run :: Environment
-    -> Monad a
-    -> IO (Result a)
+run ::
+  Environment ->
+  Monad a ->
+  IO (Result a)
 run env (Monad errT) = MReader.runReaderT (MExcept.runExceptT errT) env
 
 getEnv :: Monad Environment
@@ -214,28 +219,34 @@ getEnvs :: (Environment -> a) -> Monad a
 getEnvs = Monad . MTrans.lift . MReader.asks
 
 -- | Corresponds to 'Control.Monad.Trans.Error's throwError.
-throwErr :: ToPresentationError err
-         => err -> Monad a
+throwErr ::
+  ToPresentationError err =>
+  err ->
+  Monad a
 throwErr err = Monad $ MExcept.throwE (toError err)
 
 -- | Corresponds to 'Control.Monad.Trans.Error's catchError.
-catchErr :: Monad a                                    -- ^ The computation that can throw an error.
-            -> (Error -> Monad a) -- ^ Error handler
-            -> Monad a                                 
+catchErr ::
+  -- | The computation that can throw an error.
+  Monad a ->
+  -- | Error handler
+  (Error -> Monad a) ->
+  Monad a
 catchErr m handler =
-  let
-    (Monad errT) = m
-    handlerErrT err = let (Monad errT) = handler err
-                      in  errT
-  in
-   Monad $ MExcept.catchE errT handlerErrT
+  let (Monad errT) = m
+      handlerErrT err =
+        let (Monad errT) = handler err
+         in errT
+   in Monad $ MExcept.catchE errT handlerErrT
 
 instance ToPresentationError err => ToPresentationMonad (Either err) where
   toPresentationMonad (Left err) = throwErr err
   toPresentationMonad (Right ok) = return ok
 
-instance ToPresentationError err =>
-         ToPresentationMonad (MExcept.ExceptT err IO) where
+instance
+  ToPresentationError err =>
+  ToPresentationMonad (MExcept.ExceptT err IO)
+  where
   toPresentationMonad m =
     do
       res <- MTrans.liftIO $ MExcept.runExceptT m
@@ -245,14 +256,15 @@ instance ToPresentationMonad DBIO.DatabaseMonad where
   toPresentationMonad m =
     do
       custEnv <- getCustomEnvironment
-      res     <- MTrans.liftIO $ DBIO.runDatabase custEnv m
+      res <- MTrans.liftIO $ DBIO.runDatabase custEnv m
       toPresentationMonad res
-  
+
 -- | Integrates monads of type "IO (Either err a)"
 -- into the Monad monad
-liftIOWithError :: ToPresentationError err
-                => IO (Either err a)
-                -> Monad a
+liftIOWithError ::
+  ToPresentationError err =>
+  IO (Either err a) ->
+  Monad a
 liftIOWithError io =
   do
     res <- MTrans.liftIO io
@@ -260,15 +272,17 @@ liftIOWithError io =
       Left err -> throwErr err
       Right ok -> return ok
 
-toPresentationMonadWithConn :: (ConnWrapper -> DBIO.DatabaseMonad a)
-                                     -> Monad a
+toPresentationMonadWithConn ::
+  (ConnWrapper -> DBIO.DatabaseMonad a) ->
+  Monad a
 toPresentationMonadWithConn f =
   do
     conn <- DbExecutor.getDatabaseConnection
     toPresentationMonad $ f conn
 
-toPresentationMonadWithCar :: (DbExecutor.ConnectionAndRenderer -> DBIO.DatabaseMonad a)
-                                     -> Monad a
+toPresentationMonadWithCar ::
+  (DbExecutor.ConnectionAndRenderer -> DBIO.DatabaseMonad a) ->
+  Monad a
 toPresentationMonadWithCar f =
   do
     car <- DbExecutor.getDatabaseConnectionAndRenderer

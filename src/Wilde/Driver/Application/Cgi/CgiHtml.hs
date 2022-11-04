@@ -18,10 +18,10 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
 -- Utilities for Appliation Drivers that use CGI _and_ HTML.
-module Wilde.Driver.Application.CgiHtml
+module Wilde.Driver.Application.Cgi.CgiHtml
        (
          lookupAndRunService,
-         AppCgi.ServiceSpecificationError(..),
+         ServiceLookup.ServiceSpecificationError(..),
        )
        where
 
@@ -33,7 +33,7 @@ module Wilde.Driver.Application.CgiHtml
 
 import qualified Wilde.Render.Cgi.ElementSetIo as ElementSetIo
 
-import qualified Wilde.Driver.Application.Cgi as AppCgi
+import qualified Wilde.Driver.Application.Cgi.ServiceLookup as ServiceLookup
 import qualified Wilde.Driver.Application.Html as AppHtml
 
 import qualified Wilde.Application.ApplicationInput as AppInput
@@ -45,11 +45,11 @@ import qualified Wilde.Application.ApplicationConfiguration as AppConf
 -------------------------------------------------------------------------------
 
 
--- | Combines 'AppCgi.getServiceAndEnvironment'
+-- | Combines 'ServiceLookup.getServiceAndEnvironment'
 -- and 'AppHtml.runService_htmlString'.
 lookupAndRunService :: AppConf.ApplicationConfiguration
                     -> ElementSetIo.ServerVariables
-                    -> IO (Either AppCgi.ServiceSpecificationError String)
+                    -> IO (Either ServiceLookup.ServiceSpecificationError String)
 lookupAndRunService
   appConf@(
     AppConf.ApplicationConfiguration
@@ -58,7 +58,7 @@ lookupAndRunService
     , AppConf.appCssFile   = theAppCssFile
     })
   rawRequestInput =
-      case AppCgi.getServiceAndEnvironment appConf requestInput of
+      case ServiceLookup.getServiceAndEnvironment appConf requestInput of
         Left err -> return (Left err)
         Right (service,environment) -> do
           htmlString <- AppHtml.runService_htmlString

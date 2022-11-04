@@ -129,7 +129,7 @@ import qualified Wilde.ApplicationConstruction.Service.ServiceUtils as SU
 
 import           Wilde.ApplicationConstruction.StandardServices.SingleObjectServiceCommon
 import qualified Wilde.ApplicationConstruction.StandardServices.ShowManyUtils as ShowManyUtils
-import qualified Wilde.ApplicationConstruction.StandardServices.ShowMany       as ShowMany
+import qualified Wilde.ApplicationConstruction.StandardServices.ShowMany      as ShowMany
 import qualified Wilde.ApplicationConstruction.StandardServices.ShowSelection as ShowSelection
 import qualified Wilde.ApplicationConstruction.StandardServices.ShowOne       as ShowOne
 import qualified Wilde.ApplicationConstruction.StandardServices.CreateOne     as CreateOne

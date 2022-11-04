@@ -44,7 +44,7 @@ import qualified Wilde.ObjectModel.DatabaseAndPresentation as DatabaseAndPresent
 
 import Wilde.ApplicationConstruction.Service.ServiceTools
 
-import qualified Wilde.Render.Cgi.VariableNames as VariableNames
+import qualified Wilde.Driver.Application.Cgi.VariableNames as VariableNames
 
 
 -------------------------------------------------------------------------------

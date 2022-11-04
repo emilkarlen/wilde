@@ -19,7 +19,7 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 
 -- | An interface to execute a Wilde application
 -- as a WAI application.
-module Wilde.Driver.Application.Wai.Application
+module Wilde.Driver.Application.Cgi.Wai
        (
          -- * Construction of a WAI Application
 
@@ -58,7 +58,7 @@ import qualified Wilde.Render.Cgi.ElementSetIo as ElementSetIo
 
 import qualified Wilde.Application.ApplicationConfiguration as AppConf
 
-import qualified Wilde.Driver.Application.CgiHtml as AppCgiHtml
+import qualified Wilde.Driver.Application.Cgi.CgiHtml as AppCgiHtml
 
 
 import qualified Data.String as String

@@ -54,7 +54,7 @@ import qualified Data.Map as Map
 import Wilde.Media.ElementSet
 
 import           Wilde.Render.Cgi.ServerVariables
-import qualified Wilde.Render.Cgi.VariableNames as VariableNames
+import qualified Wilde.Driver.Application.Cgi.VariableNames as VariableNames
 
 import Wilde.Application.ApplicationInput
 

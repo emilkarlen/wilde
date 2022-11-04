@@ -57,7 +57,7 @@ import qualified Wilde.Media.Presentation as Presentation
 
 import           Wilde.ObjectModel.ObjectModel
 
-import qualified Wilde.Render.Cgi.VariableNames as VariableNames (selectExpression)
+import qualified Wilde.Driver.Application.Cgi.VariableNames as VariableNames (selectExpression)
 
 import qualified Wilde.ApplicationConstruction.UserInteraction.Input.WildeSqlInputer as SqlInputer
 import qualified Wilde.ObjectModel.Database as DatabaseClasses

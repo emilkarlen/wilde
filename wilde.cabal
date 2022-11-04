@@ -1,5 +1,5 @@
 Name:      wilde
-Version:   0.5.0.2
+Version:   0.6.0
 License:             GPL
 License-file:        LICENSE
 Build-Type:          Simple
@@ -46,6 +46,7 @@ Library
     Wilde.Application.Service
     Wilde.Application.ServiceLink
     Wilde.Application.StandardServices
+    
     Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAndDbIo
     Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAndDbIo.UserInteraction
     Wilde.ApplicationConstruction.AttributeTypeConfiguration.DdlAtAnnotation
@@ -96,6 +97,7 @@ Library
     Wilde.ApplicationConstruction.StandardServices
     Wilde.ApplicationConstruction.StandardServices.SingleObjectServiceCommon
     Wilde.ApplicationConstruction.ElementSetUtils
+
     Wilde.ApplicationTool.ApplicationModel
     Wilde.ApplicationTool.Main
     Wilde.ApplicationTool.DefaultCommands
@@ -111,11 +113,13 @@ Library
     Wilde.ApplicationTool.FlagLookup.ForMisc
     Wilde.ApplicationTool.FlagLookup.ForObjectType
     Wilde.ApplicationTool.FlagLookup.Utils
+
     Wilde.Database.SqlJoin
     Wilde.Database.Sql
     Wilde.Database.SqlDdlInfo
     Wilde.Database.SqlMisc
     Wilde.Database.Executor
+
     Wilde.WildeUi.WildeComponent
     Wilde.WildeUi.LayoutValues
     Wilde.WildeUi.LayoutComponents
@@ -123,6 +127,7 @@ Library
     Wilde.WildeUi.UiPrimitives
     Wilde.WildeUi.StdValueTypes
     Wilde.WildeUi.StdValues
+
     Wilde.Media.Translations
     Wilde.Media.WildeStyleType
     Wilde.Media.WildeValue
@@ -140,11 +145,12 @@ Library
     Wilde.Media.UserInteraction.Io
     Wilde.Media.Element
     Wilde.Media.MonadWithInputMedia
+
     Wilde.Render.AbstractTableToHtml
     Wilde.Render.RenderAsHtml
     Wilde.Render.Cgi.ElementSetIo
-    Wilde.Render.Cgi.VariableNames
     Wilde.Render.Cgi.ServerVariables
+    Wilde.Render.Cgi.HRef
     Wilde.Render.UserInteractionRendering
     Wilde.Render.ServiceLink
     Wilde.Render.StyleForHtml
@@ -156,10 +162,15 @@ Library
     Wilde.GenericUi.Widget
     Wilde.Database.BackEndDdl
     Wilde.Database.DmlRendering
-    Wilde.Driver.Application.Cgi
+
+    Wilde.Driver.Application.Cgi.CgiHtml
+    Wilde.Driver.Application.Cgi.ServiceLink
+    Wilde.Driver.Application.Cgi.ServiceLookup
+    Wilde.Driver.Application.Cgi.Wai
+    Wilde.Driver.Application.Cgi.VariableNames
+    Wilde.Driver.Application.Cgi.CustomServiceLinkRenderer
+
     Wilde.Driver.Application.Html
-    Wilde.Driver.Application.CgiHtml
-    Wilde.Driver.Application.Wai.Application
     Wilde.Driver.Database.MySQL.Renderer
     Wilde.Driver.Database.MySQL.ApplicationObjectModelTools
     Wilde.Driver.Database.MySQL.DmlExcutor
@@ -167,6 +178,7 @@ Library
     Wilde.Driver.UserInteraction.StandardServiceLinkRenderer
     Wilde.Driver.UserInteraction.Translation.En
     Wilde.Driver.UserInteraction.Translation.Se
+
     Wilde.ObjectModel.Presentation
     Wilde.ObjectModel.Presentation.FooterRowsConstructor
     Wilde.ObjectModel.ObjectModelUtils
@@ -203,6 +215,7 @@ Library
     Wilde.ObjectModel.UserInteraction.Output.ForCreateFrom
     Wilde.ObjectModel.UserInteraction.Output.ForExisting
     Wilde.ObjectModel.UserInteraction.Output.ForExistingCreateViaUi
+
     Wilde.Utils.ListUtils
     Wilde.Utils.TextHtmlUtils
     Wilde.Utils.Debug

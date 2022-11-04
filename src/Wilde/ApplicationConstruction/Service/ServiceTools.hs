@@ -76,7 +76,7 @@ import qualified Wilde.ObjectModel.Database as Database
 import qualified Wilde.ObjectModel.Database.Execution.SelectSansPresentationInfo as SelectPlain
 import qualified Wilde.ObjectModel.DatabaseAndPresentation as DatabaseAndPresentation
 
-import qualified Wilde.Render.Cgi.VariableNames as VariableNames
+import qualified Wilde.Driver.Application.Cgi.VariableNames as VariableNames
 
 import Wilde.Application.Service
 import qualified Wilde.Application.ServiceLink as ServiceLink

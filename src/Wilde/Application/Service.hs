@@ -19,7 +19,6 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 
 {-# LANGUAGE Rank2Types #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE TypeSynonymInstances #-}
 
 -------------------------------------------------------------------------------
 -- | Definition of \"service\".
@@ -201,9 +200,9 @@ throwErr :: ToServiceError err
 throwErr = ServiceMonad . throwE . toServiceError
 
 -- | Corresponds to 'Control.Monad.Trans.Error's catchError.
-catchErr :: ServiceMonad a                      -- ^ The computation that can throw an error.
-            -> (ServiceError -> ServiceMonad a) -- ^ Error handler
-            -> ServiceMonad a
+catchErr :: ServiceMonad a                   -- ^ The computation that can throw an error.
+         -> (ServiceError -> ServiceMonad a) -- ^ Error handler
+         -> ServiceMonad a
 catchErr m handler =
   let
     (ServiceMonad errT) = m
@@ -480,9 +479,9 @@ data ServiceOkResult
 
 -- | Processed all forms of 'ServiceOkResult'.
 processOkResult :: (ServicePage -> a)
-                   -> (ServicePopUp -> a)
-                   -> ServiceOkResult
-                   -> a
+                -> (ServicePopUp -> a)
+                -> ServiceOkResult
+                -> a
 processOkResult processPage _ (OkResultPage x) = processPage x
 processOkResult _ processPopUp (OkResultPopUp x) = processPopUp x
 
@@ -503,9 +502,9 @@ data ServicePopUp
 
 -- | Processes all kinds of Service "pop up" results.
 processPopUpOkResult :: (AskIfContinuePopUp -> a)
-                        -> (InformationPopUp -> a)
-                        -> ServicePopUp
-                        -> a
+                     -> (InformationPopUp -> a)
+                     -> ServicePopUp
+                     -> a
 processPopUpOkResult processAic _ (AskIfContinue x) = processAic x
 processPopUpOkResult _ processInf (Information   x) = processInf x
 

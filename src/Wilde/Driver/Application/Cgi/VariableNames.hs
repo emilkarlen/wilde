@@ -18,7 +18,7 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
 -- | CGI values and tools.
-module Wilde.Render.Cgi.VariableNames
+module Wilde.Driver.Application.Cgi.VariableNames
        (
          
          customEnvironment,

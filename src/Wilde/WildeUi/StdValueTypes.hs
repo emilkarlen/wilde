@@ -26,7 +26,7 @@ module Wilde.WildeUi.StdValueTypes
          unquotedStringValue,
          quotedStringSvalue,
          quotedStringValue,
-         
+
          BoolValueAsCheckBox(..),
          IntValue(..),
          Word32Value(..),
@@ -34,15 +34,26 @@ module Wilde.WildeUi.StdValueTypes
          QuotedStringValue(..),
          UnquotedMultiLineTextValue(..),
          HrefValue(..),
-         
+
          JavaScriptProgram,
 
+         HRef(..),
+
+         -- * WWW link (do not use!)
          WwwLinkValue,
          wwwLinkValue,
          wwwLinkValueWithOnClick,
-         
-         Wilde.WildeUi.StdValueTypes.button,
-         Button,
+
+         -- * WWW link, improved, with label that cannot be a link
+         LinkLabel(..),
+         WwwLinkValueDoneRight(..),
+         wwwLinkValue_dr,
+         wwwLinkValueWithOnClick_dr,
+
+         -- * Button (used??)
+
+         Button(..),
+         button,
        )
        where
 
@@ -61,7 +72,9 @@ import Network.HTTP.Base (urlEncodeVars)
 import Wilde.Media.WildeValue
 
 import Wilde.Render.Cgi.ServerVariables
+import Wilde.Render.Cgi.HRef
 
+import Wilde.Render.StyleForHtml (STYLE_FOR_HTML(..))
 
 -------------------------------------------------------------------------------
 -- - ...Value -
@@ -78,7 +91,7 @@ newtype BoolValueAsCheckBox = BoolValueAsCheckBox Bool
 
 instance VALUE BoolValueAsCheckBox where
   valueString (BoolValueAsCheckBox b) = if b then "T" else "F"
-  
+
   valueHtml   (BoolValueAsCheckBox b) = Html.input Html.! attrs
     where
       ro    = "readonly"
@@ -219,7 +232,7 @@ paraAndLineBreakSplit s = splitParas [] (dropWhileNewline s)
 
 
 -- | A Hypertext reference, with a text to display and the target URL.
-newtype HrefValue = HrefValue (String,Html.URL) -- ^ Maybe link text, URL.
+newtype HrefValue = HrefValue (String,Html.URL) -- ^ link text, URL.
 
 instance VALUE HrefValue where
   valueString (HrefValue (linkText,url)) = url
@@ -241,32 +254,27 @@ data DomEvent = OnClick
 type JavaScriptProgram = String
 
 -- | Constructs a link without any DOM-events.
-wwwLinkValue :: Html.URL -> ServerVariables -> a -> WwwLinkValue a
-wwwLinkValue urlBase urlArgs display = WwwLinkValue urlBase urlArgs [] display
+wwwLinkValue :: HRef -> a -> WwwLinkValue a
+wwwLinkValue href display = WwwLinkValue href [] display
 
 wwwLinkValueWithOnClick :: JavaScriptProgram
-                        -> Html.URL
-                        -> ServerVariables
+                        -> HRef
                         -> a -> WwwLinkValue a
-wwwLinkValueWithOnClick js urlBase urlArgs display = WwwLinkValue urlBase urlArgs [(OnClick,js)] display
+wwwLinkValueWithOnClick js href display = WwwLinkValue href [(OnClick,js)] display
 
 data WwwLinkValue a = WwwLinkValue
-                      {
-                        linkUnencodedUrlBase :: Html.URL
-                      , linkUnencodedUrlArgs :: ServerVariables
-                      , linkEvents           :: [(DomEvent,JavaScriptProgram)]
-                      , linkDisplay          :: a
-                      }
+  {
+    linkHref    :: HRef
+  , linkEvents  :: [(DomEvent,JavaScriptProgram)]
+  , linkDisplay :: a
+  }
 
 instance VALUE a => VALUE (WwwLinkValue a) where
-  valueString  (WwwLinkValue urlBase urlArgs domEvents display) = '[' : valueString display ++ "]"
-  
-  valueHtml    (WwwLinkValue urlBase urlArgs domEvents display) =
-    Html.anchor (valueHtml display) Html.! (Html.href url : domEventAttrs)
+  valueString  (WwwLinkValue (HRef urlBase urlArgs) domEvents display) = '[' : valueString display ++ "]"
+
+  valueHtml    (WwwLinkValue href domEvents display) =
+    Html.anchor (valueHtml display) Html.! (Html.href (hrefToUrl href) : domEventAttrs)
     where
-      url = if null urlArgs
-            then urlBase
-            else urlBase ++ "?" ++ (urlEncodeVars (map toMandatoryValue urlArgs))
       domEventAttrs = [Html.HtmlAttr (show event) jsPgm | (event,jsPgm) <- domEvents]
 
 -- | If the value has a non-neutral style, then it is applied to the
@@ -274,7 +282,74 @@ instance VALUE a => VALUE (WwwLinkValue a) where
 -- instance VALUE a => SVALUE (WwwLinkValue a)
 instance SVALUE a => SVALUE (WwwLinkValue a)
 
-data Button = Button String
+
+-------------------------------------------------------------------------------
+-- - WwwLinkValueDoneRight -
+-------------------------------------------------------------------------------
+
+
+-- | The visual element of a link.
+data LinkLabel
+    = TextLabel  String -- ^ Text label 
+    | ImageLabel String -- ^ Path of an image file
+
+-- | Constructs a link without any DOM-events.
+wwwLinkValue_dr :: HRef -> WildeStyling LinkLabel -> WwwLinkValueDoneRight
+wwwLinkValue_dr href display = WwwLinkValueDoneRight href [] display
+
+wwwLinkValueWithOnClick_dr :: JavaScriptProgram
+                          -> HRef
+                          -> WildeStyling LinkLabel
+                          -> WwwLinkValueDoneRight
+wwwLinkValueWithOnClick_dr js href display = WwwLinkValueDoneRight href [(OnClick,js)] display
+
+data WwwLinkValueDoneRight = WwwLinkValueDoneRight
+  {
+    linkDrHref    :: HRef
+  , linkDrEvents  :: [(DomEvent,JavaScriptProgram)]
+  , linkDrDisplay :: WildeStyling LinkLabel
+  }
+
+instance VALUE WwwLinkValueDoneRight where
+  valueString (WwwLinkValueDoneRight {linkDrHref = href}) = hrefToUrl href
+
+  valueHtml   (WwwLinkValueDoneRight href domEvents display) =
+    Html.anchor labelHtml Html.! (Html.href (hrefToUrl href) : domEventAttrs)
+    where
+      labelHtml     = label2Html (wildeStyled display)
+      domEventAttrs = [Html.HtmlAttr (show event) jsPgm | (event,jsPgm) <- domEvents]
+
+label2Html :: LinkLabel -> Html.Html
+label2Html (TextLabel  text)      = Html.stringToHtml text
+label2Html (ImageLabel imagePath) = Html.image Html.! [Html.src imagePath]
+
+hrefToUrl :: HRef -> String
+hrefToUrl (HRef urlBase urlArgs) =
+  if null urlArgs
+  then urlBase
+  else urlBase ++ "?" ++ urlEncodeVars (map toMandatoryValue urlArgs)
+
+-- | If the value has a non-neutral style, then it is applied to the
+-- HTML A element.
+-- instance VALUE a => SVALUE (WwwLinkValue a)
+instance SVALUE WwwLinkValueDoneRight where
+  valueStyle = wildeStyle . linkDrDisplay
+
+  valueHtmlStyled x@(WwwLinkValueDoneRight {linkDrDisplay = display} ) =
+    applyStyleToHtml style html
+    where
+      html  = valueHtml x
+      style = wildeStyle display
+
+  valueHtmlStyledWrapper _ = Nothing
+
+
+-------------------------------------------------------------------------------
+-- - WwwLinkValueDoneRight -
+-------------------------------------------------------------------------------
+
+
+newtype Button = Button String
 
 button :: String  -- ^ label
        -> Button

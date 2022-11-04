@@ -46,7 +46,7 @@ import qualified Wilde.Media.ElementSet as ES
 
 import Wilde.Media.UserInteraction
 
-import Wilde.Render.Cgi.VariableNames as VariableNames (selectExpression)
+import Wilde.Driver.Application.Cgi.VariableNames as VariableNames (selectExpression)
 
 import           Wilde.ObjectModel.ObjectModel
 import qualified Wilde.ObjectModel.Database as Database

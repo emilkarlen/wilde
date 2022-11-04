@@ -47,7 +47,7 @@ import Wilde.WildeUi.StdValueTypes
 
 import           Wilde.Render.ServiceLink
 import           Wilde.Render.RenderAsHtml
-import qualified Wilde.Render.Cgi.VariableNames as VariableNames
+import qualified Wilde.Driver.Application.Cgi.VariableNames as VariableNames
 
 import qualified Wilde.Application.PopUp as PopUp
 import           Wilde.Application.Service

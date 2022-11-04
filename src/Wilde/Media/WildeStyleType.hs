@@ -58,11 +58,11 @@ import Wilde.Utils.TextHtmlUtils
 
 
 -- | The style representation used by Wilde.
-data WildeStyle = WildeStyle 
-                  {
-                    getClasses :: [ClassName]
-                  }
-                deriving (Eq,Show)
+newtype WildeStyle = WildeStyle 
+  {
+    getClasses :: [ClassName]
+  }
+  deriving (Eq,Show)
 
 singleClassStyle :: ClassName -> WildeStyle
 singleClassStyle x = WildeStyle [x]

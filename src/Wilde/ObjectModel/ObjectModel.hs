@@ -258,13 +258,6 @@ otAttributeTypes (ObjectType
 
 
 -- | An instance of an 'AttributeType'.
---
--- Parametrized by
--- [@native@] The type of value that the 'Attribute' (and 'AttributeType') represents.
---
--- The @dbTable@ is not included in the type, since a value (as represented
--- by an attribute), is not dependent of in which database table it is stored.
---
 data Attribute atConf dbTable typeForExisting typeForCreate
   = (Typeable typeForExisting
     ,Show typeForExisting) 
@@ -286,9 +279,11 @@ data AttributeAny  =
 -------------------------------------------------------------------------------
 
 
--- | A type for objects.
--- All attribute types must have the same type of database column names.
--- (Usually one type corresponds to exactly one table.)
+-- | An instance of an 'ObjectType'.
+--
+-- All attribute types must use the same type for representing
+-- database column names.
+-- (Usually one type corresponds to exactly one database table.)
 data Object otConf atConf dbTable otNative idAtExisting idAtCreate =
   (Sql.SQL_IDENTIFIER dbTable
   ,Typeable idAtExisting
@@ -310,8 +305,8 @@ data Object otConf atConf dbTable otNative idAtExisting idAtCreate =
 
 -- | Constructs an 'Object'.
 conObject :: ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
-          -> Attribute  atConf dbTable          idAtExisting idAtCreate
-          -> [Any (Attribute atConf dbTable)]
+          -> Attribute         atConf dbTable          idAtExisting idAtCreate
+          -> [Any (Attribute   atConf dbTable)]
           -> Object     otConf atConf dbTable otNative idAtExisting idAtCreate
 conObject ot@(ObjectType {}) idAt nonIdAts =
   Object

@@ -21,6 +21,8 @@ module Wilde.Render.ServiceLink
        (
          ServiceLinkRenderer,
 
+         href,
+
          renderServiceLink_string,
          renderServiceLink_svalue,
          renderServiceLink_svalueWithConfirm,
@@ -38,16 +40,14 @@ module Wilde.Render.ServiceLink
 -------------------------------------------------------------------------------
 
 
-import           Data.Maybe
 
 import           Wilde.Media.WildeStyle as WS
 
 import           Wilde.WildeUi.StdValueTypes
 
-import qualified Wilde.Render.Cgi.VariableNames as VariableNames
-import qualified Wilde.Render.Cgi.ElementSetIo as ElmSetIo
-
 import           Wilde.Application.ServiceLink
+
+import Wilde.Driver.Application.Cgi.ServiceLink (href)
 
 
 -------------------------------------------------------------------------------
@@ -103,34 +103,15 @@ renderServiceLink_svalueWithConfirm confirmationMessage display serviceLink =
 
 
 linkValue :: SVALUE display => ServiceLink -> display -> WwwLinkValue display
-linkValue serviceLink display = wwwLinkValue "" cgiParams display
-  where
-    cgiParams = toCgiParams serviceLink
+linkValue serviceLink display = wwwLinkValue (href serviceLink) display
 
 linkValueWithConfirm :: SVALUE display
-                     => String
-                     -> ServiceLink
-                     -> display
+                     => String       -- ^ Confimation message
+                     -> ServiceLink  -- ^ Target
+                     -> display      -- ^ Link visualization
                      -> WwwLinkValue display
 linkValueWithConfirm confirmationMessage serviceLink display =
-  wwwLinkValueWithOnClick javaScriptPgm "" cgiParams display
+  wwwLinkValueWithOnClick javaScriptPgm (href serviceLink) display
   where
-    cgiParams = toCgiParams serviceLink
     -- TODO Fix possible quotes (singlet-quotes only?) inside confirmationMessage
     javaScriptPgm = "return confirm('" ++ confirmationMessage ++ "')"
-
-toCgiParams :: ServiceLink -> ElmSetIo.ServerVariables
-toCgiParams serviceLink =
-  (VariableNames.service,Just $ ssServiceName serviceSpecification) :
-  catMaybes [ withLabel VariableNames.objectType  ssObjectTypeName
-            , withLabel VariableNames.pk          ssObjectIdentity
-            ]
-  ++
-  map ElmSetIo.toOptionalValue (srwpGenericParams serviceReferenceWithParams)
-  ++
-  ElmSetIo.customEnvironmentSetToCgiValues (slCustomEnvironment serviceLink)
-  where
-    withLabel label getMbVal = fmap (\x -> (label,Just x)) $ getMbVal serviceSpecification
-    serviceReferenceWithParams = slServiceReferenceWithParams
-                                 serviceLink
-    serviceSpecification = srwpServiceSpecification serviceReferenceWithParams

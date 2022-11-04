@@ -18,7 +18,7 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
 -- Utilities for Appliation Drivers that use CGI.
-module Wilde.Driver.Application.Cgi
+module Wilde.Driver.Application.Cgi.ServiceLookup
        (
          lookupService,
          newServiceEnvironment,
@@ -36,7 +36,7 @@ module Wilde.Driver.Application.Cgi
 
 import qualified Wilde.Media.ElementSet as ElementSet
 
-import qualified Wilde.Render.Cgi.VariableNames as VariableNames
+import qualified Wilde.Driver.Application.Cgi.VariableNames as VariableNames
 
 import qualified Wilde.Media.UserInteraction.Output as UiOm (Outputing(..))
 import qualified Wilde.Render.Cgi.ElementSetIo as ElementSetIo
@@ -116,9 +116,10 @@ newServiceEnvironment :: AppConf.ApplicationConfiguration
                       -> ServiceEnvironment
 newServiceEnvironment (AppConf.ApplicationConfiguration
                        {
-                         AppConf.translations                = theTranslations
-                       , AppConf.dbConfiguration             = theDbConfiguration
-                       , AppConf.standardServiceLinkRenderer = theStdSrvcLinkRenderer
+                         AppConf.translations                 = theTranslations
+                       , AppConf.dbConfiguration              = theDbConfiguration
+                       , AppConf.standardServiceLinkRenderer  = theStdSrvcLinkRenderer
+                       , AppConf.getCustomServiceLinkRenderer = theGetCustomSLR
                        }
                       )
   serviceId
@@ -129,10 +130,10 @@ newServiceEnvironment (AppConf.ApplicationConfiguration
     , envMedia             = ElementSetIo.inputMedia        input
     , envCustomEnvironment = ElementSetIo.customEnvironment input
     , envDbConfiguration   = theDbConfiguration
-    , envOutputing         =
-      UiOm.Outputing
-      {
-        UiOm.outTranslations                = theTranslations
-      , UiOm.outStandardServiceLinkRenderer = theStdSrvcLinkRenderer
-      }
+    , envOutputing         = UiOm.Outputing
+        {
+          UiOm.outTranslations                 = theTranslations
+        , UiOm.outStandardServiceLinkRenderer  = theStdSrvcLinkRenderer
+        , UiOm.outGetCustomServiceLinkRenderer = theGetCustomSLR
+        }
     }
