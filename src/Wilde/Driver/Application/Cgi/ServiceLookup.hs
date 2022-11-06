@@ -116,10 +116,12 @@ newServiceEnvironment :: AppConf.ApplicationConfiguration
                       -> ServiceEnvironment
 newServiceEnvironment (AppConf.ApplicationConfiguration
                        {
-                         AppConf.translations                 = theTranslations
-                       , AppConf.dbConfiguration              = theDbConfiguration
-                       , AppConf.standardServiceLinkRenderer  = theStdSrvcLinkRenderer
-                       , AppConf.getCustomServiceLinkRenderer = theGetCustomSLR
+                         AppConf.translations                    = theTranslations
+                       , AppConf.dbConfiguration                 = theDbConfiguration
+                       , AppConf.standardServiceLinkRenderer     = theStdSrvcLinkRenderer
+                       , AppConf.getStdObjectTypeServiceRenderer = theStdObjectTypeSrvcLinkRenderer
+                       , AppConf.getStdObjectServiceRenderer     = theStdObjectSrvcLinkRenderer
+                       , AppConf.getGenericServiceLinkRenderer   = theGetGenericSLR
                        }
                       )
   serviceId
@@ -132,8 +134,10 @@ newServiceEnvironment (AppConf.ApplicationConfiguration
     , envDbConfiguration   = theDbConfiguration
     , envOutputing         = UiOm.Outputing
         {
-          UiOm.outTranslations                 = theTranslations
-        , UiOm.outStandardServiceLinkRenderer  = theStdSrvcLinkRenderer
-        , UiOm.outGetCustomServiceLinkRenderer = theGetCustomSLR
+          UiOm.outTranslations                  = theTranslations
+        , UiOm.outStandardServiceLinkRenderer   = theStdSrvcLinkRenderer
+        , UiOm.outMkStdObjectTypeServiceLink    = theStdObjectTypeSrvcLinkRenderer
+        , UiOm.outMkStdObjectServiceLink        = theStdObjectSrvcLinkRenderer
+        , UiOm.outGetGenericServiceLinkRenderer = theGetGenericSLR
         }
     }

@@ -35,17 +35,12 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -- Application Drivers - we do _not_ want the renderer to be hard coded
 -- in the Object Model.
 -------------------------------------------------------------------------------
-module Wilde.Application.StandardServices
+module Wilde.Application.StandardServiceLinks
        (
-         StandardServiceLinkRenderer,
-         
-         StandardServiceEnum(..),
-         StandardObjectTypeServiceEnum(..),
-         StandardObjectServiceEnum(..),
-         
-         -- * Re-exporting
-         
-         ServiceLinkRenderer,
+        ObjectTypeServiceLinkRenderer,
+        ObjectServiceLinkRenderer,
+        CrossRefIdentifier,
+        GenericParameter,
        )
        where
 
@@ -55,34 +50,34 @@ module Wilde.Application.StandardServices
 -------------------------------------------------------------------------------
 
 
-import Wilde.Render.ServiceLink ( ServiceLinkRenderer )
-
+import Wilde.Application.StandardServices
+import Wilde.Application.ServiceLink (GenericParameter)
+import Wilde.Media.WildeValue (AnySVALUE)
+import Wilde.Media.GenericStringRep (GenericStringRep)
+import Wilde.Media.WildeMedia (CrossRefIdentifier)
+import Wilde.Media.WildeStyleType (WildeStyling)
+import Wilde.WildeUi.StdValueTypes (LinkLabel)
 
 -------------------------------------------------------------------------------
 -- - implementation -
 -------------------------------------------------------------------------------
+--  , ssObjectTypeName :: Maybe CrossRefIdentifier
+--  , ssObjectIdentity :: Maybe GenericStringRep
 
+-- | Renders a UI element that is a link to a standard object type service.
+type ObjectTypeServiceLinkRenderer =
+  StandardObjectTypeServiceEnum ->
+  WildeStyling LinkLabel ->
+  CrossRefIdentifier ->
+  [GenericParameter] ->
+  AnySVALUE
+      
 
--- | Renderer for the standard services.
-type StandardServiceLinkRenderer = StandardServiceEnum -> ServiceLinkRenderer
-
--- | Enum for the \"standard services\".
-data StandardServiceEnum
-  = StandardObjectTypeService StandardObjectTypeServiceEnum
-  | StandardObjectService     StandardObjectServiceEnum
-  deriving (Eq,Show,Read)
-
--- | Enum for the \"standard\" Object Type Services.
-data StandardObjectTypeServiceEnum
-  = CreateOne
-  | ShowMany
-  | ShowSelection
-  deriving (Eq,Enum,Bounded,Show,Read)
-
--- | Enum for the \"standard\" Object Services.
-data StandardObjectServiceEnum
-  = CreateOneFrom
-  | ShowOne
-  | UpdateOne
-  | DeleteOne
-  deriving (Eq,Enum,Bounded,Show,Read)
+-- | Renders a UI element that is a link to a standard object service.
+type ObjectServiceLinkRenderer =
+      StandardObjectServiceEnum ->
+      WildeStyling LinkLabel ->
+      CrossRefIdentifier ->
+      GenericStringRep ->
+      [GenericParameter] ->
+      AnySVALUE

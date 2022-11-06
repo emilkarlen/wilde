@@ -44,6 +44,7 @@ import qualified Wilde.Media.Translations as Translations
 import Wilde.Application.ApplicationServices
 import Wilde.Application.StandardServices
 import qualified Wilde.Media.Presentation as Presentation
+import Wilde.Application.StandardServiceLinks
 
 -------------------------------------------------------------------------------
 -- - implementation -
@@ -58,11 +59,13 @@ import qualified Wilde.Media.Presentation as Presentation
 data ApplicationConfiguration =
      ApplicationConfiguration
      {
-       appServices                  :: ApplicationServices
-     , translations                 :: Translations.Translations
-     , dbConfiguration              :: DbExecutor.Configuration
-     , standardServiceLinkRenderer  :: StandardServiceLinkRenderer
-     , getCustomServiceLinkRenderer :: Presentation.Monad
-                                       Presentation.CustomServiceLinkRenderer
-     , appCssFile                   :: Maybe String
+       appServices                      :: ApplicationServices
+     , translations                     :: Translations.Translations
+     , dbConfiguration                  :: DbExecutor.Configuration
+     , standardServiceLinkRenderer      :: StandardServiceLinkRenderer
+     , getStdObjectTypeServiceRenderer  :: Presentation.Monad ObjectTypeServiceLinkRenderer
+     , getStdObjectServiceRenderer      :: Presentation.Monad ObjectServiceLinkRenderer
+     , getGenericServiceLinkRenderer    :: Presentation.Monad
+                                           Presentation.GenericServiceLinkRenderer
+     , appCssFile                       :: Maybe String
      }

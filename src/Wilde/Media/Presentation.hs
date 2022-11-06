@@ -40,9 +40,12 @@ module Wilde.Media.Presentation
     -- * Monad Environment
     Environment (..),
     Outputing (..),
-    CustomServiceLinkRenderer,
+    GenericServiceLinkRenderer,
     envStandardServiceLinkRenderer,
-    getCustomServiceLinkRenderer,
+    getStandardServiceLinkRenderer,
+    getMkStdObjectTypeServiceLink,
+    getMkStdObjectServiceLink,
+    getGenericServiceLinkRenderer,
     getEnvs,
 
     -- * Error handling
@@ -80,25 +83,14 @@ import qualified Wilde.Media.WildeValue as WildeValue
 import Wilde.WildeUi.StdValueTypes
 import Prelude hiding (Monad)
 
+import Wilde.Application.StandardServiceLinks
+
 -------------------------------------------------------------------------------
 -- - implementation -
 -------------------------------------------------------------------------------
 
 -------------------------------------------------------------------------------
--- - Errors -
--------------------------------------------------------------------------------
-
--- | All types of errors that can occurr.
-data Error
-  = DatabaseError DatabaseError
-  | UnclassifiedError UnclassifiedError
-  | ObjectModelError String
-  | MediaLookupError ES.ElementLookupError
-  | ImplementationError String
-  deriving (Show)
-
--------------------------------------------------------------------------------
--- - Environment and monad -
+-- * Environment
 -------------------------------------------------------------------------------
 
 type Result a = Either Error a
@@ -110,17 +102,19 @@ data Environment = Environment
   }
 
 -- | Renders a link to a global service.
-type CustomServiceLinkRenderer = ServiceSpecification -> WildeStyling LinkLabel -> [GenericParameter] -> WildeValue.AnySVALUE
+type GenericServiceLinkRenderer = ServiceSpecification -> WildeStyling LinkLabel -> [GenericParameter] -> WildeValue.AnySVALUE
 
 -- | Part of the 'Environment' that contains
 -- functionality for outputing.
 data Outputing = Outputing
-  { outTranslations :: Translations,
+  { outTranslations :: Translations
     -- | Renderer for the \"standard\" services.
     --
     -- NOTE: See "Wilde.Application.StandardServices".
-    outStandardServiceLinkRenderer :: StandardServices.StandardServiceLinkRenderer,
-    outGetCustomServiceLinkRenderer :: Monad CustomServiceLinkRenderer
+  , outStandardServiceLinkRenderer   :: StandardServices.StandardServiceLinkRenderer
+  , outMkStdObjectTypeServiceLink    :: Monad ObjectTypeServiceLinkRenderer
+  , outMkStdObjectServiceLink        :: Monad ObjectServiceLinkRenderer
+  , outGetGenericServiceLinkRenderer :: Monad GenericServiceLinkRenderer
   }
 
 -- | Gets the 'StandardServices.StandardServiceLinkRenderer' from the
@@ -130,11 +124,11 @@ envStandardServiceLinkRenderer ::
   StandardServices.StandardServiceLinkRenderer
 envStandardServiceLinkRenderer = outStandardServiceLinkRenderer . envOutputing
 
--- | Gets the 'CustomServiceLinkRenderer'.
-getCustomServiceLinkRenderer :: Monad CustomServiceLinkRenderer
-getCustomServiceLinkRenderer = do
-  getIt <- getEnvs $ outGetCustomServiceLinkRenderer . envOutputing
-  getIt
+
+-------------------------------------------------------------------------------
+-- * monad
+-------------------------------------------------------------------------------
+
 
 newtype Monad a
   = Monad (MExcept.ExceptT Error (MReader.ReaderT Environment IO) a)
@@ -211,12 +205,53 @@ run ::
   IO (Result a)
 run env (Monad errT) = MReader.runReaderT (MExcept.runExceptT errT) env
 
+
+-------------------------------------------------------------------------------
+-- * Methods on the monad
+-------------------------------------------------------------------------------
+
+
+-- | Gets the 'StandardServices.StandardServiceLinkRenderer'.
+getStandardServiceLinkRenderer :: Monad StandardServices.StandardServiceLinkRenderer
+getStandardServiceLinkRenderer = getEnvs envStandardServiceLinkRenderer
+
+-- | Gets the 'GenericServiceLinkRenderer'.
+getGenericServiceLinkRenderer :: Monad GenericServiceLinkRenderer
+getGenericServiceLinkRenderer = do
+  getIt <- getEnvs $ outGetGenericServiceLinkRenderer . envOutputing
+  getIt
+
+getMkStdObjectTypeServiceLink :: Monad ObjectTypeServiceLinkRenderer
+getMkStdObjectTypeServiceLink = do
+  getIt <- getEnvs $ outMkStdObjectTypeServiceLink . envOutputing
+  getIt
+
+getMkStdObjectServiceLink :: Monad ObjectServiceLinkRenderer
+getMkStdObjectServiceLink = do
+  getIt <- getEnvs $ outMkStdObjectServiceLink . envOutputing
+  getIt
+
 getEnv :: Monad Environment
 getEnv = Monad $ MTrans.lift MReader.ask
 
 -- | Gets the environment of the 'Monad'.
 getEnvs :: (Environment -> a) -> Monad a
 getEnvs = Monad . MTrans.lift . MReader.asks
+
+
+-------------------------------------------------------------------------------
+-- * Error type and Error handling
+-------------------------------------------------------------------------------
+
+
+-- | All types of errors that can occurr.
+data Error
+  = DatabaseError DatabaseError
+  | UnclassifiedError UnclassifiedError
+  | ObjectModelError String
+  | MediaLookupError ES.ElementLookupError
+  | ImplementationError String
+  deriving (Show)
 
 -- | Corresponds to 'Control.Monad.Trans.Error's throwError.
 throwErr ::

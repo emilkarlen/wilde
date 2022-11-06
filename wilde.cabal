@@ -46,6 +46,7 @@ Library
     Wilde.Application.Service
     Wilde.Application.ServiceLink
     Wilde.Application.StandardServices
+    Wilde.Application.StandardServiceLinks
     
     Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAndDbIo
     Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAndDbIo.UserInteraction
@@ -168,7 +169,7 @@ Library
     Wilde.Driver.Application.Cgi.ServiceLookup
     Wilde.Driver.Application.Cgi.Wai
     Wilde.Driver.Application.Cgi.VariableNames
-    Wilde.Driver.Application.Cgi.CustomServiceLinkRenderer
+    Wilde.Driver.Application.Cgi.ServiceLinkRenderers
 
     Wilde.Driver.Application.Html
     Wilde.Driver.Database.MySQL.Renderer
