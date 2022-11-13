@@ -47,6 +47,7 @@ Library
     Wilde.Application.ServiceLink
     Wilde.Application.StandardServices
     Wilde.Application.StandardServiceLinks
+    Wilde.Application.SingleDbConnectionHandler
     
     Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAndDbIo
     Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAndDbIo.UserInteraction
@@ -102,6 +103,7 @@ Library
     Wilde.ApplicationTool.ApplicationModel
     Wilde.ApplicationTool.Main
     Wilde.ApplicationTool.DefaultCommands
+    Wilde.ApplicationTool.DbExecution
     Wilde.ApplicationTool.Command
     Wilde.ApplicationTool.Commands.Check
     Wilde.ApplicationTool.Commands.Database
@@ -119,7 +121,7 @@ Library
     Wilde.Database.Sql
     Wilde.Database.SqlDdlInfo
     Wilde.Database.SqlMisc
-    Wilde.Database.Executor
+    Wilde.Database.DmlRenderer
 
     Wilde.WildeUi.WildeComponent
     Wilde.WildeUi.LayoutValues
@@ -133,7 +135,11 @@ Library
     Wilde.Media.WildeStyleType
     Wilde.Media.WildeValue
     Wilde.Media.Database
+    Wilde.Media.Database.Configuration
+    Wilde.Media.Database.Error
     Wilde.Media.Database.Monad
+    Wilde.Media.Database.Exec
+    Wilde.Media.Database.ExecStr
     Wilde.Media.CustomEnvironment
     Wilde.Media.ElementSet
     Wilde.Media.Presentation
@@ -225,6 +231,7 @@ Library
     Wilde.Utils.Utils
     Wilde.Utils.AnyValue
     Wilde.Utils.AnyValue2
+    Wilde.Utils.Logging
 
 Test-Suite unit-tests
   Type:              exitcode-stdio-1.0

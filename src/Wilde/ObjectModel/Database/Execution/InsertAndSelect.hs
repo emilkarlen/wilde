@@ -34,11 +34,10 @@ module Wilde.ObjectModel.Database.Execution.InsertAndSelect
 -------------------------------------------------------------------------------
 
 
-import qualified Wilde.Database.Executor as SqlExec
-
 import Wilde.ObjectModel.ObjectModel
+    ( ObjectForCreate(ofcType), Object )
 
-import Wilde.Media.Database.Monad
+import Wilde.Media.Database
 
 import qualified Wilde.ObjectModel.Database.Output as Output
 
@@ -48,6 +47,8 @@ import qualified Wilde.ObjectModel.Database.Execution.Insert as Insert
 import qualified Wilde.ObjectModel.Database.Execution.SelectSansPresentationInfo as SelectPlain
 import qualified Wilde.ObjectModel.Database as Database
 import qualified Wilde.ObjectModel.DatabaseAndPresentation as DatabaseAndPresentation
+
+import qualified Wilde.Media.Database.Monad as DbConn
 
 
 -------------------------------------------------------------------------------
@@ -68,14 +69,13 @@ insertAndSelectOne_withPresInfo :: (Database.OBJECT_TYPE_INSERT otConf
                                    ,DatabaseAndPresentation.ATTRIBUTE_TYPE_INFO atConf
                                    )
                                 => ObjectForCreate otConf atConf dbTable otNative idAtExisting idAtCreate
-                                -> SqlExec.ConnectionAndRenderer
-                                -> DatabaseMonad (Object otConf atConf dbTable otNative idAtExisting idAtCreate)
-insertAndSelectOne_withPresInfo oc car =
+                                -> DbConn.Monad (Object otConf atConf dbTable otNative idAtExisting idAtCreate)
+insertAndSelectOne_withPresInfo oc =
   do
-    idAtValue <- Insert.insertOneGetId oc car
-    mbObject <- SelectWithPres.inputOne (ofcType oc) idAtValue car
+    idAtValue <- Insert.insertOneGetId oc
+    mbObject <- SelectWithPres.inputOne (ofcType oc) idAtValue
     let errMsg = "Just inserted an object, but did not get one when trying to read it from the DB"
-    maybe (throwErr (DbUnclassifiedError errMsg)) return mbObject
+    maybe (DbConn.throwErr (DbUnclassifiedError errMsg)) return mbObject
 
 -------------------------------------------------------------------------------
 -- | Inserts one object and reads it from the database.
@@ -88,11 +88,10 @@ insertAndSelectOne_sansPresInfo :: (Database.OBJECT_TYPE_INSERT otConf
                                    ,Output.OUTPUT_FOR_EXISTING atConf
                                    ,InputExisting.INPUT_FOR_EXISTING atConf)
                                 => ObjectForCreate otConf atConf dbTable otNative idAtExisting idAtCreate
-                                -> SqlExec.ConnectionAndRenderer
-                                -> DatabaseMonad (Object otConf atConf dbTable otNative idAtExisting idAtCreate)
-insertAndSelectOne_sansPresInfo oc car =
+                                -> DbConn.Monad (Object otConf atConf dbTable otNative idAtExisting idAtCreate)
+insertAndSelectOne_sansPresInfo oc =
   do
-    idAtValue <- Insert.insertOneGetId oc car
-    mbObject <- SelectPlain.selectOne (ofcType oc) idAtValue car
+    idAtValue <- Insert.insertOneGetId oc
+    mbObject <- SelectPlain.selectOne (ofcType oc) idAtValue
     let errMsg = "Just inserted an object, but did not get one when trying to read it from the DB"
-    maybe (throwErr (DbUnclassifiedError errMsg)) return mbObject
+    maybe (DbConn.throwErr (DbUnclassifiedError errMsg)) return mbObject

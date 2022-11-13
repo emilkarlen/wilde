@@ -19,6 +19,7 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 
 {-# LANGUAGE Rank2Types #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 -------------------------------------------------------------------------------
 -- | Definition of \"service\".
@@ -75,21 +76,16 @@ module Wilde.Application.Service
 
          ServiceMonad,
          runService,
-         
-         withFinally,
-         withDbConnection,
-         withDbTransaction,
 
-         withDbConnectionCar,
-         withDbTransactionCar,
+         withFinally,
 
          ToServiceMonad(..),
-         toServiceMonadWithConn,
-         toServiceMonadWithCar,
+         toServiceMonad_wDefaultDbConn,
 
          -- ** Environment
 
-         ServiceEnvironment(..),
+         ServiceEnvironment(envCurrentService, envCustomEnvironment, envMedia, envOutputing),
+         newEnvironment,
          getEnv,
          getEnvs,
 
@@ -100,6 +96,10 @@ module Wilde.Application.Service
          ToServiceError(..),
          throwErr,
          catchErr,
+
+         -- * Logging
+         Logging.MonadWithLogging(..),
+
        )
        where
 
@@ -109,6 +109,9 @@ module Wilde.Application.Service
 -------------------------------------------------------------------------------
 
 
+-- LOGGING begin
+import qualified System.IO as IO
+-- LOGGING end
 import Control.Monad.Trans
 import Control.Monad.Trans.Except
 import Control.Monad.Trans.Reader
@@ -116,24 +119,26 @@ import Control.Monad.Trans.Reader
 
 import qualified Data.Map as Map
 
-import Database.HDBC
+import Database.HDBC as HDBC
 
 import qualified Wilde.Utils.NonEmptyList as NonEmpty
-
-import qualified Wilde.Database.Executor as SqlExec
 
 import qualified Wilde.Media.MonadWithInputMedia as MIIA
 import qualified Wilde.Media.ElementSet as ES
 import           Wilde.Media.CustomEnvironment
 import           Wilde.Media.WildeMedia as WM
+import qualified Wilde.Media.Database.Configuration as DbConf
 import qualified Wilde.Media.Database as DbM
+import qualified Wilde.Utils.Logging as Logging
 import qualified Wilde.Media.UserInteraction.Output as UiOM
 import qualified Wilde.Media.UserInteraction.Input as UiI
-import qualified Wilde.Media.Database.Monad as DBIO
+import qualified Wilde.Media.Database.Monad as DbConn
 import qualified Wilde.Media.Presentation as Presentation
 import qualified Wilde.Application.PopUp as PopUp
 
 import Wilde.Application.ServiceLink
+
+import qualified Wilde.Application.SingleDbConnectionHandler as SingleDbConnectionHandler
 
 
 -------------------------------------------------------------------------------
@@ -234,12 +239,18 @@ type InputMedia  = Map.Map String [String]
 data ServiceEnvironment =
   ServiceEnvironment
   {
-    envCurrentService  :: ServiceId
+    envCurrentService    :: ServiceId
   , envCustomEnvironment :: ES.ElementSet
-  , envMedia           :: ES.ElementSet
-  , envDbConfiguration :: SqlExec.Configuration
-  , envOutputing       :: UiOM.Outputing
+  , envMedia             :: ES.ElementSet
+  , envDbConfiguration   :: DbConf.Configuration
+  , envOutputing         :: UiOM.Outputing
   }
+
+newEnvironment :: ServiceId
+               -> ES.ElementSet -- ^ custom environment
+               -> ES.ElementSet -- ^ media
+               -> DbConf.Configuration -> UiOM.Outputing -> ServiceEnvironment
+newEnvironment = ServiceEnvironment
 
 -------------------------------------------------------------------------------
 -- | Guarranties that a \"cleanup\" computation is executed after
@@ -257,70 +268,6 @@ withFinally cleanup action =
       exceptionHandling error = cleanup >> throwErr error
   in  catchErr normal exceptionHandling
 
--------------------------------------------------------------------------------
--- | Executes a computation that uses a DB-connection, and guarranties
--- that the connection is disconnected afterwards (even in the case of
--- errors).
--------------------------------------------------------------------------------
-withDbConnection :: (ConnWrapper -> ServiceMonad a) -> ServiceMonad a
-withDbConnection action =
-  do
-    conn <- getConn
-    withFinally (toServiceMonad $ disconnect conn) (action conn)
-
--------------------------------------------------------------------------------
--- | A variant of 'withDbConnection' where the
--- \"connection\" is a 'SqlExec.ConnectionAndRenderer'.
--------------------------------------------------------------------------------
-withDbConnectionCar :: (SqlExec.ConnectionAndRenderer -> ServiceMonad a) -> ServiceMonad a
-withDbConnectionCar action =
-  do
-    car <- SqlExec.getDatabaseConnectionAndRenderer
-    let conn = SqlExec.carConnection car
-    withFinally (toServiceMonad $ disconnect conn) (action car)
-
--------------------------------------------------------------------------------
--- | Executes a computation that uses a DB-connection, and guarranties
--- that the connection is disconnected afterwards (even in the case of
--- errors).  The transaction is commited iff there is no error.
--------------------------------------------------------------------------------
-withDbTransaction :: (ConnWrapper -> ServiceMonad a) -> ServiceMonad a
-withDbTransaction action =
-  do
-    conn <- getConn
-    withFinally (toServiceMonad $ disconnect conn) (actionWithCommit conn)
-  where
-    actionWithCommit conn =
-      do
-        result <- action conn
-        toServiceMonad $ commit conn
-        return result
-
--------------------------------------------------------------------------------
--- | A variant of 'withDbTransaction' where the
--- \"connection\" is a 'SqlExec.ConnectionAndRenderer'.
--------------------------------------------------------------------------------
-withDbTransactionCar :: (SqlExec.ConnectionAndRenderer -> ServiceMonad a) -> ServiceMonad a
-withDbTransactionCar action =
-  do
-    car <- SqlExec.getDatabaseConnectionAndRenderer
-    let conn = SqlExec.carConnection car
-    withFinally (toServiceMonad $ disconnect conn) (actionWithCommit car)
-  where
-    actionWithCommit car =
-      do
-        result <- action car
-        toServiceMonad $ commit (SqlExec.carConnection car)
-        return result
-
--- | Gets a database connection.
-getConn :: ServiceMonad ConnWrapper
-getConn =
-  do
-    getConnection <- getEnvs (SqlExec.connectionProvider . envDbConfiguration)
-    liftIO getConnection
-    -- toServiceMonad getConnection
-
 
 -------------------------------------------------------------------------------
 -- - ServiceMonad -
@@ -331,9 +278,37 @@ newtype ServiceMonad a = ServiceMonad (ExceptT ServiceError (ReaderT ServiceEnvi
 
 -- | Executes a computation in the Service Monad.
 runService :: ServiceEnvironment
+           -- ^ The conn-provider of the db config must create a new connection
+           -- on every invokation.
            -> ServiceMonad a
            -> IO (Either ServiceError a)
-runService env (ServiceMonad m) = runReaderT (runExceptT m) env
+runService envWMkNewDbConnOnEveryInvokation (ServiceMonad m) =
+  do
+    loggIO "Service BEGIN"
+    (envWDbConnHandling, doDbConnCleanup) <- dbEnvWithSingleDbConnHandling
+    res <- runReaderT (runExceptT m) envWDbConnHandling
+    reporting <- doDbConnCleanup
+    loggIO $ "  Db connection handling: " ++ reporting
+    loggIO "Service END"
+    pure res
+  
+  where
+    dbEnvWithSingleDbConnHandling :: IO (ServiceEnvironment, IO String)
+    dbEnvWithSingleDbConnHandling = do
+      let confWMkNewDbConnOnEveryInvokation = envDbConfiguration envWMkNewDbConnOnEveryInvokation
+      let getNewConn     = DbConf.connectionProvider confWMkNewDbConnOnEveryInvokation
+      singleConnHandler <- SingleDbConnectionHandler.newHandler getNewConn
+      let getSingleConn  = SingleDbConnectionHandler.getConnection singleConnHandler
+      pure (envWDbConnProvider getSingleConn,
+            SingleDbConnectionHandler.disconnectIfNeeded singleConnHandler)
+
+    envWDbConnProvider :: IO ConnWrapper -> ServiceEnvironment
+    envWDbConnProvider connProvider =
+      let
+        origDbConf = envDbConfiguration envWMkNewDbConnOnEveryInvokation
+        newDbConf  = origDbConf { DbConf.connectionProvider =  connProvider }
+      in
+        envWMkNewDbConnOnEveryInvokation { envDbConfiguration = newDbConf }
 
 instance Monad ServiceMonad where
   return = ServiceMonad . return
@@ -349,11 +324,28 @@ instance Applicative ServiceMonad where
 instance Functor ServiceMonad where
   fmap f (ServiceMonad m) = ServiceMonad $ fmap f m
 
+
+-------------------------------------------------------------------------------
+-- - access to the monad environment -
+-------------------------------------------------------------------------------
+
+
+-- | Gets the environment of the 'ServiceMonad'.
+getEnv :: ServiceMonad ServiceEnvironment
+getEnv = ServiceMonad $ lift ask
+
+-- | Gets the environment of the 'ServiceMonad'.
+getEnvs :: (ServiceEnvironment -> a) -> ServiceMonad a
+getEnvs = ServiceMonad . lift . asks
+
+
+-------------------------------------------------------------------------------
+-- - instances of "monad interfaces" -
+-------------------------------------------------------------------------------
+
+
 instance MonadIO ServiceMonad where
   liftIO = ServiceMonad . lift . lift
-
-instance SqlExec.MonadWithDatabaseConfiguration ServiceMonad where
-  getDatabaseConfiguration = getEnvs envDbConfiguration
 
 instance MIIA.MonadWithInputMedia ServiceMonad where
   getInputMedia = getEnvs envMedia
@@ -378,20 +370,17 @@ instance MonadWithCustomEnvironmentAndLookup ServiceMonad where
           ES.getElementSet = getCustomEnvironment
         , ES.throwError    = throwElementLookupError
         }
+
+instance Logging.MonadWithLogging ServiceMonad where
+  logg = do_logg
+
 throwElementLookupError :: ES.ElementLookupError -> ServiceMonad a
 throwElementLookupError err = throwErr $ UiMediaLookupError err
 
--- reader :: MonadReader ServiceEnvironment m => (r -> a) -> m a
--- vill kunna lyfta alla MonadReader ServiceEnvironment ...
--- med toServiceMonad.
 
--- | Gets the environment of the 'ServiceMonad'.
-getEnv :: ServiceMonad ServiceEnvironment
-getEnv = ServiceMonad $ lift ask
-
--- | Gets the environment of the 'ServiceMonad'.
-getEnvs :: (ServiceEnvironment -> a) -> ServiceMonad a
-getEnvs = ServiceMonad . lift . asks
+-------------------------------------------------------------------------------
+-- - instances of ToServiceMonad -
+-------------------------------------------------------------------------------
 
 -- | Class for translating values to 'ServiceMonad' values.
 --
@@ -409,12 +398,8 @@ instance ToServiceMonad Presentation.Monad where
   toServiceMonad m =
     do
       env        <- getEnv
-      let presEnv = Presentation.Environment
-                    {
-                      Presentation.envCustomEnvironment = envCustomEnvironment env
-                    , Presentation.envDbConfiguration   = envDbConfiguration env
-                    , Presentation.envOutputing         = envOutputing env
-                    }
+      let presEnv = Presentation.newEnvironment
+                    (envCustomEnvironment env) (envDbConfiguration env) (envOutputing env)
       result     <- liftIO $ Presentation.run presEnv m
       toServiceMonad result
 
@@ -422,13 +407,9 @@ instance ToServiceMonad UiOM.UserInteractionOutputMonad where
   toServiceMonad uiom =
     do
       env        <- getEnv
-      let uiomEnv = UiOM.UserInteractionOutputEnvironment
-                    {
-                      UiOM.envMedia             = envMedia env
-                    , UiOM.envCustomEnvironment = envCustomEnvironment env
-                    , UiOM.envDbConfiguration   = envDbConfiguration env
-                    , UiOM.envOutputing         = envOutputing env
-                    }
+      let uiomEnv = UiOM.newEnvironment
+                    (envMedia env) (envCustomEnvironment env)
+                    (envDbConfiguration env) (envOutputing env)
       result     <- liftIO $ UiOM.run uiomEnv uiom
       toServiceMonad result
 
@@ -440,29 +421,24 @@ instance ToServiceMonad UiI.Monad where
       result   <- liftIO $ UiI.run (UiI.Environment inputMap custEnv) uiom
       toServiceMonad result
 
-instance ToServiceMonad DBIO.DatabaseMonad where
-  toServiceMonad m =
-    do
-      custEnv <- getCustomEnvironment
-      res     <- liftIO $ DBIO.runDatabase custEnv m
-      toServiceMonad res
-
 instance ToServiceMonad IO where
   toServiceMonad = ServiceMonad . lift . lift
 
-toServiceMonadWithConn :: (forall conn . IConnection conn => conn -> DBIO.DatabaseMonad a)
-                          -> ServiceMonad a
-toServiceMonadWithConn f =
-  do
-    conn <- getConn
-    toServiceMonad $ f conn
 
-toServiceMonadWithCar :: (SqlExec.ConnectionAndRenderer -> DBIO.DatabaseMonad a)
-                         -> ServiceMonad a
-toServiceMonadWithCar f =
+-------------------------------------------------------------------------------
+-- - Executing DB monads -
+-------------------------------------------------------------------------------
+
+toServiceMonad_wDefaultDbConn :: DbConn.Monad a -> ServiceMonad a
+toServiceMonad_wDefaultDbConn m =
   do
-    car <- SqlExec.getDatabaseConnectionAndRenderer
-    toServiceMonad $ f car
+    env                 <- getEnv
+    let dbConf           = envDbConfiguration env
+    conn                <- liftIO $ DbConf.connectionProvider dbConf
+    let dmlRenderer      = DbConf.dmlRenderer dbConf
+    let dbConnMonadEnv   = DbConn.newEnv (envCustomEnvironment env) dmlRenderer conn
+    res                 <- liftIO $ DbConn.run dbConnMonadEnv m
+    toServiceMonad res
 
 
 -------------------------------------------------------------------------------
@@ -549,3 +525,15 @@ servicePageStyle (styledTitle,_) = wildeStyle styledTitle
 
 servicePageContents :: ServicePage -> [AnyCOMPONENT]
 servicePageContents (_,c) = c
+
+
+-------------------------------------------------------------------------------
+-- - logging -
+-------------------------------------------------------------------------------
+
+
+do_logg :: String -> ServiceMonad ()
+do_logg = liftIO . loggIO
+
+loggIO :: String -> IO ()
+loggIO s = IO.hPutStrLn IO.stderr $ "Service." ++ s

@@ -59,7 +59,6 @@ aOutputForCreate :: OUTPUT_FOR_CREATE atConf
                     (AttributeForCreate atConf dbTable typeForExisting typeForCreate)
 aOutputForCreate afc = atOutputerForCreate (attrfcType afc) (attrfcValue afc)
 
-
 aOutputsExisting :: OUTPUT_FOR_EXISTING atConf
                  => [Any (Attribute atConf dbTable)]
                  -> ConvertResult [DatabaseOutput]

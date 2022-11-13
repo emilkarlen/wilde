@@ -51,7 +51,6 @@ import Database.HDBC
 import qualified Wilde.Utils.NonEmptyList as NonEmpty
 
 import qualified Wilde.Database.SqlJoin as Sql
-import qualified Wilde.Database.Executor as SqlExec
 
 import qualified Wilde.Render.ServiceLink as RenderServiceLink
 
@@ -59,6 +58,7 @@ import qualified Wilde.Media.Presentation as Presentation
 
 import           Wilde.ObjectModel.ObjectModel
 import qualified Wilde.ObjectModel.Database as Database
+import qualified Wilde.Media.Database.Monad as DbConn
 import qualified Wilde.ObjectModel.Database.JoinUtils as OmDbJ
 import qualified Wilde.ObjectModel.Database.InputExistingSansPresentationInfo as InputExisting
 import qualified Wilde.ObjectModel.Database.Execution.SelectSansPresentationInfo as SelectPlain
@@ -68,7 +68,7 @@ import           Wilde.ObjectModel.UserInteraction.OutputTypes (AttributeUiDefau
 import qualified Wilde.ObjectModel.GenericStringRep as OmGsr
 import qualified Wilde.ObjectModel.ObjectModelUtils as OmUtils
 
-import           Wilde.Media.Database.Monad
+import Wilde.Media.Database
 import           Wilde.Media.UserInteraction
 import qualified Wilde.Media.UserInteraction.Io as UiIo
 import qualified Wilde.Media.UserInteraction.Output as Ui
@@ -85,6 +85,7 @@ import           Wilde.ApplicationConstruction.GenericStringRepIo
 import qualified Wilde.ApplicationConstruction.Database.AttributeTypeDatabaseInfo as AtDbInfo
 import qualified Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAndDbIo as UiIoAndDbIo
 import qualified Wilde.ApplicationConstruction.UserInteraction.Io as UiIo
+import qualified Wilde.ApplicationConstruction.Database.DatabaseColumnTypes as AtDbInfo
 
 
 -------------------------------------------------------------------------------
@@ -301,8 +302,8 @@ atInfoForCreate_ref_mandatory valuesChecker
    UiIoAndDbIo.AttributeTypeMediaIoForCreate
    {
      UiIoAndDbIo.aticDatabaseOutputer = AtDbInfo.mkOutputerWithConnection $
-                                        dbOutputer $
-                                        AtDbInfo.atdbioeIo dbIoForExistingForRefTarget,
+                                        dbOutputer
+                                        (AtDbInfo.atdbioeIo dbIoForExistingForRefTarget),
      UiIoAndDbIo.aticUiIo =
        UiIo.UserInteractionIo
        { UiIo.uiInputer  = UiIo.uiInputer uiIoForExistingForRefTarget
@@ -324,7 +325,7 @@ uiOutputForCreate_optional :: Database.DATABASE_TABLE otConf
                            -> AttributeTypeOutputerForCreate (Maybe typeForExisting) (Maybe typeForExisting)
 uiOutputForCreate_optional = uiOutputForCreate rawValuesChecker_optional refExisting2RefTargetExisting
   where
-    refExisting2RefTargetExisting = maybe Nothing Just
+    refExisting2RefTargetExisting = id
 
 
 atInfoForCreate_ref_optional :: Database.DATABASE_TABLE otConf
@@ -335,7 +336,7 @@ atInfoForCreate_ref_optional rati@(ReferenceAttributeTypeInfo {}) field =
   let
     UiIoAndDbIo.AttributeTypeMediaIoForCreate dbOutputer (UiIo.UserInteractionIo _ uiInputer_mandatory)
       = atInfoForCreate_ref_mandatory rawValuesChecker_optional rati field
-    dbOutputer_o = \mbV conn -> maybe (return [SqlNull]) (\v -> dbOutputer v conn) mbV
+    dbOutputer_o = maybe (return [SqlNull]) dbOutputer
     uiInputer_o  = inputerForObjectName_optional_from_mandatory uiInputer_mandatory
     uiOutputer_o = uiOutputForCreate_optional rati
   in
@@ -656,9 +657,8 @@ getAttrOutputForReferenceAttribute :: (Database.DATABASE_TABLE otConf
                                                                      -> UiIo.AnyWIDGET)
 getAttrOutputForReferenceAttribute valuesChecker otRefTarget@(ObjectType {}) refPresSpecTarget attributeName widgetConstructor =
     do
-      values <- Ui.toUserInteractionOutputMonadWithCar $
-                \car ->
-                readObjectKeyAndPresentationStringList otRefTarget refPresSpecTarget car
+      values <- Ui.toUiOMonad_wDefaultDbConn $
+                readObjectKeyAndPresentationStringList otRefTarget refPresSpecTarget
       valuesChecker values
       return $ attrOutput_oneOfManyAttribute
         widgetConstructor attributeName values
@@ -672,17 +672,16 @@ readObjectKeyAndPresentationStringList :: (Database.DATABASE_TABLE otConf
                                           )
                                        => ObjectType                otConf atConf dbTable otNative idAtExisting idAtCreate
                                        -> ReferencePresentationSpec otConf atConf dbTable otNative idAtExisting idAtCreate
-                                       -> SqlExec.ConnectionAndRenderer
-                                       -> DatabaseMonad [RawMultiItem]
-readObjectKeyAndPresentationStringList ot@(ObjectType {}) refPresSpec conn =
+                                       -> DbConn.Monad [RawMultiItem]
+readObjectKeyAndPresentationStringList ot@(ObjectType {}) refPresSpec =
   do
     let getPresStr = otpsPresentationString      refPresSpec
     let orderByAts = otpsPresentationStringOrder refPresSpec
     let getObjectInfo o =
           do
-            presStr <- toDatabaseMonad $ getPresStr o
+            presStr <- DbConn.toMonad $ getPresStr o
             return (OmGsr.objOutputForIdAt o,presStr)
-    objects <- SelectPlain.selectAll ot orderByAts conn
+    objects <- SelectPlain.selectAll ot orderByAts
     mapM getObjectInfo objects
 
 -- | Short cut to an 'ObjectType's 'PresentationAttributeTypeInfo'.
@@ -724,4 +723,4 @@ mkShowOneLink ot objId linkText =
 
 
 getIdOfInsertedIntoDatabase_fromMandatory :: Database.GetIdOfInsertedIntoDatabase e e
-getIdOfInsertedIntoDatabase_fromMandatory _ value _ = return value
+getIdOfInsertedIntoDatabase_fromMandatory value _ = return value

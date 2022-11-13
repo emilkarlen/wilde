@@ -22,7 +22,7 @@ module Wilde.ApplicationTool.Commands.DatabaseUtils
          getObjects,
          getObjectsWithConn,
          runDatabaseMonad_inEnv,
-         runDatabaseMonad,
+         runDatabaseMonad_inCar,
        )
        where
 
@@ -33,7 +33,10 @@ module Wilde.ApplicationTool.Commands.DatabaseUtils
 -------------------------------------------------------------------------------
 
 
-import qualified Wilde.Database.Executor as SqlExec
+import qualified Wilde.Media.Database.Monad as DbConn
+import qualified Wilde.Media.Database.Exec as DbExec
+
+import qualified Wilde.ApplicationTool.DbExecution as SqlExec
 
 import qualified Wilde.Media.ElementSet as ES (empty,ElementSet)
 
@@ -45,7 +48,7 @@ import qualified Wilde.ObjectModel.DatabaseAndPresentation as DatabaseAndPresent
 
 import Wilde.ObjectModel.ObjectModelUtils
 
-import Wilde.Media.Database.Monad
+import Wilde.Media.Database (runTranslation)
 
 import Wilde.ApplicationTool.Command
 
@@ -68,7 +71,7 @@ getObjects env objectType@(ObjectType {}) =
   do
     let sql = SqlPlain.selectAll objectType []
     car    <- getCar env
-    rows   <- SqlExec.quickSelect car sql []
+    rows   <- runDatabaseMonad_inEnv env $ DbExec.select_strict sql []
     let osRes = runTranslation customEnvironment $ 
                 mapM
                 (InputExisting.inputObject objectType) 
@@ -85,27 +88,26 @@ getObjectsWithConn :: (Database.DATABASE_TABLE otConf
                    -> ObjectType otConf atConf dbTable otN idAE idAC
                    -> IO [Object otConf atConf dbTable otN idAE idAC]
 getObjectsWithConn car objectType = 
-  runDatabaseMonad dbMonad car
+  runDatabaseMonad_inCar car dbMonad
   where
-    dbMonad car = InputWithPresentation.inputAll objectType [] car
-
-runDatabaseMonad_inEnv :: (SqlExec.ConnectionAndRenderer -> DatabaseMonad a)
-                       -> CommandEnv om
-                       -> IO a
-runDatabaseMonad_inEnv dbMonad env =
-  do
-    car <- getCar env
-    runDatabaseMonad dbMonad car
-
-runDatabaseMonad :: (SqlExec.ConnectionAndRenderer -> DatabaseMonad a)
-                 -> SqlExec.ConnectionAndRenderer
-                 -> IO a
-runDatabaseMonad dbMonad car =
-  do
-    res <- runDatabase customEnvironment (dbMonad car)
-    case res of
-      Left msg -> msgFail $ "Database Error: " ++ show msg
-      Right x  -> return x
+    dbMonad = InputWithPresentation.inputAll objectType []
 
 customEnvironment :: ES.ElementSet
 customEnvironment = ES.empty
+
+runDatabaseMonad_inEnv :: CommandEnv om -> DbConn.Monad a -> IO a
+runDatabaseMonad_inEnv (CommandEnv { connectionProvider = getConn, dmlRenderer = renderer}) action = do
+  conn <- getConn
+  let dbConnEnv = DbConn.newEnv customEnvironment renderer conn
+  errOrResult <- DbConn.run dbConnEnv action
+  either doFail pure errOrResult
+  where
+    doFail msg = msgFail $ "Database Error: " ++ show msg
+
+runDatabaseMonad_inCar :: SqlExec.ConnectionAndRenderer -> DbConn.Monad a -> IO a
+runDatabaseMonad_inCar (SqlExec.ConnectionAndRenderer { SqlExec.carConnection = conn, SqlExec.carRenderer = renderer}) action = do
+  let dbConnEnv = DbConn.newEnv customEnvironment renderer conn
+  errOrResult <- DbConn.run dbConnEnv action
+  either doFail pure errOrResult
+  where
+    doFail msg = msgFail $ "Database Error: " ++ show msg

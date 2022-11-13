@@ -58,6 +58,7 @@ import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ObjectList
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.StandardFilterExpression as StdFilterExpr
 
 import qualified Wilde.ApplicationConstruction.StandardServices.ShowManyUtils as Utils
+import qualified Wilde.Application.Service as Service
 
 
 -------------------------------------------------------------------------------
@@ -86,8 +87,8 @@ serviceMain :: (Database.DATABASE_TABLE otConf
             => ObjectTypeServiceMainFunction Utils.Config otConf atConf dbTable otNative idAtExisting idAtCreate
 serviceMain ot@(ObjectType {}) config@(Utils.Config title objectListSetup) =
     do
-      getMbExpr <- toServiceMonad $ StdFilterExpr.lookupExpression_BasedOn ot
-      os        <- toServiceMonadWithCar $
+      getMbExpr <- StdFilterExpr.lookupExpression_BasedOn ot
+      os        <- Service.toServiceMonad_wDefaultDbConn $
                    InputWithPresentation.inputSelection ot theOrderByInDb getMbExpr
       Utils.showMany ot config os
   where

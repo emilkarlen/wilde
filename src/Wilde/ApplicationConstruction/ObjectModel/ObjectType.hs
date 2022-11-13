@@ -228,4 +228,4 @@ type StdAutoPkObjectTypeToNative dbTable native =
 -- is the same as the value given when creating the object in the database.
 --
 getIdOfInsertedWhenEqualToCreate :: Database.GetIdOfInsertedIntoDatabase e e
-getIdOfInsertedWhenEqualToCreate conn value dbOutput = return value
+getIdOfInsertedWhenEqualToCreate value dbOutput = return value

@@ -60,6 +60,7 @@ import Wilde.Database.Sql
 
 import qualified Wilde.Media.ElementSet as ES
 import Wilde.Media.CustomEnvironment
+import Wilde.Media.WildeMedia (ObjectToNativeError)
 
 
 -------------------------------------------------------------------------------
@@ -86,7 +87,7 @@ data DatabaseIo a = DatabaseIo
                     dbInputer  :: DatabaseInputer  a
                   }
 
-data DatabaseColumn dbTable =
+newtype DatabaseColumn dbTable =
   DatabaseColumn
   {
     columnName :: dbTable
@@ -96,7 +97,7 @@ data DatabaseColumn dbTable =
 instance Functor DatabaseColumn where
   fmap f (DatabaseColumn n) = DatabaseColumn (f n)
 
-data DatabaseTable =
+newtype DatabaseTable =
   DatabaseTable
   {
     tableName :: SqlIdentifier
@@ -110,6 +111,7 @@ data TranslationError = UnknownTranslationError String
                       | RecordTranslationError String (Mismatch String)
                       | AttributeTranslationError String ConvertError
                       | ObjectModelError String
+                      | ObjectToNativeInDbError ObjectToNativeError
                       | ImplementationTranslationError String
                       deriving Show
 

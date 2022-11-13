@@ -21,7 +21,7 @@ import System.Console.GetOpt
 
 import Database.HDBC
 
-import qualified Wilde.Database.Executor as SqlExec
+import qualified Wilde.ApplicationTool.DbExecution as SqlExec
 import Wilde.Database.BackEndDdl
 
 import Wilde.ApplicationTool.FlagsAndOptions as FlagsAndOptions

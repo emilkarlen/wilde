@@ -82,7 +82,7 @@ module Wilde.ApplicationConstruction.ObjectModel.AttributeType
 
          at_String,
          at_String_forDefaultDbIo,
-         
+
          at_String_optional,
          at_String_optional_forDefaultDbIo,
 
@@ -335,7 +335,7 @@ at_PrimaryKey_dbAutogen inputWidth field =
    {
      atCrossRefKey              = attributeName
    , atPresentationO            = presO_PrimaryKeyType
-   , atConfiguration = 
+   , atConfiguration =
      UiIoAndDbIo.Configuration
      {
        UiIoAndDbIo.presentationO            = pres_PrimaryKeyType "ID"
@@ -404,7 +404,7 @@ at_ref' bOptional field otSetupDst refPresSpec mbTitle =
                                )
                                id
                                mbTitle
-    rati = 
+    rati =
       ReferenceAttributeTypeInfo
       {
         ratiUiWidgetConstructor = widget_dropDownList bOptional
@@ -500,7 +500,7 @@ getOtIdAtDdlColumnInfo_mustBeSingle refColForErrMsg otDst =
   where
     getOtIdAtDbColInfoList = NonEmpty.toList . DdlAtAnnotation.atDdlInfo . otIdAttributeType
 
-getSingletonDdlColForRefTarget :: NonEmpty.List (DdlColumnInfo dbTable) -> (DdlColumnInfo dbTable)
+getSingletonDdlColForRefTarget :: NonEmpty.List (DdlColumnInfo dbTable) -> DdlColumnInfo dbTable
 getSingletonDdlColForRefTarget =
   getSingleton "at_ref: Invalid Object Model: Invalid num db-cols in ref-target"
 
@@ -1189,7 +1189,7 @@ at_EnumAsDropDown_mandatory mkAtDbInfoForColumn atUiIo values
       }
     }
   where
-    presO             = withNeutralStyleAny . lookupPresVal 
+    presO             = withNeutralStyleAny . lookupPresVal
     atDbInfo          = mkAtDbInfoForColumn field
     atDbConfigE       = AtDbInfo.mkAtDbConfigForE atDbInfo
     attributeName     = sqlIdentifier field
@@ -1374,8 +1374,8 @@ at_GenericWidgetDefaultValue_optional = at_String_optional_forDefaultDbIo
 
 ddlAnnotation :: AtDbInfo.AttributeTypeDatabaseInfo dbTable e c
               -> DdlAtAnnotation.DdlAtAnnotation dbTable e c
-ddlAnnotation = DdlAtAnnotation.mkDdlAtAnnotation . 
-                AtDbInfo.atdbiofeStructure . 
+ddlAnnotation = DdlAtAnnotation.mkDdlAtAnnotation .
+                AtDbInfo.atdbiofeStructure .
                 AtDbInfo.atdbioInfoForExisting
 
 

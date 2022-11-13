@@ -25,66 +25,35 @@ module ApplicationConfiguration where
 -------------------------------------------------------------------------------
 
 
-import Wilde.Driver.Application.Cgi.ApplicationMain
+import qualified Wilde.Application.ApplicationConfiguration as AppConf
 
-import DatabaseConnection
+import Db.Connection as DbConn
 
 import qualified Wilde.Driver.UserInteraction.Translation.En as Tr
 import qualified Wilde.Driver.UserInteraction.StandardServiceLinkRenderer as StandardServiceLinkRenderer
 
-import qualified Data.Map as Map
+import qualified Wilde.Driver.Application.Cgi.ServiceLinkRenderers as CgiDriver
 
-import Wilde.ObjectModel.ObjectModel
-
-import Wilde.Application.Service
-
-import Wilde.ApplicationConstruction.StandardServices
-
-import Wilde.ApplicationConstruction.Service.StepService
-
-import Wilde.ApplicationConstruction.Database.DatabaseUtils
-
-import TestApplication
-
+import qualified Services
 
 -------------------------------------------------------------------------------
 -- - implementation -
 -------------------------------------------------------------------------------
 
 
-services :: ApplicationServices
-services = Map.union globalServices otServices
-
-otServices :: ApplicationServices
-otServices = standardServices $ map anyOWithDdlInfo2AnyO objectModel
-
-globalServices :: ApplicationServices
-globalServices = Map.fromList
-  [
-    ("ok"          ,mkGlobalService $ pageOkResult (withNeutralWildeStyle "Just OK",[]))
-  , ("error"       ,mkGlobalService $ throwErr (unclassifiedError "An expected error"))
-  , ("ask-if-cont" ,mkGlobalService $ askIfContTest)
-  ]
-
-askIfContTest = stepService config
-  where
-    config = StepService
-           {
-             mainTitle    = withNeutralWildeStyle "Ask If Continue"
-           , nonLastSteps = [askIfContinue "Almost there, just one step more."]
-           , lastStep     = pageOkResult (withNeutralWildeStyle "The END",[])
-           }
-
 
 cssFileName :: String
-cssFileName = "style.css"
+cssFileName = "wilde_test.css"
 
-appConfig :: ApplicationConfiguration
-appConfig =  ApplicationConfiguration         
+appConfig :: AppConf.ApplicationConfiguration
+appConfig =  AppConf.ApplicationConfiguration         
              {
-               appServices                 = services
-             , appCssFile                  = Just $ "/wilde-hs/html/" ++ cssFileName
-             , translations                = Tr.translations
-             , dbConfiguration             = theDbConfiguration
-             , standardServiceLinkRenderer = StandardServiceLinkRenderer.renderer
+               AppConf.appServices                     = Services.services
+             , AppConf.appCssFile                      = Just cssFileName
+             , AppConf.translations                    = Tr.translations
+             , AppConf.dbConfiguration                 = DbConn.theDbConfiguration
+             , AppConf.standardServiceLinkRenderer     = StandardServiceLinkRenderer.renderer
+             , AppConf.getStdObjectTypeServiceRenderer = CgiDriver.getStandardObjectTypeServiceLinkRenderer
+             , AppConf.getStdObjectServiceRenderer     = CgiDriver.getStandardObjectServiceLinkRenderer
+             , AppConf.getGenericServiceLinkRenderer   = CgiDriver.getGenericServiceLinkRenderer
              }

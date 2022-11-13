@@ -25,10 +25,10 @@ module Main where
 -------------------------------------------------------------------------------
 
 
-import qualified Wilde.Driver.Database.MySQL.DmlExcutor as DmlExecutor
+import qualified Wilde.Media.Database.Configuration as DbConf
 
-import TestApplication
-import DatabaseConnection
+import qualified ObjectModel
+import qualified Db.Connection as DbConn
 
 import qualified Wilde.Driver.Database.MySQL.Renderer as MySql
 
@@ -46,8 +46,10 @@ main = ToolMain.cliToolMain commandEnv DefaultCommands.commands
   where
     commandEnv = ToolMain.CommandEnv
                  {
-                   ToolMain.connectionProvider = connect
+                   ToolMain.connectionProvider = DbConf.connectionProvider dbConf
                  , ToolMain.ddlRenderer        = MySql.renderer
-                 , ToolMain.dmlRenderer        = DmlExecutor.dmlRenderer theDbConfiguration
-                 , ToolMain.objectModel        = ApplicationModel.ObjectModel objectModel []
+                 , ToolMain.dmlRenderer        = DbConf.dmlRenderer dbConf
+                 , ToolMain.objectModel        = ApplicationModel.ObjectModel ObjectModel.objectModel []
                  }
+                
+    dbConf = DbConn.theDbConfiguration

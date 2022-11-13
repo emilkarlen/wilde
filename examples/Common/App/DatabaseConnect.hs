@@ -20,6 +20,8 @@ import Database.HDBC.ODBC
 
 import Wilde.Database.Sql
 
+import qualified Wilde.Media.Database.Configuration as DbConf
+
 import qualified Wilde.Driver.Database.MySQL.DmlExcutor as DmlExecutor
 
 
@@ -28,12 +30,12 @@ import qualified Wilde.Driver.Database.MySQL.DmlExcutor as DmlExecutor
 -------------------------------------------------------------------------------
 
 
-dmlExecutorConfiguration :: String -> DmlExecutor.Configuration
+dmlExecutorConfiguration :: String -> DbConf.Configuration
 dmlExecutorConfiguration dataSourceName =
-  DmlExecutor.Configuration
+  DbConf.Configuration
   {
-    DmlExecutor.connectionProvider = connectToDsn dataSourceName
-  , DmlExecutor.dmlRenderer        = DmlExecutor.mysqlDmlRenderer
+    DbConf.connectionProvider = connectToDsn dataSourceName
+  , DbConf.dmlRenderer        = DmlExecutor.mysqlDmlRenderer
   }
 
 dmlRenderer :: DmlExecutor.DmlRenderer

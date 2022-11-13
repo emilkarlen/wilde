@@ -43,13 +43,14 @@ import qualified Wilde.Utils.NonEmptyList as NonEmpty
 import Database.HDBC
 
 import qualified Wilde.Database.SqlJoin as Sql
-import qualified Wilde.Database.Executor as SqlExec
+import qualified Wilde.Media.Database.Exec as SqlExec
+import qualified Wilde.Media.Database.Monad as DbConn
 
 import qualified Wilde.ObjectModel.Database.JoinUtils as OmDbJ
 import Wilde.ObjectModel.DatabaseAndPresentation
 import Wilde.ObjectModel.ObjectModelUtils
 
-import Wilde.Media.Database.Monad
+import Wilde.Media.Database
 
 import qualified Wilde.ObjectModel.Database as Database
 import qualified Wilde.ObjectModel.Database.InputExistingSansPresentationInfo as InputExisting
@@ -63,7 +64,7 @@ import qualified Wilde.ObjectModel.Database.Sql.WithPresentationInfo as SqlGen
 
 
 -- | Data for inputing an 'Attribute' from SQL data.
-data AttributeTypeDbInputData atConf dbTable e c =
+newtype AttributeTypeDbInputData atConf dbTable e c =
   AttributeTypeDbInputData ((AttributeType atConf dbTable e c,[SqlValue]),
                             Maybe (AttributeWithPresentationInfoDbInputer e,
                                    [SqlValue])
@@ -82,14 +83,12 @@ inputAll :: (Database.DATABASE_TABLE otConf
             )
          => ObjectType otConf atConf dbTable otN idAE idAC
          -> [Any (AttributeType atConf dbTable)]
-         -> SqlExec.ConnectionAndRenderer
-         -> DatabaseMonad [Object otConf atConf dbTable otN idAE idAC]
-inputAll ot orderByInDb car = input 
+         -> DbConn.Monad [Object otConf atConf dbTable otN idAE idAC]
+inputAll ot orderByInDb = input 
                                ot 
                                (SqlGen.otDatabaseOrderBy orderByInDb) 
                                (return Nothing) 
                                []
-                               car 
 
 -------------------------------------------------------------------------------
 -- | Inputs 'Object's that satisfy a given WHERE expression.
@@ -103,10 +102,9 @@ inputSelection :: (Database.DATABASE_TABLE otConf
                -- ^ ORDER BY columns
                -> Sql.JoinMonad dbTable (Maybe (Sql.SqlExpr (Sql.BasedOn dbTable)))
                -- ^ WHERE expression that determines which 'Object's are input.
-               -> SqlExec.ConnectionAndRenderer
-               -> DatabaseMonad [Object otConf atConf dbTable otN idAE idAC]
-inputSelection ot orderByInDb getMbWhereExpr car =
-  input ot (SqlGen.otDatabaseOrderBy orderByInDb) getMbWhereExpr [] car
+               -> DbConn.Monad [Object otConf atConf dbTable otN idAE idAC]
+inputSelection ot orderByInDb getMbWhereExpr =
+  input ot (SqlGen.otDatabaseOrderBy orderByInDb) getMbWhereExpr []
 
 -------------------------------------------------------------------------------
 inputOneMandatory :: (Database.DATABASE_TABLE otConf
@@ -115,13 +113,12 @@ inputOneMandatory :: (Database.DATABASE_TABLE otConf
                      )
                   => ObjectType otConf atConf dbTable otN idAE idAC
                   -> idAE
-                  -> SqlExec.ConnectionAndRenderer
-                  -> DatabaseMonad (Object otConf atConf dbTable otN idAE idAC)
-inputOneMandatory ot pk car =
+                  -> DbConn.Monad (Object otConf atConf dbTable otN idAE idAC)
+inputOneMandatory ot pk =
   do
-    mbObject <- inputOne ot pk car
+    mbObject <- inputOne ot pk
     case mbObject of
-      Nothing -> throwErr $ DbNoRows
+      Nothing -> DbConn.throwErr $ DbNoRows
                  ("InputOneMandatory/" ++ otCrossRefKey ot)
                  (Just (Mismatch 0 1))
       Just o  -> return o
@@ -133,19 +130,17 @@ inputOne :: (Database.DATABASE_TABLE otConf
             )
          => ObjectType otConf atConf dbTable otN idAE idAC
          -> idAE
-         -> SqlExec.ConnectionAndRenderer
-         -> DatabaseMonad (Maybe (Object otConf atConf dbTable otN idAE idAC))
-inputOne ot@(ObjectType {}) pk car =
+         -> DbConn.Monad (Maybe (Object otConf atConf dbTable otN idAE idAC))
+inputOne ot@(ObjectType {}) pk =
   do
     let (getMbWhereExpr,getEqExprParams) = OmDbJ.atExprEqMb idAt
     objects       <- inputForConvertibleParams ot
                      SqlGen.orderByNone getMbWhereExpr
                      (getEqExprParams pk)
-                     car
     case objects of
       []  -> return Nothing
       [o] -> return (Just o)
-      xs  -> throwErr $ DbTooManyRows
+      xs  -> DbConn.throwErr $ DbTooManyRows
              ("InputOne/" ++ otCrossRefKey ot)
              (Just (Mismatch (length xs) 1))
   where
@@ -171,10 +166,9 @@ input :: (Database.DATABASE_TABLE otConf,
       -- ^ WHERE
       -> [SqlValue]
       -- ^ Parameters
-      -> SqlExec.ConnectionAndRenderer
-      -> DatabaseMonad [Object otConf atConf dbTable otN idAE idAC]
-input ot getOrderByExprs getMbWhereExpr sqlParams car =
-  inputObjects ot (inputInfoForOt,selectStatement) sqlParams car
+      -> DbConn.Monad [Object otConf atConf dbTable otN idAE idAC]
+input ot getOrderByExprs getMbWhereExpr sqlParams =
+  inputObjects ot (inputInfoForOt,selectStatement) sqlParams
   where
     (inputInfoForOt,selectStatement) =
       SqlGen.inputInfoAndSelect ot getMbWhereExpr getOrderByExprs
@@ -192,12 +186,11 @@ inputForConvertibleParams :: (Database.DATABASE_TABLE otConf
                           -> Sql.JoinMonad dbTable        [Sql.SqlExpr (Sql.BasedOn dbTable)]
                           -> Sql.JoinMonad dbTable (Maybe (Sql.SqlExpr (Sql.BasedOn dbTable)))
                           -> ConvertResult [SqlValue]
-                          -> SqlExec.ConnectionAndRenderer
-                          -> DatabaseMonad [Object otConf atConf dbTable otN idAE idAC]
-inputForConvertibleParams ot getOrderByExprs getMbWhereExpr getSqlParams car =
+                          -> DbConn.Monad [Object otConf atConf dbTable otN idAE idAC]
+inputForConvertibleParams ot getOrderByExprs getMbWhereExpr getSqlParams =
    do
-     sqlParams <- toDatabaseMonad getSqlParams
-     input ot getOrderByExprs getMbWhereExpr sqlParams car
+     sqlParams <- DbConn.toMonad getSqlParams
+     input ot getOrderByExprs getMbWhereExpr sqlParams
 
 -------------------------------------------------------------------------------
 -- | Inputs 'Objects' of a given 'ObjectType' for which \"input-info\" is also given.
@@ -212,12 +205,11 @@ inputObjects :: (Database.COLUMN_NAMES atConf
                   [Any (SqlGen.AttributeTypeDbInputInfo atConf dbTable)]),
                  Sql.SqlSelect (Sql.BasedOn dbTable))
              -> [SqlValue]
-             -> SqlExec.ConnectionAndRenderer
-             -> DatabaseMonad [Object otConf atConf dbTable otN idAE idAC]
-inputObjects ot@(ObjectType {}) (inputInfoForOt,selectStatement) sqlParams car =
+             -> DbConn.Monad [Object otConf atConf dbTable otN idAE idAC]
+inputObjects ot@(ObjectType {}) (inputInfoForOt,selectStatement) sqlParams =
   do
-    records <- SqlExec.quickSelect car selectStatement sqlParams
-    toDatabaseMonad $ mapM (inputObject ot inputInfoForOt) records
+    records <- SqlExec.select_strict selectStatement sqlParams
+    DbConn.toMonad $ mapM (inputObject ot inputInfoForOt) records
 
 
 -------------------------------------------------------------------------------

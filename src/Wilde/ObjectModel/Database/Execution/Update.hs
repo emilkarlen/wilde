@@ -49,12 +49,12 @@ import qualified Wilde.Utils.NonEmptyList as NonEmpty
 
 import qualified Wilde.Database.Sql as Sql
 
-import qualified Wilde.Database.Executor as SqlExec
+import qualified Wilde.Media.Database.Exec as SqlExec
 
 import Wilde.ObjectModel.ObjectModel
 import qualified Wilde.ObjectModel.ObjectModelUtils as OmUtils
 
-import Wilde.Media.Database.Monad
+import qualified Wilde.Media.Database.Monad as DbConn
 
 import qualified Wilde.ObjectModel.Database.Sql.SansPresentationInfo as SqlPlain
 import qualified Wilde.ObjectModel.Database.Output as Output
@@ -79,10 +79,9 @@ updateAll_attributes :: (Output.DATABASE_TABLE otConf
                         )
                      => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
                      -> NonEmpty.List (Any (Attribute atConf dbTable))
-                     -> SqlExec.ConnectionAndRenderer
-                     -> DatabaseMonad (Maybe Integer)
-updateAll_attributes ot attrsToUpdate car =
-  update_attributes ot Nothing [] attrsToUpdate car
+                     -> DbConn.Monad (Maybe Integer)
+updateAll_attributes ot attrsToUpdate =
+  update_attributes ot Nothing [] attrsToUpdate
 
 -------------------------------------------------------------------------------
 -- | Updates the object that is identified by the given ID-attribute value.
@@ -95,14 +94,12 @@ updateOne :: (Output.DATABASE_TABLE otConf
              )
           => Object otConf atConf dbTable otNative idAtExisting idAtCreate
           -> NonEmpty.List (Any (Attribute atConf dbTable))
-          -> SqlExec.ConnectionAndRenderer
-          -> DatabaseMonad (Maybe Integer)
-updateOne o attrsToUpdate car =
+          -> DbConn.Monad (Maybe Integer)
+updateOne o attrsToUpdate =
   updateOne_attributes
   (oType o) 
   idAtValue 
   attrsToUpdate
-  car
   where
     idAtValue = attrValue $ oIdAttribute o
 
@@ -116,17 +113,15 @@ updateOne_attributes :: (Output.DATABASE_TABLE otConf
                      => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
                      -> idAtExisting
                      -> NonEmpty.List (Any (Attribute atConf dbTable))
-                     -> SqlExec.ConnectionAndRenderer
-                     -> DatabaseMonad (Maybe Integer)
-updateOne_attributes ot@(ObjectType {}) idAtValue attrsToUpdate car =
+                     -> DbConn.Monad (Maybe Integer)
+updateOne_attributes ot@(ObjectType {}) idAtValue attrsToUpdate =
   do
-    idAtSqlValues <- toDatabaseMonad getIdAtSqlValues
+    idAtSqlValues <- DbConn.toMonad getIdAtSqlValues
     update_attributes
       ot 
       (Utils.justOtIdAtEqPosParamExpr ot)
       idAtSqlValues 
       attrsToUpdate 
-      car
   where
     getIdAtSqlValues = Output.atOutputerExisting (otIdAttributeType ot) idAtValue
                        :: ConvertResult [SqlValue]
@@ -149,13 +144,12 @@ update_attributes :: (Output.DATABASE_TABLE otConf
                   -- ^ SQL parameters for the WHERE expression
                   -> NonEmpty.List (Any (Attribute atConf dbTable))
                   -- ^ ORDER BY
-                  -> SqlExec.ConnectionAndRenderer
-                  -> DatabaseMonad (Maybe Integer)
-update_attributes ot@(ObjectType {}) mbWhereExpr whereExprParams attrsToUpdate car =
+                  -> DbConn.Monad (Maybe Integer)
+update_attributes ot@(ObjectType {}) mbWhereExpr whereExprParams attrsToUpdate =
    do
-     paramValuesForUpdates <- toDatabaseMonad getAttrsToUpdateSqlValues
+     paramValuesForUpdates <- DbConn.toMonad getAttrsToUpdateSqlValues
      let paramValues = paramValuesForUpdates ++ whereExprParams
-     numUpdatedRows <- SqlExec.quickUpdate car updateStmt paramValues
+     numUpdatedRows <- SqlExec.update updateStmt paramValues
      return $ if numUpdatedRows < 0
               then Nothing
               else Just numUpdatedRows
@@ -189,17 +183,16 @@ execForOne :: (Output.OUTPUT_FOR_EXISTING atConf
            -> [SqlValue]
            -- ^ Parameters of the resulting SQL statement that precedes
            -- those of the WHERE expression.
-           -> SqlExec.ConnectionAndRenderer
-           -> DatabaseMonad (Maybe Integer)
+           -> DbConn.Monad (Maybe Integer)
 execForOne newSqlForWhereExpr 
   whereEqAttrType@(AttributeType {})
   whereEqAttrValue 
   sqlParamsBeforeWhereExpr 
-  car =
+  =
   do
-    whereEqAttrSqlValues <- toDatabaseMonad getAtSqlValues
+    whereEqAttrSqlValues <- DbConn.toMonad getAtSqlValues
     let sqlParams         = sqlParamsBeforeWhereExpr ++ whereEqAttrSqlValues
-    execForWhereExpr newSqlForWhereExpr mbWhereExpr sqlParams car
+    execForWhereExpr newSqlForWhereExpr mbWhereExpr sqlParams
   where
     getAtSqlValues   = Output.atOutputerExisting whereEqAttrType whereEqAttrValue
                        :: ConvertResult [SqlValue]
@@ -215,7 +208,6 @@ execForWhereExpr :: Sql.SQL_IDENTIFIER dbTable
                  => (Maybe (Sql.SqlExpr dbTable) -> Sql.SqlDmlStatement dbTable)
                  -> Maybe (Sql.SqlExpr dbTable)
                  -> [SqlValue]
-                 -> SqlExec.ConnectionAndRenderer
-                 -> DatabaseMonad (Maybe Integer)
-execForWhereExpr newSqlForWhereExpr mbWhereExpr sqlParameters car =
-  SqlExec.quickNumRows2 car (newSqlForWhereExpr mbWhereExpr) sqlParameters
+                 -> DbConn.Monad (Maybe Integer)
+execForWhereExpr newSqlForWhereExpr mbWhereExpr sqlParameters =
+  SqlExec.execSql_numRowsMb (newSqlForWhereExpr mbWhereExpr) sqlParameters

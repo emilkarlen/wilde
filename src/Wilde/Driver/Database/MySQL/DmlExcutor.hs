@@ -20,10 +20,8 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -- | DML Executor for MySQL.
 module Wilde.Driver.Database.MySQL.DmlExcutor
        (
-         module Wilde.Database.Executor,
-         
+         DmlRenderer,
          mysqlDmlRenderer,
-         -- mysqlDmlExecutor,
        )
        where
 
@@ -33,8 +31,8 @@ module Wilde.Driver.Database.MySQL.DmlExcutor
 -------------------------------------------------------------------------------
 
 
-import Wilde.Database.Executor
 import Wilde.Database.DmlRendering
+import Wilde.Database.DmlRenderer
 
 
 -------------------------------------------------------------------------------
@@ -44,8 +42,3 @@ import Wilde.Database.DmlRendering
 
 mysqlDmlRenderer :: DmlRenderer
 mysqlDmlRenderer = renderSql
-
--- mysqlDmlExecutor :: DmlExecutor
--- mysqlDmlExecutor stmt conn params = quickQuery conn sqlString params
---   where
---     sqlString = mysqlDmlRenderer stmt

@@ -19,7 +19,7 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 
 {-# LANGUAGE FlexibleContexts #-}
 
-module TestApplication where
+module ObjectModel where
 
 
 -------------------------------------------------------------------------------
@@ -167,7 +167,7 @@ sdAtName :: PlainAttributeType_optional_ddl SdTable String
 sdAtName = MyAt.at_Name_optional "String" SdString
 
 sdAtBoolean :: PlainAttributeType_optional_ddl SdTable Bool
-sdAtBoolean = at_Bool_optional_dropDown Nothing "Boolean" SdBoolean
+sdAtBoolean = at_Bool_optional_dropDown Nothing "Boolean (opt)" SdBoolean
 
 sdAtDouble :: PlainAttributeType_optional_ddl SdTable Double
 sdAtDouble = at_Double_optional_withExprUiInput

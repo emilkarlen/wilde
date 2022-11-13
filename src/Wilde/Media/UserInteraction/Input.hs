@@ -83,6 +83,7 @@ type UserInteractionInputer a = ObjectName -> Monad a
 data Error = UnclassifiedError   UnclassifiedError
            | ImplementationError String
            | MediaLookupError    ES.ElementLookupError
+           | ObjectInputError    ObjectInputErrorInfo
              deriving Show
 
 -- | Type for reading from user interaction input.
@@ -94,6 +95,9 @@ class ToError a where
 
 instance ToError Error where
   toError = id
+
+instance ToError ObjectInputErrorInfo where
+  toError = ObjectInputError
 
 newtype Monad a =
   Monad (MExcept.ExceptT Error (MReader.ReaderT Environment IO) a)

@@ -175,7 +175,7 @@ mkComponent ot
                    [Any atSuperRef]
     footerRowsConstructor <- theGetFooterRowsConstructor
     getWhereExpr          <- getWhereExprGetter ot getSubObjWhereExpr
-    os                    <- Presentation.toPresentationMonadWithCar $
+    os                    <- Presentation.toPresentationMonad_wDefaultDbConn $
                              inputObjects getWhereExpr
     tableComponent <- SpecialComponents.objectListTableAccordingToSetup
                       (tableStyle os)
@@ -200,10 +200,10 @@ mkComponent ot
     tableStyle                :: [a] -> WildeStyle
     tableStyle os             = tableStyleForObjectTypeSubObjects (null os)
     mbTitle                   :: Maybe StyledTitle
-    mbTitle                   = Just $ (theTitle 
-                                        `withAdjustedStyle`
-                                        addStyle (WildeStyle [WS.componentClass])
-                                       )
+    mbTitle                   = Just (theTitle 
+                                     `withAdjustedStyle`
+                                      addStyle (WildeStyle [WS.componentClass])
+                                      )
     (getSubObjWhereExpr,getSqlParamsForRef) = OmDbJ.atExprEq atSuperRef
 
     createOneSubObjButton :: Presentation.Monad AnySVALUE
@@ -212,12 +212,11 @@ mkComponent ot
       where
         fixedValues = [attributeFixForCreate_fromValue atSuperRef refVal]
 
-    inputObjects getWhereExpr car = InputPres.inputForConvertibleParams 
-                                    ot
-                                    (SqlWithPres.otDatabaseOrderBy theOrderByInDb)
-                                    getWhereExpr
-                                    (getSqlParamsForRef refVal)
-                                    car
+    inputObjects getWhereExpr =
+      InputPres.inputForConvertibleParams ot
+                                          (SqlWithPres.otDatabaseOrderBy theOrderByInDb)
+                                          getWhereExpr
+                                          (getSqlParamsForRef refVal)
 
 -- | Constructs a 'StandardServices.ServiceLinkRenderer' for
 -- the standard service 'StandardServices.CreateOne'.

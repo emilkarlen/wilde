@@ -35,7 +35,7 @@ module Wilde.ApplicationConstruction.Database.AttributeTypeDatabaseInfo
          AttributeTypeDatabaseInfo(..),
          AttributeTypeDatabaseInfoForExisting(..),
          AttributeTypeDatabaseConfigForExisting(..),
-         
+
          -- ** Synonyms for common variants of 'AttributeTypeDatabaseInfo'
 
          AttributeTypeDatabaseInfo_same,
@@ -44,7 +44,6 @@ module Wilde.ApplicationConstruction.Database.AttributeTypeDatabaseInfo
          -- ** Utilities
 
          mkAtDbConfigForE,
-         DbCol.mkOutputerWithConnection,
          atAttributeTypeDatabaseInfo,
 
          -- * Infor for some types
@@ -197,15 +196,15 @@ data AttributeTypeDatabaseConfigForExisting dbTable a =
 -- | Makes a 'AttributeTypeDatabaseConfigForExisting'.
 mkAtDbConfigForE :: AttributeTypeDatabaseInfo              dbTable typeForExisting typeForCreate
                  -> AttributeTypeDatabaseConfigForExisting dbTable typeForExisting
-mkAtDbConfigForE (AttributeTypeDatabaseInfo dbInfoE _) =
+mkAtDbConfigForE (AttributeTypeDatabaseInfo {atdbioInfoForExisting = dbInfoE}) =
   AttributeTypeDatabaseConfigForExisting
   {
     atdbioeIo        = atdbiofeIo dbInfoE
-  , atdbioeStructure = fmap (DatabaseColumn . columnIdent) $ atdbiofeStructure dbInfoE
+  , atdbioeStructure = (DatabaseColumn . columnIdent) <$> atdbiofeStructure dbInfoE
   }
 
 atAttributeTypeDatabaseInfo :: AttributeTypeDatabaseInfoForExisting dbTable typeForExisting
-                            -> Database.OutputerWithConnection                          typeForCreate
+                            -> Database.OutputerWithConnection                              typeForCreate
                             -> AttributeTypeDatabaseInfo            dbTable typeForExisting typeForCreate
 atAttributeTypeDatabaseInfo atdbie@(AttributeTypeDatabaseInfoForExisting {}) dbCreateOutputer =
   AttributeTypeDatabaseInfo
@@ -238,12 +237,12 @@ type AttributeTypeDatabaseInfo_same_optional dbTable a =
 
 
 int :: (SQL_IDENTIFIER dbTable)
-    => dbTable 
+    => dbTable
     -> AttributeTypeDatabaseInfo_same dbTable Int
 int = atDbIo_forSingleColumn DbCol.int
 
 int_optional :: (SQL_IDENTIFIER dbTable)
-             => dbTable 
+             => dbTable
              -> AttributeTypeDatabaseInfo_same_optional dbTable Int
 int_optional = atDbIo_forSingleColumn DbCol.int_optional
 
@@ -254,12 +253,12 @@ int_optional = atDbIo_forSingleColumn DbCol.int_optional
 
 
 int32 :: (SQL_IDENTIFIER dbTable)
-      => dbTable 
+      => dbTable
       -> AttributeTypeDatabaseInfo_same dbTable Int32
 int32 = atDbIo_forSingleColumn DbCol.int32
 
 int32_optional :: (SQL_IDENTIFIER dbTable)
-               => dbTable 
+               => dbTable
                -> AttributeTypeDatabaseInfo_same_optional dbTable Int32
 int32_optional = atDbIo_forSingleColumn DbCol.int32_optional
 
@@ -270,12 +269,12 @@ int32_optional = atDbIo_forSingleColumn DbCol.int32_optional
 
 
 int64 :: (SQL_IDENTIFIER dbTable)
-      => dbTable 
+      => dbTable
       -> AttributeTypeDatabaseInfo_same dbTable Int64
 int64 = atDbIo_forSingleColumn DbCol.int64
 
 int64_optional :: (SQL_IDENTIFIER dbTable)
-               => dbTable 
+               => dbTable
                -> AttributeTypeDatabaseInfo_same_optional dbTable Int64
 int64_optional = atDbIo_forSingleColumn DbCol.int64_optional
 
@@ -286,17 +285,17 @@ int64_optional = atDbIo_forSingleColumn DbCol.int64_optional
 
 
 word32 :: (SQL_IDENTIFIER dbTable)
-       => dbTable 
+       => dbTable
        -> AttributeTypeDatabaseInfo_same dbTable Word32
 word32 = atDbIo_forSingleColumn DbCol.word32
 
 word32_optional :: (SQL_IDENTIFIER dbTable)
-                => dbTable 
+                => dbTable
                 -> AttributeTypeDatabaseInfo_same_optional dbTable Word32
 word32_optional = atDbIo_forSingleColumn DbCol.word32_optional
 
 word32_optionalOnCreate :: (SQL_IDENTIFIER dbTable)
-                        => dbTable 
+                        => dbTable
                         -> AttributeTypeDatabaseInfo dbTable Word32 (Maybe Word32)
 word32_optionalOnCreate = atDbIo_forSingleColumn_optionalOnCreate
                           DbCol.word32
@@ -309,17 +308,17 @@ word32_optionalOnCreate = atDbIo_forSingleColumn_optionalOnCreate
 
 
 word64 :: (SQL_IDENTIFIER dbTable)
-       => dbTable 
+       => dbTable
        -> AttributeTypeDatabaseInfo_same dbTable Word64
 word64 = atDbIo_forSingleColumn DbCol.word64
 
 word64_optional :: (SQL_IDENTIFIER dbTable)
-                => dbTable 
+                => dbTable
                 -> AttributeTypeDatabaseInfo_same_optional dbTable Word64
 word64_optional = atDbIo_forSingleColumn DbCol.word64_optional
 
 word64_optionalOnCreate :: (SQL_IDENTIFIER dbTable)
-                        => dbTable 
+                        => dbTable
                         -> AttributeTypeDatabaseInfo dbTable Word64 (Maybe Word64)
 word64_optionalOnCreate = atDbIo_forSingleColumn_optionalOnCreate
                           DbCol.word64
@@ -332,12 +331,12 @@ word64_optionalOnCreate = atDbIo_forSingleColumn_optionalOnCreate
 
 
 double :: (SQL_IDENTIFIER dbTable)
-       => dbTable 
+       => dbTable
        -> AttributeTypeDatabaseInfo_same dbTable Double
 double = atDbIo_forSingleColumn DbCol.double
 
 double_optional :: (SQL_IDENTIFIER dbTable)
-                => dbTable 
+                => dbTable
                 -> AttributeTypeDatabaseInfo_same_optional dbTable Double
 double_optional = atDbIo_forSingleColumn DbCol.double_optional
 
@@ -398,13 +397,13 @@ longString_optional dbIo = atDbIo_forSingleColumn (DbCol.longString_optional dbI
 
 
 longString_forDefaultDbIo :: (SQL_IDENTIFIER dbTable)
-                          => dbTable 
+                          => dbTable
                           -> AttributeTypeDatabaseInfo_same dbTable String
 longString_forDefaultDbIo = atDbIo_forSingleColumn
                             DbCol.longString_forDefaultDbIo
 
 longString_optional_forDefaultDbIo :: (SQL_IDENTIFIER dbTable)
-                                   => dbTable 
+                                   => dbTable
                                    -> AttributeTypeDatabaseInfo_same_optional dbTable String
 longString_optional_forDefaultDbIo = atDbIo_forSingleColumn
                                      DbCol.longString_optional_forDefaultDbIo
@@ -416,12 +415,12 @@ longString_optional_forDefaultDbIo = atDbIo_forSingleColumn
 
 
 bool :: (SQL_IDENTIFIER dbTable)
-     => dbTable 
+     => dbTable
      -> AttributeTypeDatabaseInfo_same dbTable Bool
 bool = atDbIo_forSingleColumn DbCol.bool
 
 bool_optional :: (SQL_IDENTIFIER dbTable)
-              => dbTable 
+              => dbTable
               -> AttributeTypeDatabaseInfo_same_optional dbTable Bool
 bool_optional = atDbIo_forSingleColumn DbCol.bool_optional
 
@@ -432,12 +431,12 @@ bool_optional = atDbIo_forSingleColumn DbCol.bool_optional
 
 
 day :: (SQL_IDENTIFIER dbTable)
-    => dbTable 
+    => dbTable
     -> AttributeTypeDatabaseInfo_same dbTable Day
 day = atDbIo_forSingleColumn DbCol.day
 
 day_optional :: (SQL_IDENTIFIER dbTable)
-             => dbTable 
+             => dbTable
              -> AttributeTypeDatabaseInfo_same_optional dbTable Day
 day_optional = atDbIo_forSingleColumn DbCol.day_optional
 

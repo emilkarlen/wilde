@@ -45,11 +45,12 @@ module Wilde.Driver.Database.MySQL.ApplicationObjectModelTools
 import Control.Monad.IO.Class
 
 import Database.HDBC
+import qualified Database.HDBC as HDBC
 
-import Wilde.Media.Database.Monad
+import Wilde.Media.Database
+import qualified Wilde.Media.Database.Monad as DbConn
 
 import           Wilde.Database.Sql
-import qualified Wilde.Database.Executor as SqlExec
 import           Wilde.Database.SqlDdlInfo
 
 import qualified Wilde.ObjectModel.ObjectModelUtils as OmUtils
@@ -191,7 +192,7 @@ selectLastInsertedId = "SELECT LAST_INSERT_ID()"
 getAutoIncValue :: (Integral idAtExisting
                    ,Convertible SqlValue idAtExisting)
                 => Database.GetIdOfInsertedIntoDatabase idAtExisting idAtCreate
-getAutoIncValue car _ _ = getAutoIncValueCar car
+getAutoIncValue _ _ = getAutoIncValue'
 
 -------------------------------------------------------------------------------
 -- | A variant of 'getAutoIncValue' where the ID may not need to be
@@ -200,23 +201,21 @@ getAutoIncValue car _ _ = getAutoIncValueCar car
 getAutoIncValue_optional :: (Integral idAtExisting,
                              Convertible SqlValue idAtExisting)
                          => Database.GetIdOfInsertedIntoDatabase idAtExisting (Maybe idAtExisting)
-getAutoIncValue_optional car mbValue _ = maybe (getAutoIncValueCar car) return mbValue
-
--- Helper for getting an AUTO_INCREMENT:ed value.
-getAutoIncValueCar :: (Integral a,
-                     Convertible SqlValue a)
-                 => SqlExec.ConnectionAndRenderer
-                 -> DatabaseMonad a
-getAutoIncValueCar car = getAutoIncValue' (SqlExec.carConnection car)
+getAutoIncValue_optional mbValue _ = maybe getAutoIncValue' return mbValue
 
 -- Helper for getting an AUTO_INCREMENT:ed value.
 getAutoIncValue' :: (Integral a,
                      Convertible SqlValue a)
-                 => ConnWrapper
-                 -> DatabaseMonad a
-getAutoIncValue' conn =
-  do
-    res <- liftIO $ quickQuery conn selectLastInsertedId []
-    convertOneRowOneValue safeFromSql errMsg res
-    where
-      errMsg = "Getting generated PK via MySQLs AUTO_INCREMENT: " ++ selectLastInsertedId
+                 => DbConn.Monad a
+getAutoIncValue' = DbConn.loggBeginEnd "getAutoIncValue'" $ do
+  stmt <- DbConn.prepareSql_str selectLastInsertedId
+  DbConn.logg "getAutoIncValue'/HDBC.execute ..."
+  liftIO $ HDBC.execute stmt []
+  DbConn.logg "getAutoIncValue'/HDBC.fetchAllRows' ..."
+  res <- liftIO $ HDBC.fetchAllRows' stmt
+  DbConn.logg "getAutoIncValue'/HDBC.convertOneRowOneValue ..."
+  retVal <- convertOneRowOneValue safeFromSql errMsg res
+  DbConn.logg "getAutoIncValue'/HDBC.convertOneRowOneValue done"
+  pure retVal
+  where
+    errMsg = "Getting generated PK via MySQLs AUTO_INCREMENT: " ++ selectLastInsertedId

@@ -43,6 +43,7 @@ import qualified Wilde.Render.Cgi.ElementSetIo as ElementSetIo
 
 import qualified Wilde.Application.ApplicationInput as AppInput
 import           Wilde.Application.Service
+import qualified Wilde.Application.Service as Service
 import qualified Wilde.Application.ApplicationServices as AppServices
 import qualified Wilde.Application.ApplicationConfiguration as AppConf
 
@@ -126,13 +127,12 @@ newServiceEnvironment (AppConf.ApplicationConfiguration
                       )
   serviceId
   input =
-    ServiceEnvironment
-    {
-      envCurrentService    = serviceId
-    , envMedia             = ElementSetIo.inputMedia        input
-    , envCustomEnvironment = ElementSetIo.customEnvironment input
-    , envDbConfiguration   = theDbConfiguration
-    , envOutputing         = UiOm.Outputing
+    Service.newEnvironment serviceId
+    (ElementSetIo.customEnvironment input)
+    (ElementSetIo.inputMedia        input)
+    theDbConfiguration outputing
+  where
+    outputing = UiOm.Outputing
         {
           UiOm.outTranslations                  = theTranslations
         , UiOm.outStandardServiceLinkRenderer   = theStdSrvcLinkRenderer
@@ -140,4 +140,3 @@ newServiceEnvironment (AppConf.ApplicationConfiguration
         , UiOm.outMkStdObjectServiceLink        = theStdObjectSrvcLinkRenderer
         , UiOm.outGetGenericServiceLinkRenderer = theGetGenericSLR
         }
-    }

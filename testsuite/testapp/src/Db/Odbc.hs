@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
-module DatabaseConnection
+module Db.Odbc
        (
          connect,
          theDbConfiguration,
@@ -32,7 +32,7 @@ module DatabaseConnection
 
 
 import Database.HDBC
-import Database.HDBC.ODBC
+import qualified Database.HDBC.ODBC as ODBC
 
 import qualified Wilde.Driver.Database.MySQL.DmlExcutor as DmlExecutor
 
@@ -41,37 +41,19 @@ import qualified Wilde.Driver.Database.MySQL.DmlExcutor as DmlExecutor
 -- - implementation -
 -------------------------------------------------------------------------------
 
-
-odbcDataSourceName = "wilde_test"
-odbcConnectionString = "DSN=" ++ odbcDataSourceName
-
-connect :: IO ConnWrapper
-connect =
-  do
-    conn <- connectODBC odbcConnectionString
-    return $ ConnWrapper conn
-
-theDbConfiguration :: DmlExecutor.Configuration
-theDbConfiguration =
+newConf :: String -- ^ DB name
+        -> DmlExecutor.Configuration
+newConf db =
   DmlExecutor.Configuration
   {
     DmlExecutor.connectionProvider = connect
   , DmlExecutor.dmlRenderer        = DmlExecutor.mysqlDmlRenderer
   }
+  where
+    odbcConnectionString = "DSN=" ++ db
 
--- socket       = "/var/run/mysqld/mysqld.sock"
--- hostName     = "localhost"
--- databaseName = "wilde_test"
--- user         = "developer"
--- password     = ""
-
--- testConnect :: IO ConnWrapper
--- testConnect =
---   do
---     conn <- connectMySql defaultMySqlConnectInfo {
---       mysqlUnixSocket = socket,
---       mysqlHost       = hostName,
---       mysqlUser       = user,
---       mysqlDatabase   = databaseName
---       }
---     return $ ConnWrapper conn
+    connect :: IO ConnWrapper
+    connect =
+      do
+        conn <- ODBC.connectODBC odbcConnectionString
+        return $ ConnWrapper conn

@@ -38,7 +38,7 @@ import Database.HDBC
 
 import qualified Wilde.Database.SqlJoin as Sql
 
-import Wilde.Media.Database
+import Wilde.Media.Database (TranslationMonad)
 
 import qualified Wilde.Media.Presentation as Presentation
 import Wilde.ObjectModel.ObjectModelUtils

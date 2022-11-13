@@ -59,8 +59,6 @@ import Data.Either
 
 import qualified Wilde.Utils.NonEmptyList as NonEmpty
 
-import qualified Wilde.Database.Executor as SqlExec
-
 import qualified Wilde.Media.ElementSet as ES
 
 import qualified Wilde.Media.MonadWithInputMedia as MIIA
@@ -79,6 +77,7 @@ import qualified Wilde.ObjectModel.DatabaseAndPresentation as DatabaseAndPresent
 import qualified Wilde.Driver.Application.Cgi.VariableNames as VariableNames
 
 import Wilde.Application.Service
+import qualified Wilde.Application.Service as Service
 import qualified Wilde.Application.ServiceLink as ServiceLink
 
 import qualified Wilde.ApplicationConstruction.ElementSetUtils as ESU
@@ -94,9 +93,8 @@ readAllPlain :: (Database.DATABASE_TABLE otConf
                 ,Database.COLUMN_NAMES atConf
                 )
              => ObjectType otConf atConf dbTable otN idAtExisting idAtCreate
-             -> SqlExec.ConnectionAndRenderer
              -> ServiceMonad [Object otConf atConf dbTable otN idAtExisting idAtCreate]
-readAllPlain ot car = toServiceMonad $ SelectPlain.selectAll ot [] car
+readAllPlain ot = Service.toServiceMonad_wDefaultDbConn $ SelectPlain.selectAll ot []
 
 formForCurrentService :: FormBlocksAndMetas
                       -> [Element]
@@ -174,8 +172,7 @@ withObjectFromDb :: (Database.DATABASE_TABLE otConf
                  -> ServiceMonad a
 withObjectFromDb ot@(ObjectType {}) f pk =
   do
-    mbObj <- withDbConnectionCar $ \car ->
-             toServiceMonad $ InputWithPresentation.inputOne ot pk car
+    mbObj <- Service.toServiceMonad_wDefaultDbConn $ InputWithPresentation.inputOne ot pk
     maybe
       (throwErr $ NormalError $ "No object in the database with id:" ++ show pk)
       f
@@ -254,8 +251,7 @@ objectService ot serviceForObject =
     pk <- lookupGsr_mandatory
           (globalElementKey VariableNames.pk)
           (OmGsr.otInputerForIdAtForExisting ot)
-    mbObj <- withDbConnectionCar $ \car ->
-             toServiceMonad $ InputWithPresentation.inputOne ot pk car
+    mbObj <- Service.toServiceMonad_wDefaultDbConn $ InputWithPresentation.inputOne ot pk
     maybe
       (throwErr $ NormalError "No such object")
       serviceForObject

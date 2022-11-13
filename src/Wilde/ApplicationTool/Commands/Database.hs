@@ -48,7 +48,7 @@ import Wilde.Utils.Utils as Utils
 import qualified Wilde.Utils.NonEmptyList as NonEmpty
 
 import Wilde.Database.Sql
-import qualified Wilde.Database.Executor as SqlExec
+import qualified Wilde.ApplicationTool.DbExecution as SqlExec
 
 import qualified Wilde.Media.ElementSet as ES (empty,ElementSet)
 
@@ -61,7 +61,7 @@ import qualified Wilde.ObjectModel.Database.Sql.WithPresentationInfo as SqlWithP
 
 import Wilde.ObjectModel.ObjectModelUtils
 
-import Wilde.Media.Database.Monad
+import Wilde.Media.Database
 
 import qualified Wilde.ObjectModel.Database.Sql.WithPresentationInfo as SqlWithPresentationInfo
 

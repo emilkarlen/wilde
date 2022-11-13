@@ -35,7 +35,7 @@ import Wilde.Media.WildeStyleType
 
 import Wilde.Media.UserInteraction
 
-import Wilde.Render.UserInteractionRendering
+import Wilde.Render.UserInteractionRendering ( formComponent )
 
 import Wilde.ApplicationConstruction.Service.ServiceTools
 

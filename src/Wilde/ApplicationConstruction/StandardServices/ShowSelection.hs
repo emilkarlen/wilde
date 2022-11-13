@@ -45,6 +45,7 @@ import qualified Wilde.Database.SqlJoin as Sql
 import qualified Wilde.Media.ElementSet as ES
 
 import Wilde.Media.UserInteraction
+import qualified Wilde.Application.Service as Service
 
 import Wilde.Driver.Application.Cgi.VariableNames as VariableNames (selectExpression)
 
@@ -135,7 +136,7 @@ serviceMain ot@(ObjectType {}) config@(Utils.Config title _) = stepService def
     showSelection = do
       mbExpr <- inputExpression ot
       let getWhereExpr = Sql.liftMbExprInMonad mbExpr
-      os <- toServiceMonadWithCar $
+      os <- Service.toServiceMonad_wDefaultDbConn $
             InputWithPresentation.inputSelection ot theOrderByInDb getWhereExpr
       Utils.showMany ot config os
 

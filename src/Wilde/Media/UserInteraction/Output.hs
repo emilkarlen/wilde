@@ -18,7 +18,6 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE TypeSynonymInstances #-}
 
 -- | Monad for generating User Interaction Output - information for producing a
 -- User Interface that lets the user input information to the program.
@@ -46,7 +45,8 @@ module Wilde.Media.UserInteraction.Output
 
          -- * Monad Environment
          
-         UserInteractionOutputEnvironment(..),
+         UserInteractionOutputEnvironment(envMedia, envCustomEnvironment, envOutputing),
+         newEnvironment,
          Presentation.Outputing(..),
          PopUpButtonTexter,
          
@@ -65,8 +65,7 @@ module Wilde.Media.UserInteraction.Output
          
          ToUserInteractionOutputMonad(..),
          
-         toUserInteractionOutputMonadWithConn,
-         toUserInteractionOutputMonadWithCar,
+         toUiOMonad_wDefaultDbConn,
        )
        where
 
@@ -80,14 +79,11 @@ import Control.Monad.Trans
 import Control.Monad.Trans.Except
 import Control.Monad.Trans.Reader
 
-import Database.HDBC.Types (ConnWrapper)
-
-import qualified Wilde.Database.Executor as DbExecutor
-
 import qualified Wilde.Media.ElementSet as ES
 import Wilde.Media.CustomEnvironment
 import Wilde.Media.UserInteraction
-import qualified Wilde.Media.Database.Monad as DBIO
+import qualified Wilde.Media.Database.Configuration as DbConf
+import qualified Wilde.Media.Database.Monad as DbConn
 import qualified Wilde.Media.Presentation as Presentation
 
 import Wilde.Media.MonadWithInputMedia
@@ -127,9 +123,16 @@ data UserInteractionOutputEnvironment =
   {
     envMedia             :: ES.ElementSet
   , envCustomEnvironment :: ES.ElementSet
-  , envDbConfiguration   :: DbExecutor.Configuration
+  , envDbConfiguration   :: DbConf.Configuration
   , envOutputing         :: Presentation.Outputing
   }
+
+newEnvironment :: ES.ElementSet  -- ^ media
+               -> ES.ElementSet  -- ^ custom environment
+               -> DbConf.Configuration
+               -> Presentation.Outputing
+               -> UserInteractionOutputEnvironment
+newEnvironment = UserInteractionOutputEnvironment
 
 -- | Gets the 'StandardServices.StandardServiceLinkRenderer' from a
 -- 'Environment'.
@@ -193,9 +196,6 @@ instance Functor UserInteractionOutputMonad where
 
 instance MonadIO UserInteractionOutputMonad where
   liftIO = UserInteractionOutputMonad . lift . lift
-
-instance DbExecutor.MonadWithDatabaseConfiguration UserInteractionOutputMonad where
-  getDatabaseConfiguration = getEnvs envDbConfiguration
   
 -- | \"Computations\" (e.g. monads) that are instances of this class
 -- can be integrated into the 'UserInteractionOutputMonad'.
@@ -246,13 +246,9 @@ instance ToUserInteractionOutputMonad Presentation.Monad where
       toPresEnv (UserInteractionOutputEnvironment
                  { envCustomEnvironment = theEnvCustomEnvironment
                  , envDbConfiguration   = theEnvDbConfiguration
-                 , envOutputing         = theEnvOutputing }) =
-        Presentation.Environment
-        {
-          Presentation.envCustomEnvironment = theEnvCustomEnvironment
-        , Presentation.envDbConfiguration   = theEnvDbConfiguration
-        , Presentation.envOutputing         = theEnvOutputing
-        }
+                 , envOutputing         = theEnvOutputing
+                 }) =
+          Presentation.newEnvironment theEnvCustomEnvironment theEnvDbConfiguration theEnvOutputing
 
 instance Presentation.ToPresentationError err => ToUserInteractionOutputMonad (Either err) where
   toUserInteractionOutputMonad (Left err) = throwErr err
@@ -263,13 +259,6 @@ instance Presentation.ToPresentationError err =>
   toUserInteractionOutputMonad m =
     do
       res <- liftIO $ runExceptT m
-      toUserInteractionOutputMonad res
-
-instance ToUserInteractionOutputMonad DBIO.DatabaseMonad where
-  toUserInteractionOutputMonad m =
-    do
-      custEnv <- getCustomEnvironment
-      res     <- liftIO $ DBIO.runDatabase custEnv m
       toUserInteractionOutputMonad res
   
 -- | Integrates monads of type "IO (Either err a)"
@@ -284,27 +273,19 @@ liftIOWithError io =
       Left err -> throwErr err
       Right ok -> return ok
 
-toUserInteractionOutputMonadWithConn :: (ConnWrapper -> DBIO.DatabaseMonad a)
-                                     -> UserInteractionOutputMonad a
-toUserInteractionOutputMonadWithConn f =
+toUiOMonad_wDefaultDbConn ::
+  DbConn.Monad a ->
+  UserInteractionOutputMonad a
+toUiOMonad_wDefaultDbConn dbm =
   do
-    conn <- DbExecutor.getDatabaseConnection
-    toUserInteractionOutputMonad $ f conn
+    dbConnMonadEnv <- getDbConnMonadEnv
+    liftIOWithError $ DbConn.run dbConnMonadEnv dbm
 
-toUserInteractionOutputMonadWithCar :: (DbExecutor.ConnectionAndRenderer
-                                        -> DBIO.DatabaseMonad a)
-                                     -> UserInteractionOutputMonad a
-toUserInteractionOutputMonadWithCar f =
-  do
-    car <- DbExecutor.getDatabaseConnectionAndRenderer
-    toUserInteractionOutputMonad $ f car
-
--- | Integrates monads of type "ErrorT err IO"
--- into the UserInteractionOutputMonad monad
--- liftIOWithErrorT :: ToUserInteractionOutputError err
---                  => ErrorT err IO a
---                  -> UserInteractionOutputMonad a
--- liftIOWithErrorT io =
---   do
---     res <- liftIO $ runErrorT io
---     either throwErr return res
+  where
+    getDbConnMonadEnv :: UserInteractionOutputMonad DbConn.Environment
+    getDbConnMonadEnv = do
+      dbConf         <- getEnvs envDbConfiguration
+      let dmlRenderer = DbConf.dmlRenderer dbConf
+      conn           <- liftIO $ DbConf.connectionProvider dbConf
+      custEnv        <- getEnvs envCustomEnvironment
+      pure $ DbConn.newEnv custEnv dmlRenderer conn

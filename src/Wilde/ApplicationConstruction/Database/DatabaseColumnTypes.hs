@@ -121,6 +121,7 @@ module Wilde.ApplicationConstruction.Database.DatabaseColumnTypes
 
 
 import Data.Typeable
+import Data.Convertible.Base
 
 import Data.Word
 import Data.Int
@@ -131,7 +132,7 @@ import Database.HDBC.ColTypes
 import Database.HDBC
 
 import Wilde.Media.Database
-import Wilde.Media.Database.Monad
+import qualified Wilde.Media.Database.Monad as DbConn
 
 import qualified Wilde.ObjectModel.Database as Database
 
@@ -529,10 +530,9 @@ sqlColDesc_integral sqlTypeId mbNumBits bNullAllowed =
 mkOutputerWithConnection :: Typeable a
                          => DatabaseOutputer a
                          -> Database.OutputerWithConnection a
-mkOutputerWithConnection outputer =
-  \value conn ->
+mkOutputerWithConnection outputer value =
   case outputer value of
-    Left err -> throwErr $ AttributeTranslationError errorInfo err
+    Left err -> DbConn.throwErr $ AttributeTranslationError errorInfo err
       where
         errorInfo = "Type: " ++ show (typeOf value)
     Right sqlValues -> return sqlValues

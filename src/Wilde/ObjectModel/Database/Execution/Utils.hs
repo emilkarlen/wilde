@@ -18,8 +18,7 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
 -------------------------------------------------------------------------------
--- | Utilities related to execution of SQL statements using
--- a 'SqlExec.ConnectionAndRenderer'.
+-- | Utilities related to execution of SQL statements in db monad.
 -------------------------------------------------------------------------------
 module Wilde.ObjectModel.Database.Execution.Utils
        (
@@ -39,11 +38,10 @@ import Database.HDBC
 
 import qualified Wilde.Database.Sql as Sql
 
-import qualified Wilde.Database.Executor as SqlExec
-
 import Wilde.ObjectModel.ObjectModel
 
-import Wilde.Media.Database.Monad
+import qualified Wilde.Media.Database.Monad as DbConnM
+import qualified Wilde.Media.Database.Exec as Exec
 
 import qualified Wilde.ObjectModel.Database.Output as Output
 
@@ -64,7 +62,7 @@ data DmlExecutionInfoConstruction dbTable =
   }
 
 -------------------------------------------------------------------------------
--- | Executes a SQL statement where the WHERE expression is quality on
+-- | Executes a SQL statement where the WHERE expression is equality on
 -- the ID 'Attribute' of an 'ObjectType'.
 --
 -- Returns the number of rows affected by the statement.
@@ -81,19 +79,18 @@ execForIdAtObject :: (Output.OUTPUT_FOR_EXISTING atConf
                   -- ^ Parameters of the resulting SQL statement that
                   -- (precedes,comes after), respectively,
                   -- those of the WHERE expression.
-                  -> SqlExec.ConnectionAndRenderer
-                  -> DatabaseMonad (Maybe Integer)
+                  -> DbConnM.Monad (Maybe Integer)
 execForIdAtObject newSqlForWhereExpr
   ot@(ObjectType {})
   idAtValue
   sqlParams 
-  car =
-    execForOne (newSqlForWhereExpr ot) idAt idAtValue sqlParams car
+  =
+    execForOne (newSqlForWhereExpr ot) idAt idAtValue sqlParams
   where
     idAt = otIdAttributeType ot
 
 -------------------------------------------------------------------------------
--- | Executes a SQL statement where the WHERE expression is quality on
+-- | Executes a SQL statement where the WHERE expression is equality on
 -- a single 'Attribute' given by it's type and value.
 --
 -- Returns the number of rows affected by the statement.
@@ -110,19 +107,18 @@ execForOne :: (Output.OUTPUT_FOR_EXISTING atConf
            -- ^ Parameters of the resulting SQL statement that
            -- (precedes,comes after), respectively,
            -- those of the WHERE expression.
-           -> SqlExec.ConnectionAndRenderer
-           -> DatabaseMonad (Maybe Integer)
+           -> DbConnM.Monad (Maybe Integer)
 execForOne newSqlForWhereExpr 
   whereEqAttrType@(AttributeType {})
   whereEqAttrValue 
   (sqlParamsBeforeWhereExpr,sqlParamsAfterWhereExpr) 
-  car =
+  =
   do
-    whereEqAttrSqlValues <- toDatabaseMonad getAtSqlValues
+    whereEqAttrSqlValues <- DbConnM.toMonad getAtSqlValues
     let sqlParams         = sqlParamsBeforeWhereExpr ++ 
                             whereEqAttrSqlValues ++
                             sqlParamsAfterWhereExpr
-    execForWhereExpr newSqlForWhereExpr mbWhereExpr sqlParams car
+    execForWhereExpr newSqlForWhereExpr mbWhereExpr sqlParams
   where
     getAtSqlValues   = Output.atOutputerExisting whereEqAttrType whereEqAttrValue
                        :: ConvertResult [SqlValue]
@@ -138,7 +134,6 @@ execForWhereExpr :: Sql.SQL_IDENTIFIER dbTable
                  => (Maybe (Sql.SqlExpr dbTable) -> Sql.SqlDmlStatement dbTable)
                  -> Maybe (Sql.SqlExpr dbTable)
                  -> [SqlValue]
-                 -> SqlExec.ConnectionAndRenderer
-                 -> DatabaseMonad (Maybe Integer)
-execForWhereExpr newSqlForWhereExpr mbWhereExpr sqlParameters car =
-  SqlExec.quickNumRows2 car (newSqlForWhereExpr mbWhereExpr) sqlParameters
+                 -> DbConnM.Monad (Maybe Integer)
+execForWhereExpr newSqlForWhereExpr mbWhereExpr sqlParameters =
+  Exec.execSql_numRowsMb (newSqlForWhereExpr mbWhereExpr) sqlParameters

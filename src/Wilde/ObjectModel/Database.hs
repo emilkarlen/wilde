@@ -56,10 +56,11 @@ module Wilde.ObjectModel.Database
 
 import qualified Wilde.Utils.NonEmptyList as NonEmpty
 
-import Wilde.Media.Database.Monad
+import Wilde.Media.Database
+import qualified Wilde.Media.Database.Monad as DbConn
 
-import qualified Wilde.Database.Executor as SqlExec
 import Wilde.ObjectModel.ObjectModelUtils
+    ( ObjectType, AttributeType )
 
 import Wilde.Database.SqlDdlInfo
 
@@ -70,8 +71,7 @@ import Wilde.Database.SqlDdlInfo
        
 
 -- | Outputer for the database media, for a given value, in a connection.
-type OutputerWithConnection a =
-  a -> SqlExec.ConnectionAndRenderer -> DatabaseMonad DatabaseOutput
+type OutputerWithConnection a = a -> DbConn.Monad DatabaseOutput
 
 -------------------------------------------------------------------------------
 -- | A function that gets the ID/PK of an object that has been
@@ -93,10 +93,9 @@ type OutputerWithConnection a =
 -- The 'SqlValue's that was returned for the ID AttributeForCreate
 -------------------------------------------------------------------------------
 type GetIdOfInsertedIntoDatabase e c =
-  SqlExec.ConnectionAndRenderer
-  -> c
+  c
   -> DatabaseOutput
-  -> DatabaseMonad e
+  -> DbConn.Monad e
 
 class DATABASE_TABLE otConf where
   otDatabaseTable :: ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate

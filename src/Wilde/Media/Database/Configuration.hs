@@ -17,7 +17,12 @@ You should have received a copy of the GNU General Public License
 along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
-module Main where
+-- | Information about a database driver.
+module Wilde.Media.Database.Configuration
+       (
+         Configuration(..),
+       )
+       where
 
 
 -------------------------------------------------------------------------------
@@ -25,17 +30,9 @@ module Main where
 -------------------------------------------------------------------------------
 
 
-import qualified Blaze.ByteString.Builder.Char8 as BChar8
-import qualified Data.ByteString.Char8 as Char8
+import Database.HDBC
 
-import Wilde.Driver.Application.Cgi.Wai
-
-import ApplicationConfiguration
-
-import Database.HDBC.MariaDB as Db
-
-import qualified Network.Wai as Wai
-import qualified Network.Wai.Handler.CGI as WaiCGI
+import Wilde.Database.DmlRenderer
 
 
 -------------------------------------------------------------------------------
@@ -43,16 +40,10 @@ import qualified Network.Wai.Handler.CGI as WaiCGI
 -------------------------------------------------------------------------------
 
 
-systemConfiguration :: SystemConfiguration
-systemConfiguration = SystemConfiguration
-                      {
-                        contentEncoder  = BChar8.fromString
-                      , queryVarDecoder = Char8.unpack
-                      -- , queryVarDecoder = UTF8.toString
-                      }
-
-waiApp :: Wai.Application
-waiApp = csApplication systemConfiguration appConfig
-
-main :: IO ()
-main = Db.withRTSSignalsBlocked $ WaiCGI.run waiApp
+-- | Configuation for executing SQL.
+data Configuration =
+  Configuration
+  {
+    connectionProvider :: IO ConnWrapper
+  , dmlRenderer        :: DmlRenderer
+  }

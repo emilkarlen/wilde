@@ -34,12 +34,13 @@ module Wilde.ObjectModel.Database.Execution.Insert
 -------------------------------------------------------------------------------
 
 
-import qualified Wilde.Database.Executor as SqlExec
+import Wilde.Media.Database (DatabaseOutput)
+import qualified Wilde.Media.Database.Exec as SqlExec
 
 import Wilde.ObjectModel.ObjectModel
 import qualified Wilde.ObjectModel.ObjectModelUtils as OmUtils
 
-import Wilde.Media.Database.Monad
+import qualified Wilde.Media.Database.Monad as DbConn
 
 import qualified Wilde.ObjectModel.Database.Sql.SansPresentationInfo as SqlPlain
 import           Wilde.ObjectModel.Database as Database
@@ -58,29 +59,27 @@ import qualified Wilde.ObjectModel.Database.Output as Output
 insertOne :: (Database.DATABASE_TABLE otConf
              ,Database.COLUMN_NAMES atConf
              ,Output.OUTPUT_FOR_CREATE atConf)
-          => ObjectForCreate otConf atConf dbTable otNative idAtExisting idAtCreate 
-          -> SqlExec.ConnectionAndRenderer
-          -> DatabaseMonad DatabaseOutput
-insertOne oc@(ObjectForCreate {}) car =
+          => ObjectForCreate otConf atConf dbTable otNative idAtExisting idAtCreate
+          -> DbConn.Monad DatabaseOutput
+insertOne oc@(ObjectForCreate {}) =
   do
-    (sqlValuesIdAt,sqlValuesNonIdAts) <- databaseOutputForInsert oc car
+    (sqlValuesIdAt,sqlValuesNonIdAts) <- databaseOutputForInsert oc
     let sqlValuesAllAts = sqlValuesIdAt ++ sqlValuesNonIdAts
     let sql = SqlPlain.insertOne (ofcType oc)
-    SqlExec.quickInsert car sql sqlValuesAllAts
+    SqlExec.insert sql sqlValuesAllAts
     return sqlValuesIdAt
 
 -------------------------------------------------------------------------------
 -- | Output for (ID-AT,non-ID-ATs).
 -------------------------------------------------------------------------------
-databaseOutputForInsert :: Output.OUTPUT_FOR_CREATE atConf 
-                        => ObjectForCreate otConf atConf dbTable otNative idAtExisting idAtCreate 
-                        -> SqlExec.ConnectionAndRenderer
-                        -> DatabaseMonad (DatabaseOutput,DatabaseOutput)
-databaseOutputForInsert oc car =
+databaseOutputForInsert :: Output.OUTPUT_FOR_CREATE atConf
+                        => ObjectForCreate otConf atConf dbTable otNative idAtExisting idAtCreate
+                        -> DbConn.Monad (DatabaseOutput,DatabaseOutput)
+databaseOutputForInsert oc =
   do
-    forIdAt     <- getForIdAt car
-    forNonIdAts <- mapM (\f -> f car) getForNonIdAts
-    return $ (forIdAt,concat forNonIdAts)
+    forIdAt     <- getForIdAt
+    forNonIdAts <- sequence getForNonIdAts
+    return (forIdAt,concat forNonIdAts)
   where
     ot             = ofcType oc
     getForIdAt     = Output.aOutputForCreate $ ofcIdAttribute oc
@@ -94,12 +93,11 @@ databaseOutputForInsert oc car =
 insertOneGetId :: (Database.OBJECT_TYPE_INSERT otConf
                   ,Database.COLUMN_NAMES atConf
                   ,Output.OUTPUT_FOR_CREATE atConf)
-               => ObjectForCreate otConf atConf dbTable otNative idAtExisting idAtCreate 
-               -> SqlExec.ConnectionAndRenderer
-               -> DatabaseMonad idAtExisting
-insertOneGetId oc car =
+               => ObjectForCreate otConf atConf dbTable otNative idAtExisting idAtCreate
+               -> DbConn.Monad idAtExisting
+insertOneGetId oc =
   do
-    insertDbOutputForIdAt <- insertOne oc car
-    getIdOfInsertedObject car (attrfcValue (ofcIdAttribute oc)) insertDbOutputForIdAt
+    insertDbOutputForIdAt <- insertOne oc
+    getIdOfInsertedObject (attrfcValue (ofcIdAttribute oc)) insertDbOutputForIdAt
   where
     getIdOfInsertedObject = otDatabaseGetIdOfInserted $ ofcType oc

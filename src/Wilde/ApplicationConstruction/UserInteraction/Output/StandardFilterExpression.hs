@@ -53,7 +53,6 @@ import qualified Wilde.Database.SqlJoin as Sql
 import qualified Wilde.Media.Element as EL
 import qualified Wilde.Media.ElementSet as ES
 import qualified Wilde.Media.CustomEnvironment as CustomEnvironment
-import qualified Wilde.Media.Presentation as Presentation
 
 import           Wilde.ObjectModel.ObjectModel
 
@@ -84,10 +83,11 @@ elementKey ot = EL.elementKey
 -------------------------------------------------------------------------------
 lookupExpression :: (DatabaseClasses.COLUMN_NAMES atConf
                     ,Sql.SQL_IDENTIFIER dbTable
+                    ,CustomEnvironment.MonadWithCustomEnvironmentAndLookup m
                     )
                  => ObjectType otConf atConf dbTable otNative idAtE idAtC
-                 -> Presentation.Monad (Maybe (Sql.SqlExpr dbTable))
-lookupExpression ot@(ObjectType {}) =
+                 -> m (Maybe (Sql.SqlExpr dbTable))
+lookupExpression ot =
   CustomEnvironment.inCustomEnvironment $
   ES.mkLookuper lookupParser (elementKey ot)
   where
@@ -100,8 +100,9 @@ lookupExpression ot@(ObjectType {}) =
 -------------------------------------------------------------------------------
 lookupExpression_BasedOn :: (DatabaseClasses.COLUMN_NAMES atConf
                             ,Sql.SQL_IDENTIFIER dbTable
+                            ,CustomEnvironment.MonadWithCustomEnvironmentAndLookup m
                             )
                          => ObjectType otConf atConf dbTable otNative idAtE idAtC
-                         -> Presentation.Monad (Sql.JoinMonad dbTable (Maybe (Sql.SqlExpr (Sql.BasedOn dbTable))))
-lookupExpression_BasedOn ot@(ObjectType {}) =
+                         -> m (Sql.JoinMonad dbTable (Maybe (Sql.SqlExpr (Sql.BasedOn dbTable))))
+lookupExpression_BasedOn ot =
     lookupExpression ot >>= return . Sql.liftMbExprInMonad

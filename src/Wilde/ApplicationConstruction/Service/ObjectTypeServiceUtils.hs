@@ -43,6 +43,7 @@ import qualified Wilde.ObjectModel.Database.Execution.SelectWithPresentationInfo
 import qualified Wilde.ObjectModel.DatabaseAndPresentation as DatabaseAndPresentation
 
 import Wilde.ApplicationConstruction.Service.ServiceTools
+import qualified Wilde.Application.Service as Service
 
 import qualified Wilde.Driver.Application.Cgi.VariableNames as VariableNames
 
@@ -75,8 +76,7 @@ objectServiceMainFunction objectMainFun ot otConfig =
   where
     objectIdMainFun ot otConfig oId =
       do
-        mbObj <- withDbConnectionCar $ 
-          toServiceMonad . InputWithPresentation.inputOne ot oId
+        mbObj <- Service.toServiceMonad_wDefaultDbConn $ InputWithPresentation.inputOne ot oId
         maybe
           (throwErr $ NormalError "No such object")
           (\obj -> objectMainFun obj otConfig)

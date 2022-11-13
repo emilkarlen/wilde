@@ -12,11 +12,11 @@ import qualified Data.ByteString.Char8 as Char8
 
 import qualified Wilde.Application.ApplicationConfiguration as AppConf
 import qualified Wilde.Driver.UserInteraction.StandardServiceLinkRenderer as NoResourceRenderer
-import Wilde.Driver.Application.Wai.Application
+import Wilde.Driver.Application.Cgi.Wai
 
 import ApplicationConfiguration
 
-import Database.HDBC.MySQL
+import Database.HDBC.MariaDB as Db
 
 import qualified Network.Wai as Wai
 import qualified Network.Wai.Handler.Warp as Warp
@@ -47,7 +47,7 @@ main :: IO ()
 main =
   do
     putStrLn $ "http://localhost:" ++ show port
-    withRTSSignalsBlocked $ Warp.run port waiApp
+    Db.withRTSSignalsBlocked $ Warp.run port waiApp
 
 waiApp :: Wai.Application
 waiApp = csApplication systemConfiguration warpAppConfig

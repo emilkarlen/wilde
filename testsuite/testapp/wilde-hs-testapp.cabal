@@ -1,48 +1,64 @@
-Name:                wilde-hs-testapp
+cabal-version:       2.4
+Name:                wilde-testapp
 Version:             1.0
-Description:         Test app for dvlp of wilde-hs
-License:             GPL
-License-file:        LICENSE
+Description:         Test app for dvlp of the library
+License:             GPL-3.0-only
 Author:              Emil Karlén
 Maintainer:          emil@fsf.org
 Build-Type:          Simple
-Cabal-Version:       >=1.10
+
+
+common common-properties
+  ghc-options:       -threaded -fwarn-unused-imports
+  default-language:  Haskell2010
+  hs-source-dirs:    src
+  build-depends:
+    base,
+    array,
+    filepath,
+    process,
+    containers,
+    mtl,
+    transformers,
+    convertible,
+    pretty,
+    html,
+    cgi,
+    parsec,
+    time, 
+    old-locale,
+    bytestring,
+    utf8-string,
+    wai-extra,
+    blaze-builder,
+    http-types,
+    wai,
+    HDBC,
+    -- HDBC-odbc,
+    HDBC-mariadb,
+    wilde == 0.6.0
+  other-modules:
+    AttributeType
+
+    Db.MariaDb
+    Db.Connection
+
+    ObjectType.CharacterEncodingExperiment
+    ObjectModel
+    ApplicationConfiguration
+    Services
+
 
 Executable testapp.cgi
-  Main-is:           testapp-cgi.hs
-  ghc-options:       -threaded -fwarn-unused-imports
-  hs-source-dirs:    src , ../../src
-  Build-Depends:     base >= 3 && < 5, array, filepath, process, containers,
-                     mtl, transformers, convertible,
-                     pretty,
-                     html, cgi, parsec, time, old-locale,
-                     bytestring, utf8-string,
-                     wai-extra, blaze-builder, http-types, wai,
-                     HDBC, HDBC-odbc, HDBC-mysql
-  Default-Language:  Haskell2010
+  import:  common-properties
+  Main-is: testapp-cgi.hs
 
 Executable testapp-wai-warp
-  Main-is:           testapp-wai-warp.hs
-  ghc-options:       -threaded -fwarn-unused-imports
-  hs-source-dirs:    src , ../../src
-  Build-Depends:     base >= 3 && < 5, array, filepath, process, containers,
-                     mtl, transformers, convertible,
-                     pretty,
-                     html, cgi, parsec, time, old-locale,
-                     bytestring, utf8-string,
-                     wai-extra, blaze-builder, http-types, wai,
-                     warp,
-                     HDBC, HDBC-odbc, HDBC-mysql
-  Default-Language:  Haskell2010
+  import:  common-properties
+  Main-is: testapp-wai-warp.hs
+  Build-Depends:
+    warp == 3.3.21
 
 Executable testapp-tool
-  Main-is:           testapp-tool.hs
-  ghc-options:       -threaded
-  hs-source-dirs:    src , ../../src
-  Build-Depends:     base >= 3 && < 5, array, filepath, process, containers,
-                     mtl, transformers, convertible,
-                     pretty,
-                     html, cgi, parsec, time, old-locale,
-                     bytestring, utf8-string,
-                     HDBC, HDBC-odbc
-  Default-Language:  Haskell2010
+  import:  common-properties
+  Main-is: testapp-tool.hs

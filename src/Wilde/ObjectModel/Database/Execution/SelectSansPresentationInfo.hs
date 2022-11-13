@@ -45,11 +45,13 @@ module Wilde.ObjectModel.Database.Execution.SelectSansPresentationInfo
 import Database.HDBC
 
 import qualified Wilde.Database.Sql as Sql
-import qualified Wilde.Database.Executor as SqlExec
+
+import qualified Wilde.Media.Database.Exec as SqlExec
 
 import Wilde.ObjectModel.ObjectModel
 
-import Wilde.Media.Database.Monad
+import qualified Wilde.Media.Database.Monad as DbConn
+import Wilde.Media.Database (DatabaseOutputer)
 
 import qualified Wilde.ObjectModel.Database.InputExistingSansPresentationInfo as InputExisting
 import qualified Wilde.ObjectModel.Database.Output as Output
@@ -72,10 +74,9 @@ selectAll :: (Database.DATABASE_TABLE otConf
           => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
           -> [Any (AttributeType atConf dbTable)]
           -- ^ ORDER BY
-          -> SqlExec.ConnectionAndRenderer
-          -> DatabaseMonad [Object otConf atConf dbTable otNative idAtExisting idAtCreate]
-selectAll ot@(ObjectType {}) orderBy car =
-  select ot sql [] car
+          -> DbConn.Monad [Object otConf atConf dbTable otNative idAtExisting idAtCreate]
+selectAll ot@(ObjectType {}) orderBy =
+  select ot sql []
   where
     sql = SqlPlain.selectAll ot orderBy
 
@@ -89,14 +90,12 @@ selectOne :: (Database.DATABASE_TABLE otConf
              )
           => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
           -> idAtExisting
-          -> SqlExec.ConnectionAndRenderer
-          -> DatabaseMonad (Maybe (Object otConf atConf dbTable otNative idAtExisting idAtCreate))
-selectOne ot@(ObjectType {}) idAtValue car =
+          -> DbConn.Monad (Maybe (Object otConf atConf dbTable otNative idAtExisting idAtCreate))
+selectOne ot@(ObjectType {}) idAtValue =
   selectOneWithOutputer
   ot 
   (Output.atOutputerExisting (otIdAttributeType ot))
   idAtValue
-  car 
 
 -------------------------------------------------------------------------------
 -- | A variant of 'selectOne' that takes a 'DatabaseOutputer' for the
@@ -109,13 +108,11 @@ selectOneWithOutputer :: (Database.DATABASE_TABLE otConf
                       => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
                       -> DatabaseOutputer idAtExisting
                       -> idAtExisting
-                      -> SqlExec.ConnectionAndRenderer
-                      -> DatabaseMonad (Maybe (Object otConf atConf dbTable otNative idAtExisting idAtCreate))
-selectOneWithOutputer ot@(ObjectType {}) idAtValueOutputer idAtValue car =
+                      -> DbConn.Monad (Maybe (Object otConf atConf dbTable otNative idAtExisting idAtCreate))
+selectOneWithOutputer ot@(ObjectType {}) idAtValueOutputer idAtValue =
   do
-    idAtSqlValues <- toDatabaseMonad $
-                     idAtValueOutputer idAtValue
-    selectOneWithSqlValues ot idAtSqlValues car
+    idAtSqlValues <- DbConn.toMonad $ idAtValueOutputer idAtValue
+    selectOneWithSqlValues ot idAtSqlValues
 
 -------------------------------------------------------------------------------
 -- | A variant of 'selectOne' that takes the 'SqlValue's for the
@@ -126,17 +123,16 @@ selectOneWithSqlValues :: (Database.COLUMN_NAMES atConf
                           ,Database.DATABASE_TABLE otConf)
                        => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
                        -> [SqlValue]
-                       -> SqlExec.ConnectionAndRenderer
-                       -> DatabaseMonad (Maybe (Object otConf atConf dbTable otNative idAtExisting idAtCreate))
-selectOneWithSqlValues ot@(ObjectType {}) idAtSqlValues car =
+                       -> DbConn.Monad (Maybe (Object otConf atConf dbTable otNative idAtExisting idAtCreate))
+selectOneWithSqlValues ot@(ObjectType {}) idAtSqlValues =
   do
-    databaseInput <- SqlExec.quickSelect car sql idAtSqlValues
+    databaseInput <- SqlExec.select_lazy sql idAtSqlValues
     case databaseInput of
       []    -> return Nothing
-      [row] -> do o <- toDatabaseMonad $ InputExisting.inputObject ot row
+      [row] -> do o <- DbConn.toMonad $ InputExisting.inputObject ot row
                   return $ Just o
       _     -> let msg = "Expected none or a single row. Got " ++ show databaseInput
-               in  throwErr $ ImplementationTranslationError msg
+               in  DbConn.throwErr $ DbConn.ImplementationTranslationError msg
   where
     sql = SqlPlain.selectOne ot
     
@@ -145,7 +141,8 @@ selectOneWithSqlValues ot@(ObjectType {}) idAtSqlValues car =
 -------------------------------------------------------------------------------
 selectSelection :: (Database.COLUMN_NAMES atConf
                    ,Database.DATABASE_TABLE otConf
-                   ,InputExisting.INPUT_FOR_EXISTING atConf)
+                   ,InputExisting.INPUT_FOR_EXISTING atConf
+                   ,Sql.SQL_IDENTIFIER dbTable)
                 => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
                 -> Maybe (Sql.SqlExpr dbTable)
                 -- ^ SELECT that selects exactly the column that correspond
@@ -154,10 +151,9 @@ selectSelection :: (Database.COLUMN_NAMES atConf
                 -- ^ ORDER BY columns
                 -> [SqlValue]
                 -- ^ Parameters of the SELECT statement.
-                -> SqlExec.ConnectionAndRenderer
-                -> DatabaseMonad [Object otConf atConf dbTable otNative idAtExisting idAtCreate]
-selectSelection ot mbWhereExpr orderBy sqlParamsInWhereExpr car =
-  select ot sql sqlParamsInWhereExpr car
+                -> DbConn.Monad [Object otConf atConf dbTable otNative idAtExisting idAtCreate]
+selectSelection ot mbWhereExpr orderBy sqlParamsInWhereExpr =
+  select ot sql sqlParamsInWhereExpr
   where
     sql = SqlPlain.select ot mbWhereExpr orderBy
 
@@ -166,16 +162,16 @@ selectSelection ot mbWhereExpr orderBy sqlParamsInWhereExpr car =
 -- that is the result of a given SELECT statement.
 -------------------------------------------------------------------------------
 select :: (Database.COLUMN_NAMES atConf
-          ,InputExisting.INPUT_FOR_EXISTING atConf)
+          ,InputExisting.INPUT_FOR_EXISTING atConf
+          ,Sql.SQL_IDENTIFIER dbTable)
        => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
        -> Sql.SqlSelect dbTable
        -- ^ SELECT that selects exactly the column that correspond
        -- to the 'AttributeType's of the 'ObjectType'.
        -> [SqlValue]
        -- ^ Parameters of the SELECT statement.
-       -> SqlExec.ConnectionAndRenderer
-       -> DatabaseMonad [Object otConf atConf dbTable otNative idAtExisting idAtCreate]
-select ot@(ObjectType {}) sql sqlParamsInWhereExpr car =
+       -> DbConn.Monad [Object otConf atConf dbTable otNative idAtExisting idAtCreate]
+select ot sql sqlParamsInWhereExpr =
   do
-    sqlValueListList <- SqlExec.quickSelect car sql sqlParamsInWhereExpr
-    toDatabaseMonad $ mapM (InputExisting.inputObject ot) sqlValueListList
+    sqlValueListList <- SqlExec.select_lazy sql sqlParamsInWhereExpr
+    DbConn.toMonad $ mapM (InputExisting.inputObject ot) sqlValueListList

@@ -25,6 +25,7 @@ module Wilde.ObjectModel.UserInteraction.Input.ForCreate
        (
          ObjectInputResult,
          inputer,
+         inputer_plain,
          inputerAny,
          
          -- * Information about attribute types
@@ -152,6 +153,17 @@ inputer :: ATTRIBUTE_INPUT_FOR_CREATE atConf
         -> UiI.Monad (ObjectInputResult
                       (ObjectForCreate otConf atConf dbTable otNative idAtExisting idAtCreate))
 inputer ot objectName = inputerNoClass at2InfoForInputAndConstructAttribute ot objectName
+      
+inputer_plain :: ATTRIBUTE_INPUT_FOR_CREATE atConf
+        => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
+        -- ^ Type of 'Object' in the form.
+        -> ObjectName
+        -- ^ The object's name in the input form.
+        -> UiI.Monad (ObjectForCreate otConf atConf dbTable otNative idAtExisting idAtCreate)
+inputer_plain ot objectName =
+  do
+    errOrRes <- inputer ot objectName
+    either UiI.throwErr pure errOrRes 
       
 inputerNoClass :: (forall e c . AttributeType atConf dbTable e c
                    -> InfoForInputAndConstructAttribute atConf dbTable e c)

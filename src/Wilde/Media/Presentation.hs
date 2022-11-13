@@ -38,7 +38,8 @@ module Wilde.Media.Presentation
     run,
 
     -- * Monad Environment
-    Environment (..),
+    Environment,
+    newEnvironment,
     Outputing (..),
     GenericServiceLinkRenderer,
     envStandardServiceLinkRenderer,
@@ -56,8 +57,7 @@ module Wilde.Media.Presentation
 
     -- * Utilities
     ToPresentationMonad (..),
-    toPresentationMonadWithConn,
-    toPresentationMonadWithCar,
+    toPresentationMonad_wDefaultDbConn,
   )
 where
 
@@ -65,17 +65,17 @@ where
 -- - import -
 -------------------------------------------------------------------------------
 
+import Control.Monad.IO.Class
 import qualified Control.Monad as MMonad
 import qualified Control.Monad.Trans as MTrans
 import qualified Control.Monad.Trans.Except as MExcept
 import qualified Control.Monad.Trans.Reader as MReader
-import Database.HDBC.Types (ConnWrapper)
 import Wilde.Application.ServiceLink
 import qualified Wilde.Application.StandardServices as StandardServices
-import qualified Wilde.Database.Executor as DbExecutor
 import Wilde.Media.CustomEnvironment
 import Wilde.Media.Database hiding (ObjectModelError)
-import qualified Wilde.Media.Database.Monad as DBIO
+import qualified Wilde.Media.Database.Configuration as DbConf
+import qualified Wilde.Media.Database.Monad as DbConn
 import qualified Wilde.Media.ElementSet as ES
 import Wilde.Media.Translations
 import Wilde.Media.WildeMedia
@@ -84,6 +84,7 @@ import Wilde.WildeUi.StdValueTypes
 import Prelude hiding (Monad)
 
 import Wilde.Application.StandardServiceLinks
+
 
 -------------------------------------------------------------------------------
 -- - implementation -
@@ -97,9 +98,15 @@ type Result a = Either Error a
 
 data Environment = Environment
   { envCustomEnvironment :: ES.ElementSet,
-    envDbConfiguration :: DbExecutor.Configuration,
-    envOutputing :: Outputing
+    envDbConfiguration   :: DbConf.Configuration,
+    envOutputing         :: Outputing
   }
+
+newEnvironment :: ES.ElementSet
+               -> DbConf.Configuration
+               -> Outputing
+               -> Environment
+newEnvironment = Environment
 
 -- | Renders a link to a global service.
 type GenericServiceLinkRenderer = ServiceSpecification -> WildeStyling LinkLabel -> [GenericParameter] -> WildeValue.AnySVALUE
@@ -156,7 +163,7 @@ instance ToPresentationError Error where
   toError = id
 
 instance ToPresentationError TranslationError where
-  toError = DatabaseError . DBIO.toDatabaseError
+  toError = DatabaseError . DbConn.toDatabaseError
 
 instance ToPresentationError DatabaseError where
   toError = DatabaseError
@@ -189,9 +196,6 @@ instance Functor Monad where
 
 instance MTrans.MonadIO Monad where
   liftIO = Monad . MTrans.lift . MTrans.lift
-
-instance DbExecutor.MonadWithDatabaseConfiguration Monad where
-  getDatabaseConfiguration = getEnvs envDbConfiguration
 
 -- | \"Computations\" (e.g. monads) that are instances of this class
 -- can be integrated into the 'Monad'.
@@ -287,13 +291,6 @@ instance
       res <- MTrans.liftIO $ MExcept.runExceptT m
       toPresentationMonad res
 
-instance ToPresentationMonad DBIO.DatabaseMonad where
-  toPresentationMonad m =
-    do
-      custEnv <- getCustomEnvironment
-      res <- MTrans.liftIO $ DBIO.runDatabase custEnv m
-      toPresentationMonad res
-
 -- | Integrates monads of type "IO (Either err a)"
 -- into the Monad monad
 liftIOWithError ::
@@ -307,18 +304,21 @@ liftIOWithError io =
       Left err -> throwErr err
       Right ok -> return ok
 
-toPresentationMonadWithConn ::
-  (ConnWrapper -> DBIO.DatabaseMonad a) ->
+-- runDbConnMonadWithConnFromEnv_noDisconnect ::
+toPresentationMonad_wDefaultDbConn
+ ::
+  DbConn.Monad a ->
   Monad a
-toPresentationMonadWithConn f =
+toPresentationMonad_wDefaultDbConn dbm =
   do
-    conn <- DbExecutor.getDatabaseConnection
-    toPresentationMonad $ f conn
+    dbConnMonadEnv <- getDbConnMonadEnv
+    liftIOWithError $ DbConn.run dbConnMonadEnv dbm
 
-toPresentationMonadWithCar ::
-  (DbExecutor.ConnectionAndRenderer -> DBIO.DatabaseMonad a) ->
-  Monad a
-toPresentationMonadWithCar f =
-  do
-    car <- DbExecutor.getDatabaseConnectionAndRenderer
-    toPresentationMonad $ f car
+  where
+    getDbConnMonadEnv :: Monad DbConn.Environment
+    getDbConnMonadEnv = do
+      dbConf         <- getEnvs envDbConfiguration
+      let dmlRenderer = DbConf.dmlRenderer dbConf
+      conn           <- liftIO $ DbConf.connectionProvider dbConf
+      custEnv        <- getEnvs envCustomEnvironment
+      pure $ DbConn.newEnv custEnv dmlRenderer conn

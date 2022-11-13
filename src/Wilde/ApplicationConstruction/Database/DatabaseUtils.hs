@@ -47,7 +47,8 @@ import Database.HDBC
 
 import Wilde.Utils.Utils
 
-import Wilde.Media.Database.Monad
+import Wilde.Media.Database
+import qualified Wilde.Media.Database.Monad as DbConn
 
 import Wilde.ObjectModel.ObjectModelUtils
 
@@ -70,12 +71,12 @@ convertOneRowOneValue :: (SqlValue -> ConvertResult a) -- ^ Converts from SQL to
                       -> [[SqlValue]]
                       -- ^ Input from database. This is expected to be exactly one
                       -- row with exactly one value.
-                      -> DatabaseMonad a
+                      -> DbConn.Monad a
 convertOneRowOneValue converter errMsg [values] = convertOneValue converter errMsg values
 convertOneRowOneValue converter errMsg rows =
   case rows of
-    [] -> throwErr $ DbNoRows      errMsg Nothing
-    xs -> throwErr $ DbTooManyRows errMsg (Just numRowsMismatch)
+    [] -> DbConn.throwErr $ DbNoRows      errMsg Nothing
+    xs -> DbConn.throwErr $ DbTooManyRows errMsg (Just numRowsMismatch)
   where
     numRowsMismatch =
       Mismatch
@@ -91,12 +92,12 @@ convertOneValue :: (SqlValue -> ConvertResult a) -- ^ Converts from SQL to \"Has
                 -> String -- ^ Error message string
                 -> [SqlValue]
                 -- ^ Input from database. This is expected to be exactly one value.
-                -> DatabaseMonad a
+                -> DbConn.Monad a
 convertOneValue converter errMsg [sqlValue] =
     case converter sqlValue of
-      Left err -> throwErr $ DbTranslationError $ AttributeTranslationError errMsg err
+      Left err -> DbConn.throwErr $ DbTranslationError $ AttributeTranslationError errMsg err
       Right x  -> return x
-convertOneValue converter errMsg xs = throwErr $ RecordTranslationError errMsg numValuesMismatch
+convertOneValue converter errMsg xs = DbConn.throwErr $ RecordTranslationError errMsg numValuesMismatch
   where
     numValuesMismatch =
       Mismatch

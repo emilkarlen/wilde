@@ -105,12 +105,12 @@ defaultSteps ot =
       toServiceMonad $ do
         msg <- UiOm.getEnvs $ Translations.trThisIsImpossibleToUndo . UiOm.outTranslations . UiOm.envOutputing
         return $ Just msg
-  , doDeleteAndGiveMessageIfAborted = \id -> deleteObject ot id >> 
+  , doDeleteAndGiveMessageIfAborted = \id -> deleteObject ot id >>
                                              return Nothing
   }
 
 mkService :: OmGsr.ATTRIBUTE_INPUT_FOR_EXISTING atConf
-          => [AnyO (OtServiceOtSetup Config otConf atConf)] 
+          => [AnyO (OtServiceOtSetup Config otConf atConf)]
           -> AnyOtService
 mkService otss = AnyOtService $
   OtService
@@ -134,19 +134,17 @@ deleteOneMain ot (Config title steps) objectId = stepService def
     fromhaltIfImpossible :: NonLastStep
     fromhaltIfImpossible =
       do
-        mbHaltMsg <- (messageIfImpossible steps) objectId
-        case mbHaltMsg of
-          Just msg -> haltWithInformationPopup msg
-          Nothing  -> askIfcontinueOrDelete
+        mbHaltMsg <- messageIfImpossible steps objectId
+        maybe askIfcontinueOrDelete haltWithInformationPopup mbHaltMsg
 
     askIfcontinueOrDelete :: NonLastStep
     askIfcontinueOrDelete =
       do
-        mbWarnMsg <- (messageIfWarnAboutConsequences steps) objectId
+        mbWarnMsg <- messageIfWarnAboutConsequences steps objectId
         case mbWarnMsg of
           Just msg -> askIfContinueTo LastStep msg
           Nothing  -> do
-            mbAbortedMsg <- (doDeleteAndGiveMessageIfAborted steps) objectId
+            mbAbortedMsg <- doDeleteAndGiveMessageIfAborted steps objectId
             case mbAbortedMsg of
               Nothing  -> haltWithPage (title,[])
               Just msg -> haltWithInformationPopup msg
@@ -154,7 +152,7 @@ deleteOneMain ot (Config title steps) objectId = stepService def
     deleteStep :: Service
     deleteStep =
       do
-        mbAbortedMsg <- (doDeleteAndGiveMessageIfAborted steps) objectId
+        mbAbortedMsg <- doDeleteAndGiveMessageIfAborted steps objectId
         maybe
           (pageOkResult (title,[]))
           (\msg -> WildeService.popupOkResult

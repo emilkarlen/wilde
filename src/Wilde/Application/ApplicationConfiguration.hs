@@ -27,8 +27,7 @@ module Wilde.Application.ApplicationConfiguration
          
          Translations.Translations(..),
 
-         DbExecutor.Configuration(..),
-         DbExecutor.DmlExecutor,
+         DbConf.Configuration(..),
        )
        where
 
@@ -38,7 +37,7 @@ module Wilde.Application.ApplicationConfiguration
 -------------------------------------------------------------------------------
 
 
-import qualified Wilde.Database.Executor as DbExecutor
+import qualified Wilde.Media.Database.Configuration as DbConf
 import qualified Wilde.Media.Translations as Translations
 
 import Wilde.Application.ApplicationServices
@@ -61,7 +60,7 @@ data ApplicationConfiguration =
      {
        appServices                      :: ApplicationServices
      , translations                     :: Translations.Translations
-     , dbConfiguration                  :: DbExecutor.Configuration
+     , dbConfiguration                  :: DbConf.Configuration
      , standardServiceLinkRenderer      :: StandardServiceLinkRenderer
      , getStdObjectTypeServiceRenderer  :: Presentation.Monad ObjectTypeServiceLinkRenderer
      , getStdObjectServiceRenderer      :: Presentation.Monad ObjectServiceLinkRenderer

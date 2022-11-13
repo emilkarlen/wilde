@@ -20,6 +20,8 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -------------------------------------------------------------------------------
 -- | Utilities for implementing services.
 -------------------------------------------------------------------------------
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Wilde.ApplicationConstruction.Service.ServiceUtils
        (
          -- * Service Titles
@@ -55,17 +57,15 @@ module Wilde.ApplicationConstruction.Service.ServiceUtils
 
 import Data.Either
 
-import qualified Wilde.Database.Executor as SqlExec
-
 import qualified Wilde.Utils.NonEmptyList as NonEmpty
 
 import qualified Wilde.Media.ElementSet as ElementSet
 import           Wilde.Media.WildeMedia
 import qualified Wilde.Media.Database as DbM
+import qualified Wilde.Media.Database.Monad as DbConn
 import qualified Wilde.Media.Presentation as Presentation
 import           Wilde.Media.UserInteraction.Io as UiIo
 import qualified Wilde.Media.UserInteraction.Input as UiI
-import qualified Wilde.Media.Database.Monad as DbIo
 
 import Wilde.ObjectModel.ObjectModelUtils
 import qualified Wilde.ObjectModel.AttributeTypeListSetup.SansAnnotation as AttributeTypeListSetup
@@ -86,6 +86,7 @@ import qualified Wilde.ObjectModel.Presentation as Presentation
 import qualified Wilde.ObjectModel.Presentation as OmPres
 
 import Wilde.Application.Service
+import qualified Wilde.Application.Service as Service
 
 
 -------------------------------------------------------------------------------
@@ -173,9 +174,10 @@ createObject ot oName =
     case oForCreateR of
       Left err -> return $ Left err
       Right oForCreate ->
-        let myInsertAndSelect dbConn = toServiceMonad $
-                                       insertAndSelect dbConn oForCreate
-        in  withDbTransactionCar ((fmap Right) . myInsertAndSelect)
+        let myInsertAndSelect = do
+                o <- insertAndSelect oForCreate
+                pure $ Right o
+        in  Service.toServiceMonad_wDefaultDbConn $ DbConn.inTransaction myInsertAndSelect
 
 -- | See 'createObject'.
 createObjectAny :: (Database.OBJECT_TYPE_INSERT otConf
@@ -197,7 +199,7 @@ createObjectAny anyOt oName = toAnyForOtAndArg createObject (oName,anyOt)
 -- from the User Interaction media,
 -- updates the 'Object' in the database, reads it from the
 -- database including presentation info and returns it.
-updateObject :: (Database.DATABASE_TABLE otConf
+updateObject :: forall otConf atConf dbTable oNative idAtE idAtC.(Database.DATABASE_TABLE otConf
                 ,Database.COLUMNS_AND_IO_FOR_EXISTING atConf
                 ,InputForExisting.ATTRIBUTE_INPUT_FOR_EXISTING atConf
                 ,DatabaseAndPresentation.ATTRIBUTE_TYPE_INFO atConf
@@ -212,28 +214,21 @@ updateObject ot updatableAts (oName,pk) =
     attrsToUpdateResult <- inputAttributes updatableAts
     either
       theErrorAsItIs
-      (updateInDbAndReturnObjectReadFromDb ot pk)
+      (updateInDbAndReturnObjectReadFromDb pk)
       attrsToUpdateResult
     where
       theErrorAsItIs err = return $ Left err
-      
-      updateInDbAndReturnObjectReadFromDb :: (Database.DATABASE_TABLE otConf
-                                             ,Database.COLUMNS_AND_IO_FOR_EXISTING atConf
-                                             ,DatabaseAndPresentation.ATTRIBUTE_TYPE_INFO atConf
-                                             )
-                                          => ObjectType otConf atConf dbTable oNative idAtE idAtC
-                                          -> idAtE
+
+      updateInDbAndReturnObjectReadFromDb :: idAtE
                                           -> NonEmpty.List (Any (Attribute atConf dbTable))
-                                          -> ServiceMonad (ObjectInputResult 
+                                          -> ServiceMonad (ObjectInputResult
                                                            (Object otConf atConf dbTable oNative idAtE idAtC))
-      updateInDbAndReturnObjectReadFromDb ot pk attrs =
-        withDbTransactionCar $ 
-        \car -> toServiceMonad $
-                fmap Right $
-                updateAndSelect car ot pk attrs
-        
-      inputAttributes :: InputForExisting.ATTRIBUTE_INPUT_FOR_EXISTING atConf
-                      => NonEmpty.List (Any (AttributeType atConf dbTable))
+      updateInDbAndReturnObjectReadFromDb pk attrs =
+        Service.toServiceMonad_wDefaultDbConn $ DbConn.inTransaction $ do
+          o <- updateAndSelect ot pk attrs
+          pure $ Right o
+
+      inputAttributes :: NonEmpty.List (Any (AttributeType atConf dbTable))
                       -> ServiceMonad (ObjectInputResult (NonEmpty.List (Any (Attribute atConf dbTable))))
       inputAttributes ats =
         do
@@ -245,16 +240,15 @@ updateObject ot updatableAts (oName,pk) =
                 attrsSuccessfullyInput_asNonEmpty =
                   NonEmpty.mk (head attrsSuccessfullyInput) (tail attrsSuccessfullyInput)
             (x:xs) -> return $ Left $ errorInfo $ NonEmpty.mk x xs
-      
+
       errorInfo :: NonEmpty.List ElementSet.ElementLookupError
                 -> ObjectInputErrorInfo
       errorInfo errors = otUiObjectInputErrorInfo
                          (otCrossRefKey ot)
                          oName
                          errors
-      
-      inputAttribute :: InputForExisting.ATTRIBUTE_INPUT_FOR_EXISTING atConf
-                     => Any (AttributeType atConf dbTable)
+
+      inputAttribute :: Any (AttributeType atConf dbTable)
                      -> UiI.Monad (ElementSet.ElementInputResult (Any (Attribute atConf dbTable)))
       inputAttribute (Any at) =
         do
@@ -275,8 +269,8 @@ deleteObject :: (Database.DATABASE_TABLE otConf
              -> idAtE -- ^ primary key
              -> ServiceMonad (Maybe Integer)
 deleteObject ot pk =
-      withDbTransactionCar $ \car -> toServiceMonad $
-                                     DbExDelete.deleteOne ot pk car
+      Service.toServiceMonad_wDefaultDbConn $ DbConn.inTransaction $
+      DbExDelete.deleteOne ot pk
 
 
 -------------------------------------------------------------------------------
@@ -288,23 +282,21 @@ insertAndSelectAny :: (Database.OBJECT_TYPE_INSERT otConf
                       ,Database.DATABASE_IO atConf
                       ,DatabaseAndPresentation.ATTRIBUTE_TYPE_INFO atConf
                       )
-                   => SqlExec.ConnectionAndRenderer
-                   -> AnyO (ObjectForCreate otConf atConf)
-                   -> DbIo.DatabaseMonad (AnyO (Object otConf atConf))
-insertAndSelectAny car (AnyO ofc) = fmap AnyO $ insertAndSelect car ofc
+                   => AnyO (ObjectForCreate otConf atConf)
+                   -> DbConn.Monad (AnyO (Object otConf atConf))
+insertAndSelectAny (AnyO ofc) = AnyO <$> insertAndSelect ofc
 
 insertAndSelect :: (Database.OBJECT_TYPE_INSERT otConf
                    ,Database.DATABASE_IO atConf
                    ,DatabaseAndPresentation.ATTRIBUTE_TYPE_INFO atConf)
-                => SqlExec.ConnectionAndRenderer
-                -> ObjectForCreate otConf atConf dbTable oNative idAE idAC
-                -> DbIo.DatabaseMonad (Object otConf atConf dbTable oNative idAE idAC)
-insertAndSelect car ofc =
+                => ObjectForCreate otConf atConf dbTable oNative idAE idAC
+                -> DbConn.Monad (Object otConf atConf dbTable oNative idAE idAC)
+insertAndSelect ofc =
   do
-    idAtValue <- DbExInsert.insertOneGetId ofc car
-    mbObject  <- InputWithPresentation.inputOne (ofcType ofc) idAtValue car
+    idAtValue <- DbExInsert.insertOneGetId ofc
+    mbObject  <- InputWithPresentation.inputOne (ofcType ofc) idAtValue
     let errMsg = "Just inserted an object, but did not get one when trying to get it from the DB"
-    maybe (DbIo.throwErr (DbM.DbUnclassifiedError errMsg)) return mbObject
+    maybe (DbConn.throwErr (DbM.DbUnclassifiedError errMsg)) return mbObject
 
 -- | Updates one 'Object' in the database and then inputs the updated 'Object' including
 -- presentation information.
@@ -312,15 +304,13 @@ updateAndSelect :: (Database.DATABASE_TABLE otConf
                    ,Database.COLUMNS_AND_IO_FOR_EXISTING atConf
                    ,DatabaseAndPresentation.ATTRIBUTE_TYPE_INFO atConf
                    )
-                => SqlExec.ConnectionAndRenderer
-                -> ObjectType otConf atConf dbTable oNative idAE idAC
+                => ObjectType otConf atConf dbTable oNative idAE idAC
                 -> idAE
                 -> NonEmpty.List (Any (Attribute atConf dbTable))
-                -> DbIo.DatabaseMonad (Object otConf atConf dbTable oNative idAE idAC)
-updateAndSelect car ot pk attrsToUpdate =
+                -> DbConn.Monad (Object otConf atConf dbTable oNative idAE idAC)
+updateAndSelect ot pk attrsToUpdate =
   do
-    DbExUpdate.updateOne_attributes ot pk attrsToUpdate car
-    mbObject  <- InputWithPresentation.inputOne ot pk car
+    DbExUpdate.updateOne_attributes ot pk attrsToUpdate
+    mbObject  <- InputWithPresentation.inputOne ot pk
     let errMsg = "Just updated an object, but did not get one when trying to get it from the DB"
-    maybe (DbIo.throwErr (DbM.DbUnclassifiedError errMsg)) return mbObject
-
+    maybe (DbConn.throwErr (DbM.DbUnclassifiedError errMsg)) return mbObject

@@ -38,11 +38,10 @@ import Database.HDBC
 
 import qualified Wilde.Database.Sql as Sql
 
-import qualified Wilde.Database.Executor as SqlExec
+import qualified Wilde.Media.Database.Monad as DbConn
 
 import Wilde.ObjectModel.ObjectModel
 
-import Wilde.Media.Database.Monad
 
 import qualified Wilde.ObjectModel.Database.Sql.SansPresentationInfo as SqlPlain
 import qualified Wilde.ObjectModel.Database.Output as Output
@@ -67,10 +66,9 @@ deleteAll :: (Database.DATABASE_TABLE otConf
              ,Database.COLUMN_NAMES atConf
              )
           => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
-          -> SqlExec.ConnectionAndRenderer
-          -> DatabaseMonad (Maybe Integer)
-deleteAll ot@(ObjectType {}) car =
-  ExecUtils.execForWhereExpr (newDeleteDml ot) Nothing [] car
+          -> DbConn.Monad (Maybe Integer)
+deleteAll ot@(ObjectType {}) =
+  ExecUtils.execForWhereExpr (newDeleteDml ot) Nothing []
 
 -------------------------------------------------------------------------------
 -- | Deletes a selection of objects/rows.
@@ -86,10 +84,9 @@ delete :: (Database.DATABASE_TABLE otConf
        -- ^ WHERE expression.
        -> [SqlValue]
        -- ^ Parameters of the given WHERE expression.
-       -> SqlExec.ConnectionAndRenderer
-       -> DatabaseMonad (Maybe Integer)
-delete ot@(ObjectType {}) mbWhereExpr sqlParameters car =
-  ExecUtils.execForWhereExpr (newDeleteDml ot) mbWhereExpr sqlParameters car
+       -> DbConn.Monad (Maybe Integer)
+delete ot@(ObjectType {}) mbWhereExpr sqlParameters =
+  ExecUtils.execForWhereExpr (newDeleteDml ot) mbWhereExpr sqlParameters
 
 -------------------------------------------------------------------------------
 -- | Deletes the object/rows that is identified by the given
@@ -104,10 +101,9 @@ deleteOne :: (Output.DATABASE_TABLE otConf
              )
           => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
           -> idAtExisting
-          -> SqlExec.ConnectionAndRenderer
-          -> DatabaseMonad (Maybe Integer)
-deleteOne ot@(ObjectType {}) idAtValue car =
-  ExecUtils.execForIdAtObject newDeleteDml ot idAtValue ([],[]) car
+          -> DbConn.Monad (Maybe Integer)
+deleteOne ot@(ObjectType {}) idAtValue =
+  ExecUtils.execForIdAtObject newDeleteDml ot idAtValue ([],[])
 
 -------------------------------------------------------------------------------
 -- | Utility that constructs SQL DML statement for delete.
