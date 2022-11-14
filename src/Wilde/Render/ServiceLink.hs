@@ -45,7 +45,7 @@ import           Wilde.Media.WildeStyle as WS
 
 import           Wilde.WildeUi.StdValueTypes
 
-import           Wilde.Application.ServiceLink
+import           Wilde.Service.ServiceLink
 
 import Wilde.Driver.Application.Cgi.ServiceLink (href)
 

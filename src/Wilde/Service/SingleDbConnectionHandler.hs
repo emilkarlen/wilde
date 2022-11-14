@@ -1,6 +1,6 @@
 -- | Tool for creating a single connection when it is first requested,
 -- and resuing this connection in following requests.
-module Wilde.Application.SingleDbConnectionHandler
+module Wilde.Service.SingleDbConnectionHandler
 (
     Handler(..),
     newHandler,

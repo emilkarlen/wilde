@@ -39,14 +39,15 @@ module Wilde.ApplicationConstruction.StandardServices.DeleteOne
 
 import Wilde.ObjectModel.ObjectModel
 
-import qualified Wilde.Application.Service as WildeService
-import qualified Wilde.Application.PopUp as PopUp
+import qualified Wilde.Application.Service.PopUp as PopUp
 
 import qualified Wilde.Media.UserInteraction.Output as UiOm
 import qualified Wilde.Media.Translations as Translations
 
 import qualified Wilde.ObjectModel.Database as Database
 import qualified Wilde.ObjectModel.GenericStringRep as OmGsr
+
+import Wilde.Application.Service.Service as Service
 
 import Wilde.ApplicationConstruction.Service.ServiceUtils
 import Wilde.ApplicationConstruction.Service.ServiceTools
@@ -155,6 +156,6 @@ deleteOneMain ot (Config title steps) objectId = stepService def
         mbAbortedMsg <- doDeleteAndGiveMessageIfAborted steps objectId
         maybe
           (pageOkResult (title,[]))
-          (\msg -> WildeService.popupOkResult
-                   (WildeService.informationPopup msg Nothing))
+          (\msg -> Service.popupOkResult
+                   (Service.informationPopup msg Nothing))
           mbAbortedMsg

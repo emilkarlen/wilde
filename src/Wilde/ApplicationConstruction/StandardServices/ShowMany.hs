@@ -58,7 +58,7 @@ import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ObjectList
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.StandardFilterExpression as StdFilterExpr
 
 import qualified Wilde.ApplicationConstruction.StandardServices.ShowManyUtils as Utils
-import qualified Wilde.Application.Service as Service
+import qualified Wilde.Service.Monad as Service
 
 
 -------------------------------------------------------------------------------

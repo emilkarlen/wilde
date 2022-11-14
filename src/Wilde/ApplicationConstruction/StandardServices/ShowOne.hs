@@ -49,6 +49,7 @@ import qualified Wilde.ObjectModel.Database as Database
 import qualified Wilde.ObjectModel.DatabaseAndPresentation as DatabaseAndPresentation
 import qualified Wilde.ObjectModel.GenericStringRep as OmGsr
 
+import Wilde.Application.Service.Service
 import Wilde.Application.ObjectTypeService
 
 import Wilde.ApplicationConstruction.UserInteraction.Output.ObjectDependentComponent

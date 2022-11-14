@@ -49,6 +49,8 @@ import           Wilde.ObjectModel.Presentation
 import Wilde.ApplicationConstruction.UserInteraction.Output.SpecialComponents
 import Wilde.Application.ObjectTypeService
 
+import Wilde.Application.Service.Service
+
 
 -------------------------------------------------------------------------------
 -- - implementation -

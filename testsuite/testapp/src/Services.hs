@@ -29,7 +29,7 @@ import qualified Data.Map as Map
 
 import Wilde.ObjectModel.ObjectModel
 
-import Wilde.Application.Service
+import Wilde.Service.Monad
 
 import Wilde.ApplicationConstruction.StandardServices
 
@@ -38,6 +38,8 @@ import Wilde.ApplicationConstruction.Service.StepService
 import Wilde.ApplicationConstruction.Database.DatabaseUtils
 
 import qualified ObjectModel
+
+import Wilde.Application.Service.Service
 
 
 -------------------------------------------------------------------------------

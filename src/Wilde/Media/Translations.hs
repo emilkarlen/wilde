@@ -30,7 +30,7 @@ module Wilde.Media.Translations
 -------------------------------------------------------------------------------
 
 
-import qualified Wilde.Application.PopUp as PopUp
+import qualified Wilde.Application.Service.PopUp as PopUp
 
 
 -------------------------------------------------------------------------------

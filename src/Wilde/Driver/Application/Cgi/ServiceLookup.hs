@@ -40,12 +40,13 @@ import qualified Wilde.Driver.Application.Cgi.VariableNames as VariableNames
 
 import qualified Wilde.Media.UserInteraction.Output as UiOm (Outputing(..))
 import qualified Wilde.Render.Cgi.ElementSetIo as ElementSetIo
-
+import           Wilde.Service.ServiceLink
 import qualified Wilde.Application.ApplicationInput as AppInput
-import           Wilde.Application.Service
-import qualified Wilde.Application.Service as Service
+import           Wilde.Service.Monad
+import qualified Wilde.Service.Monad as Service
 import qualified Wilde.Application.ApplicationServices as AppServices
 import qualified Wilde.Application.ApplicationConfiguration as AppConf
+import Wilde.Application.Service.Service
 
 
 -------------------------------------------------------------------------------

@@ -20,7 +20,7 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -------------------------------------------------------------------------------
 -- | Structures for small dialogs, with simple questions - "pop ups".
 -------------------------------------------------------------------------------
-module Wilde.Application.PopUp
+module Wilde.Application.Service.PopUp
        (
          Message,
          Type,

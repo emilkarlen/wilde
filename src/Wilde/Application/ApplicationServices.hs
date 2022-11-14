@@ -48,10 +48,13 @@ module Wilde.Application.ApplicationServices
 
 import qualified Data.Map as Map
 
-import Wilde.Application.Service
-
 import Wilde.Media.WildeMedia
+
+import Wilde.Service.ServiceLink
+
 import Wilde.Application.ObjectTypeService as ObjectTypeService
+
+import Wilde.Application.Service.Service
 
 
 -------------------------------------------------------------------------------

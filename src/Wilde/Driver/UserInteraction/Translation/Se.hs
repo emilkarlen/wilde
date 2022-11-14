@@ -31,7 +31,7 @@ module Wilde.Driver.UserInteraction.Translation.Se
 -------------------------------------------------------------------------------
 
 
-import Wilde.Application.PopUp
+import Wilde.Application.Service.PopUp
 
 import qualified Wilde.Application.ApplicationConfiguration as AppConf
 

@@ -92,7 +92,7 @@ import qualified Wilde.Media.Presentation as Presentation
 
 import Wilde.Media.MonadWithInputMedia
 
-import qualified Wilde.Application.PopUp as PopUp
+import qualified Wilde.Application.Service.PopUp as PopUp
 import           Wilde.Media.Translations
 import qualified Wilde.Application.StandardServices as StandardServices
 

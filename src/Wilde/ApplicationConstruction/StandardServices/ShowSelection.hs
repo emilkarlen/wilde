@@ -45,7 +45,7 @@ import qualified Wilde.Database.SqlJoin as Sql
 import qualified Wilde.Media.ElementSet as ES
 
 import Wilde.Media.UserInteraction
-import qualified Wilde.Application.Service as Service
+import qualified Wilde.Service.Monad as Service
 
 import Wilde.Driver.Application.Cgi.VariableNames as VariableNames (selectExpression)
 
@@ -57,8 +57,9 @@ import qualified Wilde.ObjectModel.DatabaseAndPresentation as DatabaseAndPresent
 
 import qualified Wilde.Media.MonadWithInputMedia as MIIA
 
-import Wilde.Application.Service
+import Wilde.Service.Monad
 import Wilde.Application.ObjectTypeService
+import Wilde.Application.Service.Service
 
 import           Wilde.ApplicationConstruction.Service.StepService
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ObjectListSetup as OLS

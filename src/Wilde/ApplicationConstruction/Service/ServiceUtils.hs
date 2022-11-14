@@ -85,8 +85,8 @@ import qualified Wilde.ObjectModel.Presentation as Presentation
 
 import qualified Wilde.ObjectModel.Presentation as OmPres
 
-import Wilde.Application.Service
-import qualified Wilde.Application.Service as Service
+import Wilde.Service.Monad as Service
+import Wilde.Application.Service.Result
 
 
 -------------------------------------------------------------------------------
@@ -148,7 +148,7 @@ showOnePageService attributeTypesOrder title o =
 
 
 deleteOnePage :: ObjectType otConf atConf dbTable otN idAE idAC -> StyledTitle
-                 -> ServicePage
+              -> ServicePage
 deleteOnePage ot title = (title, [])
 
 

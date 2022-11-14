@@ -38,7 +38,7 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -------------------------------------------------------------------------------
 module Wilde.Application.ObjectTypeService
        (
-         module Wilde.Application.Service,
+         module Wilde.Service.Monad,
          module Wilde.ObjectModel.ObjectModel,
 
          -- * Representation of Object Type Services
@@ -69,7 +69,9 @@ import Data.List
 import Wilde.ObjectModel.ObjectModel
 import Wilde.ObjectModel.ObjectModelUtils
 
-import Wilde.Application.Service
+import Wilde.Service.Monad
+
+import Wilde.Application.Service.Service
 
 
 -------------------------------------------------------------------------------

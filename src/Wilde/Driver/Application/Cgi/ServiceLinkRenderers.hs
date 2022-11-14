@@ -20,7 +20,7 @@ import Wilde.Media.WildeStyleType (WildeStyling)
 import Wilde.WildeUi.StdValueTypes (LinkLabel, wwwLinkValue_dr)
 import Wilde.Driver.Application.Cgi.ServiceLink (href)
 import Wilde.Application.StandardServiceLinks
-import Wilde.Application.ServiceLink
+import Wilde.Service.ServiceLink
 
 
 -------------------------------------------------------------------------------

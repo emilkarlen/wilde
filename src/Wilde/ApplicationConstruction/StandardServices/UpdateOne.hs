@@ -74,6 +74,8 @@ import qualified Wilde.ApplicationConstruction.UserInteraction.Io as UiIo
 
 import           Wilde.Application.ObjectTypeService
 
+import           Wilde.Application.Service.Service
+
 
 -------------------------------------------------------------------------------
 -- - implementation -

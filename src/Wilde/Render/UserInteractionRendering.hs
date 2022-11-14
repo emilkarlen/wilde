@@ -48,7 +48,7 @@ import           Wilde.WildeUi.LayoutComponents
 
 import qualified Wilde.Render.Cgi.ElementSetIo as ElementSetIo
 
-import qualified Wilde.Application.PopUp as PopUp
+import qualified Wilde.Application.Service.PopUp as PopUp
 
 
 -------------------------------------------------------------------------------

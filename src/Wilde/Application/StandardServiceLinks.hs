@@ -51,7 +51,7 @@ module Wilde.Application.StandardServiceLinks
 
 
 import Wilde.Application.StandardServices
-import Wilde.Application.ServiceLink (GenericParameter)
+import Wilde.Service.ServiceLink (GenericParameter)
 import Wilde.Media.WildeValue (AnySVALUE)
 import Wilde.Media.GenericStringRep (GenericStringRep)
 import Wilde.Media.WildeMedia (CrossRefIdentifier)

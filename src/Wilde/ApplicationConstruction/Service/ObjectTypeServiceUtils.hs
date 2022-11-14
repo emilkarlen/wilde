@@ -42,8 +42,11 @@ import qualified Wilde.ObjectModel.Database as Database
 import qualified Wilde.ObjectModel.Database.Execution.SelectWithPresentationInfo as InputWithPresentation
 import qualified Wilde.ObjectModel.DatabaseAndPresentation as DatabaseAndPresentation
 
+import qualified Wilde.Service.Monad as Service
+
+import Wilde.Application.Service.Service
+
 import Wilde.ApplicationConstruction.Service.ServiceTools
-import qualified Wilde.Application.Service as Service
 
 import qualified Wilde.Driver.Application.Cgi.VariableNames as VariableNames
 

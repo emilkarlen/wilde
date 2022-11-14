@@ -34,8 +34,10 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 --
 -- 3. A complete link that can be rendered ('ServiceLink')
 -------------------------------------------------------------------------------
-module Wilde.Application.ServiceLink
+module Wilde.Service.ServiceLink
        (
+         ServiceId(..),
+
          -- * Service Links
 
          ServiceName,
@@ -89,6 +91,14 @@ import           Wilde.Media.WildeMedia (CrossRefIdentifier)
 -------------------------------------------------------------------------------
 -- - implementation -
 -------------------------------------------------------------------------------
+
+
+-- | Identifies a service.
+data ServiceId = ServiceId
+                 {
+                   sidName       :: String,
+                   sidObjectType :: Maybe String
+                 }
 
 
 -------------------------------------------------------------------------------

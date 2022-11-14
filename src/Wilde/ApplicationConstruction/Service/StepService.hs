@@ -59,11 +59,12 @@ import Wilde.Media.UserInteraction
 
 import Wilde.Render.UserInteractionRendering
 
-import qualified Wilde.Application.Service as WildeService
-import           Wilde.Application.ServiceLink
-import qualified Wilde.Application.PopUp as PopUp
+import           Wilde.Service.ServiceLink
+import qualified Wilde.Application.Service.PopUp as PopUp
 
 import Wilde.ApplicationConstruction.Service.ServiceTools
+import qualified Wilde.Application.Service.Result as Result
+import Wilde.Application.Service.Service
 
 
 -------------------------------------------------------------------------------
@@ -163,7 +164,7 @@ stepService (StepService {
           result <- step
           case result of
             Halt     (Left page) -> pageOkResult page
-            Halt     (Right msg) -> popupOkResult (WildeService.informationPopup msg Nothing)
+            Halt     (Right msg) -> popupOkResult (Result.informationPopup msg Nothing)
             Continue nextStep content -> do
               nextStepIdx <- getNextStepIdx stepIdx nextStep
               serviceForNextStep content nextStepIdx

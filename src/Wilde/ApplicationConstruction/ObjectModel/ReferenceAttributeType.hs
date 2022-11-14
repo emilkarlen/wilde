@@ -76,7 +76,7 @@ import           Wilde.Media.GenericStringRep as GenericStringRep
 
 import           Wilde.WildeUi.StdValueTypes
 
-import qualified Wilde.Application.ServiceLink as ServiceLink
+import qualified Wilde.Service.ServiceLink as ServiceLink
 
 import qualified Wilde.ApplicationConstruction.StandardServices as StandardServices
 import           Wilde.ApplicationConstruction.UserInteraction.Output.LabelAndWidget

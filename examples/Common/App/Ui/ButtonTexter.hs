@@ -4,7 +4,7 @@ module ButtonTexter
        )
        where
 
-import qualified Wilde.Application.PopUp as PopUp
+import qualified Wilde.Application.Service.PopUp as PopUp
 
 buttonText :: PopUp.Button -> String
 buttonText PopUp.Ok  = "OK"

@@ -40,7 +40,7 @@ module Wilde.Application.ObjectModelServiceLink
 import           Wilde.ObjectModel.ObjectModel
 import qualified Wilde.ObjectModel.GenericStringRep as OmGsr
 
-import qualified Wilde.Application.ServiceLink as ServiceLink
+import qualified Wilde.Service.ServiceLink as ServiceLink
 
 
 -------------------------------------------------------------------------------

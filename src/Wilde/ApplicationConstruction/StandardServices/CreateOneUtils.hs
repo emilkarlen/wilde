@@ -45,10 +45,11 @@ import qualified Wilde.ObjectModel.Presentation as Presentation
 import qualified Wilde.ObjectModel.Database as Database
 import qualified Wilde.ObjectModel.DatabaseAndPresentation as DatabaseAndPresentation
 
+import Wilde.Application.Service.Service
+
 import qualified Wilde.ApplicationConstruction.Service.ServiceUtils as ServiceUtils
 
 import qualified Wilde.ApplicationConstruction.Service.ServiceTools as ServiceTools
-import Wilde.Application.ObjectTypeService
 
 
 -------------------------------------------------------------------------------

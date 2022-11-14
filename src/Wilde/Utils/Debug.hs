@@ -41,6 +41,8 @@ import Wilde.ApplicationConstruction.Service.ServiceTools
 
 import qualified Wilde.WildeUi.StdValueTypes as StdValueTypes
 
+import Wilde.Application.Service.Service
+
 
 -------------------------------------------------------------------------------
 -- - implementation -

@@ -75,7 +75,7 @@ import qualified Wilde.Utils.ExceptReaderT as ExceptReaderT
 import qualified Wilde.Utils.Logging.Class as Logger
 import qualified Wilde.Utils.Logging.Monad as Logging
 
-import Wilde.Application.ServiceLink
+import Wilde.Service.ServiceLink
 import qualified Wilde.Application.StandardServices as StandardServices
 import Wilde.Media.CustomEnvironment
 import Wilde.Media.Database hiding (ObjectModelError)

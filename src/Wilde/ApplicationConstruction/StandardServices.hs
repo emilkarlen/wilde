@@ -51,15 +51,6 @@ module Wilde.ApplicationConstruction.StandardServices
 
          singleObjectAttributeTypeOrder,
 
-         -- * References to the standard services
-
-         -- showSelectionServiceReference,
-         -- showManyServiceReference,
-         -- showOneServiceReference,
-         -- createOneServiceReference,
-         -- deleteOneServiceReference,
-         -- createOneFromServiceReference,
-
          -- * Names of the Standard Services
 
          -- * Service references
@@ -71,11 +62,7 @@ module Wilde.ApplicationConstruction.StandardServices
 
          newObjectServiceLinkButtonConstructor,
 
-         -- showOneLinkButton,
-         -- updateOneLinkButton,
          createOneLinkButton,
-         -- createOneFromLinkButton,
-         -- deleteOneLinkButton,
          createOneLinkButtonWithFixedAttributeTypes,
 
          -- * Utilities
@@ -116,11 +103,12 @@ import qualified Wilde.ObjectModel.Database as Database
 import qualified Wilde.ObjectModel.DatabaseAndPresentation as DatabaseAndPresentation
 import qualified Wilde.ObjectModel.GenericStringRep as OmGsr
 
-import           Wilde.Application.Service (ServiceName)
+import           Wilde.Service.ServiceLink (ServiceName)
+
 import           Wilde.Application.StandardServices
 import           Wilde.Application.ObjectTypeService (OtServiceOtSetup(..))
 import           Wilde.Application.ApplicationServices
-import qualified Wilde.Application.ServiceLink as ServiceLink
+import qualified Wilde.Service.ServiceLink as ServiceLink
 import qualified Wilde.Application.ObjectModelServiceLink as OmServiceLink
 
 import           Wilde.ApplicationConstruction.UserInteraction.Output.ObjectListSetup as OLS

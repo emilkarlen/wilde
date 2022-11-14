@@ -42,12 +42,11 @@ Library
     Wilde.Application.ApplicationInput
     Wilde.Application.ObjectModelServiceLink
     Wilde.Application.ObjectTypeService
-    Wilde.Application.PopUp
-    Wilde.Application.Service
-    Wilde.Application.ServiceLink
     Wilde.Application.StandardServices
     Wilde.Application.StandardServiceLinks
-    Wilde.Application.SingleDbConnectionHandler
+    Wilde.Application.Service.PopUp
+    Wilde.Application.Service.Result
+    Wilde.Application.Service.Service
     
     Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAndDbIo
     Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAndDbIo.UserInteraction
@@ -223,6 +222,11 @@ Library
     Wilde.ObjectModel.UserInteraction.Output.ForExisting
     Wilde.ObjectModel.UserInteraction.Output.ForExistingCreateViaUi
 
+    Wilde.Service.Error
+    Wilde.Service.Monad
+    Wilde.Service.ServiceLink
+    Wilde.Service.SingleDbConnectionHandler
+    
     Wilde.Utils.ListUtils
     Wilde.Utils.TextHtmlUtils
     Wilde.Utils.Debug

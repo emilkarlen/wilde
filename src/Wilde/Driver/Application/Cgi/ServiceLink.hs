@@ -14,7 +14,7 @@ import           Wilde.WildeUi.StdValueTypes
 import qualified Wilde.Driver.Application.Cgi.VariableNames as VariableNames
 import qualified Wilde.Render.Cgi.ElementSetIo as ElmSetIo
 
-import           Wilde.Application.ServiceLink
+import           Wilde.Service.ServiceLink
 
 
 -------------------------------------------------------------------------------

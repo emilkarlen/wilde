@@ -20,7 +20,7 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -- | Tools for constructing the services of a Wilde application.
 module Wilde.ApplicationConstruction.Service.ServiceTools
        (
-         module Wilde.Application.Service,
+         module Wilde.Service.Monad,
 
          -- * Object Service
 
@@ -76,9 +76,10 @@ import qualified Wilde.ObjectModel.DatabaseAndPresentation as DatabaseAndPresent
 
 import qualified Wilde.Driver.Application.Cgi.VariableNames as VariableNames
 
-import Wilde.Application.Service
-import qualified Wilde.Application.Service as Service
-import qualified Wilde.Application.ServiceLink as ServiceLink
+import Wilde.Service.Monad
+import qualified Wilde.Service.Monad as Service
+import Wilde.Application.Service.Service
+import qualified Wilde.Service.ServiceLink as ServiceLink
 
 import qualified Wilde.ApplicationConstruction.ElementSetUtils as ESU
 
@@ -111,7 +112,7 @@ formForCurrentService formBlocksAndMetas formMetas =
 currentServiceLink :: ServiceMonad ServiceLink.ServiceLink
 currentServiceLink =
   do
-    ServiceId theServiceName theMbServiceOt <- getEnvs envCurrentService
+    ServiceLink.ServiceId theServiceName theMbServiceOt <- getEnvs envCurrentService
     mbCustomEnv <- getEnvs envCustomEnvironment
     mbObjectId <- MIIA.inInputMedia $
                   ES.lookupSingleton_optional (globalElementKey VariableNames.pk)
@@ -134,9 +135,9 @@ currentServiceLink =
 
 formForService :: FormBlocksAndMetas
                -> [Element]
-               -> ServiceId
+               -> ServiceLink.ServiceId
                -> Form
-formForService formBlocksAndMetas formMetas (ServiceId serviceName mbServiceOt) =
+formForService formBlocksAndMetas formMetas (ServiceLink.ServiceId serviceName mbServiceOt) =
   formForFormBlocksAndMetas formBlocksAndMetas formMetaValues Nothing
   where
     formMetaValues = valServiceName : valObjectType ++ formMetas :: [Element]

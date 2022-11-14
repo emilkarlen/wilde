@@ -45,14 +45,16 @@ import qualified Wilde.Media.UserInteraction.Output as UiOm
 
 import Wilde.WildeUi.StdValueTypes
 
+import           Wilde.Service.Monad
+
 import           Wilde.Render.ServiceLink
 import           Wilde.Render.RenderAsHtml
 import qualified Wilde.Driver.Application.Cgi.VariableNames as VariableNames
 
-import qualified Wilde.Application.PopUp as PopUp
-import           Wilde.Application.Service
+import qualified Wilde.Application.Service.PopUp as PopUp
 
 import Wilde.Application.ApplicationConfiguration
+import Wilde.Application.Service.Service
 
 
 -------------------------------------------------------------------------------

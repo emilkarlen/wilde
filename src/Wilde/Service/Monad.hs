@@ -37,40 +37,9 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 --
 -- TODO This module is too big.
 -------------------------------------------------------------------------------
-module Wilde.Application.Service
+module Wilde.Service.Monad
        (
          module MIIA,
-
-         -- * Service definition
-
-         ServicePage,
-         Service,
-         ServiceName,
-         ServiceId(..),
-
-         -- * Service "OK"/"normal" results
-
-         ServiceOkResult,
-         pageOkResult,
-         popupOkResult,
-         processOkResult,
-         processPopUpOkResult,
-
-         -- ** PopUps
-
-         ServicePopUp,
-
-         AskIfContinuePopUp(..),
-         askIfContinuePopup,
-
-         InformationPopUp(..),
-         informationPopup,
-
-         -- * Service "pages"
-
-         servicePageTitle,
-         servicePageStyle,
-         servicePageContents,
 
          -- * The service monad
 
@@ -120,83 +89,28 @@ import qualified Data.Map as Map
 import Database.HDBC as HDBC
 
 import qualified Wilde.Utils.ExceptReaderT as ExceptReaderT
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
 import qualified Wilde.Utils.Logging.Class as Logger
 import qualified Wilde.Utils.Logging.Monad as Logging
 import qualified Wilde.Media.MonadWithInputMedia as MIIA
 import qualified Wilde.Media.ElementSet as ES
 import           Wilde.Media.CustomEnvironment
-import           Wilde.Media.WildeMedia as WM
 import qualified Wilde.Media.Database.Configuration as DbConf
-import qualified Wilde.Media.Database as DbM
 import qualified Wilde.Media.UserInteraction.Output as UiOM
 import qualified Wilde.Media.UserInteraction.Input as UiI
 import qualified Wilde.Media.Database.Monad as DbConn
 import qualified Wilde.Media.Presentation as Presentation
-import qualified Wilde.Application.PopUp as PopUp
 
-import Wilde.Application.ServiceLink
+import Wilde.Service.ServiceLink
 
-import qualified Wilde.Application.SingleDbConnectionHandler as SingleDbConnectionHandler
+import qualified Wilde.Service.SingleDbConnectionHandler as SingleDbConnectionHandler
+
+import Wilde.Service.Error
 
 
 -------------------------------------------------------------------------------
 -- - implementation -
 -------------------------------------------------------------------------------
 
-
-data ServiceError = SInvocationError    InvocationError
-                  | DbIoError           DbM.DatabaseError
-                  | UiMediaLookupError  ES.ElementLookupError
-                  | UiObjectInputError  (NonEmpty.List ObjectInputErrorInfo)
-                  | UnclassifiedError   WM.UnclassifiedError
-                  | NormalError         String
-                  | SObjectModelError   String
-                  | ImplementationError String
-                    deriving Show
-
-data InvocationError = MandatoryVariableMissing String (Maybe [String]) -- ^ Var Name,actual value
-                     | ValueSyntax String String                        -- ^ Var Name,actual value
-                     | ValueValue  String String                        -- ^ Var Name,actual value
-                       deriving Show
-
--- | Class for the error "sub types" of ServiceError.
-class ToServiceError a where
-  toServiceError :: a -> ServiceError
-
-instance ToServiceError GeneralError where
-  toServiceError (GeneralUnclassifiedError s) = UnclassifiedError (unclassifiedError s)
-  toServiceError (GeneralObjectModelError  s) = SObjectModelError s
-
-instance ToServiceError ObjectToNativeError where
-  toServiceError = SObjectModelError . show
-
-instance ToServiceError UnclassifiedError where
-  toServiceError = UnclassifiedError
-
-instance ToServiceError InvocationError where
-  toServiceError = SInvocationError
-
-instance ToServiceError DbM.TranslationError where
-  toServiceError = DbIoError . DbM.DbTranslationError
-
-instance ToServiceError DbM.DatabaseError where
-  toServiceError = DbIoError
-
-instance ToServiceError UiOM.UserInteractionOutputError where
-  toServiceError (UiOM.DatabaseError error)        = toServiceError error
-  toServiceError (UiOM.ObjectModelError string)    = SObjectModelError string
-  toServiceError (UiOM.ImplementationError string) = ImplementationError string
-  toServiceError (UiOM.MediaLookupError info)      = UiMediaLookupError info
-  toServiceError (UiOM.UnclassifiedError error)    = toServiceError error
-
-instance ToServiceError ServiceError where
-  toServiceError = id
-
-instance ToServiceError UiI.Error where
-  toServiceError (UiI.ImplementationError string)   = ImplementationError string
-  toServiceError (UiI.UnclassifiedError   err)      = UnclassifiedError err
-  toServiceError (UiI.MediaLookupError info)        = UiMediaLookupError info
 
 -- | Corresponds to 'Control.Monad.Trans.Error's throwError.
 throwErr :: ToServiceError err
@@ -219,14 +133,6 @@ catchErr m handler =
 -------------------------------------------------------------------------------
 -- - Environment -
 -------------------------------------------------------------------------------
-
-
--- | Identifies a service.
-data ServiceId = ServiceId
-                 {
-                   sidName       :: String,
-                   sidObjectType :: Maybe String
-                 }
 
 -- | Media for inputing an attribute FROM the User Interaction.
 --
@@ -442,6 +348,7 @@ instance ToServiceMonad IO where
 -- - Executing DB monads -
 -------------------------------------------------------------------------------
 
+
 toServiceMonad_wDefaultDbConn :: DbConn.Monad a -> ServiceMonad a
 toServiceMonad_wDefaultDbConn m =
   do
@@ -453,92 +360,6 @@ toServiceMonad_wDefaultDbConn m =
     let dbConnMonadEnv   = DbConn.newEnv (envCustomEnvironment env) dmlRenderer conn logger
     res                 <- liftIO $ DbConn.run dbConnMonadEnv m
     toServiceMonad res
-
-
--------------------------------------------------------------------------------
--- - Service -
--------------------------------------------------------------------------------
-
-
-type Service = ServiceMonad ServiceOkResult
-
--- | All types of results of a service.
-data ServiceOkResult
-  = OkResultPage  ServicePage  -- ^ A simple page with custom contents.
-  | OkResultPopUp ServicePopUp -- ^ A small dialog that will "pop up".
-
--- | Processed all forms of 'ServiceOkResult'.
-processOkResult :: (ServicePage -> a)
-                -> (ServicePopUp -> a)
-                -> ServiceOkResult
-                -> a
-processOkResult processPage _ (OkResultPage x) = processPage x
-processOkResult _ processPopUp (OkResultPopUp x) = processPopUp x
-
--- | Makes the given page the result of the service.
-pageOkResult :: ServicePage -> ServiceMonad ServiceOkResult
-pageOkResult page = return $ OkResultPage page
-
--- | Makes the given popup the result of the service.
-popupOkResult :: ServicePopUp -> ServiceMonad ServiceOkResult
-popupOkResult popup = return $ OkResultPopUp popup
-
--- | All types of small "pop up" dialogs, possibly with information about how
--- to continue after the user has responded to the choices that the pop up
--- lets the user choose from.
-data ServicePopUp
-   = AskIfContinue AskIfContinuePopUp
-   | Information   InformationPopUp
-
--- | Processes all kinds of Service "pop up" results.
-processPopUpOkResult :: (AskIfContinuePopUp -> a)
-                     -> (InformationPopUp -> a)
-                     -> ServicePopUp
-                     -> a
-processPopUpOkResult processAic _ (AskIfContinue x) = processAic x
-processPopUpOkResult _ processInf (Information   x) = processInf x
-
--- | A "pop up" that asks the user wether to continue the service
--- that he/she has started or not.
-data AskIfContinuePopUp =
-    AskIfContinuePopUp
-    {
-      askIfContinueMessage      :: PopUp.Message
-    , askIfContinueContinuation :: ServiceLink
-    }
-
--- | A "pop up" that gives the user some information.
--- The service might continue or not after the message has been
--- displayed.
-data InformationPopUp =
-    InformationPopUp
-    {
-      informationMessage      :: PopUp.Message
-    , informationContinuation :: Maybe ServiceLink
-    }
-
-askIfContinuePopup :: PopUp.Message -> ServiceLink -> ServicePopUp
-askIfContinuePopup msg continuation =
-  AskIfContinue (AskIfContinuePopUp msg continuation)
-
-informationPopup :: PopUp.Message -> Maybe ServiceLink -> ServicePopUp
-informationPopup msg continuation =
-  Information (InformationPopUp msg continuation)
-
--- | A "page" that is the "result" of the execution of a service.
--- (title,style,contents)
-type ServicePage = (StyledTitle
-                   ,[AnyCOMPONENT]
-                   )
-
-servicePageTitle    :: ServicePage -> Title
-servicePageTitle (styledTitle,_) = wildeStyled styledTitle
-
-servicePageStyle    :: ServicePage -> WildeStyle
-servicePageStyle (styledTitle,_) = wildeStyle styledTitle
-
-servicePageContents :: ServicePage -> [AnyCOMPONENT]
-servicePageContents (_,c) = c
 
 
 toLogStr :: ServiceId -> String
