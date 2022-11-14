@@ -229,9 +229,14 @@ Library
     Wilde.Utils.Empty
     Wilde.Utils.NonEmptyList
     Wilde.Utils.Utils
+    Wilde.Utils.ExceptReaderT
     Wilde.Utils.AnyValue
     Wilde.Utils.AnyValue2
-    Wilde.Utils.Logging
+    Wilde.Utils.Logging.Entry
+    Wilde.Utils.Logging.Class
+    Wilde.Utils.Logging.Monad
+    Wilde.Utils.Logging.SimpleLogger
+    Wilde.Utils.Logging.NoLogging
 
 Test-Suite unit-tests
   Type:              exitcode-stdio-1.0

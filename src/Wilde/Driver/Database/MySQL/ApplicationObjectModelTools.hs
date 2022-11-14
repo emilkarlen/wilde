@@ -47,6 +47,8 @@ import Control.Monad.IO.Class
 import Database.HDBC
 import qualified Database.HDBC as HDBC
 
+import qualified Wilde.Utils.Logging.Monad as Logging
+
 import Wilde.Media.Database
 import qualified Wilde.Media.Database.Monad as DbConn
 
@@ -207,15 +209,15 @@ getAutoIncValue_optional mbValue _ = maybe getAutoIncValue' return mbValue
 getAutoIncValue' :: (Integral a,
                      Convertible SqlValue a)
                  => DbConn.Monad a
-getAutoIncValue' = DbConn.loggBeginEnd "getAutoIncValue'" $ do
+getAutoIncValue' = Logging.loggBeginEnd Logging.LIBRARY "getAutoIncValue'" $ do
   stmt <- DbConn.prepareSql_str selectLastInsertedId
-  DbConn.logg "getAutoIncValue'/HDBC.execute ..."
+  Logging.logg Logging.LIBRARY "getAutoIncValue'/HDBC.execute ..."
   liftIO $ HDBC.execute stmt []
-  DbConn.logg "getAutoIncValue'/HDBC.fetchAllRows' ..."
+  Logging.logg Logging.LIBRARY "getAutoIncValue'/HDBC.fetchAllRows' ..."
   res <- liftIO $ HDBC.fetchAllRows' stmt
-  DbConn.logg "getAutoIncValue'/HDBC.convertOneRowOneValue ..."
+  Logging.logg Logging.LIBRARY "getAutoIncValue'/HDBC.convertOneRowOneValue ..."
   retVal <- convertOneRowOneValue safeFromSql errMsg res
-  DbConn.logg "getAutoIncValue'/HDBC.convertOneRowOneValue done"
+  Logging.logg Logging.LIBRARY "getAutoIncValue'/HDBC.convertOneRowOneValue done"
   pure retVal
   where
     errMsg = "Getting generated PK via MySQLs AUTO_INCREMENT: " ++ selectLastInsertedId

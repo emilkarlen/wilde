@@ -32,6 +32,7 @@ module Wilde.ApplicationTool.Commands.DatabaseUtils
 -- - import -
 -------------------------------------------------------------------------------
 
+import qualified Wilde.Utils.Logging.NoLogging as NoLogging
 
 import qualified Wilde.Media.Database.Monad as DbConn
 import qualified Wilde.Media.Database.Exec as DbExec
@@ -98,7 +99,7 @@ customEnvironment = ES.empty
 runDatabaseMonad_inEnv :: CommandEnv om -> DbConn.Monad a -> IO a
 runDatabaseMonad_inEnv (CommandEnv { connectionProvider = getConn, dmlRenderer = renderer}) action = do
   conn <- getConn
-  let dbConnEnv = DbConn.newEnv customEnvironment renderer conn
+  let dbConnEnv = DbConn.newEnv customEnvironment renderer conn NoLogging.theLogger
   errOrResult <- DbConn.run dbConnEnv action
   either doFail pure errOrResult
   where
@@ -106,7 +107,7 @@ runDatabaseMonad_inEnv (CommandEnv { connectionProvider = getConn, dmlRenderer =
 
 runDatabaseMonad_inCar :: SqlExec.ConnectionAndRenderer -> DbConn.Monad a -> IO a
 runDatabaseMonad_inCar (SqlExec.ConnectionAndRenderer { SqlExec.carConnection = conn, SqlExec.carRenderer = renderer}) action = do
-  let dbConnEnv = DbConn.newEnv customEnvironment renderer conn
+  let dbConnEnv = DbConn.newEnv customEnvironment renderer conn NoLogging.theLogger
   errOrResult <- DbConn.run dbConnEnv action
   either doFail pure errOrResult
   where

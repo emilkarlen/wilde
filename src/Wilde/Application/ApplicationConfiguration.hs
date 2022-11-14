@@ -37,6 +37,7 @@ module Wilde.Application.ApplicationConfiguration
 -------------------------------------------------------------------------------
 
 
+import qualified Wilde.Utils.Logging.Class as Logger
 import qualified Wilde.Media.Database.Configuration as DbConf
 import qualified Wilde.Media.Translations as Translations
 
@@ -44,6 +45,7 @@ import Wilde.Application.ApplicationServices
 import Wilde.Application.StandardServices
 import qualified Wilde.Media.Presentation as Presentation
 import Wilde.Application.StandardServiceLinks
+
 
 -------------------------------------------------------------------------------
 -- - implementation -
@@ -67,4 +69,5 @@ data ApplicationConfiguration =
      , getGenericServiceLinkRenderer    :: Presentation.Monad
                                            Presentation.GenericServiceLinkRenderer
      , appCssFile                       :: Maybe String
+     , appLogger                        :: Logger.AnyLogger
      }

@@ -24,15 +24,19 @@ module ApplicationConfiguration where
 -- - import -
 -------------------------------------------------------------------------------
 
+import qualified System.IO as IO
+
+import qualified Wilde.Utils.Logging.Class as Logging
+import qualified Wilde.Utils.Logging.SimpleLogger as SimpleLogger
 
 import qualified Wilde.Application.ApplicationConfiguration as AppConf
-
-import Db.Connection as DbConn
 
 import qualified Wilde.Driver.UserInteraction.Translation.En as Tr
 import qualified Wilde.Driver.UserInteraction.StandardServiceLinkRenderer as StandardServiceLinkRenderer
 
 import qualified Wilde.Driver.Application.Cgi.ServiceLinkRenderers as CgiDriver
+
+import Db.Connection as DbConn
 
 import qualified Services
 
@@ -45,6 +49,8 @@ import qualified Services
 cssFileName :: String
 cssFileName = "wilde_test.css"
 
+logger = SimpleLogger.newLogger (IO.hPutStrLn IO.stderr) Logging.LIBRARY ""
+
 appConfig :: AppConf.ApplicationConfiguration
 appConfig =  AppConf.ApplicationConfiguration         
              {
@@ -56,4 +62,5 @@ appConfig =  AppConf.ApplicationConfiguration
              , AppConf.getStdObjectTypeServiceRenderer = CgiDriver.getStandardObjectTypeServiceLinkRenderer
              , AppConf.getStdObjectServiceRenderer     = CgiDriver.getStandardObjectServiceLinkRenderer
              , AppConf.getGenericServiceLinkRenderer   = CgiDriver.getGenericServiceLinkRenderer
+             , AppConf.appLogger                       = logger
              }

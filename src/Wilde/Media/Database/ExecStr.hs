@@ -47,7 +47,7 @@ import Control.Monad.IO.Class
 
 import Database.HDBC (SqlValue)
 import qualified Database.HDBC as HDBC
-
+import qualified Wilde.Utils.Logging.Monad as Logging
 import qualified Wilde.Media.Database.Monad as DbConnM
 -- prepare :: IConnection conn => conn -> String -> IO Statement
 -- execute :: Statement -> [SqlValue] -> IO Integer
@@ -65,10 +65,10 @@ import Wilde.Media.Database.Error
 execSql_numRows :: String -- ^ SQL DML statement
                 -> [SqlValue] -- ^ positional parameters
                 -> DbConnM.Monad Integer
-execSql_numRows sql params = DbConnM.loggBeginEnd "execSql_numRows/str" $ do
-  DbConnM.logg "execSql_numRows: prepareSql..."
+execSql_numRows sql params = Logging.loggBeginEnd Logging.LIBRARY "execSql_numRows/str" $ do
+  Logging.logg Logging.LIBRARY "execSql_numRows: prepareSql..."
   stmt <- DbConnM.prepareSql_str sql
-  DbConnM.logg "execSql_numRows: HDBC.execute..."
+  Logging.logg Logging.LIBRARY "execSql_numRows: HDBC.execute..."
   liftIO $ HDBC.execute stmt params
 
 -- | Executes a non-SELECT statement,
@@ -79,7 +79,7 @@ execSql_numRows sql params = DbConnM.loggBeginEnd "execSql_numRows/str" $ do
 execSql_numRowsMb :: String -- ^ SQL DML statement
                   -> [SqlValue] -- ^ positional parameters
                   -> DbConnM.Monad (Maybe Integer)
-execSql_numRowsMb sql params = DbConnM.loggBeginEnd "execSql_numRowsMb/str" $ do
+execSql_numRowsMb sql params = Logging.loggBeginEnd Logging.LIBRARY "execSql_numRowsMb/str" $ do
   numRows <- execSql_numRows sql params
   pure $ fixNumRows numRows
   where
@@ -92,7 +92,7 @@ execSql_numRowsMb sql params = DbConnM.loggBeginEnd "execSql_numRowsMb/str" $ do
 select_lazy :: String     -- ^ SQL SELECT statement
             -> [SqlValue] -- ^ positional parameters
             -> DbConnM.Monad [[SqlValue]]
-select_lazy sql params = DbConnM.loggBeginEnd "select_lazy/str" $ do
+select_lazy sql params = Logging.loggBeginEnd Logging.LIBRARY "select_lazy/str" $ do
   stmt <- DbConnM.prepareSql_str sql
   liftIO $ do
     HDBC.execute stmt params
@@ -101,7 +101,7 @@ select_lazy sql params = DbConnM.loggBeginEnd "select_lazy/str" $ do
 select_strict :: String     -- ^ SQL SELECT statement
               -> [SqlValue] -- ^ positional parameters
               -> DbConnM.Monad [[SqlValue]]
-select_strict sql params = DbConnM.loggBeginEnd "select_strict/str" $ do
+select_strict sql params = Logging.loggBeginEnd Logging.LIBRARY "select_strict/str" $ do
   stmt <- DbConnM.prepareSql_str sql
   liftIO $ do
     HDBC.execute stmt params
@@ -110,14 +110,14 @@ select_strict sql params = DbConnM.loggBeginEnd "select_strict/str" $ do
 insert :: String     -- ^ SQL INSERT statement
        -> [SqlValue] -- ^ positional parameters
        -> DbConnM.Monad Integer
-insert sql params = DbConnM.loggBeginEnd "insert/str" $ execSql_numRows sql params
+insert sql params = Logging.loggBeginEnd Logging.LIBRARY "insert/str" $ execSql_numRows sql params
 
 update :: String     -- ^ SQL UPDATE statement
        -> [SqlValue] -- ^ positional parameters
        -> DbConnM.Monad Integer
-update sql params = DbConnM.loggBeginEnd "update/str" $ execSql_numRows sql params
+update sql params = Logging.loggBeginEnd Logging.LIBRARY "update/str" $ execSql_numRows sql params
 
 delete :: String     -- ^ SQL DELETE statement
        -> [SqlValue] -- ^ positional parameters
        -> DbConnM.Monad Integer
-delete sql params = DbConnM.loggBeginEnd "delete/str" $ execSql_numRows sql params
+delete sql params = Logging.loggBeginEnd Logging.LIBRARY "delete/str" $ execSql_numRows sql params

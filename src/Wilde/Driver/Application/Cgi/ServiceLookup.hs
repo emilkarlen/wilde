@@ -123,6 +123,7 @@ newServiceEnvironment (AppConf.ApplicationConfiguration
                        , AppConf.getStdObjectTypeServiceRenderer = theStdObjectTypeSrvcLinkRenderer
                        , AppConf.getStdObjectServiceRenderer     = theStdObjectSrvcLinkRenderer
                        , AppConf.getGenericServiceLinkRenderer   = theGetGenericSLR
+                       , AppConf.appLogger                       = theLogger
                        }
                       )
   serviceId
@@ -131,6 +132,7 @@ newServiceEnvironment (AppConf.ApplicationConfiguration
     (ElementSetIo.customEnvironment input)
     (ElementSetIo.inputMedia        input)
     theDbConfiguration outputing
+    theLogger
   where
     outputing = UiOm.Outputing
         {

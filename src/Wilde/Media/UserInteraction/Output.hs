@@ -79,6 +79,10 @@ import Control.Monad.Trans
 import Control.Monad.Trans.Except
 import Control.Monad.Trans.Reader
 
+import qualified Wilde.Utils.ExceptReaderT as ExceptReaderT
+import qualified Wilde.Utils.Logging.Class as Logger
+import qualified Wilde.Utils.Logging.Monad as Logging
+
 import qualified Wilde.Media.ElementSet as ES
 import Wilde.Media.CustomEnvironment
 import Wilde.Media.UserInteraction
@@ -125,14 +129,22 @@ data UserInteractionOutputEnvironment =
   , envCustomEnvironment :: ES.ElementSet
   , envDbConfiguration   :: DbConf.Configuration
   , envOutputing         :: Presentation.Outputing
+  , envLogger            :: Logger.AnyLogger
   }
 
 newEnvironment :: ES.ElementSet  -- ^ media
                -> ES.ElementSet  -- ^ custom environment
                -> DbConf.Configuration
                -> Presentation.Outputing
+               -> Logger.AnyLogger
                -> UserInteractionOutputEnvironment
 newEnvironment = UserInteractionOutputEnvironment
+
+withEnv :: (UserInteractionOutputEnvironment -> UserInteractionOutputEnvironment) -> UserInteractionOutputMonad a -> UserInteractionOutputMonad a
+withEnv modifyEnv (UserInteractionOutputMonad m) = UserInteractionOutputMonad $ ExceptReaderT.withEnv modifyEnv m
+
+setLogger :: Logger.AnyLogger -> UserInteractionOutputEnvironment -> UserInteractionOutputEnvironment
+setLogger l env = env { envLogger = l }
 
 -- | Gets the 'StandardServices.StandardServiceLinkRenderer' from a
 -- 'Environment'.
@@ -175,6 +187,10 @@ instance MonadWithCustomEnvironmentAndLookup UserInteractionOutputMonad where
           ES.getElementSet = getCustomEnvironment
         , ES.throwError    = throwElementLookupError
         }
+
+instance Logging.MonadWithLogging UserInteractionOutputMonad where
+  getLogger = getEnvs envLogger
+  withLogger logger = withEnv (setLogger logger)
 
 throwElementLookupError :: ES.ElementLookupError -> UserInteractionOutputMonad a
 throwElementLookupError err = throwErr $ Presentation.MediaLookupError err
@@ -247,8 +263,11 @@ instance ToUserInteractionOutputMonad Presentation.Monad where
                  { envCustomEnvironment = theEnvCustomEnvironment
                  , envDbConfiguration   = theEnvDbConfiguration
                  , envOutputing         = theEnvOutputing
+                 , envLogger            = theLogger
                  }) =
-          Presentation.newEnvironment theEnvCustomEnvironment theEnvDbConfiguration theEnvOutputing
+          Presentation.newEnvironment
+          theEnvCustomEnvironment theEnvDbConfiguration theEnvOutputing
+          theLogger
 
 instance Presentation.ToPresentationError err => ToUserInteractionOutputMonad (Either err) where
   toUserInteractionOutputMonad (Left err) = throwErr err
@@ -284,8 +303,10 @@ toUiOMonad_wDefaultDbConn dbm =
   where
     getDbConnMonadEnv :: UserInteractionOutputMonad DbConn.Environment
     getDbConnMonadEnv = do
-      dbConf         <- getEnvs envDbConfiguration
+      env            <- getEnv
+      let dbConf      = envDbConfiguration env
       let dmlRenderer = DbConf.dmlRenderer dbConf
       conn           <- liftIO $ DbConf.connectionProvider dbConf
-      custEnv        <- getEnvs envCustomEnvironment
-      pure $ DbConn.newEnv custEnv dmlRenderer conn
+      let custEnv      = envCustomEnvironment env
+      let logger       = envLogger env
+      pure $ DbConn.newEnv custEnv dmlRenderer conn logger

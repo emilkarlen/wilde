@@ -109,27 +109,26 @@ module Wilde.Application.Service
 -------------------------------------------------------------------------------
 
 
--- LOGGING begin
-import qualified System.IO as IO
--- LOGGING end
 import Control.Monad.Trans
 import Control.Monad.Trans.Except
 import Control.Monad.Trans.Reader
+    ( ReaderT(runReaderT), ask, asks )
 
 
 import qualified Data.Map as Map
 
 import Database.HDBC as HDBC
 
+import qualified Wilde.Utils.ExceptReaderT as ExceptReaderT
 import qualified Wilde.Utils.NonEmptyList as NonEmpty
-
+import qualified Wilde.Utils.Logging.Class as Logger
+import qualified Wilde.Utils.Logging.Monad as Logging
 import qualified Wilde.Media.MonadWithInputMedia as MIIA
 import qualified Wilde.Media.ElementSet as ES
 import           Wilde.Media.CustomEnvironment
 import           Wilde.Media.WildeMedia as WM
 import qualified Wilde.Media.Database.Configuration as DbConf
 import qualified Wilde.Media.Database as DbM
-import qualified Wilde.Utils.Logging as Logging
 import qualified Wilde.Media.UserInteraction.Output as UiOM
 import qualified Wilde.Media.UserInteraction.Input as UiI
 import qualified Wilde.Media.Database.Monad as DbConn
@@ -244,13 +243,19 @@ data ServiceEnvironment =
   , envMedia             :: ES.ElementSet
   , envDbConfiguration   :: DbConf.Configuration
   , envOutputing         :: UiOM.Outputing
+  , envLogger            :: Logger.AnyLogger
   }
 
 newEnvironment :: ServiceId
                -> ES.ElementSet -- ^ custom environment
                -> ES.ElementSet -- ^ media
-               -> DbConf.Configuration -> UiOM.Outputing -> ServiceEnvironment
+               -> DbConf.Configuration -> UiOM.Outputing
+               -> Logger.AnyLogger
+               -> ServiceEnvironment
 newEnvironment = ServiceEnvironment
+
+setLogger :: Logger.AnyLogger -> ServiceEnvironment -> ServiceEnvironment
+setLogger logger env = env { envLogger = logger }
 
 -------------------------------------------------------------------------------
 -- | Guarranties that a \"cleanup\" computation is executed after
@@ -284,12 +289,15 @@ runService :: ServiceEnvironment
            -> IO (Either ServiceError a)
 runService envWMkNewDbConnOnEveryInvokation (ServiceMonad m) =
   do
-    loggIO "Service BEGIN"
+    let srvcHdrStr = toLogStr $ envCurrentService envWMkNewDbConnOnEveryInvokation
+    let logger = envLogger envWMkNewDbConnOnEveryInvokation
+    Logger.register logger (Logger.LIBRARY, srvcHdrStr ++ " BEGIN", Nothing)
     (envWDbConnHandling, doDbConnCleanup) <- dbEnvWithSingleDbConnHandling
     res <- runReaderT (runExceptT m) envWDbConnHandling
     reporting <- doDbConnCleanup
-    loggIO $ "  Db connection handling: " ++ reporting
-    loggIO "Service END"
+    let dbConnHandlingMsg = "Db connection handling: " ++ reporting
+    Logger.register logger (Logger.LIBRARY, dbConnHandlingMsg, Nothing)
+    Logger.register logger (Logger.LIBRARY, srvcHdrStr ++ " END", Nothing)
     pure res
   
   where
@@ -338,6 +346,8 @@ getEnv = ServiceMonad $ lift ask
 getEnvs :: (ServiceEnvironment -> a) -> ServiceMonad a
 getEnvs = ServiceMonad . lift . asks
 
+withEnv :: (ServiceEnvironment -> ServiceEnvironment) -> ServiceMonad a -> ServiceMonad a
+withEnv modifyEnv (ServiceMonad m) = ServiceMonad $ ExceptReaderT.withEnv modifyEnv m
 
 -------------------------------------------------------------------------------
 -- - instances of "monad interfaces" -
@@ -372,7 +382,9 @@ instance MonadWithCustomEnvironmentAndLookup ServiceMonad where
         }
 
 instance Logging.MonadWithLogging ServiceMonad where
-  logg = do_logg
+  getLogger = getEnvs envLogger
+  withLogger logger = withEnv (setLogger logger)
+
 
 throwElementLookupError :: ES.ElementLookupError -> ServiceMonad a
 throwElementLookupError err = throwErr $ UiMediaLookupError err
@@ -399,7 +411,8 @@ instance ToServiceMonad Presentation.Monad where
     do
       env        <- getEnv
       let presEnv = Presentation.newEnvironment
-                    (envCustomEnvironment env) (envDbConfiguration env) (envOutputing env)
+                    (envCustomEnvironment env) (envDbConfiguration env)
+                    (envOutputing env) (envLogger env)
       result     <- liftIO $ Presentation.run presEnv m
       toServiceMonad result
 
@@ -409,7 +422,7 @@ instance ToServiceMonad UiOM.UserInteractionOutputMonad where
       env        <- getEnv
       let uiomEnv = UiOM.newEnvironment
                     (envMedia env) (envCustomEnvironment env)
-                    (envDbConfiguration env) (envOutputing env)
+                    (envDbConfiguration env) (envOutputing env) (envLogger env)
       result     <- liftIO $ UiOM.run uiomEnv uiom
       toServiceMonad result
 
@@ -433,10 +446,11 @@ toServiceMonad_wDefaultDbConn :: DbConn.Monad a -> ServiceMonad a
 toServiceMonad_wDefaultDbConn m =
   do
     env                 <- getEnv
+    let logger           = envLogger env
     let dbConf           = envDbConfiguration env
     conn                <- liftIO $ DbConf.connectionProvider dbConf
     let dmlRenderer      = DbConf.dmlRenderer dbConf
-    let dbConnMonadEnv   = DbConn.newEnv (envCustomEnvironment env) dmlRenderer conn
+    let dbConnMonadEnv   = DbConn.newEnv (envCustomEnvironment env) dmlRenderer conn logger
     res                 <- liftIO $ DbConn.run dbConnMonadEnv m
     toServiceMonad res
 
@@ -527,13 +541,5 @@ servicePageContents :: ServicePage -> [AnyCOMPONENT]
 servicePageContents (_,c) = c
 
 
--------------------------------------------------------------------------------
--- - logging -
--------------------------------------------------------------------------------
-
-
-do_logg :: String -> ServiceMonad ()
-do_logg = liftIO . loggIO
-
-loggIO :: String -> IO ()
-loggIO s = IO.hPutStrLn IO.stderr $ "Service." ++ s
+toLogStr :: ServiceId -> String
+toLogStr (ServiceId srvc mbOt) = "Service " ++ srvc ++ maybe "" (\ot -> "/" ++ ot) mbOt

@@ -61,13 +61,8 @@ module Wilde.Media.Database.Monad
 
 
 import Prelude hiding (Monad)
-import qualified System.IO as IO
 import qualified Control.Monad.Error.Class as ME
 import qualified Control.Monad as MMonad
-
--- LOGGING begin
--- import qualified System.IO as IO
--- LOGGING end
 
 import Control.Monad.Trans
 import Control.Monad.Trans.Except
@@ -76,11 +71,12 @@ import Control.Monad.Trans.Reader
 import Data.Convertible.Base
 
 import qualified Database.HDBC as HDBC
--- prepare :: IConnection conn => conn -> String -> IO Statement
--- execute :: Statement -> [SqlValue] -> IO Integer
+
+import qualified Wilde.Utils.ExceptReaderT as ExceptReaderT
+import qualified Wilde.Utils.Logging.Monad as Logging
+import qualified Wilde.Utils.Logging.Class as Logger
 
 import Wilde.Media.Database
-import qualified Wilde.Utils.Logging as Logging
 import Wilde.Media.Database.Error
 
 import Wilde.Database.Sql
@@ -100,6 +96,7 @@ data Environment = Environment
     envCustEnv     :: ES.ElementSet
   , envSqlRenderer :: SqlDmlStatement SqlIdentifier -> String
   , envDbConn      :: HDBC.ConnWrapper
+  , envLogger      :: Logger.AnyLogger
   }
 
 -- | Constructor of `Environment`.
@@ -108,8 +105,15 @@ data Environment = Environment
 newEnv :: ES.ElementSet -- ^ custom environment
        -> (SqlDmlStatement SqlIdentifier -> String) -- ^ SQL renderer
        -> HDBC.ConnWrapper -- ^ db connection
+       -> Logger.AnyLogger
        -> Environment
 newEnv = Environment
+
+withEnv :: (Environment -> Environment) -> Monad a -> Monad a
+withEnv modifyEnv (Monad m) = Monad $ ExceptReaderT.withEnv modifyEnv m
+
+setLogger :: Logger.AnyLogger -> Environment -> Environment
+setLogger l env = env { envLogger = l }
 
 
 -------------------------------------------------------------------------------
@@ -166,7 +170,8 @@ instance MonadWithCustomEnvironment Monad where
 
 
 instance Logging.MonadWithLogging Monad where
-  logg = do_logg
+  getLogger = getEnv envLogger
+  withLogger logger = withEnv (setLogger logger)
 
 
 -------------------------------------------------------------------------------
@@ -245,13 +250,13 @@ prepareSql :: SQL_IDENTIFIER col
 prepareSql sql = do
   (conn, sqlRenderer) <- getEnvConnAndSqlRenderer
   let sqlString = sqlRenderer $ fmap sqlIdentifier sql
-  Logging.logg $ "prepareSql:\n" ++ sqlString
+  Logging.logg_ Logger.LIBRARY "prepareSql:" (Just sqlString)
   liftIO $ HDBC.prepare conn sqlString
 
 prepareSql_str :: String -- ^ SQL statement
                -> Monad HDBC.Statement
 prepareSql_str sql = do
-  Logging.logg $"prepareSql_str:\n" ++ sql
+  Logging.logg_ Logger.LIBRARY "prepareSql_str:" (Just sql)
   conn <- getEnvConn
   liftIO $ HDBC.prepare conn sql
 

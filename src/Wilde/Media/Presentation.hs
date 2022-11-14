@@ -70,6 +70,11 @@ import qualified Control.Monad as MMonad
 import qualified Control.Monad.Trans as MTrans
 import qualified Control.Monad.Trans.Except as MExcept
 import qualified Control.Monad.Trans.Reader as MReader
+
+import qualified Wilde.Utils.ExceptReaderT as ExceptReaderT
+import qualified Wilde.Utils.Logging.Class as Logger
+import qualified Wilde.Utils.Logging.Monad as Logging
+
 import Wilde.Application.ServiceLink
 import qualified Wilde.Application.StandardServices as StandardServices
 import Wilde.Media.CustomEnvironment
@@ -90,6 +95,7 @@ import Wilde.Application.StandardServiceLinks
 -- - implementation -
 -------------------------------------------------------------------------------
 
+
 -------------------------------------------------------------------------------
 -- * Environment
 -------------------------------------------------------------------------------
@@ -97,16 +103,25 @@ import Wilde.Application.StandardServiceLinks
 type Result a = Either Error a
 
 data Environment = Environment
-  { envCustomEnvironment :: ES.ElementSet,
-    envDbConfiguration   :: DbConf.Configuration,
-    envOutputing         :: Outputing
+  {
+    envCustomEnvironment :: ES.ElementSet
+  , envDbConfiguration   :: DbConf.Configuration
+  , envOutputing         :: Outputing
+  , envLogger            :: Logger.AnyLogger
   }
 
 newEnvironment :: ES.ElementSet
                -> DbConf.Configuration
                -> Outputing
+               -> Logger.AnyLogger
                -> Environment
 newEnvironment = Environment
+
+setLogger :: Logger.AnyLogger -> Environment -> Environment
+setLogger logger env = env { envLogger = logger }
+
+withEnv :: (Environment -> Environment) -> Monad a -> Monad a
+withEnv modifyEnv (Monad m) = Monad $ ExceptReaderT.withEnv modifyEnv m
 
 -- | Renders a link to a global service.
 type GenericServiceLinkRenderer = ServiceSpecification -> WildeStyling LinkLabel -> [GenericParameter] -> WildeValue.AnySVALUE
@@ -154,6 +169,11 @@ instance MonadWithCustomEnvironmentAndLookup Monad where
 
 throwElementLookupError :: ES.ElementLookupError -> Monad a
 throwElementLookupError err = throwErr $ MediaLookupError err
+
+
+instance Logging.MonadWithLogging Monad where
+  getLogger = getEnvs envLogger
+  withLogger logger = withEnv (setLogger logger)
 
 -- | Class for the error "sub types" of Error.
 class ToPresentationError a where
@@ -317,8 +337,10 @@ toPresentationMonad_wDefaultDbConn dbm =
   where
     getDbConnMonadEnv :: Monad DbConn.Environment
     getDbConnMonadEnv = do
-      dbConf         <- getEnvs envDbConfiguration
+      env            <- getEnv
+      let dbConf       = envDbConfiguration env
       let dmlRenderer = DbConf.dmlRenderer dbConf
       conn           <- liftIO $ DbConf.connectionProvider dbConf
-      custEnv        <- getEnvs envCustomEnvironment
-      pure $ DbConn.newEnv custEnv dmlRenderer conn
+      let custEnv      = envCustomEnvironment env
+      let logger       = envLogger env
+      pure $ DbConn.newEnv custEnv dmlRenderer conn logger
