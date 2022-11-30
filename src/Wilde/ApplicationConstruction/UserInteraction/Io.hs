@@ -30,7 +30,7 @@ module Wilde.ApplicationConstruction.UserInteraction.Io
 
          uiIo_convertibleFromInteger,
          uiIo_convertibleFromInteger_optional,
-         
+
          uiIo_mandatory,
          uiIo_optional,
 
@@ -40,14 +40,14 @@ module Wilde.ApplicationConstruction.UserInteraction.Io
          uiIo_asString,
          uiIo_asTextArea,
          uiIo_asDropDown_optional,
-         
+
          -- * Utilities
-         
+
          readConvertibleFromInteger_expr,
-         
+
          uiIo_optional_from_mandatory,
          uiIo_forStringConvertible,
-         
+
          parseEnum_optional,
          renderAttributeUiDefaultForCreate,
          renderAttributeUiDefaultForCreate_optionalOnCreate,
@@ -70,12 +70,12 @@ module Wilde.ApplicationConstruction.UserInteraction.Io
 
 import Data.Convertible.Base
 
+import qualified Data.Char as Char
+
 import Data.Word
 import Data.Int
 
 import Data.Time
-
---import System.Locale
 
 import Control.Monad.IO.Class
 
@@ -83,7 +83,7 @@ import Wilde.Utils.Utils
 
 import Wilde.GenericUi.Value
 
-import Wilde.Media.ElementSet
+import Wilde.Media.ElementSet as ES
 import qualified Wilde.ApplicationConstruction.ElementSetUtils as ESU
 
 import           Wilde.Media.UserInteraction.Output
@@ -98,6 +98,7 @@ import Wilde.ApplicationConstruction.UserInteraction.Input.UserInteractionInpute
 import qualified Wilde.ApplicationConstruction.UserInteraction.Input.DateParser as DateParser
 
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.LabelAndWidget as LabelAndWidget
+import qualified Wilde.ApplicationConstruction.UserInteraction.Input.SyntaxCheck as SyntaxCheck
 
 
 -------------------------------------------------------------------------------
@@ -210,11 +211,17 @@ uiIo_Integer_optional inputWidth = uiIo_asString_optional inputWidth True show r
 
 uiIo_Date  :: Int -- ^ Input width
            -> AttributeTypeUserInteractionIo Day Day
-uiIo_Date = uiIo_mandatory
+uiIo_Date inputWidth = uiIo_asString inputWidth True show readUiiMonad_Date
+
+readUiiMonad_Date :: ElementKey -> ElementValue -> ElementInputResult Day
+readUiiMonad_Date ek singletonValue =
+  if SyntaxCheck.checkDate singletonValue
+    then readUiiMonad ek singletonValue
+    else Left (ek,InvalidSyntax,Just singletonValue)
 
 uiIo_Date_optional :: Int
                    -> AttributeTypeUserInteractionIo (Maybe Day) (Maybe Day)
-uiIo_Date_optional = uiIo_optional
+uiIo_Date_optional inputWidth = uiIo_asString_optional inputWidth True show readUiiMonad_Date
 
 -- | Parses a date using 'DateParser.parseEmlFormat', with
 -- current date and the default locale ('defaultTimeLocale').
@@ -337,8 +344,8 @@ uiIo_asString_optional inputWidth trimAndEmptyNothing renderValue parseString =
    AttributeTypeUserInteractionIo
    {
      atuiioCreateIo = UserInteractionIo
-                      { uiOutputer = \attributeName ->  return $ 
-                                     output 
+                      { uiOutputer = \attributeName ->  return $
+                                     output
                                      (renderAttributeUiDefaultForCreate_optional renderValue)
                                      attributeName
                       , uiInputer  = \attributeName -> attrInput_optional trimAndEmptyNothing parseString attributeName
@@ -369,7 +376,7 @@ uiIo_optional_from_mandatory atUiIo@(AttributeTypeUserInteractionIo {
                        }
   }
   where
-    outputerCreate = \attributeName -> 
+    outputerCreate = \attributeName ->
       do
         mandatoryOutputer <- mandatoryOutpCreate attributeName
         return $ \mbDefault objectName ->
@@ -446,6 +453,12 @@ parseEnum_optional values ek valueAsString =
                    (const $ return (Just v))
                    (lookup v values)
 
+trimAndEmptyIsMissing :: ES.Parser String String
+trimAndEmptyIsMissing input =
+  case dropWhile Char.isSpace input of
+    [] -> Left ValueMissing
+    s  -> return s
+
 uiIo_forStringConvertible :: (forall defaultValue . LabelAndWidget.AttrOutputAsString defaultValue)
                           -> Bool -- ^ Trim input, and treat an empty string as if a value is missing.
                           -> (a -> String)
@@ -464,7 +477,7 @@ uiIo_forStringConvertible attrOutputForDefault trimAndEmptyIsMissing
          , uiInputer = \attributeName -> attrInput trimAndEmptyIsMissing parseString attributeName
          },
 
-      atuiioExistingIo = 
+      atuiioExistingIo =
         UserInteractionIo
         { uiOutputer = \attributeName -> return $
                                          output

@@ -31,6 +31,7 @@ Library
     html          ==1.0.1.2,
     HTTP          ==4000.3.16,
     wai           ==3.2.3,
+    text          ==1.2.5.0,
     bytestring    ==0.10.12.1,
     utf8-string   ==1.0.2,
     http-types    ==0.12.3,
@@ -72,6 +73,7 @@ Library
     Wilde.ApplicationConstruction.UserInteraction.Input.WildeSqlInputer
     Wilde.ApplicationConstruction.UserInteraction.Input.SqlExprParser
     Wilde.ApplicationConstruction.UserInteraction.Input.ParsedSqlExpr2WildeSqlExpr
+    Wilde.ApplicationConstruction.UserInteraction.Input.SyntaxCheck
     Wilde.ApplicationConstruction.UserInteraction.Output.LabelAndWidget
     Wilde.ApplicationConstruction.UserInteraction.Output.ObjectListSetup
     Wilde.ApplicationConstruction.UserInteraction.Output.ReferringObjectsComponent
@@ -169,12 +171,26 @@ Library
     Wilde.Database.BackEndDdl
     Wilde.Database.DmlRendering
 
+    Wilde.Driver.Application.Types
+    Wilde.Driver.Application.Utils
+
+    Wilde.Driver.Application.Wai.Utils
+
     Wilde.Driver.Application.Cgi.CgiHtml
     Wilde.Driver.Application.Cgi.ServiceLink
     Wilde.Driver.Application.Cgi.ServiceLookup
     Wilde.Driver.Application.Cgi.Wai
     Wilde.Driver.Application.Cgi.VariableNames
     Wilde.Driver.Application.Cgi.ServiceLinkRenderers
+
+    Wilde.Driver.Application.WaiServer.RequestHandling.Types
+    Wilde.Driver.Application.WaiServer.RequestHandling.File.Handler
+    Wilde.Driver.Application.WaiServer.RequestHandling.File.PathHandling
+    Wilde.Driver.Application.WaiServer.RequestHandling.File.Types
+    Wilde.Driver.Application.WaiServer.RequestHandling.Service.Handler
+    Wilde.Driver.Application.WaiServer.RequestHandling.Main.RequestTypeResolving
+    Wilde.Driver.Application.WaiServer.RequestHandling.Main.Handler
+    Wilde.Driver.Application.WaiServer.Application
 
     Wilde.Driver.Application.Html
     Wilde.Driver.Database.MySQL.Renderer
@@ -234,6 +250,7 @@ Library
     Wilde.Utils.NonEmptyList
     Wilde.Utils.Utils
     Wilde.Utils.ExceptReaderT
+    Wilde.Utils.Monad
     Wilde.Utils.AnyValue
     Wilde.Utils.AnyValue2
     Wilde.Utils.Logging.Entry
@@ -252,19 +269,27 @@ Test-Suite unit-tests
     TestResources.UserInteractionOutputMonadUtils
     TestResources.TestData
     TestResources.ReferenceObjectType
-    Wilde.DdlUtils
-    Wilde.Media.Test
-    Wilde.Media.ElementTest
-    Wilde.Media.ElementSetTest
-    Wilde.Render.Cgi.ElementSetIoTest
-    Wilde.ApplicationTool.ApplicationToolTest
-    Wilde.ApplicationConstruction.StandardServices.WildeSqlInputerTest
-    Wilde.ApplicationConstruction.ObjectTypeTest
-    Wilde.ApplicationConstruction.SqlExprParserTest
-    Wilde.Utils.ListUtilsTest
-    TestApplication
+    TestResources.Environment
+    WildeTest.DdlUtils
+    WildeTest.Media.Test
+    WildeTest.Media.ElementTest
+    WildeTest.Media.ElementSetTest
+    WildeTest.Render.Cgi.ElementSetIoTest
+    WildeTest.ApplicationTool.ApplicationToolTest
+    WildeTest.ApplicationConstruction.StandardServices.WildeSqlInputerTest
+    WildeTest.ApplicationConstruction.AttributeTypeTest
+    WildeTest.ApplicationConstruction.SqlExprParserTest
+    WildeTest.Utils.ListUtilsTest
+    WildeTest.Driver.Tests
+    WildeTest.Driver.WaiServer.Tests
+    WildeTest.Driver.WaiServer.RequestHandlerResolving
+    WildeTest.Driver.WaiServer.FilePathHandling.TestResources
+    WildeTest.Driver.WaiServer.FilePathHandling.Tests
+    WildeTest.Driver.WaiServer.FilePathHandling.PathIsValid
+    WildeTest.Driver.WaiServer.FilePathHandling.ResolveMimeType
 
   Build-Depends:
+    wilde         ,
     HUnit,
     base          ,
     containers    ,
@@ -280,7 +305,11 @@ Test-Suite unit-tests
     html          ,
     cgi           ,
     bytestring    ,
+    blaze-builder ,
     HTTP          ,
     HDBC          ,
-    HDBC-odbc     
+    -- HDBC-odbc     ,
+    HDBC-mariadb  ,
+    text
+
   Default-Language:  Haskell2010

@@ -17,7 +17,11 @@ You should have received a copy of the GNU General Public License
 along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
-module Main where
+module WildeTest.ObjectModel.UserInteraction.Output.Test
+       (
+         theTest,
+       )
+       where
 
 
 -------------------------------------------------------------------------------
@@ -25,19 +29,10 @@ module Main where
 -------------------------------------------------------------------------------
 
 
-import qualified Blaze.ByteString.Builder.Char8 as BChar8
-import qualified Data.ByteString.Char8 as Char8
 
-import qualified Data.Text.Encoding as TE
+import Test.HUnit
 
-import Wilde.Driver.Application.Cgi.Wai
-
-import ApplicationConfiguration
-
-import Database.HDBC.MariaDB as Db
-
-import qualified Network.Wai as Wai
-import qualified Network.Wai.Handler.CGI as WaiCGI
+import qualified WildeTest.ObjectModel.UserInteraction.Output.CommonTest
 
 
 -------------------------------------------------------------------------------
@@ -45,18 +40,5 @@ import qualified Network.Wai.Handler.CGI as WaiCGI
 -------------------------------------------------------------------------------
 
 
-systemConfiguration :: SystemConfiguration
-systemConfiguration = SystemConfiguration
-  {
-    contentEncoder  = BChar8.fromString
-  , queryVarDecoder = Char8.unpack
-                      -- , queryVarDecoder = UTF8.toString
-  , queryTDecoder   = TE.decodeUtf8
-  , contentTEncoder = TE.encodeUtf8Builder
-  }
-
-waiApp :: Wai.Application
-waiApp = newApplication systemConfiguration appConfig
-
-main :: IO ()
-main = Db.withRTSSignalsBlocked $ WaiCGI.run waiApp
+theTest :: Test
+theTest = WildeTest.ObjectModel.UserInteraction.Output.CommonTest.theTest

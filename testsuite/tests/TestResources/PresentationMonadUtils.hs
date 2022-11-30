@@ -44,6 +44,8 @@ import qualified Wilde.Media.ElementSet as ES
 import qualified Wilde.Driver.UserInteraction.Translation.En as Tr
 import qualified Wilde.Driver.UserInteraction.StandardServiceLinkRenderer as StandardServiceLinkRenderer
 
+import qualified TestResources.Environment as Env
+
 
 -------------------------------------------------------------------------------
 -- - implementation -
@@ -55,12 +57,7 @@ import qualified Wilde.Driver.UserInteraction.StandardServiceLinkRenderer as Sta
 -- Especially, getting a database connection results in an error.
 emptyEnv :: Presentation.Environment
 emptyEnv =
-  Presentation.Environment
-  {
-    Presentation.envCustomEnvironment = ES.empty
-  , Presentation.envDbConfiguration   = error "noMediaAndNoConnection does not have access to database connections"
-  , Presentation.envOutputing         = emptyOutputing
-  }
+  Presentation.newEnvironment ES.empty Env.emptyDbConfig emptyOutputing Env.emptyLogging
 
 
 emptyOutputing :: Outputing

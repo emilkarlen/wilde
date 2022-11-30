@@ -31,6 +31,7 @@ common common-properties
     utf8-string,
     wai-extra,
     blaze-builder,
+    text,
     http-types,
     wai,
     HDBC,
@@ -57,7 +58,8 @@ Executable testapp-wai-warp
   import:  common-properties
   Main-is: testapp-wai-warp.hs
   Build-Depends:
-    warp == 3.3.21
+    warp == 3.3.21,
+    text
 
 Executable testapp-tool
   import:  common-properties

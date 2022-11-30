@@ -24,6 +24,9 @@ module TestResources.AssertUtils
          failOnNothing,
          
          checkMaybes,
+
+         isLeft,
+         isRight,
          checkEithers,
        )
        where
@@ -35,6 +38,7 @@ module TestResources.AssertUtils
 
 
 import Test.HUnit.Base (Assertion,assertFailure)
+import Test.HUnit.Lang (FailureReason(..), formatFailureReason)
 
 
 -------------------------------------------------------------------------------
@@ -53,8 +57,14 @@ failOnError assertionOnOk (Right x)  = assertionOnOk x
 failOnNothing :: (a -> Assertion)
                -> Maybe a
                -> Assertion
-failOnNothing _             Nothing    = assertFailure $ "Nothing: Expected Just something"
+failOnNothing _             Nothing    = assertFailure "Nothing: Expected Just something"
 failOnNothing assertionOnJust (Just x) = assertionOnJust x
+
+
+-------------------------------------------------------------------------------
+-- - Maybe -
+-------------------------------------------------------------------------------
+
 
 checkMaybes :: (String -> a -> a -> Assertion)
                -- ^ Assertion on two Just values.
@@ -83,6 +93,27 @@ checkMaybes _ showVal header (Just expected) Nothing = assertFailure msg
           "got: Nothing"
 checkMaybes assertOnJusts showVal header (Just expected) (Just actual) =
   assertOnJusts header expected actual
+
+
+-------------------------------------------------------------------------------
+-- - Either -
+-------------------------------------------------------------------------------
+
+
+isLeft :: Show b => Either a b -> Assertion
+isLeft (Right y) = assertFailure $ formatFailureReason failure
+  where
+    failure :: FailureReason
+    failure =  ExpectedButGot Nothing "Left <anything>" $ show (Right (show y) :: Either () String)
+isLeft _ = pure ()
+
+
+isRight :: Show a => Either a b -> Assertion
+isRight (Left x) = assertFailure $ formatFailureReason failure
+  where
+    failure :: FailureReason
+    failure =  ExpectedButGot Nothing "Right <anything>" $ show (Left (show x) :: Either String ())
+isRight _ = pure ()
 
 
 checkEithers :: (String -> l -> l -> Assertion)

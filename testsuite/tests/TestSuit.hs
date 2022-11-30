@@ -30,14 +30,17 @@ module TestSuit
 -------------------------------------------------------------------------------
 
 
+import Control.Monad
+
 import Test.HUnit
 
-import Wilde.Utils.ListUtilsTest
-import Wilde.ObjectModel.Test
-import Wilde.Media.Test
-import Wilde.Render.Cgi.ElementSetIoTest
-import Wilde.ApplicationConstruction.Test
-import Wilde.ApplicationTool.ApplicationToolTest
+import WildeTest.Utils.ListUtilsTest
+import WildeTest.ObjectModel.Test
+import WildeTest.Media.Test
+import WildeTest.Render.Cgi.ElementSetIoTest
+import WildeTest.ApplicationConstruction.Test
+import WildeTest.ApplicationTool.ApplicationToolTest
+import WildeTest.Driver.Tests
 
 
 -------------------------------------------------------------------------------
@@ -46,13 +49,14 @@ import Wilde.ApplicationTool.ApplicationToolTest
 
 
 suit = TestList
-       [ Wilde.Utils.ListUtilsTest.theTest
-       , Wilde.ObjectModel.Test.theTest
-       , Wilde.Media.Test.theTest
-       , Wilde.Render.Cgi.ElementSetIoTest.theTest
-       , Wilde.ApplicationConstruction.Test.theTest
-       , Wilde.ApplicationTool.ApplicationToolTest.theTest
+       [ WildeTest.Utils.ListUtilsTest.theTest
+       , WildeTest.ObjectModel.Test.theTest
+       , WildeTest.Media.Test.theTest
+       , WildeTest.Render.Cgi.ElementSetIoTest.theTest
+       , WildeTest.ApplicationConstruction.Test.theTest
+       , WildeTest.ApplicationTool.ApplicationToolTest.theTest
+       , WildeTest.Driver.Tests.theTest
        ]
 
 runSuit :: IO ()
-runSuit = runTestTT suit >> return ()
+runSuit = void $ runTestTT suit

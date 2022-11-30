@@ -1,7 +1,7 @@
 {-
 Copyright 2013 Emil Karlén.
 
-This file is part of Wilde.
+This file is part of WildeTest.
 
 Wilde is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,7 +17,11 @@ You should have received a copy of the GNU General Public License
 along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
-module Main where
+module WildeTest.ApplicationConstruction.Test
+       (
+         theTest,
+       )
+       where
 
 
 -------------------------------------------------------------------------------
@@ -25,19 +29,13 @@ module Main where
 -------------------------------------------------------------------------------
 
 
-import qualified Blaze.ByteString.Builder.Char8 as BChar8
-import qualified Data.ByteString.Char8 as Char8
+import Test.HUnit
 
-import qualified Data.Text.Encoding as TE
-
-import Wilde.Driver.Application.Cgi.Wai
-
-import ApplicationConfiguration
-
-import Database.HDBC.MariaDB as Db
-
-import qualified Network.Wai as Wai
-import qualified Network.Wai.Handler.CGI as WaiCGI
+import qualified WildeTest.ApplicationConstruction.AttributeTypeTest
+import qualified WildeTest.ApplicationConstruction.SqlExprParserTest
+import qualified WildeTest.ApplicationConstruction.DateParserTest
+import qualified WildeTest.ApplicationConstruction.AttributeTypesListFooterTest
+import qualified WildeTest.ApplicationConstruction.StandardServices.WildeSqlInputerTest
 
 
 -------------------------------------------------------------------------------
@@ -45,18 +43,10 @@ import qualified Network.Wai.Handler.CGI as WaiCGI
 -------------------------------------------------------------------------------
 
 
-systemConfiguration :: SystemConfiguration
-systemConfiguration = SystemConfiguration
-  {
-    contentEncoder  = BChar8.fromString
-  , queryVarDecoder = Char8.unpack
-                      -- , queryVarDecoder = UTF8.toString
-  , queryTDecoder   = TE.decodeUtf8
-  , contentTEncoder = TE.encodeUtf8Builder
-  }
-
-waiApp :: Wai.Application
-waiApp = newApplication systemConfiguration appConfig
-
-main :: IO ()
-main = Db.withRTSSignalsBlocked $ WaiCGI.run waiApp
+theTest = TestList
+          [ WildeTest.ApplicationConstruction.AttributeTypeTest.theTest
+          , WildeTest.ApplicationConstruction.SqlExprParserTest.theTest
+          , WildeTest.ApplicationConstruction.DateParserTest.theTest
+          , WildeTest.ApplicationConstruction.AttributeTypesListFooterTest.theTest
+          , WildeTest.ApplicationConstruction.StandardServices.WildeSqlInputerTest.theTest
+          ]

@@ -37,12 +37,17 @@ module TestResources.UserInteractionOutputMonadUtils
 import Test.HUnit.Base (Assertion)
 
 import Wilde.Media.UserInteraction.Output
+import qualified Wilde.Media.Database.Configuration as DbConf
+import qualified Wilde.Utils.Logging.Class as Logger
 
 import qualified Wilde.Media.ElementSet as ES
 
 import qualified Wilde.Driver.UserInteraction.Translation.En as Tr
 import qualified Wilde.Driver.UserInteraction.StandardServiceLinkRenderer as StandardServiceLinkRenderer
 
+import qualified Wilde.Driver.Application.Cgi.ServiceLinkRenderers as CgiDriver
+
+import qualified TestResources.Environment as Env
 
 -------------------------------------------------------------------------------
 -- - implementation -
@@ -54,21 +59,17 @@ import qualified Wilde.Driver.UserInteraction.StandardServiceLinkRenderer as Sta
 -- Especially, getting a database connection results in an error.
 emptyEnv :: UserInteractionOutputEnvironment
 emptyEnv =
-  UserInteractionOutputEnvironment
-  {
-    envMedia             = ES.empty
-  , envCustomEnvironment = ES.empty
-  , envDbConfiguration   = error "This env (emptyEnv) does not have access to database connections"
-  , envOutputing         = emptyOutputing
-  }
-
+  newEnvironment ES.empty ES.empty Env.emptyDbConfig emptyOutputing Env.emptyLogging
 
 emptyOutputing :: Outputing
 emptyOutputing =
   Outputing
   {
-    outTranslations                = Tr.translations
-  , outStandardServiceLinkRenderer = StandardServiceLinkRenderer.renderer
+    outTranslations                  = Tr.translations
+  , outStandardServiceLinkRenderer   = StandardServiceLinkRenderer.renderer
+  , outMkStdObjectTypeServiceLink    = CgiDriver.getStandardObjectTypeServiceLinkRenderer
+  , outMkStdObjectServiceLink        = CgiDriver.getStandardObjectServiceLinkRenderer
+  , outGetGenericServiceLinkRenderer = CgiDriver.getGenericServiceLinkRenderer
   }
 
 -------------------------------------------------------------------------------

@@ -27,7 +27,7 @@ module Wilde.Driver.Application.Cgi.Wai
          ContentDecoder,
          SystemConfiguration(..),
          
-         csApplication,
+         newApplication,
 
          -- * Re-exported from "Wilde.Application.ApplicationConfiguration"
 
@@ -42,9 +42,6 @@ module Wilde.Driver.Application.Cgi.Wai
 -- - import -
 -------------------------------------------------------------------------------
 
-
--- import System.IO.Unsafe -- DEBUG
--- import System.IO -- DEBUG
 
 import qualified Control.Exception as Exception
 
@@ -63,9 +60,9 @@ import qualified Wilde.Driver.Application.Cgi.CgiHtml as AppCgiHtml
 
 import qualified Data.String as String
 
-import qualified Data.ByteString as ByteString
-
 import qualified Blaze.ByteString.Builder as B
+
+import Wilde.Driver.Application.Types
 
 
 -------------------------------------------------------------------------------
@@ -73,24 +70,10 @@ import qualified Blaze.ByteString.Builder as B
 -------------------------------------------------------------------------------
 
 
-type ContentEncoder = String -> B.Builder
-
-type ContentDecoder = ByteString.ByteString -> String
-
-data SystemConfiguration =
-  SystemConfiguration
-  {
-    contentEncoder  :: ContentEncoder
-  , queryVarDecoder :: ContentDecoder
-  }
-
--- fromString :: ContentEncoder
--- fromString = BChar8.fromString
-
-csApplication :: SystemConfiguration
-              -> AppConf.ApplicationConfiguration
-              -> Wai.Application
-csApplication sysConf appConf request respond =
+newApplication :: SystemConfiguration
+               -> AppConf.ApplicationConfiguration
+               -> Wai.Application
+newApplication sysConf appConf request respond =
   do
     response <- MonadIO.liftIO $
                 Exception.catch
@@ -198,17 +181,3 @@ buildRawInput contentDecoder request = queryToServerVariables theQueryString
 
     tr (bs,mbBs) = (contentDecoder bs,fmap contentDecoder mbBs)
 
-    -- tr_debug (bs,mbBs) = unsafePerformIO $ do
-    --   pf $ contentDecoder bs
-    --   pfi $ show $ fmap ByteString.unpack mbBs
-    -- När "knepiga" bokstäver skrivs ut på stderr här nedan så smäller det!!??
-    --   pfi $ maybe "Nothing" (\s -> "\"" ++ s ++ "\"") $ fmap contentDecoder mbBs
-    --   return (contentDecoder bs,fmap contentDecoder mbBs)
-
--- puts = hPutStrLn stderr
-
--- frame :: String -> String
--- frame s = "|" ++ s ++ "|"
-
--- pf s = puts $ frame s
--- pfi s = puts $ "   " ++ frame s

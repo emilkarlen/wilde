@@ -38,7 +38,7 @@ module Wilde.Media.Presentation
     run,
 
     -- * Monad Environment
-    Environment,
+    Environment(envCustomEnvironment),
     newEnvironment,
     Outputing (..),
     GenericServiceLinkRenderer,
