@@ -18,6 +18,7 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 -------------------------------------------------------------------------------
 -- | Utilities related to MySQL for constructing an applications Object Model.

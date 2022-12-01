@@ -19,6 +19,7 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 -- | A monad that operates on a single db connection.
 --
@@ -60,7 +61,9 @@ module Wilde.Media.Database.Monad
 -------------------------------------------------------------------------------
 
 
-import Prelude hiding (Monad)
+import           Prelude hiding (Monad)
+
+import qualified Data.String as S
 import qualified Control.Monad.Error.Class as ME
 import qualified Control.Monad as MMonad
 
@@ -250,13 +253,13 @@ prepareSql :: SQL_IDENTIFIER col
 prepareSql sql = do
   (conn, sqlRenderer) <- getEnvConnAndSqlRenderer
   let sqlString = sqlRenderer $ fmap sqlIdentifier sql
-  Logging.logg_ Logger.LIBRARY "prepareSql:" (Just sqlString)
+  Logging.logg_ Logger.LIBRARY "prepareSql" (Just $ S.fromString sqlString)
   liftIO $ HDBC.prepare conn sqlString
 
 prepareSql_str :: String -- ^ SQL statement
                -> Monad HDBC.Statement
 prepareSql_str sql = do
-  Logging.logg_ Logger.LIBRARY "prepareSql_str:" (Just sql)
+  Logging.logg_ Logger.LIBRARY "prepareSql_str" (Just $ S.fromString sql)
   conn <- getEnvConn
   liftIO $ HDBC.prepare conn sql
 

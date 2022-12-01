@@ -258,6 +258,7 @@ Library
     Wilde.Utils.Logging.Monad
     Wilde.Utils.Logging.SimpleLogger
     Wilde.Utils.Logging.NoLogging
+    Wilde.Utils.Text
 
 Test-Suite unit-tests
   Type:              exitcode-stdio-1.0

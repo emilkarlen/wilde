@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
+{-# LANGUAGE OverloadedStrings #-}
+
 -- | SQL execution in the DbConnMonad.
 module Wilde.Media.Database.Exec
        (

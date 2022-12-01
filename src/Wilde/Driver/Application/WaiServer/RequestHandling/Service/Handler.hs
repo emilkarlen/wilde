@@ -18,6 +18,8 @@ import qualified Wilde.Render.Cgi.ElementSetIo as ElementSetIo
 
 import qualified Wilde.Application.ApplicationConfiguration as AppConf
 import qualified Wilde.Driver.Application.Cgi.ServiceLookup as ServiceLookup
+import qualified Wilde.Driver.Application.Utils as Utils
+
 import qualified Wilde.Driver.Application.Cgi.CgiHtml as AppCgiHtml
 import Wilde.Driver.Application.Types
 import Wilde.Driver.Application.Wai.Utils as WaiUtils
@@ -55,7 +57,7 @@ serviceRequestHandler
   appConf request errorHandler responder =
   do
     let logger = AppConf.appLogger appConf
-    Logging.register logger (Logging.LIBRARY, "handle service", Nothing)
+    Logging.register logger (Logging.LIBRARY, Utils.logHdr1 <> "handle service", Nothing)
     res <- AppCgiHtml.lookupAndRunService appConf rawRequestInput
     case res of
       Left err         -> errorHandler $ HandlingError $ S.fromString $ show err

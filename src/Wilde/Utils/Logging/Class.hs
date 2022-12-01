@@ -17,5 +17,5 @@ class Logger a where
 data AnyLogger = forall l. Logger l => AnyLogger l
 
 instance Logger AnyLogger where
-    register (AnyLogger logger) = register logger
+    register  (AnyLogger logger) = register logger
     subLogger (AnyLogger logger) = AnyLogger $ subLogger logger

@@ -14,8 +14,8 @@ module Wilde.Driver.Application.WaiServer.RequestHandling.Main.Handler
 -------------------------------------------------------------------------------
 
 
-import qualified Data.String as S
 import qualified Data.Text as T
+import qualified Wilde.Utils.Text as TU
 
 import qualified Control.Exception as Exception
 
@@ -23,11 +23,11 @@ import qualified Control.Monad.IO.Class as MonadIO
 
 import           Control.Monad.Trans.Except as ExceptT
 
+import           Data.Text
 import qualified Network.Wai as Wai
 import qualified Network.HTTP.Types as HttpTypes
 
-import qualified Data.ByteString as BS
-import qualified Blaze.ByteString.Builder as B
+import qualified Wilde.Driver.Application.Utils as Utils
 
 import qualified Wilde.Application.ApplicationConfiguration as AppConf
 
@@ -131,14 +131,14 @@ errorHandler AppConf.ApplicationConfiguration {AppConf.appLogger = logger} respo
   where
     status = HttpTypes.badRequest400
 
-    logStr :: String 
-    logStr = show status <> " : " <> show msg
+    logStr :: Text 
+    logStr = TU.showText status <> " : " <> TU.showText msg
 
 plainTextResponse :: TextEncoder -> HttpTypes.Status -> T.Text -> Wai.Response
 plainTextResponse encode status text =
   Wai.responseBuilder
   status
-  (headers_plainText encode)
+  (Utils.headers_plainText encode)
   (encode text)
 
 -- TODO [WAI] Translate error to user friendly text.
@@ -150,12 +150,12 @@ internalServerErrorHandler
   -> Exception.SomeException
   -> IO Wai.ResponseReceived
 internalServerErrorHandler AppConf.ApplicationConfiguration {AppConf.appLogger = logger}  contentEncoder request responder ex = do
-  Logging.register logger (Logging.LIBRARY, show status, Just $ show ex)
+  Logging.register logger (Logging.LIBRARY, TU.showText status, Just $ TU.showText ex)
   responder $
     plainTextResponse
     contentEncoder
     status
-    ("Internal Server Error: " <> showText ex)
+    ("Internal Server Error: " <> TU.showText ex)
   where
     status = HttpTypes.internalServerError500
 
@@ -163,13 +163,6 @@ badRequestResponse :: TextEncoder
                    -> T.Text -- ^ error message
                    -> Wai.Response
 badRequestResponse contentEncoder = plainTextResponse contentEncoder HttpTypes.badRequest400
-
-headers_plainText :: TextEncoder
-                  -> [HttpTypes.Header]
-headers_plainText encoder = [(HttpTypes.hContentType, encodedMimeType)]
-  where
-    encodedMimeType :: BS.ByteString
-    encodedMimeType = B.toByteString $ encoder mimeType_textPlain
 
 
 -------------------------------------------------------------------------------
@@ -183,21 +176,9 @@ loggRequest AppConf.ApplicationConfiguration {AppConf.appLogger = logger} reques
 
 requestLogEntry :: Wai.Request -> Logging.Entry
 requestLogEntry request =
-  (Logging.LIBRARY, "REQUEST " <> method, Just body)
+  (Logging.LIBRARY, Utils.logHdr0 <> " REQUEST " <> method, Just body)
   where
-    method   = show $ Wai.requestMethod request
-    pathInfo = "pathInfo    = " <> show (Wai.pathInfo request)
-    queryStr = "queryString = " <> show (Wai.queryString request)
+    method   = TU.showText $ Wai.requestMethod request
+    pathInfo = "pathInfo    = " <> TU.showText (Wai.pathInfo request)
+    queryStr = "queryString = " <> TU.showText (Wai.queryString request)
     body     = pathInfo <> "\n\n" <> queryStr
-
-
--------------------------------------------------------------------------------
--- - constants and helpers -
--------------------------------------------------------------------------------
-
-
-mimeType_textPlain :: T.Text
-mimeType_textPlain = "text/plain"
-
-showText :: Show a => a -> T.Text
-showText = S.fromString . show

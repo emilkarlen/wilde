@@ -88,7 +88,7 @@ serveValidPath logger filePathPrefix mimeType requestPath errorHandler responder
                 filePathSepa,
                 toRelativeFilePath requestPath
                 ]
-        Logging.register logger (Logging.LIBRARY, "handle file : " <> path, Nothing)
+        Logging.register logger (Logging.LIBRARY, Utils.logHdr1 <> " handle file : " <> S.fromString path, Nothing)
         let header   = Utils.singleResponseHeaders mimeType
         let response = Wai.responseFile HttpTypes.ok200 header path Nothing
         responder response

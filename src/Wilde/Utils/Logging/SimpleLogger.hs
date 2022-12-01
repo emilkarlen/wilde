@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Wilde.Utils.Logging.SimpleLogger
 (
   newLogger
@@ -5,30 +6,31 @@ module Wilde.Utils.Logging.SimpleLogger
 where
 
 import Control.Monad
+import Data.Text
 import Wilde.Utils.Logging.Class
 
-newLogger :: (String -> IO ()) -> Level -> String -> AnyLogger
+newLogger :: (Text -> IO ()) -> Level -> Text -> AnyLogger
 newLogger writeLn level prefix =
   AnyLogger $ Setup (writeLn, level, prefix)
 
-newtype Setup = Setup (String -> IO (), Level, String)
+newtype Setup = Setup (Text -> IO (), Level, Text)
 
 instance Logger Setup where
     register (Setup (writeLn, level0, prefix)) (level, header, mbBody) = do
         when (level >= level0) $ do
-          writeLn $ levelStr level ++ prefix ++ header
+          writeLn $ levelStr level <> prefix <> header
           maybe (pure ()) writeBody mbBody
 
       where
-        writeBody :: String -> IO ()
+        writeBody :: Text -> IO ()
         writeBody s = do
             writeLn "--------------------------------------"
             writeLn s
             writeLn "======================================"
 
-    subLogger (Setup (write, level, prefix)) = Setup (write, level, prefix ++ "  ")
+    subLogger (Setup (write, level, prefix)) = Setup (write, level, prefix <> "  ")
 
-levelStr :: Level -> String
+levelStr :: Level -> Text
 levelStr LIBRARY = "LIBRARY "
 levelStr DEBUG   = "DEBUG   "
 levelStr INFO    = "INFO    "

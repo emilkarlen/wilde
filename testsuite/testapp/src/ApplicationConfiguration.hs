@@ -24,7 +24,9 @@ module ApplicationConfiguration where
 -- - import -
 -------------------------------------------------------------------------------
 
+
 import qualified System.IO as IO
+import qualified Data.Text.IO as TIO
 
 import qualified Wilde.Utils.Logging.Class as Logging
 import qualified Wilde.Utils.Logging.SimpleLogger as SimpleLogger
@@ -40,16 +42,16 @@ import Db.Connection as DbConn
 
 import qualified Services
 
+
 -------------------------------------------------------------------------------
 -- - implementation -
 -------------------------------------------------------------------------------
 
 
-
 cssFileName :: String
 cssFileName = "wilde_test.css"
 
-logger = SimpleLogger.newLogger (IO.hPutStrLn IO.stderr) Logging.LIBRARY ""
+logger = SimpleLogger.newLogger (TIO.hPutStrLn IO.stderr) Logging.LIBRARY mempty
 
 appConfig :: AppConf.ApplicationConfiguration
 appConfig =  AppConf.ApplicationConfiguration         

@@ -18,6 +18,7 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
 -- | SQL execution in the DbConnMonad.
+{-# LANGUAGE OverloadedStrings #-}
 module Wilde.Media.Database.ExecStr
        (
          DbConnM.Monad,

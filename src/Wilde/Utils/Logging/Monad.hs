@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Wilde.Utils.Logging.Monad
 (
     module Wilde.Utils.Logging.Entry,
@@ -6,6 +7,7 @@ module Wilde.Utils.Logging.Monad
 where
 
 import Control.Monad.IO.Class
+import Data.Text
 
 import Wilde.Utils.Logging.Entry
 import Wilde.Utils.Logging.Class
@@ -22,23 +24,23 @@ class MonadIO m => MonadWithLogging m where
             let theSubLogger = AnyLogger $ subLogger logger
             withLogger theSubLogger action
 
-    logg_ :: Level -> String -> Maybe String -> m ()
+    logg_ :: Level -> Text -> Maybe Text -> m ()
     logg_ level header mbBody =
         do
             AnyLogger logger <- getLogger
             liftIO $ register logger (level, header, mbBody)
 
-    logg :: Level -> String -> m ()
+    logg :: Level -> Text -> m ()
     logg level header = logg_ level header Nothing
 
-    loggBeginEnd :: Level -> String -> m a -> m a
+    loggBeginEnd :: Level -> Text -> m a -> m a
     loggBeginEnd level entity action =
         do
             AnyLogger logger <- getLogger
-            liftIO $ register logger (level, entity ++ " BEGIN", Nothing)
+            liftIO $ register logger (level, entity <> " BEGIN", Nothing)
             result <- action
-            liftIO $ register logger (level, entity ++ " END", Nothing)
+            liftIO $ register logger (level, entity <> " END", Nothing)
             pure result
 
-    loggBeginEnd_sub :: Level -> String -> m a -> m a
+    loggBeginEnd_sub :: Level -> Text -> m a -> m a
     loggBeginEnd_sub level entity action = loggBeginEnd level entity (withSubLogger action)

@@ -20,6 +20,7 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 {-# LANGUAGE Rank2Types #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 -------------------------------------------------------------------------------
 -- | Definition of \"service\".
@@ -85,7 +86,8 @@ import Control.Monad.Trans.Reader
 
 
 import qualified Data.Map as Map
-
+import           Data.Text
+import qualified Data.String as String
 import Database.HDBC as HDBC
 
 import qualified Wilde.Utils.ExceptReaderT as ExceptReaderT
@@ -197,13 +199,13 @@ runService envWMkNewDbConnOnEveryInvokation (ServiceMonad m) =
   do
     let srvcHdrStr = toLogStr $ envCurrentService envWMkNewDbConnOnEveryInvokation
     let logger = envLogger envWMkNewDbConnOnEveryInvokation
-    Logger.register logger (Logger.LIBRARY, srvcHdrStr ++ " BEGIN", Nothing)
+    Logger.register logger (Logger.LIBRARY, srvcHdrStr <> " BEGIN", Nothing)
     (envWDbConnHandling, doDbConnCleanup) <- dbEnvWithSingleDbConnHandling
     res <- runReaderT (runExceptT m) envWDbConnHandling
     reporting <- doDbConnCleanup
-    let dbConnHandlingMsg = "Db connection handling: " ++ reporting
+    let dbConnHandlingMsg = "Db connection handling: " <> String.fromString reporting
     Logger.register logger (Logger.LIBRARY, dbConnHandlingMsg, Nothing)
-    Logger.register logger (Logger.LIBRARY, srvcHdrStr ++ " END", Nothing)
+    Logger.register logger (Logger.LIBRARY, srvcHdrStr <> " END", Nothing)
     pure res
   
   where
@@ -362,5 +364,8 @@ toServiceMonad_wDefaultDbConn m =
     toServiceMonad res
 
 
-toLogStr :: ServiceId -> String
-toLogStr (ServiceId srvc mbOt) = "Service " ++ srvc ++ maybe "" (\ot -> "/" ++ ot) mbOt
+toLogStr :: ServiceId -> Text
+toLogStr (ServiceId srvc mbOt) = "service \"" <> String.fromString srvc <> logStr_ot mbOt <> "\""
+
+logStr_ot :: Maybe String -> Text
+logStr_ot = maybe "" (\ot -> "/" <> String.fromString ot)
