@@ -1,9 +1,9 @@
 -- | Defines sdfsdfsdf
 module Wilde.Driver.Application.Cgi.ServiceLinkRenderers
 (
-  getStandardObjectTypeServiceLinkRenderer,
-  getStandardObjectServiceLinkRenderer,
-  getGenericServiceLinkRenderer,
+  getMkStandardObjectTypeServiceLink,
+  getMkStandardObjectServiceLink,
+  getMkGenericServiceLink,
 )
 where
 
@@ -27,31 +27,31 @@ import Wilde.Service.ServiceLink
 -- - implementation -
 -------------------------------------------------------------------------------
 
-getStandardObjectTypeServiceLinkRenderer :: Presentation.Monad ObjectTypeServiceLinkRenderer
-getStandardObjectTypeServiceLinkRenderer = do
+getMkStandardObjectTypeServiceLink :: Presentation.Monad MkObjectTypeServiceLink
+getMkStandardObjectTypeServiceLink = do
     custEnv <- Presentation.getCustomEnvironment
     pure $ mkLink custEnv
     where
-      mkLink :: ES.ElementSet -> ObjectTypeServiceLinkRenderer
+      mkLink :: ES.ElementSet -> MkObjectTypeServiceLink
       mkLink custEnv serviceEnum label objectTypeId params =
         serviceLinkRenderer custEnv srvcSpec label params
         where
           srvcSpec = newObjectTypeServiceSpecification (show serviceEnum) objectTypeId
 
 
-getStandardObjectServiceLinkRenderer :: Presentation.Monad ObjectServiceLinkRenderer
-getStandardObjectServiceLinkRenderer = do
+getMkStandardObjectServiceLink :: Presentation.Monad MkObjectServiceLink
+getMkStandardObjectServiceLink = do
     custEnv <- Presentation.getCustomEnvironment
     pure $ mkLink custEnv
     where
-      mkLink :: ES.ElementSet -> ObjectServiceLinkRenderer
+      mkLink :: ES.ElementSet -> MkObjectServiceLink
       mkLink custEnv serviceEnum label objectTypeId objectId params =
         serviceLinkRenderer custEnv srvcSpec label params
         where
           srvcSpec = newObjectServiceSpecification (show serviceEnum) objectTypeId objectId
 
-getGenericServiceLinkRenderer :: Presentation.Monad Presentation.GenericServiceLinkRenderer
-getGenericServiceLinkRenderer = do
+getMkGenericServiceLink :: Presentation.Monad Presentation.MkGenericServiceLink
+getMkGenericServiceLink = do
     custEnv <- Presentation.getCustomEnvironment
     pure $ serviceLinkRenderer custEnv
 

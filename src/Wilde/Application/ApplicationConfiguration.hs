@@ -60,14 +60,13 @@ import Wilde.Application.StandardServiceLinks
 data ApplicationConfiguration =
      ApplicationConfiguration
      {
-       appServices                      :: ApplicationServices
-     , translations                     :: Translations.Translations
-     , dbConfiguration                  :: DbConf.Configuration
-     , standardServiceLinkRenderer      :: StandardServiceLinkRenderer
-     , getStdObjectTypeServiceRenderer  :: Presentation.Monad ObjectTypeServiceLinkRenderer
-     , getStdObjectServiceRenderer      :: Presentation.Monad ObjectServiceLinkRenderer
-     , getGenericServiceLinkRenderer    :: Presentation.Monad
-                                           Presentation.GenericServiceLinkRenderer
-     , appCssFile                       :: Maybe String
-     , appLogger                        :: Logger.AnyLogger
+       appServices                  :: ApplicationServices
+     , translations                 :: Translations.Translations
+     , dbConfiguration              :: DbConf.Configuration
+     , standardServiceLinkRenderer  :: StandardServiceLinkRenderer
+     , getMkStdObjectTypeService    :: Presentation.Monad MkObjectTypeServiceLink
+     , getMkStdObjectService        :: Presentation.Monad MkObjectServiceLink
+     , getMkGenericServiceLink      :: Presentation.Monad Presentation.MkGenericServiceLink
+     , appCssFile                   :: Maybe String
+     , appLogger                    :: Logger.AnyLogger
      }

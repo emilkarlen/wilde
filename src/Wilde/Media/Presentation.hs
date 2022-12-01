@@ -41,12 +41,12 @@ module Wilde.Media.Presentation
     Environment(envCustomEnvironment),
     newEnvironment,
     Outputing (..),
-    GenericServiceLinkRenderer,
+    MkGenericServiceLink,
     envStandardServiceLinkRenderer,
     getStandardServiceLinkRenderer,
     getMkStdObjectTypeServiceLink,
     getMkStdObjectServiceLink,
-    getGenericServiceLinkRenderer,
+    getMkGenericServiceLink,
     getEnvs,
 
     -- * Error handling
@@ -124,7 +124,7 @@ withEnv :: (Environment -> Environment) -> Monad a -> Monad a
 withEnv modifyEnv (Monad m) = Monad $ ExceptReaderT.withEnv modifyEnv m
 
 -- | Renders a link to a global service.
-type GenericServiceLinkRenderer = ServiceSpecification -> WildeStyling LinkLabel -> [GenericParameter] -> WildeValue.AnySVALUE
+type MkGenericServiceLink = ServiceSpecification -> WildeStyling LinkLabel -> [GenericParameter] -> WildeValue.AnySVALUE
 
 -- | Part of the 'Environment' that contains
 -- functionality for outputing.
@@ -134,9 +134,9 @@ data Outputing = Outputing
     --
     -- NOTE: See "Wilde.Application.StandardServices".
   , outStandardServiceLinkRenderer   :: StandardServices.StandardServiceLinkRenderer
-  , outMkStdObjectTypeServiceLink    :: Monad ObjectTypeServiceLinkRenderer
-  , outMkStdObjectServiceLink        :: Monad ObjectServiceLinkRenderer
-  , outGetGenericServiceLinkRenderer :: Monad GenericServiceLinkRenderer
+  , outMkStdObjectTypeServiceLink    :: Monad MkObjectTypeServiceLink
+  , outMkStdObjectServiceLink        :: Monad MkObjectServiceLink
+  , outgetMkGenericServiceLink       :: Monad MkGenericServiceLink
   }
 
 -- | Gets the 'StandardServices.StandardServiceLinkRenderer' from the
@@ -239,18 +239,18 @@ run env (Monad errT) = MReader.runReaderT (MExcept.runExceptT errT) env
 getStandardServiceLinkRenderer :: Monad StandardServices.StandardServiceLinkRenderer
 getStandardServiceLinkRenderer = getEnvs envStandardServiceLinkRenderer
 
--- | Gets the 'GenericServiceLinkRenderer'.
-getGenericServiceLinkRenderer :: Monad GenericServiceLinkRenderer
-getGenericServiceLinkRenderer = do
-  getIt <- getEnvs $ outGetGenericServiceLinkRenderer . envOutputing
+-- | Gets the 'MkGenericServiceLink'.
+getMkGenericServiceLink :: Monad MkGenericServiceLink
+getMkGenericServiceLink = do
+  getIt <- getEnvs $ outgetMkGenericServiceLink . envOutputing
   getIt
 
-getMkStdObjectTypeServiceLink :: Monad ObjectTypeServiceLinkRenderer
+getMkStdObjectTypeServiceLink :: Monad MkObjectTypeServiceLink
 getMkStdObjectTypeServiceLink = do
   getIt <- getEnvs $ outMkStdObjectTypeServiceLink . envOutputing
   getIt
 
-getMkStdObjectServiceLink :: Monad ObjectServiceLinkRenderer
+getMkStdObjectServiceLink :: Monad MkObjectServiceLink
 getMkStdObjectServiceLink = do
   getIt <- getEnvs $ outMkStdObjectServiceLink . envOutputing
   getIt

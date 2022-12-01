@@ -55,14 +55,14 @@ logger = SimpleLogger.newLogger (TIO.hPutStrLn IO.stderr) Logging.LIBRARY mempty
 
 appConfig :: AppConf.ApplicationConfiguration
 appConfig =  AppConf.ApplicationConfiguration         
-             {
-               AppConf.appServices                     = Services.services
-             , AppConf.appCssFile                      = Just cssFileName
-             , AppConf.translations                    = Tr.translations
-             , AppConf.dbConfiguration                 = DbConn.theDbConfiguration
-             , AppConf.standardServiceLinkRenderer     = StandardServiceLinkRenderer.renderer
-             , AppConf.getStdObjectTypeServiceRenderer = CgiDriver.getStandardObjectTypeServiceLinkRenderer
-             , AppConf.getStdObjectServiceRenderer     = CgiDriver.getStandardObjectServiceLinkRenderer
-             , AppConf.getGenericServiceLinkRenderer   = CgiDriver.getGenericServiceLinkRenderer
-             , AppConf.appLogger                       = logger
-             }
+  {
+    AppConf.appServices                 = Services.services
+  , AppConf.appCssFile                  = Just cssFileName
+  , AppConf.translations                = Tr.translations
+  , AppConf.dbConfiguration             = DbConn.theDbConfiguration
+  , AppConf.standardServiceLinkRenderer = StandardServiceLinkRenderer.renderer
+  , AppConf.getMkStdObjectTypeService   = CgiDriver.getMkStandardObjectTypeServiceLink
+  , AppConf.getMkStdObjectService       = CgiDriver.getMkStandardObjectServiceLink
+  , AppConf.getMkGenericServiceLink     = CgiDriver.getMkGenericServiceLink
+  , AppConf.appLogger                   = logger
+  }

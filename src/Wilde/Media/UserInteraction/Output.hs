@@ -239,7 +239,7 @@ throwErr :: Presentation.ToPresentationError err
 throwErr err = UserInteractionOutputMonad $ throwE (Presentation.toError err)
 
 -- | Corresponds to 'Control.Monad.Trans.Error's catchError.
-catchErr :: UserInteractionOutputMonad a                                    -- ^ The computation that can throw an error.
+catchErr :: UserInteractionOutputMonad a                                 -- ^ The computation that can throw an error.
          -> (UserInteractionOutputError -> UserInteractionOutputMonad a) -- ^ Error handler
          -> UserInteractionOutputMonad a                                 
 catchErr m handler =
@@ -259,12 +259,12 @@ instance ToUserInteractionOutputMonad Presentation.Monad where
       toUserInteractionOutputMonad res
     where
       toPresEnv :: UserInteractionOutputEnvironment -> Presentation.Environment
-      toPresEnv (UserInteractionOutputEnvironment
-                 { envCustomEnvironment = theEnvCustomEnvironment
-                 , envDbConfiguration   = theEnvDbConfiguration
-                 , envOutputing         = theEnvOutputing
-                 , envLogger            = theLogger
-                 }) =
+      toPresEnv UserInteractionOutputEnvironment
+                { envCustomEnvironment = theEnvCustomEnvironment
+                , envDbConfiguration   = theEnvDbConfiguration
+                , envOutputing         = theEnvOutputing
+                , envLogger            = theLogger
+                } =
           Presentation.newEnvironment
           theEnvCustomEnvironment theEnvDbConfiguration theEnvOutputing
           theLogger

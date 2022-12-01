@@ -67,9 +67,9 @@ emptyOutputing =
   {
     outTranslations                  = Tr.translations
   , outStandardServiceLinkRenderer   = StandardServiceLinkRenderer.renderer
-  , outMkStdObjectTypeServiceLink    = CgiDriver.getStandardObjectTypeServiceLinkRenderer
-  , outMkStdObjectServiceLink        = CgiDriver.getStandardObjectServiceLinkRenderer
-  , outGetGenericServiceLinkRenderer = CgiDriver.getGenericServiceLinkRenderer
+  , outMkStdObjectTypeServiceLink    = CgiDriver.getMkStandardObjectTypeServiceLink
+  , outMkStdObjectServiceLink        = CgiDriver.getMkStandardObjectServiceLink
+  , outgetMkGenericServiceLink = CgiDriver.getMkGenericServiceLink
   }
 
 -------------------------------------------------------------------------------

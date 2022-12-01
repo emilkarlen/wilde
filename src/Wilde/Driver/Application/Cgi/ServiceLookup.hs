@@ -116,17 +116,18 @@ newServiceEnvironment :: AppConf.ApplicationConfiguration
                       -> ServiceId
                       -> AppInput.Input
                       -> ServiceEnvironment
-newServiceEnvironment (AppConf.ApplicationConfiguration
-                       {
-                         AppConf.translations                    = theTranslations
-                       , AppConf.dbConfiguration                 = theDbConfiguration
-                       , AppConf.standardServiceLinkRenderer     = theStdSrvcLinkRenderer
-                       , AppConf.getStdObjectTypeServiceRenderer = theStdObjectTypeSrvcLinkRenderer
-                       , AppConf.getStdObjectServiceRenderer     = theStdObjectSrvcLinkRenderer
-                       , AppConf.getGenericServiceLinkRenderer   = theGetGenericSLR
-                       , AppConf.appLogger                       = theLogger
-                       }
-                      )
+newServiceEnvironment
+  AppConf.ApplicationConfiguration
+  {
+    AppConf.translations                = theTranslations
+  , AppConf.dbConfiguration             = theDbConfiguration
+  , AppConf.standardServiceLinkRenderer = theStdSrvcLinkRenderer
+  , AppConf.getMkStdObjectTypeService   = theStdObjectTypeSrvcLinkRenderer
+  , AppConf.getMkStdObjectService       = theStdObjectSrvcLinkRenderer
+  , AppConf.getMkGenericServiceLink     = theGetGenericSLR
+  , AppConf.appLogger                   = theLogger
+  }
+                      
   serviceId
   input =
     Service.newEnvironment serviceId
@@ -137,9 +138,9 @@ newServiceEnvironment (AppConf.ApplicationConfiguration
   where
     outputing = UiOm.Outputing
         {
-          UiOm.outTranslations                  = theTranslations
-        , UiOm.outStandardServiceLinkRenderer   = theStdSrvcLinkRenderer
-        , UiOm.outMkStdObjectTypeServiceLink    = theStdObjectTypeSrvcLinkRenderer
-        , UiOm.outMkStdObjectServiceLink        = theStdObjectSrvcLinkRenderer
-        , UiOm.outGetGenericServiceLinkRenderer = theGetGenericSLR
+          UiOm.outTranslations                = theTranslations
+        , UiOm.outStandardServiceLinkRenderer = theStdSrvcLinkRenderer
+        , UiOm.outMkStdObjectTypeServiceLink  = theStdObjectTypeSrvcLinkRenderer
+        , UiOm.outMkStdObjectServiceLink      = theStdObjectSrvcLinkRenderer
+        , UiOm.outgetMkGenericServiceLink     = theGetGenericSLR
         }

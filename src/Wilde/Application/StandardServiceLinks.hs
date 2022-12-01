@@ -37,8 +37,8 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -------------------------------------------------------------------------------
 module Wilde.Application.StandardServiceLinks
        (
-        ObjectTypeServiceLinkRenderer,
-        ObjectServiceLinkRenderer,
+        MkObjectTypeServiceLink,
+        MkObjectServiceLink,
         CrossRefIdentifier,
         GenericParameter,
        )
@@ -65,7 +65,7 @@ import Wilde.WildeUi.StdValueTypes (LinkLabel)
 --  , ssObjectIdentity :: Maybe GenericStringRep
 
 -- | Renders a UI element that is a link to a standard object type service.
-type ObjectTypeServiceLinkRenderer =
+type MkObjectTypeServiceLink =
   StandardObjectTypeServiceEnum ->
   WildeStyling LinkLabel ->
   CrossRefIdentifier ->
@@ -74,7 +74,7 @@ type ObjectTypeServiceLinkRenderer =
       
 
 -- | Renders a UI element that is a link to a standard object service.
-type ObjectServiceLinkRenderer =
+type MkObjectServiceLink =
       StandardObjectServiceEnum ->
       WildeStyling LinkLabel ->
       CrossRefIdentifier ->
