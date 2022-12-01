@@ -44,6 +44,7 @@ import qualified Wilde.Media.ElementSet as ES
 import qualified Wilde.Driver.UserInteraction.Translation.En as Tr
 import qualified Wilde.Driver.UserInteraction.StandardServiceLinkRenderer as StandardServiceLinkRenderer
 
+import qualified Wilde.Driver.Application.Cgi.ServiceLinkRenderers as CgiServiceLinkRenderers
 import qualified TestResources.Environment as Env
 
 
@@ -66,6 +67,9 @@ emptyOutputing =
   {
     outTranslations                = Tr.translations
   , outStandardServiceLinkRenderer = StandardServiceLinkRenderer.renderer
+  , outMkStdObjectTypeServiceLink  = CgiServiceLinkRenderers.getMkStandardObjectTypeServiceLink
+  , outMkStdObjectServiceLink      = CgiServiceLinkRenderers.getMkStandardObjectServiceLink
+  , outgetMkGenericServiceLink     = CgiServiceLinkRenderers.getMkGenericServiceLink
   }
 
 -------------------------------------------------------------------------------
