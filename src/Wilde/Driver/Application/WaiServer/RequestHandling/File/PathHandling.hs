@@ -2,8 +2,10 @@
 module Wilde.Driver.Application.WaiServer.RequestHandling.File.PathHandling
 (
     module Wilde.Driver.Application.WaiServer.RequestHandling.File.Types,
+    FsPathPrefixAndRqPathSuffix,
     resolveMimeTypeFromValidPath,
     pathIsValid,
+    filePathSepa,
 )
 where
 
@@ -15,6 +17,7 @@ where
 
 import qualified Data.Either as Either
 import           Control.Monad
+import           Data.String (IsString)
 import qualified Data.Text as T
 import qualified Data.Map.Strict as Map
 
@@ -26,6 +29,9 @@ import           Wilde.Driver.Application.WaiServer.RequestHandling.File.Types
 -- - implementation -
 -------------------------------------------------------------------------------
 
+
+filePathSepa :: IsString a => a
+filePathSepa = "/"
 
 {- | A path is valid iff
 
@@ -40,7 +46,7 @@ import           Wilde.Driver.Application.WaiServer.RequestHandling.File.Types
    also, this extension is non-empty)
 -}
 pathIsValid :: RequestPath -> Bool
-pathIsValid [] = False
+pathIsValid [] = True
 pathIsValid components = noCompIsEmpty && noCompIsRelativeDir && lastCompHasAnExtension
     where
         noCompIsEmpty = mempty `notElem` components
@@ -51,29 +57,52 @@ pathIsValid components = noCompIsEmpty && noCompIsRelativeDir && lastCompHasAnEx
                               ".." `notElem` components
 
 
+type FsPathPrefixAndRqPathSuffix = (FilePath, RequestPath)
+
 -- | Resolves the mime type of a path that is valid according to `pathIsValid`.
 -- Fails if the extension is not mapped to any mime type.
-resolveMimeTypeFromValidPath :: MimeTypeMapping -> RequestPath -> Either ErrorMessage MimeType
-resolveMimeTypeFromValidPath mimeTypes requestPath =
+resolveMimeTypeFromValidPath
+  :: MimeTypeMapping
+  -> FsPathPrefixAndRqPathSuffix
+     -- ^ (FS path prefix,
+     --    RQ path suffix, that is appended to the
+     --    FS path prefix to get the final FS path)
+     --
+     -- If the RQ path suffix is empty,
+     -- then the FS path to serve is the same as the FS path prefix,
+    --  and the mime type is derived from the FS path prefix
+  -> Either ErrorMessage MimeType
+resolveMimeTypeFromValidPath mimeTypes fsPAndrqS@(fsPathPrefix, rqPathSuffix) =
   do
-    extension <- extensionOf requestPath
-    -- case mimeTypes Map.! extension of
+    extension <- extensionOf $ pathToDeriveExtFrom fsPAndrqS
     case Map.lookup extension mimeTypes of
-      Nothing -> Left "error message" -- TODO "Not handled"
+      Nothing -> Left $ "Extension not mapped: " <> extension
       Just mt -> Right mt
+
+  where
+    pathToDeriveFrom :: RequestPath
+    pathToDeriveFrom
+      | null rqPathSuffix = T.splitOn "/" $ T.pack fsPathPrefix
+      | otherwise         = rqPathSuffix
 
 extensionOf :: RequestPath -- ^ non-empty
             -> Either ErrorMessage T.Text
 extensionOf requestPathComponents = do
   unless (length lastCompSplitOnExtSepa > 1)
-    (Left "error message") -- TODO "Missing file extension"
+    (extError "Path has no extension")
   let ext = last lastCompSplitOnExtSepa
   if ext == mempty
-    then Left "error message" -- TODO "Missing file extension"
+    then extError "Empty extension"
     else pure ext
   where
     lastCompSplitOnExtSepa :: [T.Text]
     lastCompSplitOnExtSepa = T.splitOn "." lastCompWoLeadingDots
-    
+
     lastCompWoLeadingDots = T.dropWhile (=='.') (last requestPathComponents)
 
+    extError :: T.Text -> Either ErrorMessage a
+    extError cause = Left $ cause <> ": " <> T.intercalate filePathSepa requestPathComponents
+
+pathToDeriveExtFrom :: FsPathPrefixAndRqPathSuffix -> RequestPath
+pathToDeriveExtFrom (fsPathPrefix, []) = T.splitOn "/" $ T.pack fsPathPrefix
+pathToDeriveExtFrom (_, rqPathSuffix)   = rqPathSuffix

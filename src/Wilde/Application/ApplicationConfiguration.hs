@@ -24,7 +24,7 @@ module Wilde.Application.ApplicationConfiguration
          module Wilde.Application.ApplicationServices,
 
          ApplicationConfiguration(..),
-         
+
          Translations.Translations(..),
 
          DbConf.Configuration(..),

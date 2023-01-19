@@ -1,5 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Wilde.Driver.Application.WaiServer.RequestHandling.File.Handler where
+{-# LANGUAGE StrictData #-}
+
+module Wilde.Driver.Application.WaiServer.RequestHandling.File.Handler
+    (
+        Configuration(..),
+        resolveRequest,
+    )
+where
 
 
 -------------------------------------------------------------------------------
@@ -20,9 +27,10 @@ import qualified Network.Wai as Wai
 import qualified Wilde.Utils.Logging.Class as Logging
 import qualified Wilde.Driver.Application.Utils as Utils
 
-import Wilde.Driver.Application.WaiServer.RequestHandling.File.Types
+import           Wilde.Driver.Application.WaiServer.RequestHandling.File.Types
 import qualified Wilde.Driver.Application.WaiServer.RequestHandling.File.PathHandling as PathHandling
-import Wilde.Driver.Application.WaiServer.RequestHandling.Types (RequestHandlerResolver, ValidRequestHandler)
+import           Wilde.Driver.Application.WaiServer.RequestHandling.Types (RequestHandlerResolver, ValidRequestHandler)
+import           Wilde.Driver.Application.WaiServer.RequestHandling.File.PathHandling (filePathSepa)
 
 
 -------------------------------------------------------------------------------
@@ -30,44 +38,48 @@ import Wilde.Driver.Application.WaiServer.RequestHandling.Types (RequestHandlerR
 -------------------------------------------------------------------------------
 
 
-filePathSepa :: IsString a => a
-filePathSepa = "/"
-
 data Configuration =
     Configuration
     {
-      mimeTypes      :: MimeTypeMapping
-      -- ^ Mime types for all handled file types.
-    , filePathPrefix :: FilePath
-      -- ^ File System prefix for the location of handled files.
+        filePathPrefix :: FilePath
+        -- ^ File System prefix for the location of handled files.
+    ,   mimeTypes      :: MimeTypeMapping
+        -- ^ Mime types for all handled file types.
     }
 
-resolveRequest :: Logging.AnyLogger -> SystemConfiguration -> Configuration -> RequestHandlerResolver
+{- | request:
+       pathInfo: the suffix of the matched request path prefix.
+       Is empty if the prefix matched the whole path.
+-}
+resolveRequest :: Logging.AnyLogger -> CodingConfiguration -> Configuration -> RequestHandlerResolver
 resolveRequest logger sysConf conf request =
     do
         validatePath
         supportedMimeType <- resolveMimeType
-        pure $ serveValidPath logger (filePathPrefix conf) supportedMimeType path
+        pure $ serveValidPath logger (filePathPrefix conf) supportedMimeType rqPathSuffix
     where
-        path       :: RequestPath
-        path        = Wai.pathInfo request
+        rqPathSuffix       :: RequestPath
+        rqPathSuffix        = Wai.pathInfo request
+
+        fsPathPrefix       :: FilePath
+        fsPathPrefix        = filePathPrefix conf
 
         validatePath :: HandlerResolvingMonad ()
         validatePath =
-            unless (PathHandling.pathIsValid path)
+            unless (PathHandling.pathIsValid rqPathSuffix)
                    (throwBadRequest $
                     "Invalid path: " <> toText (Wai.rawPathInfo request))
 
-        actualMimeType = PathHandling.resolveMimeTypeFromValidPath (mimeTypes conf) path
-    
-        toText :: BS.ByteString -> T.Text
-        toText = queryTDecoder sysConf
+        actualMimeType = PathHandling.resolveMimeTypeFromValidPath (mimeTypes conf) (fsPathPrefix, rqPathSuffix)
 
         resolveMimeType :: HandlerResolvingMonad MimeType
         resolveMimeType =
             case actualMimeType of
                 Left errMsg -> throwBadRequest $ "Invalid file type: " <> errMsg
                 Right x     -> pure x
+
+        toText :: BS.ByteString -> T.Text
+        toText = queryTDecoder sysConf
 
 
 -- | Serves a path that has been cheked "statically" -
@@ -76,18 +88,22 @@ resolveRequest logger sysConf conf request =
 -- This code asserts that the error conditions are handled by the Wai helper.
 serveValidPath
     :: Logging.AnyLogger
-    -> FilePath    -- ^ the file system path that is the "root" for the served file (relative path) 
+    -> FilePath    -- ^ the file system path that is the "root" for the served file (relative path)
     -> MimeType    -- ^ mime type of the file
     -> RequestPath -- ^ the file path of the request
+                   -- ^ appended to the FS path prefix, if non-empty
     -> ValidRequestHandler
 serveValidPath logger filePathPrefix mimeType requestPath errorHandler responder =
     do
-        let path = Prelude.concat
-                [
-                filePathPrefix, 
-                filePathSepa,
-                toRelativeFilePath requestPath
-                ]
+        let path =
+                if Prelude.null requestPath
+                then filePathPrefix
+                else Prelude.concat
+                    [
+                    filePathPrefix,
+                    filePathSepa,
+                    toRelativeFilePath requestPath
+                    ]
         Logging.register logger (Logging.LIBRARY, Utils.logHdr1 <> " handle file : " <> S.fromString path, Nothing)
         let header   = Utils.singleResponseHeaders mimeType
         let response = Wai.responseFile HttpTypes.ok200 header path Nothing

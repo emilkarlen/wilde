@@ -32,7 +32,7 @@ module WildeTest.Media.ElementTest
 
 import Test.HUnit
 
-import TestResources.TestUtils
+import TestResources.Testing.TestUtils
 import qualified TestResources.TestData as TD
 
 import Wilde.Media.Element

@@ -14,6 +14,7 @@ import Test.HUnit
 
 import qualified WildeTest.Driver.WaiServer.FilePathHandling.PathIsValid
 import qualified WildeTest.Driver.WaiServer.FilePathHandling.ResolveMimeType
+import qualified WildeTest.Driver.WaiServer.Cli.Tests
 
 
 -------------------------------------------------------------------------------
@@ -23,6 +24,10 @@ import qualified WildeTest.Driver.WaiServer.FilePathHandling.ResolveMimeType
 
 theTest :: Test
 theTest = TestList
-          [ WildeTest.Driver.WaiServer.FilePathHandling.PathIsValid.theTest
-          , WildeTest.Driver.WaiServer.FilePathHandling.ResolveMimeType.theTest
+          [ "path is valid" ~:
+            WildeTest.Driver.WaiServer.FilePathHandling.PathIsValid.theTest
+          , "resolve mime type" ~:
+            WildeTest.Driver.WaiServer.FilePathHandling.ResolveMimeType.theTest
+          , "cli" ~:
+            WildeTest.Driver.WaiServer.Cli.Tests.theTest
           ]

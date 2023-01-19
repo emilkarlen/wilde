@@ -17,8 +17,8 @@ import Wilde.Driver.Application.Wai.Application
 -------------------------------------------------------------------------------
 
 
-systemConfiguration :: SystemConfiguration
-systemConfiguration = SystemConfiguration
+systemConfiguration :: CodingConfiguration
+systemConfiguration = CodingConfiguration
                       {
                         contentEncoder  = BChar8.fromString
                       , queryVarDecoder = Char8.unpack

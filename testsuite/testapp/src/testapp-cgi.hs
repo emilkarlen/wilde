@@ -30,14 +30,16 @@ import qualified Data.ByteString.Char8 as Char8
 
 import qualified Data.Text.Encoding as TE
 
-import Wilde.Driver.Application.Cgi.Wai
-
-import ApplicationConfiguration
-
-import Database.HDBC.MariaDB as Db
-
 import qualified Network.Wai as Wai
 import qualified Network.Wai.Handler.CGI as WaiCGI
+
+import           Database.HDBC.MariaDB as Db
+
+import qualified Wilde.Application.ApplicationConfiguration as AppConf
+import           Wilde.Driver.Application.Cgi.Wai
+import qualified Wilde.Utils.Logging.Class as Logger
+
+import           ApplicationConfiguration
 
 
 -------------------------------------------------------------------------------
@@ -45,8 +47,8 @@ import qualified Network.Wai.Handler.CGI as WaiCGI
 -------------------------------------------------------------------------------
 
 
-systemConfiguration :: SystemConfiguration
-systemConfiguration = SystemConfiguration
+systemConfiguration :: CodingConfiguration
+systemConfiguration = CodingConfiguration
   {
     contentEncoder  = BChar8.fromString
   , queryVarDecoder = Char8.unpack
@@ -56,7 +58,10 @@ systemConfiguration = SystemConfiguration
   }
 
 waiApp :: Wai.Application
-waiApp = newApplication systemConfiguration appConfig
+waiApp = newApplication systemConfiguration appConf
+
+appConf :: AppConf.ApplicationConfiguration
+appConf = newAppConfig $ newLogger Logger.LIBRARY
 
 main :: IO ()
 main = Db.withRTSSignalsBlocked $ WaiCGI.run waiApp

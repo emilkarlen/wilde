@@ -6,11 +6,11 @@ module Wilde.Driver.Application.Types where
 -------------------------------------------------------------------------------
 
 
-import Data.Text
+import           Data.Text
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Builder as BSB
 import qualified Blaze.ByteString.Builder as B
-import Control.Monad.Trans.Except (ExceptT, throwE)
+import           Control.Monad.Trans.Except (ExceptT, throwE)
 
 
 -------------------------------------------------------------------------------
@@ -42,8 +42,8 @@ type ContentDecoder = BS.ByteString -> String
 type TextEncoder = Text -> BSB.Builder
 type TextDecoder = BS.ByteString -> Text
 
-data SystemConfiguration =
-  SystemConfiguration
+data CodingConfiguration =
+  CodingConfiguration
   {
     contentEncoder  :: ContentEncoder
   , queryVarDecoder :: ContentDecoder

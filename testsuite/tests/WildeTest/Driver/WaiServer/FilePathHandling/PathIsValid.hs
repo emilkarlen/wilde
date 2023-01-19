@@ -38,9 +38,7 @@ theTest =
 pathIsValid_invalid :: Test
 pathIsValid_invalid = TestList
     [
-      "empty" ~: tc []
-
-    , "single empty component" ~: tc [""]
+      "single empty component" ~: tc [""]
 
     , "1 empty, 1 non-empty component" ~:
       tcs ["", "non-empty.ext"]
@@ -67,13 +65,13 @@ pathIsValid_invalid = TestList
       [
         "just relative dir '.'" ~:
         tc ["."]
-  
+
       , "relative dir component '.'" ~:
         tcs [".", "valid.ext"]
-  
+
       , "just relative dir component '..'" ~:
         tc [".."]
-  
+
       , "relative dir component '..'" ~:
         tcs ["..", "valid.ext"]
       ]
@@ -98,7 +96,8 @@ pathIsValid_invalid = TestList
 pathIsValid_valid :: Test
 pathIsValid_valid = TestList
     [
-      "1 comp" ~: TestList
+      "empty"  ~: tc []
+    , "1 comp" ~: TestList
         [
           "single ext"  ~: tc ["head.ext"]
         , "1 char ext"  ~: tc ["head.x"]

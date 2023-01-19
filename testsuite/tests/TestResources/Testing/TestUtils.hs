@@ -18,7 +18,7 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
 -- | Utilities related to testing.
-module TestResources.TestUtils 
+module TestResources.Testing.TestUtils 
        (
          identityTests,
        )

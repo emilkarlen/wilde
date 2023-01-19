@@ -14,16 +14,17 @@ import qualified Data.ByteString.Char8 as Char8
 
 import qualified Data.Text.Encoding as TE
 
-import qualified Network.Wai as Wai
-import qualified Network.Wai.Handler.Warp as Warp
-
 import qualified Wilde.Application.ApplicationConfiguration as AppConf
 import qualified Wilde.Driver.UserInteraction.StandardServiceLinkRenderer as NoResourceRenderer
 import qualified Wilde.Driver.Application.WaiServer.Application as WarpApp
+import qualified Wilde.Driver.Application.WaiServer.Cli.Read as CliRead
 
 import qualified ApplicationConfiguration as TestAppConf
 
-import Database.HDBC.MariaDB as Db
+import           Database.HDBC.MariaDB as Db
+import qualified Wilde.Driver.Application.WaiServer.Cli.WarpMain as WarpMain
+
+import qualified Wilde.Utils.Logging.Class as Logging
 
 
 -------------------------------------------------------------------------------
@@ -31,8 +32,51 @@ import Database.HDBC.MariaDB as Db
 -------------------------------------------------------------------------------
 
 
-systemConfiguration :: WarpApp.SystemConfiguration
-systemConfiguration = WarpApp.SystemConfiguration
+main :: IO ()
+main = WarpMain.main newAppConfigForServer constants cliConfigurable
+
+newAppConfigForServer :: Logging.AnyLogger -> AppConf.ApplicationConfiguration
+newAppConfigForServer logger = (TestAppConf.newAppConfig logger)
+  {
+    AppConf.standardServiceLinkRenderer = NoResourceRenderer.renderer
+  , AppConf.appCssFile                  = Just $ "/style/" ++ TestAppConf.cssFileName
+  }
+
+constants :: WarpMain.NonConfigurable
+constants =
+  WarpMain.NonConfigurable
+  {
+    WarpMain.applicationName     = "Test Application"
+  , WarpMain.coding              = codingConfiguration
+  , WarpMain.servicesPath        = []
+  , WarpMain.fallbackPathHanding = Nothing
+  , WarpMain.newLogger           = TestAppConf.newLogger
+  , WarpMain.wrapperOfWaiApp     = WarpMain.noWaiWrapping
+  , WarpMain.wrapperOfIoAction   = ioWrapper
+  }
+
+cliConfigurable :: CliRead.ServerConfiguration
+cliConfigurable =
+  CliRead.ServerConfiguration
+  {
+    CliRead.port         = 8081
+  , CliRead.fileHandling = filePathsConfig
+  , CliRead.logging      = CliRead.Logging
+    {
+      CliRead.logging_enabled = True
+    , CliRead.logging_level   = Logging.LIBRARY
+    }
+  }
+
+filePathsConfig :: WarpApp.FileHandlingConfiguration
+filePathsConfig = WarpApp.FileHandlingConfiguration
+  {
+    WarpApp.filePaths        = M.singleton ["style"] "html"
+  , WarpApp.handledMimeTypes = supportedMimeTypes
+  }
+
+codingConfiguration :: WarpApp.CodingConfiguration
+codingConfiguration = WarpApp.CodingConfiguration
   {
     WarpApp.contentEncoder  = BChar8.fromString
   , WarpApp.queryVarDecoder = Char8.unpack
@@ -40,38 +84,10 @@ systemConfiguration = WarpApp.SystemConfiguration
   , WarpApp.contentTEncoder = TE.encodeUtf8Builder
   }
 
-appConfigForServer :: AppConf.ApplicationConfiguration
-appConfigForServer = TestAppConf.appConfig
-  {
-    AppConf.standardServiceLinkRenderer = NoResourceRenderer.renderer
-  , AppConf.appCssFile                  = Just $ "/style/" ++ TestAppConf.cssFileName
-  }
-
-requestPaths :: WarpApp.PathPrefixesSetup
-requestPaths = WarpApp.PathPrefixesSetup
-  {
-    WarpApp.services = []
-  , WarpApp.files    = M.singleton ["style"] "html"
-  }
-
 supportedMimeTypes :: WarpApp.MimeTypeMapping
 supportedMimeTypes = M.singleton "css" "text/css"
 
-warpAppConf = WarpApp.Configuration
-  {
-    WarpApp.coding            = systemConfiguration
-  , WarpApp.paths             = requestPaths
-  , WarpApp.handledMimeTypes  = supportedMimeTypes
-  , WarpApp.customPathHandler = Nothing
-  }
-
-port = 8081
-
-main :: IO ()
-main =
-  do
-    putStrLn $ "http://localhost:" ++ show port
-    Db.withRTSSignalsBlocked $ Warp.run port waiApp
-
-waiApp :: Wai.Application
-waiApp = WarpApp.newApplication warpAppConf appConfigForServer
+ioWrapper :: CliRead.ServerConfiguration -> IO () -> IO ()
+ioWrapper config rawIo = do
+    putStrLn $ "http://localhost:" <> show (CliRead.port config)
+    Db.withRTSSignalsBlocked rawIo

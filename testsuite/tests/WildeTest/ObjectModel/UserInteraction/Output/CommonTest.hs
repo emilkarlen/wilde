@@ -44,7 +44,7 @@ import qualified Wilde.ObjectModel.UserInteraction.Common as UserInteractionComm
 import qualified TestResources.UserInteractionOutputMonadUtils as TestUiUtils
 import qualified TestResources.UserInteraction.WidgetResources as WidgetResources
 import qualified TestResources.UserInteraction.FormBlockResources as FormBlockResources
-import qualified TestResources.AssertUtils as AssertUtils
+import qualified TestResources.Testing.AssertUtils as AssertUtils
 
 
 -------------------------------------------------------------------------------

@@ -1,4 +1,6 @@
-module Wilde.Driver.Application.WaiServer.RequestHandling.Main.RequestTypeResolving 
+{-# LANGUAGE StrictData #-}
+
+module Wilde.Driver.Application.WaiServer.RequestHandling.Main.RequestTypeResolving
 (
     module Wilde.Driver.Application.Types,
 
@@ -9,24 +11,38 @@ module Wilde.Driver.Application.WaiServer.RequestHandling.Main.RequestTypeResolv
 )
 where
 
+
+-------------------------------------------------------------------------------
+-- - import -
+-------------------------------------------------------------------------------
+
+
 import Data.Map as M
 import Data.List as L
 
 import Wilde.Driver.Application.Types
+import Wilde.Driver.Application.WaiServer.RequestHandling.Types (FilePaths)
+
+
+-------------------------------------------------------------------------------
+-- - implementation -
+-------------------------------------------------------------------------------
+
 
 data RequestType
     = Service
     | File FilePath -- ^ File request with file system path prefix
     deriving (Show, Eq)
 
-data PathPrefixesSetup 
-    = PathPrefixesSetup
+data PathPrefixesSetup =
+    PathPrefixesSetup
     {
         services :: RequestPath
          -- ^ The request path prefix that serves Wilde services
-    ,   files    :: M.Map RequestPath FilePath
+    ,   files    :: FilePaths
         -- ^ Mapping of request path prefixes to file system path prefixes
     }
+    deriving (Eq, Show)
 
 {- | The request together with the path following
 the path prefix of the matched "path setup element".

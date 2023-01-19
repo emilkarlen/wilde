@@ -8,19 +8,17 @@ module Wilde.Driver.Application.WaiServer.Application
          TextEncoder,
          TextDecoder,
 
-         SystemConfiguration(..),
+         CodingConfiguration(..),
 
          newApplication,
 
          -- * Re-exported from "Wilde.Application.ApplicationConfiguration"
 
-         MainHandler.Configuration(..),
+         MainHandler.MainConfiguration(..),
+         MainHandler.RequestPathsConfiguration(..),
+         MainHandler.FileHandlingConfiguration(..),
 
-         RTR.PathPrefixesSetup(..),
          FileTypes.MimeTypeMapping,
-         -- AppConf.ApplicationConfiguration(..),
-         -- AppConf.ApplicationServices,
-         -- AppConf.Translations(..),
          )
        where
 
@@ -32,11 +30,10 @@ module Wilde.Driver.Application.WaiServer.Application
 
 import qualified Network.Wai as Wai
 
-import Wilde.Driver.Application.Types
+import           Wilde.Driver.Application.Types
 
 import           Wilde.Application.ApplicationConfiguration as AppConf
 
-import qualified Wilde.Driver.Application.WaiServer.RequestHandling.Main.RequestTypeResolving as RTR
 import qualified Wilde.Driver.Application.WaiServer.RequestHandling.File.Types as FileTypes
 import qualified Wilde.Driver.Application.WaiServer.RequestHandling.Main.Handler as MainHandler
 
@@ -46,7 +43,7 @@ import qualified Wilde.Driver.Application.WaiServer.RequestHandling.Main.Handler
 -------------------------------------------------------------------------------
 
 
-newApplication :: MainHandler.Configuration
+newApplication :: MainHandler.MainConfiguration
                -> AppConf.ApplicationConfiguration
                -> Wai.Application
 newApplication = MainHandler.newApplication

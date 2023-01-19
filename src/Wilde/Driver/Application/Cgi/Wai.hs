@@ -25,7 +25,7 @@ module Wilde.Driver.Application.Cgi.Wai
 
          ContentEncoder,
          ContentDecoder,
-         SystemConfiguration(..),
+         CodingConfiguration(..),
          
          newApplication,
 
@@ -70,7 +70,7 @@ import Wilde.Driver.Application.Types
 -------------------------------------------------------------------------------
 
 
-newApplication :: SystemConfiguration
+newApplication :: CodingConfiguration
                -> AppConf.ApplicationConfiguration
                -> Wai.Application
 newApplication sysConf appConf request respond =
@@ -81,11 +81,11 @@ newApplication sysConf appConf request respond =
                 (topLevelErrorHandler (contentEncoder sysConf) appConf)
     respond response
 
-exceptionThrowingWaiApp :: SystemConfiguration
+exceptionThrowingWaiApp :: CodingConfiguration
                         -> AppConf.ApplicationConfiguration
                         -> Wai.Request
                         -> IO Wai.Response
-exceptionThrowingWaiApp (SystemConfiguration
+exceptionThrowingWaiApp (CodingConfiguration
                          {
                            contentEncoder = theContentEncoder
                          , queryVarDecoder = theQueryVarDecoder

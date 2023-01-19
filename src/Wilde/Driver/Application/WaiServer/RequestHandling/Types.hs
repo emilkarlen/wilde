@@ -1,7 +1,21 @@
 module Wilde.Driver.Application.WaiServer.RequestHandling.Types where
 
-import Wilde.Driver.Application.Types (HandlerResolvingMonad, HandlingError)
+
+-------------------------------------------------------------------------------
+-- - import -
+-------------------------------------------------------------------------------
+
+
+import           Data.Map.Strict as M
 import qualified Network.Wai as Wai
+
+import           Wilde.Driver.Application.Types (HandlerResolvingMonad, HandlingError, RequestPath)
+
+
+-------------------------------------------------------------------------------
+-- - implementation -
+-------------------------------------------------------------------------------
+
 
 type WaiResponder = Wai.Response -> IO Wai.ResponseReceived
 
@@ -22,6 +36,10 @@ E.g. checking that a requested object exists in a database might need
 execute the "service", or would be very expensive.
 It is up to the implementation to decide what is checked and reported
 as an exception in this monad, and what is handled/detected inside the
-request handler. 
+request handler.
 -}
 type RequestHandlerResolver = Wai.Request -> HandlerResolvingMonad ValidRequestHandler
+
+-- | The request paths that are handled as files
+-- (each together with its corresponding file system path).
+type FilePaths = M.Map RequestPath FilePath

@@ -44,7 +44,7 @@ import Test.HUnit
 import qualified Wilde.Media.UserInteraction.Output as UiO
 import qualified Wilde.Media.WildeMedia as WildeMedia
 
-import qualified TestResources.AssertUtils as AssertUtils
+import qualified TestResources.Testing.AssertUtils as AssertUtils
 
 
 -------------------------------------------------------------------------------

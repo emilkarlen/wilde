@@ -25,7 +25,7 @@ common common-properties
     html,
     cgi,
     parsec,
-    time, 
+    time,
     old-locale,
     bytestring,
     utf8-string,
@@ -37,7 +37,7 @@ common common-properties
     HDBC,
     -- HDBC-odbc,
     HDBC-mariadb,
-    wilde == 0.6.0
+    wilde
   other-modules:
     AttributeType
 

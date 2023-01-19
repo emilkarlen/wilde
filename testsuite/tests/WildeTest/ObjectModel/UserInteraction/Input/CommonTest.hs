@@ -39,7 +39,7 @@ import Wilde.ObjectModel.ObjectModel
 import qualified Wilde.ObjectModel.UserInteraction.Input.Common as Common
 import qualified Wilde.Media.UserInteraction.Input as UiI
 
-import qualified TestResources.AssertUtils as AssertUtils
+import qualified TestResources.Testing.AssertUtils as AssertUtils
 
 import WildeTest.ObjectModel.UserInteraction.SingleAttributeObjectModelTestResources
 

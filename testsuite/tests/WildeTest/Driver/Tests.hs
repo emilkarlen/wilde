@@ -23,5 +23,5 @@ import qualified WildeTest.Driver.WaiServer.Tests
 -- | All tests in this package.
 theTest :: Test
 theTest = TestList
-          [ WildeTest.Driver.WaiServer.Tests.theTest
+          [ "wai server" ~: WildeTest.Driver.WaiServer.Tests.theTest
           ]

@@ -51,10 +51,11 @@ import qualified Services
 cssFileName :: String
 cssFileName = "wilde_test.css"
 
-logger = SimpleLogger.newLogger (TIO.hPutStrLn IO.stderr) Logging.LIBRARY mempty
+newLogger :: Logging.Level -> Logging.AnyLogger
+newLogger level = SimpleLogger.newLogger (TIO.hPutStrLn IO.stderr) level mempty
 
-appConfig :: AppConf.ApplicationConfiguration
-appConfig =  AppConf.ApplicationConfiguration         
+newAppConfig :: Logging.AnyLogger -> AppConf.ApplicationConfiguration
+newAppConfig logger =  AppConf.ApplicationConfiguration
   {
     AppConf.appServices                 = Services.services
   , AppConf.appCssFile                  = Just cssFileName

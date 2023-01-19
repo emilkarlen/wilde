@@ -2,9 +2,9 @@
 -- | The main handler of Wai apps run as a server.
 module Wilde.Driver.Application.WaiServer.RequestHandling.Main.Handler
        (
-         Configuration(..),
+          module C,
 
-         newApplication,
+          newApplication,
          )
        where
 
@@ -18,8 +18,6 @@ import qualified Data.Text as T
 import qualified Wilde.Utils.Text as TU
 
 import qualified Control.Exception as Exception
-
-import qualified Control.Monad.IO.Class as MonadIO
 
 import           Control.Monad.Trans.Except as ExceptT
 
@@ -35,11 +33,12 @@ import qualified Wilde.Utils.Logging.Class as Logging
 
 import           Wilde.Driver.Application.Types
 import qualified Wilde.Driver.Application.WaiServer.RequestHandling.Main.RequestTypeResolving as RTR
-import           Wilde.Driver.Application.WaiServer.RequestHandling.Types (ValidRequestHandler, RequestHandlerResolver, ErrorHandler, WaiResponder)
+import           Wilde.Driver.Application.WaiServer.RequestHandling.Types (ValidRequestHandler, ErrorHandler, WaiResponder)
 
 import qualified Wilde.Driver.Application.WaiServer.RequestHandling.Service.Handler as ServiceHandling
 import qualified Wilde.Driver.Application.WaiServer.RequestHandling.File.Handler as FileHandling
-import qualified Wilde.Driver.Application.WaiServer.RequestHandling.File.Types as FileTypes
+
+import           Wilde.Driver.Application.WaiServer.RequestHandling.Main.Types as C
 
 
 -------------------------------------------------------------------------------
@@ -47,28 +46,17 @@ import qualified Wilde.Driver.Application.WaiServer.RequestHandling.File.Types a
 -------------------------------------------------------------------------------
 
 
--- | Complete configuration for a WAI web server application.
-data Configuration =
-  Configuration
-  {
-    coding            :: SystemConfiguration
-  , paths             :: RTR.PathPrefixesSetup
-  , handledMimeTypes  :: FileTypes.MimeTypeMapping
-  , customPathHandler :: Maybe RequestHandlerResolver
-  }
-
 -- | Constructs a WAI application acting as a web server.
-newApplication :: Configuration
+newApplication :: MainConfiguration
                -> AppConf.ApplicationConfiguration
                -> Wai.Application
 newApplication warpConf appConf request respond =
-    MonadIO.liftIO $
-      Exception.catch
-      (withinTopLevelErrorHandling warpConf appConf request respond)
-      (internalServerErrorHandler appConf (contentTEncoder $ coding warpConf) request respond)
+  Exception.catch
+  (withinTopLevelErrorHandling warpConf appConf request respond)
+  (internalServerErrorHandler appConf (contentTEncoder $ coding warpConf) request respond)
 
 withinTopLevelErrorHandling
-  :: Configuration
+  :: MainConfiguration
   -> AppConf.ApplicationConfiguration
   -> Wai.Application
 withinTopLevelErrorHandling warpConf appConf request respond =
@@ -88,13 +76,13 @@ withinTopLevelErrorHandling warpConf appConf request respond =
     contentEncoder = contentTEncoder $ coding warpConf
 
 resolveHandler
-  :: Configuration
+  :: MainConfiguration
   -> AppConf.ApplicationConfiguration
   -> Wai.Request
   -> HandlerResolvingMonad ValidRequestHandler
 resolveHandler warpConf appConf request =
   do
-    let requestType = RTR.resolve (paths warpConf) path
+    let requestType = RTR.resolve (getPathPrefixesSetup warpConf) path
     let sysConf = coding warpConf
     case requestType of
       Just (RTR.Service, path)             -> ServiceHandling.resolveRequest sysConf appConf (request {Wai.pathInfo = path})
@@ -102,7 +90,7 @@ resolveHandler warpConf appConf request =
                                               (fileResovingConf filePathPrefix)
                                               (request {Wai.pathInfo = path})
       Nothing ->
-        case customPathHandler warpConf of
+        case C.fallback $ C.requestPaths warpConf of
           Just handlerResolver -> handlerResolver request
           Nothing -> throwBadRequest "Bad request - neither service nor file"
 
@@ -114,7 +102,7 @@ resolveHandler warpConf appConf request =
     fileResovingConf filePathPrefix =
       FileHandling.Configuration
       {
-        FileHandling.mimeTypes      = handledMimeTypes warpConf
+        FileHandling.mimeTypes      = handledMimeTypes $ files $ requestPaths warpConf
       , FileHandling.filePathPrefix = filePathPrefix
       }
 
@@ -131,7 +119,7 @@ errorHandler AppConf.ApplicationConfiguration {AppConf.appLogger = logger} respo
   where
     status = HttpTypes.badRequest400
 
-    logStr :: Text 
+    logStr :: Text
     logStr = TU.showText status <> " : " <> TU.showText msg
 
 plainTextResponse :: TextEncoder -> HttpTypes.Status -> T.Text -> Wai.Response
@@ -141,7 +129,6 @@ plainTextResponse encode status text =
   (Utils.headers_plainText encode)
   (encode text)
 
--- TODO [WAI] Translate error to user friendly text.
 internalServerErrorHandler
   :: AppConf.ApplicationConfiguration
   -> TextEncoder
@@ -150,14 +137,16 @@ internalServerErrorHandler
   -> Exception.SomeException
   -> IO Wai.ResponseReceived
 internalServerErrorHandler AppConf.ApplicationConfiguration {AppConf.appLogger = logger}  contentEncoder request responder ex = do
-  Logging.register logger (Logging.LIBRARY, TU.showText status, Just $ TU.showText ex)
+  Logging.register logger (Logging.ERROR, TU.showText status, Just msg)
   responder $
     plainTextResponse
     contentEncoder
     status
-    ("Internal Server Error: " <> TU.showText ex)
+    msg
   where
     status = HttpTypes.internalServerError500
+    msg :: T.Text
+    msg = "Internal Server Error: " <> TU.showText ex
 
 badRequestResponse :: TextEncoder
                    -> T.Text -- ^ error message
@@ -182,3 +171,17 @@ requestLogEntry request =
     pathInfo = "pathInfo    = " <> TU.showText (Wai.pathInfo request)
     queryStr = "queryString = " <> TU.showText (Wai.queryString request)
     body     = pathInfo <> "\n\n" <> queryStr
+
+
+-------------------------------------------------------------------------------
+-- - utils -
+-------------------------------------------------------------------------------
+
+
+getPathPrefixesSetup :: MainConfiguration -> RTR.PathPrefixesSetup
+getPathPrefixesSetup mc =
+  RTR.PathPrefixesSetup
+  {
+        RTR.services = C.services $ C.requestPaths mc
+    ,   RTR.files    = C.filePaths $ C.files $ C.requestPaths mc
+  }

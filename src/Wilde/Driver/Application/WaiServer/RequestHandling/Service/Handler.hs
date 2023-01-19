@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module Wilde.Driver.Application.WaiServer.RequestHandling.Service.Handler where
 
 
@@ -17,7 +18,6 @@ import qualified Wilde.Utils.Logging.Class as Logging
 import qualified Wilde.Render.Cgi.ElementSetIo as ElementSetIo
 
 import qualified Wilde.Application.ApplicationConfiguration as AppConf
-import qualified Wilde.Driver.Application.Cgi.ServiceLookup as ServiceLookup
 import qualified Wilde.Driver.Application.Utils as Utils
 
 import qualified Wilde.Driver.Application.Cgi.CgiHtml as AppCgiHtml
@@ -32,7 +32,7 @@ import Wilde.Driver.Application.WaiServer.RequestHandling.Types (RequestHandlerR
 
 
 resolveRequest
-  :: SystemConfiguration
+  :: CodingConfiguration
   -> AppConf.ApplicationConfiguration
   -> RequestHandlerResolver
 resolveRequest sysConf appConf request =
@@ -44,12 +44,12 @@ resolveRequest sysConf appConf request =
     requestPath = Wai.pathInfo request
 
 serviceRequestHandler
-    :: SystemConfiguration
+    :: CodingConfiguration
     -> AppConf.ApplicationConfiguration
     -> Wai.Request
     -> ValidRequestHandler
 serviceRequestHandler
-  SystemConfiguration
+  CodingConfiguration
   {
     contentEncoder = theContentEncoder
   , queryVarDecoder = theQueryVarDecoder
@@ -57,7 +57,7 @@ serviceRequestHandler
   appConf request errorHandler responder =
   do
     let logger = AppConf.appLogger appConf
-    Logging.register logger (Logging.LIBRARY, Utils.logHdr1 <> "handle service", Nothing)
+    Logging.register logger (Logging.LIBRARY, Utils.logHdr1 <> " handle service", Nothing)
     res <- AppCgiHtml.lookupAndRunService appConf rawRequestInput
     case res of
       Left err         -> errorHandler $ HandlingError $ S.fromString $ show err

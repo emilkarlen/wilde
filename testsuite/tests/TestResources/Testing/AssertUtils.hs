@@ -18,10 +18,13 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
 -- | Utilities for constructing assertions.
-module TestResources.AssertUtils
+module TestResources.Testing.AssertUtils
        (
          failOnError,
          failOnNothing,
+
+         expectedButGot,
+         failExpectedButGot,
          
          checkMaybes,
 
@@ -59,6 +62,18 @@ failOnNothing :: (a -> Assertion)
                -> Assertion
 failOnNothing _             Nothing    = assertFailure "Nothing: Expected Just something"
 failOnNothing assertionOnJust (Just x) = assertionOnJust x
+
+
+expectedButGot :: String -- ^ expected
+               -> String -- ^ actual
+               -> FailureReason
+expectedButGot expected actual = ExpectedButGot Nothing expected actual
+
+failExpectedButGot :: String -- ^ expected
+                   -> String -- ^ actual
+                   -> Assertion
+failExpectedButGot expected actual =
+  assertFailure $ formatFailureReason $ expectedButGot expected actual
 
 
 -------------------------------------------------------------------------------

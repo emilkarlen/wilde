@@ -14,6 +14,7 @@ import Test.HUnit
 
 import qualified WildeTest.Driver.WaiServer.RequestHandlerResolving
 import qualified WildeTest.Driver.WaiServer.FilePathHandling.Tests
+import qualified WildeTest.Driver.WaiServer.ReadConfigFile
 
 
 -------------------------------------------------------------------------------
@@ -25,4 +26,5 @@ theTest :: Test
 theTest = TestList
           [ WildeTest.Driver.WaiServer.RequestHandlerResolving.theTest
           , WildeTest.Driver.WaiServer.FilePathHandling.Tests.theTest
+          , WildeTest.Driver.WaiServer.ReadConfigFile.theTest
           ]

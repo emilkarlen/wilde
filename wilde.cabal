@@ -1,21 +1,24 @@
-Name:      wilde
-Version:   0.6.0
+Cabal-Version:       >=1.10
+Name:                wilde
+Version:             0.7.0
 License:             GPL
 License-file:        LICENSE
 Build-Type:          Simple
-Cabal-Version:       >=1.10
 Author:              Emil Karlén (emil@member.fsf.org)
 Maintainer:          emil@member.fsf.org
 Stability:           experimental
 Bug-Reports:         mailto:emil@member.fsf.org
-Synopsis:            Library for implementing simple database-oriented CGI Web applications
-Description:         Library for implementing simple administrative CGI Web applications
+Synopsis:            Library for implementing simple database-oriented Web applications
 Category:            Web
+Description:
+  Library for implementing simple administrative Web applications
+  that store data in a relational database.
+
+  Supports CGi and standalone server applications.
 
 Library
   Default-Language:  Haskell2010
   ghc-options:       -fwarn-unused-imports
--- -Wall
   Hs-Source-Dirs:    src
   Build-Depends:
     base          ==4.15.1.0,
@@ -36,7 +39,14 @@ Library
     utf8-string   ==1.0.2,
     http-types    ==0.12.3,
     blaze-builder ==0.4.2.2,
-    HDBC          ==2.4.0.4
+    HDBC          ==2.4.0.4,
+    -- wai server cli
+    warp          == 3.3.21,
+    yaml          ==0.11.8.0,
+    aeson         ==2.0.3.0,
+    scientific    ==0.3.7.0,
+    optparse-applicative ==0.16.1.0,
+    terminal-size ==0.3.3
   Exposed-Modules:
     Wilde.Application.ApplicationConfiguration
     Wilde.Application.ApplicationServices
@@ -48,7 +58,7 @@ Library
     Wilde.Application.Service.PopUp
     Wilde.Application.Service.Result
     Wilde.Application.Service.Service
-    
+
     Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAndDbIo
     Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAndDbIo.UserInteraction
     Wilde.ApplicationConstruction.AttributeTypeConfiguration.DdlAtAnnotation
@@ -174,6 +184,8 @@ Library
     Wilde.Driver.Application.Types
     Wilde.Driver.Application.Utils
 
+    Wilde.Driver.Application.Html
+
     Wilde.Driver.Application.Wai.Utils
 
     Wilde.Driver.Application.Cgi.CgiHtml
@@ -190,9 +202,21 @@ Library
     Wilde.Driver.Application.WaiServer.RequestHandling.Service.Handler
     Wilde.Driver.Application.WaiServer.RequestHandling.Main.RequestTypeResolving
     Wilde.Driver.Application.WaiServer.RequestHandling.Main.Handler
+    Wilde.Driver.Application.WaiServer.RequestHandling.Main.Types
+    Wilde.Driver.Application.WaiServer.Cli.Arguments
+    Wilde.Driver.Application.WaiServer.Cli.Options
+    Wilde.Driver.Application.WaiServer.Cli.Parse
+    Wilde.Driver.Application.WaiServer.Cli.Configuration
+    Wilde.Driver.Application.WaiServer.Cli.Read
+    Wilde.Driver.Application.WaiServer.Cli.Help
+    Wilde.Driver.Application.WaiServer.Cli.Help.FormatConfFile
+    Wilde.Driver.Application.WaiServer.Cli.Help.DocFormat
+    Wilde.Driver.Application.WaiServer.Cli.WarpMain
+    Wilde.Driver.Application.WaiServer.ConfigFile.Configuration
+    Wilde.Driver.Application.WaiServer.ConfigFile.Read
+    Wilde.Driver.Application.WaiServer.ConfigFile.Yaml
     Wilde.Driver.Application.WaiServer.Application
 
-    Wilde.Driver.Application.Html
     Wilde.Driver.Database.MySQL.Renderer
     Wilde.Driver.Database.MySQL.ApplicationObjectModelTools
     Wilde.Driver.Database.MySQL.DmlExcutor
@@ -242,7 +266,7 @@ Library
     Wilde.Service.Monad
     Wilde.Service.ServiceLink
     Wilde.Service.SingleDbConnectionHandler
-    
+
     Wilde.Utils.ListUtils
     Wilde.Utils.TextHtmlUtils
     Wilde.Utils.Debug
@@ -262,25 +286,52 @@ Library
 
 Test-Suite unit-tests
   Type:              exitcode-stdio-1.0
-  Hs-Source-Dirs:    src, testsuite/tests, testsuite/testapp/src
+  Default-Language:  Haskell2010
+  Hs-Source-Dirs:    testsuite/tests, testsuite/testapp/src
   Main-Is:           test-suit.hs
   Other-Modules:
     TestSuit
-    TestResources.TestUtils
-    TestResources.UserInteractionOutputMonadUtils
+    TestResources.Testing.Checker
+    TestResources.Testing.AssertUtils
+    TestResources.Testing.TestUtils
+    TestResources.Testing.TmpDir
+    TestResources.Testing.TestWithTmpDir
     TestResources.TestData
-    TestResources.ReferenceObjectType
     TestResources.Environment
+    TestResources.UserInteractionOutputMonadUtils
+    TestResources.UserInteraction.FormBlockResources
+    TestResources.UserInteraction.WidgetResources
+    TestResources.PresentationMonadUtils
+    TestResources.ReferenceObjectType
+
+    WildeTest.Utils.ListUtilsTest
+
     WildeTest.DdlUtils
+
     WildeTest.Media.Test
     WildeTest.Media.ElementTest
     WildeTest.Media.ElementSetTest
+
     WildeTest.Render.Cgi.ElementSetIoTest
+
     WildeTest.ApplicationTool.ApplicationToolTest
     WildeTest.ApplicationConstruction.StandardServices.WildeSqlInputerTest
     WildeTest.ApplicationConstruction.AttributeTypeTest
     WildeTest.ApplicationConstruction.SqlExprParserTest
-    WildeTest.Utils.ListUtilsTest
+    WildeTest.ApplicationConstruction.AttributeTypesListFooterTest
+    WildeTest.ApplicationConstruction.DateParserTest
+    WildeTest.ApplicationConstruction.Test
+
+    WildeTest.ObjectModel.ObjectModelTest
+    WildeTest.ObjectModel.Test
+    WildeTest.ObjectModel.UserInteraction.Input.CommonTest
+    WildeTest.ObjectModel.UserInteraction.Input.Test
+    WildeTest.ObjectModel.UserInteraction.Output.CommonTest
+    WildeTest.ObjectModel.UserInteraction.Output.Test
+    WildeTest.ObjectModel.UserInteraction.SingleAttributeObjectModelTestResources
+    WildeTest.ObjectModel.UserInteraction.Test
+    WildeTest.ObjectModel.UserInteraction.UserInteractionTest
+
     WildeTest.Driver.Tests
     WildeTest.Driver.WaiServer.Tests
     WildeTest.Driver.WaiServer.RequestHandlerResolving
@@ -288,10 +339,22 @@ Test-Suite unit-tests
     WildeTest.Driver.WaiServer.FilePathHandling.Tests
     WildeTest.Driver.WaiServer.FilePathHandling.PathIsValid
     WildeTest.Driver.WaiServer.FilePathHandling.ResolveMimeType
+    WildeTest.Driver.WaiServer.ReadConfigFile
+    WildeTest.Driver.WaiServer.Cli.Tests
+    WildeTest.Driver.WaiServer.Cli.TestResources
+    WildeTest.Driver.WaiServer.Cli.TestResources.Yaml
+    WildeTest.Driver.WaiServer.Cli.TestResources.CliOptions
+    WildeTest.Driver.WaiServer.Cli.Options
+    WildeTest.Driver.WaiServer.Cli.ParseArguments
+    WildeTest.Driver.WaiServer.Cli.ReadArgsAndFiles
+
+    -- testapp
+    AttributeType
+    ObjectModel
+    ObjectType.CharacterEncodingExperiment
 
   Build-Depends:
     wilde         ,
-    HUnit,
     base          ,
     containers    ,
     transformers  ,
@@ -311,6 +374,15 @@ Test-Suite unit-tests
     HDBC          ,
     -- HDBC-odbc     ,
     HDBC-mariadb  ,
-    text
-
-  Default-Language:  Haskell2010
+    text          ,
+    -- wai server
+    optparse-applicative,
+    -- test
+    HUnit,
+    directory     ==1.3.6.2,
+    -- YAML
+    aeson         ,
+    yaml          ,
+    scientific    ,
+    -- other
+    temporary     ==1.3

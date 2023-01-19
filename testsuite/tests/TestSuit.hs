@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
-module TestSuit 
+module TestSuit
        (
          suit,
          runSuit,
@@ -49,13 +49,20 @@ import WildeTest.Driver.Tests
 
 
 suit = TestList
-       [ WildeTest.Utils.ListUtilsTest.theTest
-       , WildeTest.ObjectModel.Test.theTest
-       , WildeTest.Media.Test.theTest
-       , WildeTest.Render.Cgi.ElementSetIoTest.theTest
-       , WildeTest.ApplicationConstruction.Test.theTest
-       , WildeTest.ApplicationTool.ApplicationToolTest.theTest
-       , WildeTest.Driver.Tests.theTest
+       [ "list utils" ~:
+         WildeTest.Utils.ListUtilsTest.theTest
+       , "object model" ~:
+         WildeTest.ObjectModel.Test.theTest
+       , "media" ~:
+         WildeTest.Media.Test.theTest
+       , "element set" ~:
+         WildeTest.Render.Cgi.ElementSetIoTest.theTest
+       , "app con" ~:
+         WildeTest.ApplicationConstruction.Test.theTest
+       , "app tool" ~:
+         WildeTest.ApplicationTool.ApplicationToolTest.theTest
+       , "driver" ~:
+         WildeTest.Driver.Tests.theTest
        ]
 
 runSuit :: IO ()

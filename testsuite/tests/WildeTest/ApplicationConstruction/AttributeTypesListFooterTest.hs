@@ -31,7 +31,7 @@ module WildeTest.ApplicationConstruction.AttributeTypesListFooterTest
 
 import Test.HUnit
 
-import TestResources.AssertUtils
+import TestResources.Testing.AssertUtils
 import TestResources.PresentationMonadUtils
 
 import Wilde.GenericUi.Value (AnyVALUE(..), valueString)

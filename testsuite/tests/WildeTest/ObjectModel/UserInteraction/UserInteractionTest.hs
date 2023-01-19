@@ -34,8 +34,8 @@ import qualified Data.Map as Map
 
 import Test.HUnit
 
-import           TestResources.TestUtils
-import           TestResources.AssertUtils
+import           TestResources.Testing.TestUtils
+import           TestResources.Testing.AssertUtils
 import qualified TestResources.UserInteractionOutputMonadUtils as UiUtils
 import qualified TestResources.TestData as TD
 import           TestResources.UserInteractionOutputMonadUtils
