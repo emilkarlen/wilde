@@ -1,6 +1,8 @@
 *~
 *.hi
 *.o
+hie.yaml
+
 haddock/
 TAGS
 
