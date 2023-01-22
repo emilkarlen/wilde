@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 module TestResources.UserInteraction.WidgetResources
        (
          -- * Widget designed for test
@@ -27,7 +8,7 @@ module TestResources.UserInteraction.WidgetResources
          StringWidgetForTest(..),
 
          -- * Checking widgets
-         
+
          checkWidgetByHtmlString,
        )
        where
@@ -54,12 +35,12 @@ import qualified Wilde.Media.ElementSet as ES
 
 
 checkWidgetByHtmlString :: String -> UiO.AnyWIDGET -> UiO.AnyWIDGET -> Assertion
-checkWidgetByHtmlString msgHeader (UiO.AnyWIDGET expected) (UiO.AnyWIDGET actual) = 
+checkWidgetByHtmlString msgHeader (UiO.AnyWIDGET expected) (UiO.AnyWIDGET actual) =
   assertEqual "widget html" html_expected html_actual
   where
     html_expected = show $ UiO.widgetHtml expected
     html_actual   = show $ UiO.widgetHtml actual
-  
+
 
 -------------------------------------------------------------------------------
 -- - Construction of test-widget -

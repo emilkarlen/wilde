@@ -1,28 +1,9 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -- | Functionallity required from types that support both
 -- database and presentation medias.
 module Wilde.ObjectModel.DatabaseAndPresentation
        (
          ATTRIBUTE_TYPE_INFO(..),
-         
+
          AttributeWithPresentationInfoDbInputerInfo(..),
          AttributeWithPresentationInfoDbInputer,
        )
@@ -52,7 +33,7 @@ import qualified Wilde.ObjectModel.Presentation as Presentation
 -------------------------------------------------------------------------------
 
 
-class (Database.COLUMN_NAMES atConf,Presentation.ATTRIBUTE_PRESENTATION atConf) => 
+class (Database.COLUMN_NAMES atConf,Presentation.ATTRIBUTE_PRESENTATION atConf) =>
       ATTRIBUTE_TYPE_INFO atConf where
   atDbPresentationInfoGetter :: AttributeType atConf                          dbTable typeForExisting typeForCreate
                              -> AttributeWithPresentationInfoDbInputerInfo dbTable typeForExisting

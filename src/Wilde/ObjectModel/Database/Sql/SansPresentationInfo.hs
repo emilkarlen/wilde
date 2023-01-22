@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -------------------------------------------------------------------------------
 -- | Generation of SQL statements that select
 -- the \"plain\" variant of objects.
@@ -28,29 +9,29 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 --
 -- This means that only columns from the
 -- 'ObjectType's own table are selected.  Also, only
--- information 
+-- information
 -------------------------------------------------------------------------------
 module Wilde.ObjectModel.Database.Sql.SansPresentationInfo
        (
          -- * INSERT
-         
+
          insertOne,
-         
+
          -- * SELECT
-         
+
          select,
          selectAll,
          selectOne,
-         
+
          -- * UPDATE
-         
+
          update_attributes,
-         
+
          updateOne,
          updateOne_attributes,
-         
+
          -- * DELETE
-         
+
          delete,
          deleteAll,
          deleteOne,
@@ -98,7 +79,7 @@ insertOne ot = Sql.insert tblName colNames (map (const Sql.posParam) colNames)
     tblName        = tableName $ otDatabaseTable ot
     allDbCols      = concatMap atColumnListAny$ otAttributeTypes ot
     colNames       = map columnName allDbCols
-   
+
 
 {- |
 An SQL SELECT statement that selects all columns and all rows.
@@ -173,12 +154,12 @@ select ot mbWhereExpr orderBy =
 --
 -- Parameters of the statement are the ID-attribute of type idAtExisting.
 -------------------------------------------------------------------------------
-selectOne :: (COLUMN_NAMES atConf 
+selectOne :: (COLUMN_NAMES atConf
              ,DATABASE_TABLE otConf)
           => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
           -> Sql.SqlSelect dbTable
 selectOne ot = select ot (justOtIdAtEqPosParamExpr ot) []
-    
+
 -------------------------------------------------------------------------------
 -- | An UPDATE statement which updates the given list of 'AttributeType's,
 -- of the selected objects/rows.
@@ -188,10 +169,10 @@ update_attributes :: (COLUMN_NAMES atConf
                   => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
                   -> NonEmpty.List (Any (AttributeType atConf dbTable))
                   -- ^ Attributes to update
-                  -> Maybe (Sql.SqlExpr dbTable) 
+                  -> Maybe (Sql.SqlExpr dbTable)
                   -- ^ WHERE expr
                   -> Sql.SqlUpdate dbTable
-update_attributes ot atsToUpdate mbWhereExpr = 
+update_attributes ot atsToUpdate mbWhereExpr =
   Sql.update theTableName colSets mbWhereExpr
   where
     colSets       = fmap setColumnName colsToUpdate
@@ -234,7 +215,7 @@ updateOne_attributes :: (COLUMN_NAMES atConf
                      -- The SQL expects as parameters values for all these
                      -- attributes.
                      -> Sql.SqlUpdate dbTable
-updateOne_attributes ot atsToUpdate = 
+updateOne_attributes ot atsToUpdate =
   update_attributes ot atsToUpdate (justOtIdAtEqPosParamExpr ot)
 
 -------------------------------------------------------------------------------

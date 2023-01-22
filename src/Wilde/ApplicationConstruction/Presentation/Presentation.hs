@@ -1,74 +1,55 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -------------------------------------------------------------------------------
 -- | Presentation for some common types.
 -------------------------------------------------------------------------------
 module Wilde.ApplicationConstruction.Presentation.Presentation
        (
          -- * Numbers
-         
+
          pres_Word32,
          pres_Int32,
-         
+
          presO_Integral,
          pres_Integral,
          presO_Integral_optional,
          pres_Integral_optional,
-         
+
          presO_Fractional,
          pres_Fractional,
          presO_Fractional_optional,
          pres_Fractional_optional,
-         
+
          -- * Date
-         
+
          presO_Date,
          pres_Date,
          presO_Date_optional,
          pres_Date_optional,
 
          -- * String and Text
-         
+
          presO_String,
          pres_String,
          presO_String_optional,
          pres_String_optional,
-         
+
          presO_Text,
          pres_Text,
          presO_Text_optional,
          pres_Text_optional,
-         
+
          presO_TextHtml,
          presO_TextHtml_optional,
          pres_TextHtml_optional,
-         
+
          HtmlMultiLineTextValue(..),
-         
+
          -- * Special
 
          presO_Href,
          pres_Href,
          presO_Href_optional,
          pres_Href_optional,
-         
+
          -- * Utilities
 
          asUnquotedString,
@@ -76,7 +57,7 @@ module Wilde.ApplicationConstruction.Presentation.Presentation
 
          showAsUnquotedString,
          showAsUnquotedString_optional,
-         
+
          mkOptional,
        )
        where
@@ -102,7 +83,7 @@ import Wilde.ObjectModel.ObjectModel
 -------------------------------------------------------------------------------
 -- - implementation -
 -------------------------------------------------------------------------------
-         
+
 
 pres_Word32 :: Title -- ^ Title of the attribute type.
             -> AttributeTypePresentation Word32
@@ -122,7 +103,7 @@ pres_Integral sTitle = AttributeTypePresentation
              }
 
 presO_Integral :: Integral a
-               => PresentationOutputer a 
+               => PresentationOutputer a
 presO_Integral = AnySVALUE . IntValue . fromIntegral
 
 pres_Integral_optional :: Integral a
@@ -198,7 +179,7 @@ presO_Date_optional = mkOptional presO_Date
 -------------------------------------------------------------------------------
 
 
-pres_String :: String 
+pres_String :: String
             -> AttributeTypePresentation String
 pres_String sTitle = AttributeTypePresentation
                     {
@@ -209,7 +190,7 @@ pres_String sTitle = AttributeTypePresentation
 presO_String :: PresentationOutputer String
 presO_String = AnySVALUE . UnquotedStringValue
 
-pres_String_optional :: String 
+pres_String_optional :: String
                      -> AttributeTypePresentation (Maybe String)
 pres_String_optional sTitle = AttributeTypePresentation
                     {
@@ -220,7 +201,7 @@ pres_String_optional sTitle = AttributeTypePresentation
 presO_String_optional :: PresentationOutputer (Maybe String)
 presO_String_optional = mkOptional presO_String
 
-pres_Text :: String 
+pres_Text :: String
           -> AttributeTypePresentation String
 pres_Text sTitle = AttributeTypePresentation
                     {
@@ -231,7 +212,7 @@ pres_Text sTitle = AttributeTypePresentation
 presO_Text :: PresentationOutputer String
 presO_Text = AnySVALUE . UnquotedMultiLineTextValue
 
-pres_Text_optional :: String 
+pres_Text_optional :: String
                    -> AttributeTypePresentation (Maybe String)
 pres_Text_optional sTitle = AttributeTypePresentation
                     {
@@ -245,7 +226,7 @@ presO_Text_optional = mkOptional presO_Text
 presO_TextHtml :: PresentationOutputer String
 presO_TextHtml = AnySVALUE . HtmlMultiLineTextValue
 
-pres_TextHtml_optional :: String 
+pres_TextHtml_optional :: String
                        -> AttributeTypePresentation (Maybe String)
 pres_TextHtml_optional sTitle = AttributeTypePresentation
                     {
@@ -273,7 +254,7 @@ instance SVALUE HtmlMultiLineTextValue
 -------------------------------------------------------------------------------
 
 
-pres_Href :: String 
+pres_Href :: String
           -> AttributeTypePresentation String
 pres_Href sTitle = AttributeTypePresentation
                     {
@@ -284,7 +265,7 @@ pres_Href sTitle = AttributeTypePresentation
 presO_Href :: PresentationOutputer String
 presO_Href = AnySVALUE . HrefValue . (\x -> (x,x))
 
-pres_Href_optional :: String 
+pres_Href_optional :: String
                    -> AttributeTypePresentation (Maybe String)
 pres_Href_optional sTitle = AttributeTypePresentation
                     {

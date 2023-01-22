@@ -1,23 +1,4 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
-module WildeTest.ObjectModel.UserInteraction.UserInteractionTest 
+module WildeTest.ObjectModel.UserInteraction.UserInteractionTest
        (
          theTest
        )
@@ -106,19 +87,19 @@ fixedGsrTests =
     Nothing `isExpectedAsFixedGsrInEnvironment` []
 
   , "single fixed-gsr value" ~:
-    (Just aNonEmptyValue)  
-    `isExpectedAsFixedGsrInEnvironment` 
+    (Just aNonEmptyValue)
+    `isExpectedAsFixedGsrInEnvironment`
     (UiCommon.metaValuesForRole UiCommon.Fix fixedGsr_atName fixedGsr_oName aNonEmptyValue)
   ]
   where
     aNonEmptyValue = "expectedValue"
 
 fixedGsr_value = UiCommon.elementKeyForAttributeValue
-                 fixedGsr_atName 
+                 fixedGsr_atName
                  fixedGsr_oName
 
 fixedGsr_indicator = UiCommon.elementKeyForRoleIndicator
-                     fixedGsr_atName 
+                     fixedGsr_atName
                      fixedGsr_oName
 
 fixedGsr_oName :: ObjectName
@@ -139,7 +120,7 @@ isExpectedAsFixedGsrInEnvironment expectedResult elementsInSet =
     media     = Map.fromList $ map (\(ek,v) -> (elementKeyRender ek,[v])) elementsInSet
     assertion = failOnError
                 (\actualResult -> assertEqual
-                                  "" 
-                                  expectedResult 
+                                  ""
+                                  expectedResult
                                   actualResult)
     m         = UiCommon.inputFixedFromEnv fixedGsr_atName fixedGsr_oName

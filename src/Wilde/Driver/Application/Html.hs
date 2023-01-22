@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -- | Tools for application drivers that implement HTML based applications.
 module Wilde.Driver.Application.Html
        (
@@ -62,10 +43,10 @@ import Wilde.Application.Service.Service
 -------------------------------------------------------------------------------
 
 
-runService_html :: Maybe String 
-                -> Translations 
-                -> ServiceEnvironment 
-                -> Service 
+runService_html :: Maybe String
+                -> Translations
+                -> ServiceEnvironment
+                -> Service
                 -> IO THtml.Html
 runService_html mbCssFile tr env service =
   do
@@ -79,10 +60,10 @@ runService_html mbCssFile tr env service =
 -- | A variant of 'runService_html' that also renders the HTML as a string.
 --
 -- Renders \"pretty\" if 'VariableNames.pretty' is found in the input media.
-runService_htmlString :: Maybe String 
-                      -> Translations 
-                      -> ServiceEnvironment 
-                      -> Service 
+runService_htmlString :: Maybe String
+                      -> Translations
+                      -> ServiceEnvironment
+                      -> Service
                       -> IO String
 runService_htmlString mbCssFile tr env service =
     do

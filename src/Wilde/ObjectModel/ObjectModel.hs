@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE Rank2Types #-}
 
@@ -47,7 +28,7 @@ module Wilde.ObjectModel.ObjectModel
          AttributeType(..),
 
          EmptyAtConfiguration(..),
-         
+
 
          -- *** Short cuts
 
@@ -67,7 +48,7 @@ module Wilde.ObjectModel.ObjectModel
          -- ** Object Type
 
          EmptyOtConfiguration(..),
-         
+
          ObjectType(..),
 
          ObjectToNativeResult,
@@ -190,7 +171,7 @@ data Any t = forall e c . Any (t e c)
 
 -- TODO move to ObjectModelUtils, remove
 -- (may be replaced by anyValueECApply...
-atCrossRefKey_anyValue :: Any (AttributeType atConf dbTable) 
+atCrossRefKey_anyValue :: Any (AttributeType atConf dbTable)
                        -> AttributeName
 atCrossRefKey_anyValue (Any at) = atCrossRefKey at
 
@@ -260,7 +241,7 @@ otAttributeTypes (ObjectType
 -- | An instance of an 'AttributeType'.
 data Attribute atConf dbTable typeForExisting typeForCreate
   = (Typeable typeForExisting
-    ,Show typeForExisting) 
+    ,Show typeForExisting)
     =>
     Attribute
     {
@@ -287,7 +268,7 @@ data AttributeAny  =
 data Object otConf atConf dbTable otNative idAtExisting idAtCreate =
   (Sql.SQL_IDENTIFIER dbTable
   ,Typeable idAtExisting
-  ,Show idAtExisting) 
+  ,Show idAtExisting)
   =>
   Object
   {
@@ -342,7 +323,7 @@ oAttributes o@(Object {}) = Any (oIdAttribute o) : oNonIdAttributes o
 data AttributeForCreate atConf dbTable typeForExisting typeForCreate
   = (Sql.SQL_IDENTIFIER dbTable
     ,Typeable typeForExisting
-    ,Show typeForExisting) 
+    ,Show typeForExisting)
     =>
     AttributeForCreate
     {
@@ -356,7 +337,7 @@ data AttributeForCreate atConf dbTable typeForExisting typeForCreate
 data ObjectForCreate otConf atConf dbTable otNative idAtExisting idAtCreate =
   (Sql.SQL_IDENTIFIER dbTable
   ,Typeable idAtExisting
-  ,Show idAtExisting) 
+  ,Show idAtExisting)
   =>
   ObjectForCreate
   {

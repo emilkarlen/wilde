@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -- | Functionality for rendering User Interaction in terms of COMPONENT.
 --
 -- The idea is that 'ObjectModelUserInteraction' should not need
@@ -70,7 +51,7 @@ formBlockComponent (FormBlock interaction metaValues)  =
                        renderValue
                        WS.weAttribute WS.tableColumnStylesInputOne
                        interaction
-      
+
       metaValuesHtml = H.concatHtml $ map metaValueInput metaValues
     in
      verticalComponents formContents
@@ -90,11 +71,11 @@ formBlockComponent (FormBlock interaction metaValues)  =
 
 -- | Constructs an 'AnyCOMPONENT' for a 'Form'.
 
-formComponent :: Form 
+formComponent :: Form
               -> UiOm.UserInteractionOutputMonad AnyCOMPONENT
 formComponent form =
   do
-    
+
     custEnv             <- UiOm.getCustomEnvironment
     buttonTexter        <- UiOm.getEnvs UiOm.envButtonTexter
     let custEnvCgiVals   = ElementSetIo.customEnvironmentSetToCgiValues custEnv
@@ -112,7 +93,7 @@ formComponent form =
                       WC.formContent = formContents
                      }
 
-  
+
 -------------------------------------------------------------------------------
 -- - Label -
 -------------------------------------------------------------------------------

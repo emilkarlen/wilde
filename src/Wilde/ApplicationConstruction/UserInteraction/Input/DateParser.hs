@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 {-# LANGUAGE FlexibleContexts #-}
 
 -- | A function for parsing 'Day's conveniently.
@@ -58,7 +39,7 @@ type ParseResult a = Either String a
 format :: String
 format =  "%F"
 
-parseEmlFormat :: TimeLocale 
+parseEmlFormat :: TimeLocale
                -> Maybe String -- ^ A format.  If 'Nothing' than local format ("%F") is used.
                -> Day          -- ^ Base date for eml parsing if parsing according to format fails.
                -> String       -- ^ The string to parse.  Surrounding spaces are allowed.
@@ -83,12 +64,12 @@ parseEmlFormat timeLocale mbFormatString baseDay s =
                                                      absolute m bm,
                                                      absolute d bd)
                                    return $ fromGregorianInteger (y',m',d')
-    
+
     -- Replaces the \"relative\" value 0 with it's absolute counterpart.
     absolute :: Integer -> Integer -> Integer
     absolute 0 n = n
     absolute x _ = x
-    
+
     diff :: (Integer -> Integer -> Integer) -> String -> ParseResult Day
     diff oper diffString =
       do
@@ -98,18 +79,18 @@ parseEmlFormat timeLocale mbFormatString baseDay s =
         return $ fromGregorianInteger (by `oper` dy,
                                        bm `oper` dm,
                                        bd `oper` dd)
-              
-    
-toGregorianInteger :: Day -> (Integer,Integer,Integer)    
+
+
+toGregorianInteger :: Day -> (Integer,Integer,Integer)
 toGregorianInteger day =
   let
     (y,m,d) = toGregorian day
   in
    (y,fromIntegral m,fromIntegral d)
-    
+
 fromGregorianInteger :: (Integer,Integer,Integer) -> Day
 fromGregorianInteger (y,m,d) = fromGregorian y (fromIntegral m) (fromIntegral d)
-    
+
 fill :: (Integer,Integer)
      -> [Integer] -- list to fill. length is 1 .. 3.
      -> (Integer,Integer,Integer)
@@ -135,7 +116,7 @@ datePartsParser =
     xs <- maxCount 2 followingPart
     eof
     return $ x : xs
-    
+
 number4 :: Stream s m Char => ParsecT s u m Integer
 number4 =
   do
@@ -147,7 +128,7 @@ followingPart =
   do
     char '-'
     number4
-  
+
 maxCount :: Stream s m t => Int -> ParsecT s u m a -> ParsecT s u m [a]
 maxCount n p =
   if n <= 0
@@ -163,7 +144,7 @@ maxCount n p =
 
 maxCount1 :: Stream s m t
           => Int -- ^ The max number of optional elements (the first is non-optional)
-          -> ParsecT s u m a 
+          -> ParsecT s u m a
           -> ParsecT s u m [a]
 maxCount1 n p =
   do

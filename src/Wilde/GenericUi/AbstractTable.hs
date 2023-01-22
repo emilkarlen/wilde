@@ -1,26 +1,7 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -------------------------------------------------------------------------------
 -- | A table parametrizes by the type of contents.  This enables the type to
 -- be used for different kinds of tables (HTML, XSL, DocBook, ...).
--- 
+--
 --   This type is relatively primitive - it is very \"pysical\".
 -- This means that, probably, you want to work with tables on a higher, more
 -- logical, level that suits your specific application.  ('ColGroup' and
@@ -34,7 +15,7 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -- each concretization (= concrete content type) to interpret these strings.
 --
 -- FURTHER DEVELOPMENT
--- 
+--
 --  * Add caption
 --
 --  * Add table settings (may introduce a type parameter for this).
@@ -49,19 +30,19 @@ module Wilde.GenericUi.AbstractTable
        --   RowGroupMapFun,
        --   RowMapFun,
        --   CellMapFun,
-         
+
        --   StyledTable,
        --   conTable,
-         
+
        --   StyledRowGroup,
        --   conRowGroup,
-         
+
        --   StyledRow,
        --   conRow,
-         
+
        --   StyledCell,
        --   conCell,
-       --   tableMap 
+       --   tableMap
        -- )
        where
 
@@ -89,7 +70,7 @@ type StyledTable style contentType = Styling style (Table style contentType)
 -- | Constructs a table.
 conTable :: style                            -- ^ The style of the table.
          -> Maybe (StyledRowGroup style cc)  -- ^ The head row-group.
-         -> Maybe (StyledRowGroup style cc)  -- ^ The foot row-group. 
+         -> Maybe (StyledRowGroup style cc)  -- ^ The foot row-group.
          -> StyledRowGroup style cc          -- ^ The body row-group.
          -> StyledTable style cc
 conTable style mbHead mbFoot body =

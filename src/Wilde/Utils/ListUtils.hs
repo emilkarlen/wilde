@@ -1,29 +1,10 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -- | Utilities related to lists.
 module Wilde.Utils.ListUtils
        (
          firstNonNull,
-         
+
          stringSep,
-         
+
          splitAs,
          splitAs2,
          splitOn,
@@ -35,9 +16,9 @@ module Wilde.Utils.ListUtils
          -- ** Comma separated lists
          renderCommaList,
          parseCommaList,
-         
+
          -- * Mics
-         
+
          orderAccordingToList,
        )
        where
@@ -64,13 +45,13 @@ stringSep sep = concat . intersperse sep
 
 -------------------------------------------------------------------------------
 -- | Returns the first non-null (non-empty) list in the given list of lists.
--- If there is non, then the fallback is returned.    
+-- If there is non, then the fallback is returned.
 -------------------------------------------------------------------------------
 firstNonNull :: [a] -> [[a]] -> [a]
 firstNonNull fallback []           = fallback
 firstNonNull fallback ([]:ys)      = firstNonNull fallback ys
 firstNonNull fallback (l@(x:xs):_) = l
-    
+
 -------------------------------------------------------------------------------
 -- | Splits the elements of a list, with the length of the first
 -- part is the same as that of a given list.
@@ -137,7 +118,7 @@ splitOn e = splitOnBy (==e)
 -- elements.
 -------------------------------------------------------------------------------
 splitOnBy :: (a -> Bool) -- ^ True iff the element is a \"border\" element.
-          -> [a] 
+          -> [a]
           -> [[a]]
 
 splitOnBy isBorder xs = case break isBorder xs of
@@ -155,7 +136,7 @@ splitOnBy isBorder xs = case break isBorder xs of
 
 -------------------------------------------------------------------------------
 -- | Renders a list of Strings as a single string, just by interspersing commas.
--- 
+--
 -- Empty element are ignored (the main reason for this is that
 -- the current implementation of 'parseCommaList' is unable to
 -- reproduce such elements correctly.)
@@ -179,8 +160,8 @@ parseCommaList = parseSingleCharSepaList ','
 -- elements may contain the separation character!
 -------------------------------------------------------------------------------
 renderSingleCharSepaList :: Char -> [String] -> String
-renderSingleCharSepaList sepaChar = concat . 
-                                    intersperse [sepaChar] . 
+renderSingleCharSepaList sepaChar = concat .
+                                    intersperse [sepaChar] .
                                     filter (not . null)
 
 -------------------------------------------------------------------------------
@@ -190,7 +171,7 @@ renderSingleCharSepaList sepaChar = concat .
 -- values contain the sepa character!
 -------------------------------------------------------------------------------
 parseSingleCharSepaList :: Char -> String -> [String]
-parseSingleCharSepaList sepaChar = splitOn sepaChar 
+parseSingleCharSepaList sepaChar = splitOn sepaChar
 
 -------------------------------------------------------------------------------
 -- | Uses a list (\"specification\") to order the elements of another

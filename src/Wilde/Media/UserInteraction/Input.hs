@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -- | Monad for reading from User Interaction Input - reading from a User Interface.
 module Wilde.Media.UserInteraction.Input
        (
@@ -25,11 +6,11 @@ module Wilde.Media.UserInteraction.Input
          module ES,
 
          -- * Types
-         
+
          UserInteractionInputer,
-         
+
          -- * The Monad
-         
+
          Monad,
          Environment(..),
          Result(..),
@@ -42,7 +23,7 @@ module Wilde.Media.UserInteraction.Input
          Error(..),
 
          -- ** Liftings and translations
-         
+
          ToError(..),
          ToMonad(..),
 
@@ -125,7 +106,7 @@ instance Functor Monad where
 
 instance MonadWithInputMedia Monad where
   getInputMedia = Monad $ MTrans.lift $ MReader.asks envInputMedia
-  
+
 instance MonadWithInputMediaAndLookup Monad where
   inInputMedia = ES.integrateLookup integration
     where
@@ -137,7 +118,7 @@ instance MonadWithInputMediaAndLookup Monad where
 
 instance MonadWithCustomEnvironment Monad where
   getCustomEnvironment = Monad $ MTrans.lift $ MReader.asks envCustomEnvironment
-  
+
 instance MonadWithCustomEnvironmentAndLookup Monad where
   inCustomEnvironment = ES.integrateLookup integration
     where
@@ -153,7 +134,7 @@ throwElementLookupError err = throwErr $ MediaLookupError err
 
 -- | Runs a 'Monad'.
 run :: Environment
-    -> Monad a 
+    -> Monad a
     -> IO (Either Error a)
 run env (Monad m) =
   MReader.runReaderT (MExcept.runExceptT m) env

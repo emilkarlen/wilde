@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 module WildeTest.ApplicationConstruction.AttributeTypesListFooterTest
        (
          theTest,
@@ -64,48 +45,48 @@ theTest =
   TestList
   [
     -- "Construction of footer rows" ~:
-    
+
     -- [["2","", "3"] , ["F","",""]] ~=? footerRowsAsStrings
-    
+
     "Construction of footer rows" ~:
-    
+
     (TestCase $
      (emptyEnv `check`
       (failOnError $
        failOnNothing
        (\frc -> assertEqual
                 "msg-prefix"
-                (footerRowsAsStrings frc) 
+                (footerRowsAsStrings frc)
                 [["2","", "3"] , ["T","",""]]))
      )
      frcGetter
     )
-    
+
   --   assert ( (isCreateTableWithName refTableName) (getLast (backEndDdlStmtsOf aots)) )
-    
+
   -- , "Create FOREIGN KEYs after CREATE TABLEs for circular dependencies" ~:
-    
+
   --   circularTablesCheck (backEndDdlStmtsOf aotsCircular)
-             
+
   ]
 
-frcGetter :: ObjListSetup.GetFooterRowsConstructor 
-             (AttributeTypesFooterSpecification DdlAtAnnotation.Configuration PkNameTable) 
+frcGetter :: ObjListSetup.GetFooterRowsConstructor
+             (AttributeTypesFooterSpecification DdlAtAnnotation.Configuration PkNameTable)
              OtDbConfig.Configuration
-             DdlAtAnnotation.Configuration 
-             PkNameTable 
-             () 
-             PrimaryKeyType 
+             DdlAtAnnotation.Configuration
+             PkNameTable
+             ()
+             PrimaryKeyType
              PrimaryKeyType
 frcGetter = attributeTypesFooterCellsGetter otPkName atCellConstructors
 
 atCellConstructors :: AttributeTypesFooterSpecification DdlAtAnnotation.Configuration PkNameTable
 atCellConstructors = [Any pkAtFooters,Any nameAtFooters]
-  
-pkAtFooters :: AttributeTypeFooterSpecification 
-               DdlAtAnnotation.Configuration 
-               PkNameTable 
-               PrimaryKeyType 
+
+pkAtFooters :: AttributeTypeFooterSpecification
+               DdlAtAnnotation.Configuration
+               PkNameTable
+               PrimaryKeyType
                PrimaryKeyType
 pkAtFooters =
   AttributeTypeFooterSpecification
@@ -114,10 +95,10 @@ pkAtFooters =
   , atfcCellConstructors = [sumCell_show]
   }
 
-nameAtFooters :: AttributeTypeFooterSpecification 
-                 DdlAtAnnotation.Configuration 
-                 PkNameTable 
-                 String 
+nameAtFooters :: AttributeTypeFooterSpecification
+                 DdlAtAnnotation.Configuration
+                 PkNameTable
+                 String
                  String
 nameAtFooters =
   AttributeTypeFooterSpecification
@@ -130,13 +111,13 @@ nameAtFooters =
 columns :: [Maybe (Any (AttributeType DdlAtAnnotation.Configuration PkNameTable))]
 columns = [Just $ Any at_name, Nothing, Just $ Any at_pk]
 
-footerRowsAsStrings :: FooterRowsConstructor 
-                       (AttributeTypesFooterSpecification otConf PkNameTable) 
-                       OtDbConfig.Configuration 
-                       DdlAtAnnotation.Configuration 
-                       PkNameTable 
-                       () 
-                       PrimaryKeyType 
+footerRowsAsStrings :: FooterRowsConstructor
+                       (AttributeTypesFooterSpecification otConf PkNameTable)
+                       OtDbConfig.Configuration
+                       DdlAtAnnotation.Configuration
+                       PkNameTable
+                       ()
+                       PrimaryKeyType
                        PrimaryKeyType
                     -> [[String]]
 footerRowsAsStrings frc = cellsAsStrings footerRows
@@ -146,7 +127,7 @@ footerRowsAsStrings frc = cellsAsStrings footerRows
 
 cellsAsStrings :: FooterRows -> [[String]]
 cellsAsStrings (_,rows) = map (map getCellValueStringRepresentation) rows
-                               
+
 getCellValueStringRepresentation :: WildeStyledCell -> String
 getCellValueStringRepresentation (Styling { sStyled = Cell { cellContent = AnyVALUE value } } ) = valueString value
 

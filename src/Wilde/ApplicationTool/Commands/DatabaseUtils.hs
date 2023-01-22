@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 module Wilde.ApplicationTool.Commands.DatabaseUtils
        (
          getObjects,
@@ -73,9 +54,9 @@ getObjects env objectType@(ObjectType {}) =
     let sql = SqlPlain.selectAll objectType []
     car    <- getCar env
     rows   <- runDatabaseMonad_inEnv env $ DbExec.select_strict sql []
-    let osRes = runTranslation customEnvironment $ 
+    let osRes = runTranslation customEnvironment $
                 mapM
-                (InputExisting.inputObject objectType) 
+                (InputExisting.inputObject objectType)
                 rows
     case osRes of
       Left msg      -> msgFail $ "Error: " ++ show msg
@@ -88,7 +69,7 @@ getObjectsWithConn :: (Database.DATABASE_TABLE otConf
                    => SqlExec.ConnectionAndRenderer
                    -> ObjectType otConf atConf dbTable otN idAE idAC
                    -> IO [Object otConf atConf dbTable otN idAE idAC]
-getObjectsWithConn car objectType = 
+getObjectsWithConn car objectType =
   runDatabaseMonad_inCar car dbMonad
   where
     dbMonad = InputWithPresentation.inputAll objectType []

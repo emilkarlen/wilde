@@ -1,26 +1,7 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -- | A type for a list that is garrantied to be non-empty.
 --
 -- Import qualified, as many names clash with those for normal lists.
-module Wilde.Utils.NonEmptyList 
+module Wilde.Utils.NonEmptyList
        (
          List(..),
          cons,
@@ -57,7 +38,7 @@ import qualified Prelude as P
 
 newtype List a = List (a,[a])
                  deriving (P.Eq,P.Ord,P.Show,P.Read)
-                          
+
 length :: List a -> P.Int
 length (List (_,xs)) = 1 P.+ P.length xs
 
@@ -99,7 +80,7 @@ concat (List (List (x,xs),ls)) = List (x,concat' xs ls)
     concat' :: [a] -> [List a] -> [a]
     concat' (x:xs) xss               = x : concat' xs xss
     concat' [] ((List (x,xs)) : xss) = x : concat' xs xss
-    concat' [] []                    = []    
+    concat' [] []                    = []
 
 zip :: List a -> List b -> List (a,b)
 zip (List (aH,aT)) (List (bH,bT)) = List ((aH,bH),P.zip aT bT)

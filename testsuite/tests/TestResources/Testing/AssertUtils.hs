@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -- | Utilities for constructing assertions.
 module TestResources.Testing.AssertUtils
        (
@@ -25,7 +6,7 @@ module TestResources.Testing.AssertUtils
 
          expectedButGot,
          failExpectedButGot,
-         
+
          checkMaybes,
 
          isLeft,
@@ -33,7 +14,7 @@ module TestResources.Testing.AssertUtils
          checkEithers,
        )
        where
-  
+
 
 -------------------------------------------------------------------------------
 -- - import -
@@ -98,7 +79,7 @@ checkMaybes :: (String -> a -> a -> Assertion)
 checkMaybes _ _       _      Nothing Nothing = return ()
 checkMaybes _ showVal header Nothing (Just actual) = assertFailure msg
   where
-    msg = header ++ ": expected Nothing" ++ 
+    msg = header ++ ": expected Nothing" ++
           "\n" ++
           "got: Just $ " ++ showVal actual
 checkMaybes _ showVal header (Just expected) Nothing = assertFailure msg
@@ -159,13 +140,13 @@ checkEithers checkLs checkRs showL showR msgHeader (Right expected) (Right actua
   checkRs (msgHeader ++ "/Rights") expected actual
 
 checkEithers checkLs checkRs showL showR msgHeader (Left expected) (Right actual) =
-  assertFailure $ 
+  assertFailure $
   msgHeader ++ ": expected is Left $ " ++ showL expected ++
   "\n" ++
   "actual is Right $ " ++ showR actual
 
 checkEithers checkLs checkRs showL showR msgHeader (Right expected) (Left actual) =
-  assertFailure $ 
+  assertFailure $
   msgHeader ++ ": expected is Right $ " ++ showR expected ++
   "\n" ++
   "actual is Left $ " ++ showL actual

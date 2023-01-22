@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 {-# LANGUAGE ExistentialQuantification #-}
 
 -------------------------------------------------------------------------------
@@ -81,7 +62,7 @@ import qualified Wilde.ApplicationTool.Commands.DatabaseUtils as CommandDatabase
 -------------------------------------------------------------------------------
 
 
-printSql :: OBJECT_TYPES_WITH_DATABASE_IO_INFO om 
+printSql :: OBJECT_TYPES_WITH_DATABASE_IO_INFO om
          => CommandWithParsedArgs om
 printSql (CommandEnv { objectModel = om,dmlRenderer = theDmlRenderer }) (flags,arguments) =
   do
@@ -89,8 +70,8 @@ printSql (CommandEnv { objectModel = om,dmlRenderer = theDmlRenderer }) (flags,a
     sqlStmt     <- FlagLookup.flagSqlStatement_mandatory flags
     mapM_ (printSqlForObjectType theDmlRenderer sqlStmt) (NonEmpty.toList objectTypes)
 
-printSqlForObjectType :: SqlExec.DmlRenderer 
-                      -> SqlStatement 
+printSqlForObjectType :: SqlExec.DmlRenderer
+                      -> SqlStatement
                       -> AnyOWithDatabaseIo ObjectType
                       -> IO ()
 printSqlForObjectType dmlRenderer sqlAction (AnyOWithDatabaseIo ot@(ObjectType {})) =
@@ -102,9 +83,9 @@ printSqlForObjectType dmlRenderer sqlAction (AnyOWithDatabaseIo ot@(ObjectType {
       SelectAllPres  -> Just $ renderSql $ toSI $ SqlDmlSelect $ SqlWithPres.selectAll ot []
       SelectOnePres  -> Just $ renderSql $ toSI $ SqlDmlSelect $ SqlWithPres.selectOne ot
       InsertOne      -> Just $ renderSql $ toSI $ SqlDmlInsert $ SqlSansPres.insertOne ot
-      UpdateOne      -> Just $ 
+      UpdateOne      -> Just $
                         maybe
-                        "no updatable attributes" 
+                        "no updatable attributes"
                         (renderSql . toSI . SqlDmlUpdate . (SqlSansPres.updateOne ot))
                         (NonEmpty.fromList . otNonIdAttributeTypes $ ot)
       DeleteOne      -> Just $ renderSql $ toSI $ SqlDmlDelete $ SqlSansPres.deleteOne ot
@@ -113,7 +94,7 @@ printSqlForObjectType dmlRenderer sqlAction (AnyOWithDatabaseIo ot@(ObjectType {
 toSI :: SQL_IDENTIFIER col => SqlDmlStatement col -> SqlDmlStatement SqlIdentifier
 toSI = fmap sqlIdentifier
 
-dbSelectAll_sqlRecord :: OBJECT_TYPES_WITH_DATABASE_IO_INFO om 
+dbSelectAll_sqlRecord :: OBJECT_TYPES_WITH_DATABASE_IO_INFO om
                       => CommandWithParsedArgs om
 dbSelectAll_sqlRecord env@(CommandEnv { objectModel = om }) (flags,arguments) =
   do
@@ -131,7 +112,7 @@ dbSelectAll_forObjectType_sqlRecord car (AnyOWithDatabaseIo ot@(ObjectType {})) 
     rows   <- SqlExec.quickSelect car sql []
     mapM_ putStrLn $ table ' ' " " $ map (map show) rows
 
-dbSelectAll_tupleString :: OBJECT_TYPES_WITH_DATABASE_IO_INFO om 
+dbSelectAll_tupleString :: OBJECT_TYPES_WITH_DATABASE_IO_INFO om
                         => CommandWithParsedArgs om
 dbSelectAll_tupleString env@(CommandEnv { objectModel = om }) (flags,arguments) =
   do
@@ -176,8 +157,8 @@ printObjectType (AnyOWithDatabaseIo ot) = mapM_ putStrLn $ Utils.table ' ' "  " 
   where
     table = map printAttributeType $ otAttributeTypes ot :: [[String]]
 
-printAttributeType :: DatabaseClasses.COLUMN_NAMES atConf 
-               => Any (AttributeType atConf dbTable) 
+printAttributeType :: DatabaseClasses.COLUMN_NAMES atConf
+               => Any (AttributeType atConf dbTable)
                -> [String]
 printAttributeType (Any at@(AttributeType
                             { atCrossRefKey = crossRefKey }
@@ -190,8 +171,8 @@ printAttributeType (Any at@(AttributeType
     dbColInfo :: SQL_IDENTIFIER dbTable => DatabaseColumn dbTable -> String
     dbColInfo (DatabaseColumn field) = fill ' ' 20 $ sqlIdentifier field
 
-typeString :: AttributeType atConf dbTable typeForExisting typeForCreate 
-           -> typeForExisting 
+typeString :: AttributeType atConf dbTable typeForExisting typeForCreate
+           -> typeForExisting
            -> String
 typeString at@(AttributeType {}) neverTouched = show $ typeOf neverTouched
 

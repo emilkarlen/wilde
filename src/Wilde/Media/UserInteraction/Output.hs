@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 {-# LANGUAGE FlexibleInstances #-}
 
 -- | Monad for generating User Interaction Output - information for producing a
@@ -27,44 +8,44 @@ module Wilde.Media.UserInteraction.Output
          module ES,
          module Wilde.Media.CustomEnvironment,
          module Wilde.Media.MonadWithInputMedia,
-         
+
          -- * Types
-         
+
          WidgetConstructorGetter,
          WidgetConstructorForObjectWithDefault,
          -- * The monad
-         
+
          UserInteractionOutputMonad,
          UserInteractionOutputResult,
          UserInteractionOutputError(..),
          Presentation.Error(..),
-         
+
          -- * Monad Execution
-         
+
          run,
 
          -- * Monad Environment
-         
+
          UserInteractionOutputEnvironment(envMedia, envCustomEnvironment, envOutputing),
          newEnvironment,
          Presentation.Outputing(..),
          PopUpButtonTexter,
-         
+
          envButtonTexter,
          envStandardServiceLinkRenderer,
-         
+
          getEnvs,
-         
+
          -- * Error handling
-         
+
          throwErr,
          catchErr,
          liftIOWithError,
-         
+
          -- * Utilities
-         
+
          ToUserInteractionOutputMonad(..),
-         
+
          toUiOMonad_wDefaultDbConn,
        )
        where
@@ -154,7 +135,7 @@ envStandardServiceLinkRenderer = Presentation.outStandardServiceLinkRenderer . e
 
 -- | Gets the 'PopUpButtonTexter' from a
 -- 'UserInteractionOutputEnvironment'.
-envButtonTexter :: UserInteractionOutputEnvironment 
+envButtonTexter :: UserInteractionOutputEnvironment
                 -> PopUpButtonTexter
 envButtonTexter = trButtonTexter . Presentation.outTranslations . envOutputing
 
@@ -166,7 +147,7 @@ newtype UserInteractionOutputMonad a =
 
 instance MonadWithInputMedia UserInteractionOutputMonad where
   getInputMedia = fmap envMedia getEnv
-  
+
 instance MonadWithInputMediaAndLookup UserInteractionOutputMonad where
   inInputMedia = ES.integrateLookup integration
     where
@@ -178,7 +159,7 @@ instance MonadWithInputMediaAndLookup UserInteractionOutputMonad where
 
 instance MonadWithCustomEnvironment UserInteractionOutputMonad where
   getCustomEnvironment = fmap envCustomEnvironment getEnv
-  
+
 instance MonadWithCustomEnvironmentAndLookup UserInteractionOutputMonad where
   inCustomEnvironment = ES.integrateLookup integration
     where
@@ -212,7 +193,7 @@ instance Functor UserInteractionOutputMonad where
 
 instance MonadIO UserInteractionOutputMonad where
   liftIO = UserInteractionOutputMonad . lift . lift
-  
+
 -- | \"Computations\" (e.g. monads) that are instances of this class
 -- can be integrated into the 'UserInteractionOutputMonad'.
 class ToUserInteractionOutputMonad m where
@@ -228,20 +209,20 @@ getEnv :: UserInteractionOutputMonad UserInteractionOutputEnvironment
 getEnv = UserInteractionOutputMonad $ lift ask
 
 -- | Gets the environment of the 'UserInteractionOutputMonad'.
-getEnvs :: (UserInteractionOutputEnvironment -> a) 
+getEnvs :: (UserInteractionOutputEnvironment -> a)
         -> UserInteractionOutputMonad a
 getEnvs = UserInteractionOutputMonad . lift . asks
 
 -- | Corresponds to 'Control.Monad.Trans.Error's throwError.
 throwErr :: Presentation.ToPresentationError err
-         => err 
+         => err
          -> UserInteractionOutputMonad a
 throwErr err = UserInteractionOutputMonad $ throwE (Presentation.toError err)
 
 -- | Corresponds to 'Control.Monad.Trans.Error's catchError.
 catchErr :: UserInteractionOutputMonad a                                 -- ^ The computation that can throw an error.
          -> (UserInteractionOutputError -> UserInteractionOutputMonad a) -- ^ Error handler
-         -> UserInteractionOutputMonad a                                 
+         -> UserInteractionOutputMonad a
 catchErr m handler =
   let
     (UserInteractionOutputMonad errT) = m
@@ -279,7 +260,7 @@ instance Presentation.ToPresentationError err =>
     do
       res <- liftIO $ runExceptT m
       toUserInteractionOutputMonad res
-  
+
 -- | Integrates monads of type "IO (Either err a)"
 -- into the UserInteractionOutputMonad monad
 liftIOWithError :: Presentation.ToPresentationError err

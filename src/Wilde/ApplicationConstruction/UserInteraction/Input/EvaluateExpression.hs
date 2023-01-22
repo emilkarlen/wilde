@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -------------------------------------------------------------------------------
 -- | Methods for evaluating mathematical numerical expressions.
 --
@@ -26,7 +7,7 @@ module Wilde.ApplicationConstruction.UserInteraction.Input.EvaluateExpression
        (
          evalInteger,
          evalDouble,
-       
+
          ParseError,
          errorString,
        )
@@ -75,7 +56,7 @@ exprDouble = buildExpressionParser tableDouble termDouble
           <?> "expression"
 
 termDouble :: ParsecT String u Identity Double
-termDouble =  parens exprDouble 
+termDouble =  parens exprDouble
           <|> fmap (either fromIntegral id) naturalOrFloat
           <?> "constant or expression in parenthesis"
 
@@ -84,7 +65,7 @@ tableDouble = [ [prefix "-" negate, prefix "+" id ]
               , [binary "*" (*) AssocLeft, binary "/" (/) AssocLeft ]
               , [binary "+" (+) AssocLeft, binary "-" (-) AssocLeft ]
               ]
-          
+
 
 -------------------------------------------------------------------------------
 -- - Integer -
@@ -103,7 +84,7 @@ exprInteger = buildExpressionParser tableInteger termInteger
            <?> "expression"
 
 termInteger :: ParsecT String u Identity Integer
-termInteger = parens exprInteger 
+termInteger = parens exprInteger
            <|> natural
            <?> "constant or expression in parenthesis"
 
@@ -112,7 +93,7 @@ tableInteger = [ [prefix "-" negate, prefix "+" id ]
                , [binary "*" (*) AssocLeft, binary "/" (div) AssocLeft ]
                , [binary "+" (+) AssocLeft, binary "-" (-)   AssocLeft ]
                ]
-          
+
 
 -------------------------------------------------------------------------------
 -- - Helper functions -

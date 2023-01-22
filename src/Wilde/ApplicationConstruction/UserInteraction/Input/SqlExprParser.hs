@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -------------------------------------------------------------------------------
 -- | Parser of SQL expressions.
 --
@@ -25,7 +6,7 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 module Wilde.ApplicationConstruction.UserInteraction.Input.SqlExprParser
        (
          Expression(..),
-         
+
          parseWithListedColumns,
        )
        where
@@ -170,7 +151,7 @@ p_expression p_column = buildExpressionParser opTable p_expression' <?> "express
 -- of the table.
 -------------------------------------------------------------------------------
 parseString :: Parser tableColumn
-               -> String 
+               -> String
                -> Either ParseError (Expression tableColumn)
 parseString p_column = parse (p_whiteSpace *> ((p_expression p_column) <* eof))
               "Invalid SQL"
@@ -180,7 +161,7 @@ parseString p_column = parse (p_whiteSpace *> ((p_expression p_column) <* eof))
 -- table.
 -------------------------------------------------------------------------------
 parseWithListedColumns :: [(String,tableColumn)] -- ^ (column name in lower case,column)
-                          -> String 
+                          -> String
                           -> Either ParseError (Expression tableColumn)
 parseWithListedColumns columns = parseString (columnParserForListedColumns columns)
 

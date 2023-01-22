@@ -1,27 +1,8 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -------------------------------------------------------------------------------
 -- | A command of the Application Tool that checks an Object Model for
 -- integrity and consistency.
 -------------------------------------------------------------------------------
-module Wilde.ApplicationTool.Commands.Check 
+module Wilde.ApplicationTool.Commands.Check
        (
          checkObjectModel,
        )
@@ -268,7 +249,7 @@ checkStringSyntax isValidChar (title,elementName) elements =
       do
         putStrLn $ title ++ ": " ++ show (length invalidStrings) ++ " with invalid syntax"
         let elementRows = map (\s -> (s,quote $ filter (not . isValidChar) s)) invalidStrings
-        print2ColTable (elementName,"Invalid Characters") elementRows      
+        print2ColTable (elementName,"Invalid Characters") elementRows
 
 isValidSqlIdentifier :: Char -> Bool
 isValidSqlIdentifier ch = isAlphaNum ch || ch == '_'

@@ -1,27 +1,8 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -- | Test data that is shared by many tests.
 module TestResources.TestData
        (
          noDbIo,
-         
+
          elementKeyPrefixes,
 
          -- * A Test Object Type
@@ -146,20 +127,20 @@ mkObject id name = conObject otPkName idAttr [Any (nameAttr)]
 
 otsPkName :: StandardServices.ObjectTypeSetup
              OtDbConfig.Configuration
-             DdlAtAnnotation.Configuration 
-             PkNameTable 
-             PkName 
-             PrimaryKeyType 
+             DdlAtAnnotation.Configuration
+             PkNameTable
+             PkName
+             PrimaryKeyType
              PrimaryKeyType
 otsPkName = objectTypeSetup otPkName $
             withNeutralWildeStyle "PKN"
 
-rpsPkName :: ReferencePresentationSpec 
+rpsPkName :: ReferencePresentationSpec
              OtDbConfig.Configuration
-             DdlAtAnnotation.Configuration 
-             PkNameTable 
-             PkName 
-             PrimaryKeyType 
+             DdlAtAnnotation.Configuration
+             PkNameTable
+             PkName
+             PrimaryKeyType
              PrimaryKeyType
 rpsPkName = refPresSpec_4_stringAt at_name
 

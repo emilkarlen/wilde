@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 {-# LANGUAGE FlexibleInstances #-}
 
 -------------------------------------------------------------------------------
@@ -33,7 +14,7 @@ module Wilde.Database.Sql
          -- DOC(..), -- behövs?
 
          SqlDmlStatement(..),
-         
+
          -- * Expression
 
          SqlExpr(..),
@@ -41,7 +22,7 @@ module Wilde.Database.Sql
          SqlUnOp(..),
 
          SqlConstant(..),
-         
+
          -- ** Constants
 
          const_null,
@@ -86,7 +67,7 @@ module Wilde.Database.Sql
 
          SqlJoin(..),
          SqlJoinTableAndType(..),
-         
+
          OuterJoinType,
 
          outerNothing,
@@ -198,7 +179,7 @@ outerBoth    = Just Nothing
 -- | A \"right\" table to join.
 --
 -- \"right\" is the position for OUTER/INNER joins.
-data SqlJoin fieldType = 
+data SqlJoin fieldType =
   SqlJoin
   {
     sqlJoinTableAndType :: SqlJoinTableAndType
@@ -234,7 +215,7 @@ instance Functor SqlSelect where
 --
 -- The types are included here just for quick experimentation.
 --
--------------------------------------------------------------------------------  
+-------------------------------------------------------------------------------
 -- | Parametrize by the field type.  This will make SQL expressions
 -- related to a special field type.
 -- A drawback is that field types must be defined for each SQL SELECT

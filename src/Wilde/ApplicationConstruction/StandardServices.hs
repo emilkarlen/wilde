@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -------------------------------------------------------------------------------
 -- | Constructs the \"standard services\" of an 'ObjectType' given
 -- a 'ObjectTypeSetup'.
@@ -34,7 +15,7 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 module Wilde.ApplicationConstruction.StandardServices
        (
          mkSetupUpdateOne, -- DEBUG
-         
+
          module Wilde.Application.ApplicationServices,
          module Wilde.Application.StandardServices,
 
@@ -70,7 +51,7 @@ module Wilde.ApplicationConstruction.StandardServices
          NEW_LINK_RENDERER(..),
          rendererLinkFor,
          linkRendererFor,
-         
+
          HAS_SERVICE_NAME(..),
          HAS_SERVICE_TITLE(..),
          --standardServiceTitle,
@@ -360,7 +341,7 @@ mkSetupUpdateOne ots@(ObjectTypeSetup
   =
   fmap
   aConfig
-  (UpdateOne.updatableAts theUpdateConfig) 
+  (UpdateOne.updatableAts theUpdateConfig)
   where
     aConfig theUpdatables =
                   OtServiceOtSetup ot $
@@ -440,7 +421,7 @@ createOneLinkButtonWithFixedAttributeTypes ot fixedAts =
     mkFixParam :: OmUi.AttributeFixedValue atConf dbTable
                -> [Element.Element]
     mkFixParam (OmUi.AttributeFixedValue at_any gsrValue) =
-      UiCommon.metaValuesForRole 
+      UiCommon.metaValuesForRole
       UiCommon.Fix
       (atCrossRefKey_anyValue at_any)
       theObjectName

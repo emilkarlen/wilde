@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE KindSignatures #-}
 
@@ -42,17 +23,17 @@ module Wilde.ApplicationConstruction.ObjectModel.ObjectType
 
          StdObjectType_ddl,
          StdObject_ddl,
-         
+
          -- ** Types with a PK autogen by the database
 
          -- *** Type synonyms helpers
-         
+
          StdAutoPkO,
          StdAutoPkO_noAtAnn,
          StdAutoPkO_ddl,
-         
+
          -- *** Standard types
-         
+
          StdAutoPkObjectType,
          StdAutoPkObjectTypeSetup,
          StdAutoPkObject,
@@ -64,9 +45,9 @@ module Wilde.ApplicationConstruction.ObjectModel.ObjectType
          StdAutoPkObject_ddl,
 
          -- * Id AttributeType utils
-         
+
          getIdOfInsertedWhenEqualToCreate,
-         
+
          -- * Reference Presentation Specifications
 
          refPresSpec_default,

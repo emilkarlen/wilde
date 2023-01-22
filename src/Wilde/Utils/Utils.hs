@@ -1,34 +1,15 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -- | Misc utilities.
 --
 -- (May decompose this module when/if a pattern emerges.)
-module Wilde.Utils.Utils 
+module Wilde.Utils.Utils
        (
          -- * Table layout
-         
+
          table,
          fill,
-         
+
          -- * Other
-         
+
          eitherMap,
          readCompletelyAndUnambigously,
          Mismatch(..),
@@ -86,7 +67,7 @@ columnLengths rows = columnLengths' rows []
     columnLengths' :: [[[a]]] -> [Int] -> [Int]
     columnLengths' []         lengths = lengths
     columnLengths' (row:rows) lengths = columnLengths' rows (updateLengths row lengths)
-  
+
     updateLengths :: [[a]] -> [Int] -> [Int]
     updateLengths [] lengths        = lengths
     updateLengths (col:cols) []     = length col         : updateLengths cols []
@@ -98,14 +79,14 @@ table fillValue columnSeparator rows =
   case columnLengths rows of
     []      -> []
     lengths -> map (layoutRow fillValue columnSeparator lengths) rows
-      
+
       where
         layoutRow :: a -> [a] -> [Int] -> [[a]] -> [a]
         layoutRow fill colSepa lengths row = intercalate colSepa $ map (layoutCell fill) $ zip lengths row
-        
+
         layoutCell :: a -> (Int,[a]) -> [a]
         layoutCell fill (cellWidth,cell) = cell ++ replicate (cellWidth - length cell) fill
-  
+
 -- | Fills a list to a given size.
 --
 -- If the list is longer than the size, the result is the original list.

@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -------------------------------------------------------------------------------
 -- | Utilities related to execution of SQL statements in db monad.
 -------------------------------------------------------------------------------
@@ -71,7 +52,7 @@ execForIdAtObject :: (Output.OUTPUT_FOR_EXISTING atConf
                      ,Output.COLUMN_NAMES atConf
                      )
                   => (ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
-                      -> Maybe (Sql.SqlExpr dbTable) 
+                      -> Maybe (Sql.SqlExpr dbTable)
                       -> Sql.SqlDmlStatement dbTable)
                   -> ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
                   -> idAtExisting
@@ -83,7 +64,7 @@ execForIdAtObject :: (Output.OUTPUT_FOR_EXISTING atConf
 execForIdAtObject newSqlForWhereExpr
   ot@(ObjectType {})
   idAtValue
-  sqlParams 
+  sqlParams
   =
     execForOne (newSqlForWhereExpr ot) idAt idAtValue sqlParams
   where
@@ -108,14 +89,14 @@ execForOne :: (Output.OUTPUT_FOR_EXISTING atConf
            -- (precedes,comes after), respectively,
            -- those of the WHERE expression.
            -> DbConnM.Monad (Maybe Integer)
-execForOne newSqlForWhereExpr 
+execForOne newSqlForWhereExpr
   whereEqAttrType@(AttributeType {})
-  whereEqAttrValue 
-  (sqlParamsBeforeWhereExpr,sqlParamsAfterWhereExpr) 
+  whereEqAttrValue
+  (sqlParamsBeforeWhereExpr,sqlParamsAfterWhereExpr)
   =
   do
     whereEqAttrSqlValues <- DbConnM.toMonad getAtSqlValues
-    let sqlParams         = sqlParamsBeforeWhereExpr ++ 
+    let sqlParams         = sqlParamsBeforeWhereExpr ++
                             whereEqAttrSqlValues ++
                             sqlParamsAfterWhereExpr
     execForWhereExpr newSqlForWhereExpr mbWhereExpr sqlParams
@@ -123,7 +104,7 @@ execForOne newSqlForWhereExpr
     getAtSqlValues   = Output.atOutputerExisting whereEqAttrType whereEqAttrValue
                        :: ConvertResult [SqlValue]
     mbWhereExpr      = Utils.justAtEqPosParamExpr whereEqAttrType
-    
+
 -------------------------------------------------------------------------------
 -- | Executes a SQL statement given a way to construct it from a given WHERE
 -- expression, and the SQL parameters expected by the constructed SQL.

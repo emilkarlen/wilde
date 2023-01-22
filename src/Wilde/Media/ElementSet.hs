@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -------------------------------------------------------------------------------
 -- | Lookup functionallity on a set of 'Element's.
 --
@@ -73,7 +54,7 @@ module Wilde.Media.ElementSet
 
          Parser,
          mkLookuper,
-         
+
          parser_optional_ValueMissing_is_Nothing,
          nothingIs,
          nothingIsNothing,
@@ -121,9 +102,9 @@ empty :: ElementSet
 empty = Map.empty
 
 fromElements :: [Element] -> ElementSet
-fromElements = Map.fromList . 
+fromElements = Map.fromList .
                map (\(ek,ev) -> (elementKeyRender ek,[ev]))
-  
+
 
 -------------------------------------------------------------------------------
 -- - Error types -
@@ -165,12 +146,12 @@ type Lookuper a = ElementSet -> LookupResult a
 -- | Parses the value in the set for a single key, to something that
 -- may be regarded as the result of the lookup on the key.
 --
--- The purpose of this type is to be able to used to construct complex lookup 
+-- The purpose of this type is to be able to used to construct complex lookup
 -- function from simple ones.
 --
 -- Compose parses using '>=>' from "Control.Monad".
 --
--- TODO: Maybe make it possible to include an (optional) error message in this 
+-- TODO: Maybe make it possible to include an (optional) error message in this
 -- type.
 -------------------------------------------------------------------------------
 type Parser a b = a -> Either ElementLookupErrorType b

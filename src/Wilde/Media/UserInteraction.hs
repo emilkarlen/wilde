@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 {-# LANGUAGE ExistentialQuantification #-}
 
 -- | Types related to User Interaction/User Interaface,
@@ -24,7 +5,7 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 module Wilde.Media.UserInteraction
        (
          -- * Names
-         
+
          ObjectName,
          AttributeName,
          objectName,
@@ -32,23 +13,23 @@ module Wilde.Media.UserInteraction
          objectNameAsElementKey,
          attributeName,
          attributeElementKey,
-         
+
          -- * Element
-         
+
          module Wilde.Media.Element,
          Monoid(..),
-         
+
          -- * Widgets and forms
 
          Label(..),
-         
+
          -- ** Widget
-         
+
          WIDGET(..),
          AnyWIDGET(..),
-         
+
          -- * Forms
-         
+
          GenericWidgetDefaultValue,
          MultiItem,
          MultiItemPresentation,
@@ -70,16 +51,16 @@ module Wilde.Media.UserInteraction
          presentationOutputFormBlockRow,
 
          -- *** FormBlockRowInfo
-         
+
          FormBlockRowInfo(..),
          concatAtFormBlockInfos,
          formBlockInfoAsFormBlock,
          mkFormBlockRowInfoForLabelAndWidget,
          mkFormBlockRowInfoForMetas,
          mkFormBlockRowInfoForPresentation,
-         
+
          -- ** Container for Form Blocks and Meta Elements
-         
+
          FormBlocksAndMetas(..),
          fbamAppendMetas,
          fbamAppendBlocks,
@@ -204,11 +185,11 @@ instance Semigroup FormBlock where
                { formBlockInteraction = concatMap formBlockInteraction [fp1,fp2]
                , formBlockMetaValues  = concatMap formBlockMetaValues  [fp1,fp2]
                }
-  
+
 
 instance Monoid FormBlock where
   mempty = FormBlock [] []
-  
+
 
 -- | One row of a 'FormBlock'.
 type FormBlockRow = Either
@@ -234,7 +215,7 @@ formBlockAppendMetaValues f@(FormBlock _ currentMetas) newMetas =
 
 -- | Information about how to use an 'AttributeType'
 -- in a 'FormBlock'.
-data FormBlockRowInfo = 
+data FormBlockRowInfo =
   FormBlockRowInfo
   {
     atFormBlockMetaValues :: [Element]
@@ -255,7 +236,7 @@ formBlockInfoAsFormBlock atFbInfo@(FormBlockRowInfo {
   FormBlock formBlockRows theMetaValues
   where
     formBlockRows = maybe [] (:[]) mbFormBlockRow
-  
+
 instance EMPTY FormBlockRowInfo where
   empty =
     FormBlockRowInfo
@@ -264,9 +245,9 @@ instance EMPTY FormBlockRowInfo where
     , atFormBlockRow        = Nothing
     }
 
-mkFormBlockRowInfoForLabelAndWidget :: LabelAndWidget 
+mkFormBlockRowInfoForLabelAndWidget :: LabelAndWidget
                                     -> FormBlockRowInfo
-mkFormBlockRowInfoForLabelAndWidget x = 
+mkFormBlockRowInfoForLabelAndWidget x =
   FormBlockRowInfo
   {
     atFormBlockMetaValues = []
@@ -275,16 +256,16 @@ mkFormBlockRowInfoForLabelAndWidget x =
 
 mkFormBlockRowInfoForPresentation :: (Title,PresentationOutput)
                                   -> FormBlockRowInfo
-mkFormBlockRowInfoForPresentation x = 
+mkFormBlockRowInfoForPresentation x =
   FormBlockRowInfo
   {
     atFormBlockMetaValues = []
   , atFormBlockRow        = Just $ Right x
   }
 
-mkFormBlockRowInfoForMetas :: [Element] 
+mkFormBlockRowInfoForMetas :: [Element]
                            -> FormBlockRowInfo
-mkFormBlockRowInfoForMetas x = 
+mkFormBlockRowInfoForMetas x =
   FormBlockRowInfo
   {
     atFormBlockMetaValues = x
@@ -394,11 +375,11 @@ formForFormBlocksAndMetasForSameProgram formBlocksAndMetas formMetas =
 
 formBlockFromRows :: [FormBlockRowOutputer defaultType]
                   -> FormBlockOutputer defaultType
-formBlockFromRows rowOutputers defaltValue objectName = 
-  concatAtFormBlockInfos $ 
+formBlockFromRows rowOutputers defaltValue objectName =
+  concatAtFormBlockInfos $
   map (\rowOutputer -> rowOutputer defaltValue objectName) rowOutputers
 
-  
+
 -------------------------------------------------------------------------------
 -- - outputers -
 -------------------------------------------------------------------------------
@@ -406,7 +387,7 @@ formBlockFromRows rowOutputers defaltValue objectName =
 
 type FormBlockOutputer defaultType =
   Maybe defaultType -> ObjectName -> FormBlock
-  
-  
+
+
 type FormBlockRowOutputer defaultType =
   Maybe defaultType -> ObjectName -> FormBlockRowInfo

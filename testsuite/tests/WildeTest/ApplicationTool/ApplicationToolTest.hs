@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 module WildeTest.ApplicationTool.ApplicationToolTest
        (
          theTest,
@@ -57,24 +38,24 @@ theTest =
   TestList
   [
     "Create Referring tables after the reference target tables" ~:
-    
+
     assert ( (isCreateTableWithName refTableName) (getLast (backEndDdlStmtsOf aots)) )
-    
+
   , "Create FOREIGN KEYs after CREATE TABLEs for circular dependencies" ~:
-    
+
     circularTablesCheck (backEndDdlStmtsOf aotsCircular)
-             
+
   ]
   where
     refTableName = getTableName refOt
-    
+
     backEndDdlStmtsOf aots = [ commentedValue x | x <- mkDdlStatements aots]
-    
+
     aots = map getOt ObjectModel.objectModel :: [ObjectTypeWithAtDdlInformation.AnyO ObjectType]
-    
+
     refOt :: ObjectTypeWithAtDdlInformation.AnyO ObjectType
     refOt = getOt ObjectModel.aotsReference
-    
+
     getOt :: ObjectTypeWithAtDdlInformation.AnyO SS.ObjectTypeSetup -> ObjectTypeWithAtDdlInformation.AnyO ObjectType
     getOt = ObjectTypeWithAtDdlInformation.anyODdlApply2 SS.objectType
 
@@ -119,7 +100,7 @@ circularTablesCheck [tbl_inCircle1
        [("c",tbl_inCircle1)
        ,("b",tbl_inCircle2)]
       )
-      
+
     fKs_for_B_or_C_after_TABLEs_for_B_and_C =
       assertBool "fKs_for_B_or_C_after_TABLEs_for_B_and_C" $
       isAlterTableWithNameAndOneAddFk "b" fk_inCircle1 &&
@@ -127,19 +108,19 @@ circularTablesCheck [tbl_inCircle1
       ||
       isAlterTableWithNameAndOneAddFk "c" fk_inCircle1 &&
       isAlterTableWithNameAndOneAddFk "b" fk_inCircle2
-    
+
     isAlterTableWithNameAndOneAddFk name ddl =
       isAlterTableAnd [alterTableHasName name
                       ,\(_,specList) -> length (specList) == 1
                       ] ddl
-    
+
     isTablesWithNameAndNoFKs :: [(TableName,DdlStatement a)] -> Bool
-    
+
     isTablesWithNameAndNoFKs tableName_and_ddl_list =
       and $ map isTableWithNameAndNoFKs tableName_and_ddl_list
-    
+
     isTableWithNameAndNoFKs :: (TableName,DdlStatement a) -> Bool
-    
+
     isTableWithNameAndNoFKs (name,ddl) =
       isCreateTableAnd [createTableHasName name
                        ,\tbl -> null (tblForeignKeys tbl)

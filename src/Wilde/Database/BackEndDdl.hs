@@ -1,54 +1,35 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -- | Abstract Syntax for the DLL that should be rendered by
 -- the DDL renderer for the SQL Back End.
 module Wilde.Database.BackEndDdl
        (
          -- * Data Definition Language (DLL)
-         
+
          DdlStatement(..),
          TranslatedDdlStatement,
          TranslatedBackEndTableInfo,
-         
+
          AlterSpecification(..),
-         
+
          -- * Table information
-         
+
          ForeignKeyTarget(..),
 
          BackEndColumnInfo(..),
          BackEndTableInfo(..),
          BackEndForeignKeyInfo(..),
-         
+
          -- * Comments
-         
+
          PrecededByCommentLines(..),
          withComments,
          withoutComments,
-         
+
          -- * Rendering
-         
+
          DdlRenderer(..),
-         
+
          -- * From SQL
-         
+
          SqlIdentifier,
          )
        where
@@ -104,14 +85,14 @@ data DdlStatement columnInfo
 instance Functor DdlStatement where
   fmap f (CreateTable ct)      = CreateTable (fmap f ct)
   fmap f (AlterTable  (tn,ss)) = AlterTable  (tn,map (fmap f) ss)
-  
+
 -- | An "item" of an SQL table that to alter in a ALTER TABLE statement.
 data AlterSpecification columnInfo =
   AddForeignKey BackEndForeignKeyInfo
-                 
-instance Functor AlterSpecification where  
+
+instance Functor AlterSpecification where
   fmap f (AddForeignKey x) = AddForeignKey x
-  
+
 data BackEndColumnInfo =
   BackEndColumnInfo
   {

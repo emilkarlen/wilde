@@ -1,52 +1,33 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -- | Implementation of some common widgets.
 --
 -- Also some tools for constructing widgets.
 module Wilde.ApplicationConstruction.UserInteraction.Widgets
        (
          -- * Re-exporting
-         
+
          WIDGET(..),
          AnyWIDGET(..),
-         
+
          -- * Widget with key
-         
+
          WithWidgetKey(..),
-         
+
          newWidgetWithKey,
          newAnyWidgetWithKey,
-         
+
          mkLabelAndWidgetFromInfo,
-         
+
          -- * Some common widgets
-         
+
          CheckBox,
          CheckBoxInfo(..),
-         
+
          LineInput,
          LineInputInfo(..),
-       
+
          TextArea,
          TextAreaInfo(..),
-         
+
          DropDownList,
          DropDownListInfo(..),
          )
@@ -74,7 +55,7 @@ import Wilde.Media.GenericStringRep
 -------------------------------------------------------------------------------
 -- - implementation -
 -------------------------------------------------------------------------------
-  
+
 
 -------------------------------------------------------------------------------
 -- - WithWidgetKey -
@@ -91,7 +72,7 @@ data WithWidgetKey a =
 
 instance WIDGET widgetInfo => WIDGET (WithWidgetKey widgetInfo) where
   widgetHtml withWidgetKey = htmlForWithWidgetKey withWidgetKey widgetHtml
-  
+
 newWidgetWithKey :: ElementKey -> widgetInfo -> WithWidgetKey widgetInfo
 newWidgetWithKey key theWidgetInfo =
    WithWidgetKey
@@ -149,7 +130,7 @@ instance WIDGET LineInputInfo where
                    }) =
     inputWithTypeAndAts "text" (catMaybes attributes)
      where
-       thevalue   = maybe Nothing (Just . H.value) theDefault 
+       thevalue   = maybe Nothing (Just . H.value) theDefault
        thesize    = Just $ H.size (show theSize)
        attributes = [thevalue,thesize] :: [Maybe H.HtmlAttr]
 
@@ -175,7 +156,7 @@ instance WIDGET TextAreaInfo where
                    }) =
     (H.textarea thevalue) H.! attributes
      where
-       thevalue   = maybe H.noHtml H.stringToHtml theDefault 
+       thevalue   = maybe H.noHtml H.stringToHtml theDefault
        cols       = H.cols (show width)  :: H.HtmlAttr
        rows       = H.rows (show height) :: H.HtmlAttr
        attributes = [cols,rows]  :: [H.HtmlAttr]
@@ -205,8 +186,8 @@ instance WIDGET CheckBoxInfo where
        atType    = H.thetype "checkbox"
        atValue   = H.value theValue :: H.HtmlAttr
        atChecked = if theDefault then [H.checked] else [] :: [H.HtmlAttr]
-    
-    
+
+
 -------------------------------------------------------------------------------
 -- - DropDownList -
 -------------------------------------------------------------------------------
@@ -231,11 +212,11 @@ instance WIDGET DropDownListInfo where
        mkOption   = maybe optionWithoutDefault optionWithDefault mbDefault
        theOptions = map mkOption options
 
-       -- An option in a selection list, when there is no default specified.  
+       -- An option in a selection list, when there is no default specified.
        optionWithoutDefault :: (String,AnyVALUE) -> H.Html
        optionWithoutDefault (value,pres) = H.option (valueHtml pres) H.! [H.value value]
 
-       -- An option in a selection list, when there is a default specified.  
+       -- An option in a selection list, when there is a default specified.
        optionWithDefault :: GenericStringRep -> (String,AnyVALUE) -> H.Html
        optionWithDefault defaultValue (value,pres) =
          let

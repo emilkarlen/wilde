@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 module WildeTest.ApplicationConstruction.SqlExprParserTest
        (
          theTest,
@@ -48,59 +29,59 @@ theTest = TestLabel "SqlExprParserTest" $
           TestList
           [
             "parse string (simple)" ~:
-            
-            checkOk 
+
+            checkOk
             (StringLiteral "A string")
             (parse "\"A string\"")
-            
+
           , "parse column" ~:
-            
-            checkOk 
+
+            checkOk
             (ColumnVar TD.ColumnPk)
             (parse colIdentPk)
-            
+
           , "parse column (non-existing)" ~:
-            
+
             checkError
             (parse "non_existing_column")
-            
+
           , "function call (without arguments)" ~:
-            
-            checkOk 
+
+            checkOk
             (FunCall "myFunc" [])
             (parse $ "myFunc ()")
-            
+
           , "function call (with arguments)" ~:
-            
-            checkOk 
+
+            checkOk
             (FunCall "myFunc" [BoolLiteral True,Null])
             (parse $ "myFunc (TRUE,NULL)")
-          
+
           , "parenthesis" ~:
-            
-            checkOk 
+
+            checkOk
             (ExprsInParens [ColumnVar TD.ColumnPk])
             (parse $ "( " ++ colIdentPk ++ "  )")
-            
+
           , "IN (no elements)" ~:
-            
-            checkOk 
+
+            checkOk
             (In Null (ExprsInParens []))
             (parse $ "NULL  IN  () ")
-            
+
           , "IN (some elements)" ~:
-            
-            checkOk 
+
+            checkOk
             (In Null (ExprsInParens [BoolLiteral False
                                     ,Plus (IntLiteral 1) (IntLiteral 2)
                                     ,ColumnVar TD.ColumnPk]))
             (parse $ "NULL  IN  (false,1 + 2," ++ colIdentPk ++ ") ")
-            
-            
+
+
           ]
 
 
-parse :: String 
+parse :: String
          -> Either ParseError (Expression TD.PkNameTable)
 parse = parseWithListedColumns columns
 
@@ -115,7 +96,7 @@ columns = [(colIdentPk,TD.ColumnPk)
 
 
 checkOk :: (Eq tableColumn,Show tableColumn)
-        => Expression tableColumn 
+        => Expression tableColumn
         -> Either ParseError (Expression tableColumn)
         -> Assertion
 checkOk _ (Left errMsg)         = assertFailure ("Failure: " ++ (show errMsg))
@@ -127,4 +108,3 @@ checkError :: (Eq tableColumn,Show tableColumn)
 checkError (Left errMsg)  = return ()
 checkError (Right actual) = assertFailure $
                             "Unexpected OK result: " ++ (show actual)
-

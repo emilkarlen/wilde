@@ -1,28 +1,9 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 module Wilde.Driver.Database.RenderDdlUtils
        (
          module Wilde.Database.BackEndDdl,
 
          renderDdl,
-         
+
          ErrorMessage,
          ColTypeTranslator,
        )
@@ -113,7 +94,7 @@ renderPrecededByCommentLinesM renderValue x =
     commentsDoc = vcat . map renderCommentLine $ commentLines x
 
     renderCommentLine line = text "-- " <> text line
-      
+
 renderAlterTable :: (SqlIdentifier,[AlterSpecification BackEndColumnInfo]) -> RenderMonad Doc
 renderAlterTable (_,[]) = return empty
 renderAlterTable (tableName,specifications) =
@@ -128,7 +109,7 @@ renderAlterTableSpecification (AddForeignKey backEndForeignKeyInfo) = return doc
   where
     doc = text "ADD CONSTRAINT" <+>
           renderForeignKey backEndForeignKeyInfo
-  
+
 renderCreateTable :: BackEndTableInfo BackEndColumnInfo -> RenderMonad Doc
 renderCreateTable ti =
   do
@@ -140,14 +121,14 @@ renderCreateTable ti =
                   , rparen <> semi
                   ]
   where
-    
+
     primKeyDoc = text "PRIMARY KEY" <+>
                  parens (hcat (punctuate comma primKeyCols))
     primKeyCols = map text $ NonEmpty.toList $ tblPrimaryKeyColumns ti :: [Doc]
-    
+
     fkDocs     :: [Doc]
     fkDocs      = map renderForeignKey (tblForeignKeys ti)
-    
+
     separate   :: [Doc] -> Doc
     separate   = vcat . intersperse comma
 
@@ -162,7 +143,7 @@ renderForeignKey fki = text "FOREIGN KEY" <+>
                    parens (text (fkTargetColumn fkt))
 
 renderColumns :: [BackEndColumnInfo] -> RenderMonad [Doc]
-renderColumns cis = 
+renderColumns cis =
   do
     columnInfosAsStringLists <- mapM renderColumn cis
     let lines = table ' ' " " columnInfosAsStringLists :: [String]

@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -------------------------------------------------------------------------------
 -- | Tools for constructing a service that proceeds in steps,
 -- where each step requires interaction with the user.
@@ -32,12 +13,12 @@ module Wilde.ApplicationConstruction.Service.StepService
          continueTo,
          askIfContinue,
          askIfContinueTo,
-         
+
          StepService(..),
          NonLastStep,
          ContinueInfo,
          ServicePage,
-         
+
          StepReference(..),
        )
        where
@@ -83,7 +64,7 @@ data StepService = StepService
 
 data WhatToDoNext
   = Halt (Either ServicePage InformationPopUpInfo)
-  | Continue 
+  | Continue
     {
       stepReference :: StepReference
       -- | Continue with either a form or a
@@ -122,7 +103,7 @@ continue info = continueTo Following info
 continueTo :: StepReference -> FormBlocksAndMetas -> NonLastStep
 continueTo nextStep info =
   return $
-  Continue 
+  Continue
   {
     stepReference = nextStep
   , pageContent   = Left info
@@ -141,7 +122,7 @@ askIfContinue msg = askIfContinueTo Following msg
 askIfContinueTo :: StepReference -> PopUp.Message -> NonLastStep
 askIfContinueTo nextStep msg =
   return $
-  Continue 
+  Continue
   {
     stepReference = nextStep
   , pageContent   = Right msg
@@ -172,21 +153,21 @@ stepService (StepService {
 
        lastStepIdx :: Int
        lastStepIdx = length nonLastSteps'
-       
+
        serviceForNextStep :: PageContent -> Int -> Service
        serviceForNextStep (Left  x) nextStepIdx = continueWithFormBlocks mainTitle' x nextStepIdx
        serviceForNextStep (Right x) nextStepIdx = askIfContinueWithMsg   mainTitle' x nextStepIdx
-       
+
        getNextStepIdx :: Int -> StepReference -> ServiceMonad Int
        getNextStepIdx currentStepIdx LastStep    = return lastStepIdx
        getNextStepIdx currentStepIdx Following   = returnOrThrowIfInvalid (currentStepIdx + 1)
        getNextStepIdx currentStepIdx (Indexed n) = returnOrThrowIfInvalid (n + 1)
-       
+
        returnOrThrowIfInvalid :: Int -> ServiceMonad Int
        returnOrThrowIfInvalid n = do
          when (n > lastStepIdx) (throwInvalidStep $ "step too large: " ++ show n)
          return n
-         
+
        throwInvalidStep :: String -> ServiceMonad a
        throwInvalidStep msg = throwErr $ ValueValue "step" msg
 

@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -------------------------------------------------------------------------------
 -- | Utilities for database IO, handling 'Object's with presentation information.
 -------------------------------------------------------------------------------
@@ -84,10 +65,10 @@ inputAll :: (Database.DATABASE_TABLE otConf
          => ObjectType otConf atConf dbTable otN idAE idAC
          -> [Any (AttributeType atConf dbTable)]
          -> DbConn.Monad [Object otConf atConf dbTable otN idAE idAC]
-inputAll ot orderByInDb = input 
-                               ot 
-                               (SqlGen.otDatabaseOrderBy orderByInDb) 
-                               (return Nothing) 
+inputAll ot orderByInDb = input
+                               ot
+                               (SqlGen.otDatabaseOrderBy orderByInDb)
+                               (return Nothing)
                                []
 
 -------------------------------------------------------------------------------
@@ -172,7 +153,7 @@ input ot getOrderByExprs getMbWhereExpr sqlParams =
   where
     (inputInfoForOt,selectStatement) =
       SqlGen.inputInfoAndSelect ot getMbWhereExpr getOrderByExprs
-   
+
 
 -------------------------------------------------------------------------------
 -- | A variant of 'input' where the SQL parameters are gotten
@@ -252,7 +233,7 @@ inputAttribute (AttributeTypeDbInputData ((at@(AttributeType {}),plainAtValues),
       , attrValue        = v
       , attrPresentation = presValueGetter
       }
-    
+
 -------------------------------------------------------------------------------
 getInputData :: (Database.COLUMN_NAMES atConf
                 ,Database.INPUT_FOR_EXISTING atConf

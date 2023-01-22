@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE Rank2Types #-}
 
@@ -27,20 +8,20 @@ module Wilde.ObjectModel.UserInteraction.Input.ForCreate
          inputer,
          inputer_plain,
          inputerAny,
-         
+
          -- * Information about attribute types
-         
+
          AttributeTypeInfo(..),
          ATTRIBUTE_INPUT_FOR_CREATE(..),
          at2ati,
          InfoForInputAndConstructAttribute(..),
-         
+
          -- * Translators
-         
+
          at2InfoForInputAndConstructAttribute,
-         
+
          -- * Low level helpers
-         
+
          inputAttr,
          inputAttrAny,
        )
@@ -84,8 +65,8 @@ import           Wilde.ObjectModel.UserInteraction as OmUi
 data AttributeTypeInfo dbTable typeForExisting typeForCreate =
   (Show typeForExisting,
    Typeable typeForExisting,
-   Wilde.Database.Sql.SQL_IDENTIFIER dbTable) 
-  => 
+   Wilde.Database.Sql.SQL_IDENTIFIER dbTable)
+  =>
   AttributeTypeInfo
   {
     atiCrossRefKey        :: AttributeName
@@ -138,7 +119,7 @@ at2InfoForInputAndConstructAttribute at =
   , atiaaAnnotation = atConfiguration at
   , atiaaForAttributeConstruction = at
   }
-  
+
 
 -------------------------------------------------------------------------------
 -- - Inputer constructors -
@@ -153,7 +134,7 @@ inputer :: ATTRIBUTE_INPUT_FOR_CREATE atConf
         -> UiI.Monad (ObjectInputResult
                       (ObjectForCreate otConf atConf dbTable otNative idAtExisting idAtCreate))
 inputer ot objectName = inputerNoClass at2InfoForInputAndConstructAttribute ot objectName
-      
+
 inputer_plain :: ATTRIBUTE_INPUT_FOR_CREATE atConf
         => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
         -- ^ Type of 'Object' in the form.
@@ -163,8 +144,8 @@ inputer_plain :: ATTRIBUTE_INPUT_FOR_CREATE atConf
 inputer_plain ot objectName =
   do
     errOrRes <- inputer ot objectName
-    either UiI.throwErr pure errOrRes 
-      
+    either UiI.throwErr pure errOrRes
+
 inputerNoClass :: (forall e c . AttributeType atConf dbTable e c
                    -> InfoForInputAndConstructAttribute atConf dbTable e c)
                -> ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
@@ -201,10 +182,10 @@ inputerNoClass at2InfoForInputAndConstructAttribute ot@(ObjectType {}) objectNam
     iacaNonIdAts = map
                    (OmUtils.anyValueApply2 at2InfoForInputAndConstructAttribute)
                    (otNonIdAttributeTypes ot)
-      
+
 -- | A variant of 'inputer' that acts on any type of 'ObjectType'.
 inputerAny :: ATTRIBUTE_INPUT_FOR_CREATE atConf
-           => (ObjectName,AnyO (ObjectType otConf atConf)) 
+           => (ObjectName,AnyO (ObjectType otConf atConf))
            -> UiI.Monad (ObjectInputResult (AnyO (ObjectForCreate otConf atConf)))
 inputerAny = OmUtils.toAnyForOtAndArg inputer
 
@@ -220,7 +201,7 @@ inputAttr :: ObjectName
           -> InfoForInputAndConstructAttribute atConf dbTable typeForExisting typeForCreate
           -> UiI.Monad
              (ES.ElementInputResult (AttributeForCreate atConf dbTable typeForExisting typeForCreate))
-inputAttr objectName 
+inputAttr objectName
   (InfoForInputAndConstructAttribute
    {
      atiaaTypeInfo =
@@ -237,7 +218,7 @@ inputAttr objectName
       attrfcType  = theAttributeType
     , attrfcValue = value
     }
-inputAttr objectName 
+inputAttr objectName
   (InfoForInputAndConstructAttribute
    {
      atiaaTypeInfo =
@@ -254,7 +235,7 @@ inputAttr objectName
   do
     valueR <- UiICommon.inputer_fixedFromEnvHasPrecedence
               theGsrInputer theInputer
-              theAttributeName objectName 
+              theAttributeName objectName
     case valueR of
       Left err -> return $ Left err
       Right value ->

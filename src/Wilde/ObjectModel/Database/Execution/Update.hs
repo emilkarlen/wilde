@@ -1,38 +1,19 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -------------------------------------------------------------------------------
 -- | Execution of SQL UPDATE statements.
 -------------------------------------------------------------------------------
 module Wilde.ObjectModel.Database.Execution.Update
        (
          -- * All objects
-         
+
          updateAll_attributes,
-         
+
          -- * One object
-         
+
          updateOne,
          updateOne_attributes,
-         
+
          -- * Selection of objects
-         
+
          update_attributes,
        )
        where
@@ -97,8 +78,8 @@ updateOne :: (Output.DATABASE_TABLE otConf
           -> DbConn.Monad (Maybe Integer)
 updateOne o attrsToUpdate =
   updateOne_attributes
-  (oType o) 
-  idAtValue 
+  (oType o)
+  idAtValue
   attrsToUpdate
   where
     idAtValue = attrValue $ oIdAttribute o
@@ -118,10 +99,10 @@ updateOne_attributes ot@(ObjectType {}) idAtValue attrsToUpdate =
   do
     idAtSqlValues <- DbConn.toMonad getIdAtSqlValues
     update_attributes
-      ot 
+      ot
       (Utils.justOtIdAtEqPosParamExpr ot)
-      idAtSqlValues 
-      attrsToUpdate 
+      idAtSqlValues
+      attrsToUpdate
   where
     getIdAtSqlValues = Output.atOutputerExisting (otIdAttributeType ot) idAtValue
                        :: ConvertResult [SqlValue]
@@ -138,7 +119,7 @@ update_attributes :: (Output.DATABASE_TABLE otConf
                      ,Output.OUTPUT_FOR_EXISTING atConf
                      )
                   => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
-                  -> Maybe (Sql.SqlExpr dbTable) 
+                  -> Maybe (Sql.SqlExpr dbTable)
                   -- ^ WHERE expression
                   -> [SqlValue]
                   -- ^ SQL parameters for the WHERE expression
@@ -160,7 +141,7 @@ update_attributes ot@(ObjectType {}) mbWhereExpr whereExprParams attrsToUpdate =
                                 concat
                                 (Output.aOutputsExisting (NonEmpty.toList attrsToUpdate))
                                 :: ConvertResult [SqlValue]
-                                   
+
     getAts :: NonEmpty.List (Any (Attribute     atConf dbTable))
            -> NonEmpty.List (Any (AttributeType atConf dbTable))
     getAts attrs = fmap (OmUtils.anyValueApply2 attrType) attrs
@@ -184,10 +165,10 @@ execForOne :: (Output.OUTPUT_FOR_EXISTING atConf
            -- ^ Parameters of the resulting SQL statement that precedes
            -- those of the WHERE expression.
            -> DbConn.Monad (Maybe Integer)
-execForOne newSqlForWhereExpr 
+execForOne newSqlForWhereExpr
   whereEqAttrType@(AttributeType {})
-  whereEqAttrValue 
-  sqlParamsBeforeWhereExpr 
+  whereEqAttrValue
+  sqlParamsBeforeWhereExpr
   =
   do
     whereEqAttrSqlValues <- DbConn.toMonad getAtSqlValues
@@ -197,7 +178,7 @@ execForOne newSqlForWhereExpr
     getAtSqlValues   = Output.atOutputerExisting whereEqAttrType whereEqAttrValue
                        :: ConvertResult [SqlValue]
     mbWhereExpr      = Utils.justAtEqPosParamExpr whereEqAttrType
-    
+
 -------------------------------------------------------------------------------
 -- | Executes a SQL statement given a way to construct it from a given WHERE
 -- expression, and the SQL parameters expected by the constructed SQL.

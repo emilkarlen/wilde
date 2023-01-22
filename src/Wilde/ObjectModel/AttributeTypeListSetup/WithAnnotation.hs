@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -------------------------------------------------------------------------------
 -- | Functionality for extraction of the 'Attribute's of an
 -- 'Object' in a custom order.
@@ -82,7 +63,7 @@ mk :: ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
    -> [(Any (AttributeType atConf dbTable),a)]
    -> Prelude.Either
       (Any (AttributeType atConf dbTable))
-      (Setup 
+      (Setup
        otConf atConf dbTable otNative idAtExisting idAtCreate a)
 mk ot atAndAnnList =
   do
@@ -103,7 +84,7 @@ mk ot atAndAnnList =
 
     -- Each attribute paired with it's index in the array.
     atKeyIndexes = Prelude.zip
-                   (Prelude.map atCrossRefKey_anyValue Prelude.$ otAttributeTypes ot) 
+                   (Prelude.map atCrossRefKey_anyValue Prelude.$ otAttributeTypes ot)
                    [0..]
 
 -------------------------------------------------------------------------------
@@ -135,7 +116,7 @@ apply
 map :: ((Any (AttributeType atConf dbTable),a) -> b)
     -> Setup otConf atConf dbTable otNative idAtExisting idAtCreate a
     -> Setup otConf atConf dbTable otNative idAtExisting idAtCreate b
-map 
+map
   f
   setup@(Setup {
             atlsaOt       = theOt,
@@ -146,10 +127,10 @@ map
    {
      atlsaOt       = theOt
    , atlsaAts      = Prelude.map
-                     (\(idx,at,a) -> (idx,at,f (at,a))) 
+                     (\(idx,at,a) -> (idx,at,f (at,a)))
                      theAts
    }
-    
+
 -------------------------------------------------------------------------------
 -- | Transforms a Setup in the fashion of mapM.
 -------------------------------------------------------------------------------
@@ -157,7 +138,7 @@ mapM :: Prelude.Monad m
      => ((Any (AttributeType atConf dbTable),a) -> m b)
      -> Setup    otConf atConf dbTable otNative idAtExisting idAtCreate a
      -> m (Setup otConf atConf dbTable otNative idAtExisting idAtCreate b)
-mapM 
+mapM
   f
   setup@(Setup {
             atlsaOt       = theOt,
@@ -167,7 +148,7 @@ mapM
     do
       newAts <- Prelude.mapM
                 (
-                  \(idx,at,a) -> 
+                  \(idx,at,a) ->
                     do
                       b <- f (at,a)
                       Prelude.return (idx,at,b)

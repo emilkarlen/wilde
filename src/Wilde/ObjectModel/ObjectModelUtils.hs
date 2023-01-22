@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 {-# LANGUAGE Rank2Types #-}
 
 -- | Utilities related to the methods and data structures in 'ObjectModel'.
@@ -195,7 +176,7 @@ anyValueApply2 f (Any x) = Any (f x)
 
 -- | Applies a \"monadic\" function that takes a \"plain\" value as argument to
 -- a value wrapped in a 'Any'.
-anyValueApplyM :: Monad m 
+anyValueApplyM :: Monad m
                => (forall e c . t e c -> m (u e c))
                -> Any t
                -> m (Any u)
@@ -238,7 +219,7 @@ anyOApply2_maybe f (AnyO x) = maybe Nothing (Just . AnyO) (f x)
 
 -- | Applies a \"monadic\" function that takes a \"plain\" value as argument to
 -- a value wrapped in a 'AnyO'.
-anyOApplyM :: Monad m 
+anyOApplyM :: Monad m
            => (forall dbTable otNative idAtE idAtC .
                t dbTable otNative idAtE idAtC -> m (u dbTable otNative idAtE idAtC))
            -> AnyO t
@@ -274,7 +255,7 @@ tupleString object =
   concat $ ["("] ++ intersperse "," stringValues ++ [")"]
   where
     stringValues = mapAttributeAnyValue showAttrValue $ oAllAttributesAnyValue object
-    
+
 showAttrValue :: Attribute atConf dbTable e c -> String
 showAttrValue (Attribute { attrValue = v, attrType = (AttributeType {}) }) = show v
 
@@ -353,7 +334,7 @@ doOtnUnhide :: (Typeable a,Typeable b)
             => a -> Either ObjectToNativeError b
 doOtnUnhide = either (Left . (anonOTN . AttributeTypeError)) Right . doUnhide
 
-doUnhide :: (Typeable a,Typeable b) 
+doUnhide :: (Typeable a,Typeable b)
          => a -> Either (Mismatch TypeRep) b
 doUnhide a = doUnhide' undefined a
 

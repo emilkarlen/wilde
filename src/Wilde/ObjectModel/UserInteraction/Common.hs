@@ -1,33 +1,14 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -- | Functionallity that is common to output for create.
 module Wilde.ObjectModel.UserInteraction.Common
        (
          metaValuesForRole,
-         
+
          inputValueForRoleFromEnv,
          Role(..),
-         
+
          inputFixedFromEnv,
          inputDefaultFromEnv,
-         
+
          elementKeyForRoleIndicator,
          elementKeyForAttributeValue,
        )
@@ -57,11 +38,11 @@ import Wilde.ObjectModel.ObjectModel
 -- | The meta values that stores a value for a role.
 -------------------------------------------------------------------------------
 metaValuesForRole :: Role
-                  -> AttributeName 
-                  -> UiO.ObjectName 
+                  -> AttributeName
+                  -> UiO.ObjectName
                   -> String
                   -> [ES.Element]
-metaValuesForRole role attributeName objectName value = 
+metaValuesForRole role attributeName objectName value =
   [
     ES.element keyForValue     value
   , ES.element keyForIndicator (indicatorForRole role)
@@ -85,7 +66,7 @@ elementKeyForRoleIndicator attributeName objectName =
 elementKeyForAttributeValue :: AttributeName
                             -> UiO.ObjectName
                             -> ES.ElementKey
-elementKeyForAttributeValue attributeName objectName = 
+elementKeyForAttributeValue attributeName objectName =
   ES.elementKey objectName attributeName
 
 -- | The element that indicates the role of the attribute's value.
@@ -101,7 +82,7 @@ indicatorForRole :: Role -> String
 indicatorForRole = show
 
 indicatesRole :: String -> Role -> Bool
-indicatesRole indicator role = 
+indicatesRole indicator role =
   toLowerString indicator == toLowerString (show role)
   where
     toLowerString = map toLower
@@ -112,15 +93,15 @@ indicatesRole indicator role =
 -- Gives the error 'ValueMissing' if the attribute does not have
 -- a value.
 -------------------------------------------------------------------------------
-lookupStringForRole :: Role 
-                    -> AttributeName 
+lookupStringForRole :: Role
+                    -> AttributeName
                     -> UiO.ObjectName
                     -> ES.Lookuper (Maybe String)
 lookupStringForRole requestedRole attributeName objectName es =
   case ES.lookupSingleton_optional keyForRole es of
     Left err        -> return Nothing
     Right Nothing   -> return Nothing
-    Right (Just indicator) -> 
+    Right (Just indicator) ->
       if indicator `indicatesRole` requestedRole
       then
         case ES.lookupSingleton_optional keyForValue es of
@@ -139,7 +120,7 @@ lookupStringForRole requestedRole attributeName objectName es =
 --
 -- [@Nothing@] There is no fixed value in environment.
 -- [@Just Nothing@] There is a fixed value, but the actual value is
---                  empty=missing. 
+--                  empty=missing.
 -- Gives the error 'ValueMissing' if the attribute does not have
 -- fixed value.
 -------------------------------------------------------------------------------
@@ -167,7 +148,7 @@ inputDefaultFromEnv = inputValueForRoleFromEnv Default
 --
 -- [@Nothing@] There is no fixed value in environment.
 -- [@Just Nothing@] There is a fixed value, but the actual value is
---                  empty=missing. 
+--                  empty=missing.
 -- Gives the error 'ValueMissing' if the attribute does not have
 -- fixed value.
 -------------------------------------------------------------------------------
@@ -181,9 +162,9 @@ inputValueForRoleFromEnv requestedRole attributeName objectName =
     res <- inInputMedia_raw
            (lookupStringForRole requestedRole attributeName objectName)
     case res of
-      Right x -> 
+      Right x ->
         return x
-      Left (_, ES.ValueMissing,_) -> 
+      Left (_, ES.ValueMissing,_) ->
         return Nothing
-      _ -> 
+      _ ->
         error "inputValueForRoleFromEnv: Implementation Error"

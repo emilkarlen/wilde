@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 module WildeTest.Render.Cgi.ElementSetIoTest
        (
          theTest,
@@ -47,15 +28,15 @@ theTest =
   TestList
   [
     "Two empty sets" ~:
-    
+
     checkToCgiAndBack emptyInput
-  
+
   , "Two identical sets (single value)" ~:
-    
+
     checkToCgiAndBack identicalSetsInput
-    
+
   , "Sets with elements that have multiple values" ~:
-    
+
     checkToCgiAndBack multiValueElementsInput
   ]
 
@@ -79,7 +60,7 @@ emptyInput =
 
 -- | Input in which both 'ElementSet's are identical.
 identicalSetsInput :: Input
-identicalSetsInput =  
+identicalSetsInput =
   Input
   {
     inputMedia        = set
@@ -90,7 +71,7 @@ identicalSetsInput =
 
 -- | Input in which there are keys who's values have multiple strings.
 multiValueElementsInput :: Input
-multiValueElementsInput =  
+multiValueElementsInput =
   Input
   {
     inputMedia        = Map.fromList [("i",["i1","i2"]),("j",["j1"])]

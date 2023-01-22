@@ -1,41 +1,22 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -- | Utilities related to database SQL generation.
 --
 module Wilde.ObjectModel.Database
        (
          -- * Types
-         
+
          OutputerWithConnection,
          GetIdOfInsertedIntoDatabase,
-         
+
          -- * Classes
-         
+
          DATABASE_TABLE(..),
          OBJECT_TYPE_INSERT(..),
-         
+
          COLUMN_NAMES(..),
-         
+
          OUTPUT_FOR_EXISTING(..),
          OUTPUT_FOR_CREATE(..),
-         
+
          INPUT_FOR_EXISTING(..),
          DDL(..),
 
@@ -44,7 +25,7 @@ module Wilde.ObjectModel.Database
 
          DATABASE_IO(..),
          DATABASE_IO_AND_DDL(..),
-         
+
        )
        where
 
@@ -68,7 +49,7 @@ import Wilde.Database.SqlDdlInfo
 -------------------------------------------------------------------------------
 -- - implementation -
 -------------------------------------------------------------------------------
-       
+
 
 -- | Outputer for the database media, for a given value, in a connection.
 type OutputerWithConnection a = a -> DbConn.Monad DatabaseOutput
@@ -110,7 +91,7 @@ class DATABASE_TABLE otConf => OBJECT_TYPE_INSERT otConf where
     --
     -- TODO Move? Probably - encapsulate with DatabaseStructure into a
     -- all-database-thing.
-  
+
 
 class COLUMN_NAMES atConf where
   atColumns :: AttributeType atConf dbTable typeForExisting typeForCreate

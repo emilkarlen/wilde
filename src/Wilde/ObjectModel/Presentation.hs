@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -------------------------------------------------------------------------------
 -- | Presentation of Object's and 'Attribute's.
 --
@@ -25,9 +6,9 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 module Wilde.ObjectModel.Presentation
        (
          module Wilde.ObjectModel.Presentation.FooterRowsConstructor,
-         
+
          ATTRIBUTE_PRESENTATION(..),
-         
+
          showOneComponent,
 
          objectListTable,
@@ -63,7 +44,7 @@ import Wilde.ObjectModel.Presentation.FooterRowsConstructor
 
 
 class ATTRIBUTE_PRESENTATION atConf where
-  atTitle :: AttributeType atConf dbTable typeForExisting typeForCreate 
+  atTitle :: AttributeType atConf dbTable typeForExisting typeForCreate
           -> StyledTitle
 
 
@@ -73,7 +54,7 @@ class ATTRIBUTE_PRESENTATION atConf where
 
 
 showOneComponent :: ATTRIBUTE_PRESENTATION atConf
-                 => (Object otConf atConf dbTable otNative idAtExisting idAtCreate 
+                 => (Object otConf atConf dbTable otNative idAtExisting idAtCreate
                  -> [Any (Attribute atConf dbTable)])
                  -> Object  otConf atConf dbTable otNative idAtExisting idAtCreate
                  -> Presentation.Monad AnyCOMPONENT
@@ -101,7 +82,7 @@ showOneTable attrs =
     getHeaderValueRowList = sequence $ mapAttributeAnyValue headerValueRow attrs
 
     headerValueRow :: ATTRIBUTE_PRESENTATION atConf
-                   => Attribute atConf dbTable typeForExisting typeForCreate 
+                   => Attribute atConf dbTable typeForExisting typeForCreate
                    -> Presentation.Monad (Wilde.ObjectModel.ObjectModelUtils.Title,AnySVALUE)
     headerValueRow (Attribute at val getPresVal) =
      do

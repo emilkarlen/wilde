@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -- | Utilities related to database SQL generation.
 module Wilde.ObjectModel.Database.Utils
        (
@@ -24,19 +5,19 @@ module Wilde.ObjectModel.Database.Utils
 
          ObjectTranslationSetup(..),
          inputPlainObjectSetup,
-         
+
          getOrderByCols,
-         
+
          atColumnList,
          atColumnListAny,
-         
+
          atColumnNames,
          atColumnNameList,
-         
+
          aEqExpr,
          atEqPosParamExpr,
          justAtEqPosParamExpr,
-         
+
          otIdAtEqPosParamExpr,
          justOtIdAtEqPosParamExpr,
        )
@@ -69,7 +50,7 @@ import Wilde.ObjectModel.Database
 -------------------------------------------------------------------------------
 
 
-getOrderByCols :: COLUMN_NAMES atConf 
+getOrderByCols :: COLUMN_NAMES atConf
                => [Any (AttributeType atConf dbTable)]
                -> [dbTable]
 getOrderByCols orderBy = map columnName $ concatMap atColumnListAny orderBy
@@ -139,7 +120,7 @@ inputPlainObjectSetup ot =
 -- The expression expects values for the positional parameters,
 -- which are as many as the number of columns of the 'AttributeType'.
 -------------------------------------------------------------------------------
-atEqPosParamExpr :: COLUMN_NAMES atConf 
+atEqPosParamExpr :: COLUMN_NAMES atConf
                  => AttributeType atConf dbTable typeForExisting typeForCreate
                  -> SqlExpr dbTable
 atEqPosParamExpr = eqFieldPosParamAndsNonEmpty . atColumnNames
@@ -149,7 +130,7 @@ atEqPosParamExpr = eqFieldPosParamAndsNonEmpty . atColumnNames
 --
 -- Utility for skipping the 'Just' in places where a 'Maybe' is expected.
 -------------------------------------------------------------------------------
-justAtEqPosParamExpr :: COLUMN_NAMES atConf 
+justAtEqPosParamExpr :: COLUMN_NAMES atConf
                      => AttributeType atConf dbTable typeForExisting typeForCreate
                      -> Maybe (SqlExpr dbTable)
 justAtEqPosParamExpr = Just . atEqPosParamExpr

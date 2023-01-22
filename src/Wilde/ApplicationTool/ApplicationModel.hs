@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE Rank2Types #-}
 {-# LANGUAGE KindSignatures #-}
@@ -28,32 +9,32 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 module Wilde.ApplicationTool.ApplicationModel
        (
          -- * Encapsulation of Object/Object Type-like elements
-         
+
          AnyOWithDatabaseIo(..),
-         
+
          AnyAnyO(..),
          idForAnyAny,
          anyAnyApply,
 
          idForWithDatabaseIo,
          idForWithDdlInfo,
-         
+
          idForSetupWithDdlInfo,
-         
-         
+
+
          -- * Classes for the application model
-         
+
          OBJECT_TYPES(..),
          OBJECT_TYPES_WITH_DATABASE_IO_INFO(..),
          OBJECT_TYPES_WITH_DDL_INFO(..),
          OBJECT_TYPE_SETUPS_WITH_DDL_INFO(..),
 
          -- * Implementation of an application model
-         
+
          ObjectModel(..),
 
          -- * Utilities
-         
+
          allWithDdlInfo,
          stripDdlInfo,
        )
@@ -83,7 +64,7 @@ import qualified Wilde.ApplicationConstruction.ObjectTypeConfiguration.ObjectTyp
 data AnyOWithDatabaseIo t =
   forall (otConf :: * -> * -> * -> * -> *) atConf dbTable otNative idAtExisting idAtCreate .
   (DatabaseClasses.DATABASE_TABLE otConf
-  ,DatabaseClasses.DATABASE_IO atConf 
+  ,DatabaseClasses.DATABASE_IO atConf
   ,DatabaseAndPresentation.ATTRIBUTE_TYPE_INFO atConf
   )
   => AnyOWithDatabaseIo (t otConf atConf dbTable otNative idAtExisting idAtCreate)
@@ -94,7 +75,7 @@ idForWithDdlInfo (ObjectTypeWithAtDdlInformation.AnyO ot) = otCrossRefKey ot
 idForSetupWithDdlInfo :: ObjectTypeWithAtDdlInformation.AnyO StandardServices.ObjectTypeSetup
                       -> String
 idForSetupWithDdlInfo (ObjectTypeWithAtDdlInformation.AnyO setup) = otCrossRefKey $ StandardServices.objectType setup
-  
+
 idForWithDatabaseIo :: AnyOWithDatabaseIo ObjectType -> String
 idForWithDatabaseIo (AnyOWithDatabaseIo ot) = otCrossRefKey ot
 
@@ -140,12 +121,12 @@ stripDdlInfo (ObjectTypeWithAtDdlInformation.AnyO ot) = AnyAnyO ot
 
 instance OBJECT_TYPES ObjectModel where
   objectTypes = map stripDdlInfo . allWithDdlInfo
-        
+
 instance OBJECT_TYPES_WITH_DATABASE_IO_INFO ObjectModel where
   objectTypesWithDatabaseIoInfo = map changeWrapper . allWithDdlInfo
     where
       changeWrapper (ObjectTypeWithAtDdlInformation.AnyO x) = AnyOWithDatabaseIo x
-        
+
 instance OBJECT_TYPES_WITH_DDL_INFO ObjectModel where
   objectTypesWithDdlInfo = allWithDdlInfo
 

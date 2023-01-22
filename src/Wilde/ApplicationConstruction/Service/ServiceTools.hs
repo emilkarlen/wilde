@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -- | Tools for constructing the services of a Wilde application.
 module Wilde.ApplicationConstruction.Service.ServiceTools
        (
@@ -27,22 +8,22 @@ module Wilde.ApplicationConstruction.Service.ServiceTools
          withObjectIdFromEnv,
          withObjectFromDb,
          withObjectFromDbWithIdFromEnv,
-         
+
          objectService,
          objectServiceForId,
          objectServiceHandle,
-         
+
          -- * Utilities
 
          currentServiceLink,
          formForCurrentService,
          formForService,
          readAllPlain,
-         
+
          lookupGsr_mandatory,
-         
+
          -- * Error handling
-         
+
          swallowError,
          otUiObjectInputErrorMonad,
          otUiObjectInputErrorMonads,
@@ -108,7 +89,7 @@ formForCurrentService formBlocksAndMetas formMetas =
     return $ formForService formBlocksAndMetas (objectIdElements ++ formMetas) serviceId
   where
     objectIdElementKey = globalElementKey VariableNames.pk
-    
+
 currentServiceLink :: ServiceMonad ServiceLink.ServiceLink
 currentServiceLink =
   do
@@ -188,8 +169,8 @@ withObjectFromDbWithIdFromEnv :: (Database.DATABASE_TABLE otConf
                               -> (Object    otConf atConf dbTable otNative idAtExisting idAtCreate -> ServiceMonad a)
                               -> ServiceMonad a
 withObjectFromDbWithIdFromEnv ot f = withObjectIdFromEnv ot (withObjectFromDb ot f)
-  
-  
+
+
 -------------------------------------------------------------------------------
 -- | Utility to construct a service that operats on an 'Object' that
 -- exists in the database.

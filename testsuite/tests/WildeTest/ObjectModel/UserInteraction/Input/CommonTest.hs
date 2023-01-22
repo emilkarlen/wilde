@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 module WildeTest.ObjectModel.UserInteraction.Input.CommonTest
        (
          theTest,
@@ -112,7 +93,7 @@ theTest =
     (theAttributeElementKey,ES.InvalidValue,Nothing)
   ]
 
-type WidgetInputer = AttributeName -> 
+type WidgetInputer = AttributeName ->
                      UiI.UserInteractionInputer (ES.ElementInputResult AtValueType)
 
 setupWithInputMediaAndWidgetInputer = Setup
@@ -146,10 +127,10 @@ shouldGiveFailureResult setup expectedFailure =
       result
   where
     checkInputResult :: ES.ElementInputResult AtValueType -> Assertion
-    
+
     checkInputResult (Left actualFailure) =
       assertEqual "error" expectedFailure actualFailure
-    
+
     checkInputResult (Right success) =
       assertFailure $ "expected error, got success: " ++ show success
 
@@ -167,7 +148,7 @@ run (Setup inputMedia gsrInputer widgetInputer) = UiI.run env computation
             UiI.envInputMedia        = inputMedia
           , UiI.envCustomEnvironment = ES.empty
           }
-  
+
 
 theWidgetValue :: AtValueType
 theWidgetValue = "WIDGET-VALUE"
@@ -177,7 +158,7 @@ widgetInputerThatGives :: AtValueType
 widgetInputerThatGives x attributeName objectName =
   return $ return x
 
-widgetInputerThatFailsWith :: ES.ElementLookupErrorType 
+widgetInputerThatFailsWith :: ES.ElementLookupErrorType
                            -> WidgetInputer
 widgetInputerThatFailsWith error attributeName objectName =
   return $ Left (theAttributeElementKey,error,Nothing)
@@ -186,6 +167,6 @@ widgetInputerThatFailsWith error attributeName objectName =
 successfullGsrInputer :: Gsr.GenericStringRepInputer AtValueType
 successfullGsrInputer = return
 
-gsrInputerThatFailsWith :: ES.ElementLookupErrorType 
+gsrInputerThatFailsWith :: ES.ElementLookupErrorType
                         -> Gsr.GenericStringRepInputer AtValueType
 gsrInputerThatFailsWith error = const $ Left error

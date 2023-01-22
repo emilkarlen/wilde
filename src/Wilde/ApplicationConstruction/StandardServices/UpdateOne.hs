@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 {-# LANGUAGE KindSignatures #-}
 
 -------------------------------------------------------------------------------
@@ -25,18 +6,18 @@ along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 module Wilde.ApplicationConstruction.StandardServices.UpdateOne
        (
          Config(..),
-         
+
          OutputForExisting.AttributeTypeRole(..),
          OutputForExisting.AttributeTypeConfiguration(..),
          OutputForExisting.AttributeTypeConfigurations(..),
-         
+
          mkUpdatable,
          mkDisplayed,
 
          mkService,
-         
+
          -- * Utilities
-         
+
          updatableAts,
          updatableAtsList, -- tryging to avoid infinite loop
        )
@@ -86,13 +67,13 @@ data Config (otConf :: * -> * -> * -> * -> *) atConf dbTable otNative idAtExisti
   Config
   {
     titles              :: ServiceUtils.TwoStepServiceTitles
-    
+
     -- | The display order of the attributes when presenting
     -- the updated object.
     -- This must be a permutation of all 'AttributeType's of the
     -- 'ObjectType'.
   , displayUpdatedObjectConfig :: [Any (AttributeType atConf dbTable)]
-    
+
     -- | Configures the input form.
     --
     -- Must contain at least one updatable attribute type.
@@ -100,7 +81,7 @@ data Config (otConf :: * -> * -> * -> * -> *) atConf dbTable otNative idAtExisti
 
   , updatables :: NonEmpty.List (Any (AttributeType atConf dbTable))
   }
-      
+
 mkService :: (Database.DATABASE_TABLE otConf
              ,Database.COLUMNS_AND_IO_FOR_EXISTING atConf
              ,DatabaseAndPresentation.ATTRIBUTE_TYPE_INFO atConf
@@ -108,7 +89,7 @@ mkService :: (Database.DATABASE_TABLE otConf
              ,UserInteraction.ATTRIBUTE_IO_FOR_EXISTING atConf
              ,OmGsr.ATTRIBUTE_IO_FOR_EXISTING atConf
              )
-          => [AnyO (OtServiceOtSetup Config otConf atConf)] 
+          => [AnyO (OtServiceOtSetup Config otConf atConf)]
           -> AnyOtService
 mkService otss = AnyOtService $
   OtService
@@ -142,9 +123,9 @@ updateOneMain ot (Config titles displayUpdatedObjectConfig inputFormConfig updat
         formBlockAndMetas <- ServiceTools.withObjectFromDbWithIdFromEnv ot
                              (\o -> do
                                  formBlock'   <- toServiceMonad $
-                                                 objectFormBlock 
+                                                 objectFormBlock
                                                  inputFormConfig
-                                                 o 
+                                                 o
                                                  theObjectName
                                  let formBlock = outputOriginalObjectId o formBlock'
                                  return $ FormBlocksAndMetas [] [formBlock]
@@ -155,7 +136,7 @@ updateOneMain ot (Config titles displayUpdatedObjectConfig inputFormConfig updat
     inputFromUi_store_show =
       do
         objId <- inputOriginalObjectId ot
-        o     <- (ServiceUtils.updateObject ot updatables (theObjectName,objId) >>= 
+        o     <- (ServiceUtils.updateObject ot updatables (theObjectName,objId) >>=
                   ServiceTools.swallowError)
         page <- ServiceUtils.showOnePageService displayUpdatedObjectConfig resultPageTitle o
         pageOkResult page
@@ -174,11 +155,11 @@ updatableAts = NonEmpty.fromList . updatableAtsList
 updatableAtsList :: [OutputForExisting.AttributeTypeConfiguration atConf dbTable]
                  -> [Any (AttributeType atConf dbTable)]
 updatableAtsList = OutputForExisting.atsWith OutputForExisting.UserInteraction
-    
+
 
 -- updatableAts_debug_orig :: OutputForExisting.AttributeTypeConfigurations atConf dbTable
 --              -> Maybe (NonEmpty.List (Any (AttributeType atConf dbTable)))
--- updatableAts_debug_orig = NonEmpty.fromList . 
+-- updatableAts_debug_orig = NonEmpty.fromList .
 --                OutputForExisting.atsWith OutputForExisting.UserInteraction
 
 -- | Configuration for an updatable 'AttributeType'.

@@ -1,46 +1,27 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 {-# LANGUAGE FlexibleContexts #-}
 
 -- | Input/Output of \"Generic String Representation\" for some types.
 module Wilde.ApplicationConstruction.GenericStringRepIo
        (
          module Wilde.ObjectModel.GenericStringRep,
-         
+
          AttributeGenericStringRepIo(..),
 
          atGsrIo_string,
-         
+
          atGsrIo_showRead_nonEmpty,
          gsrIo_showRead_nonEmpty,
-         
+
          atGsrIo_convertibleFromInteger_nonEmpty,
          gsrIo_convertibleFromInteger_nonEmpty,
-         
+
          gsr_parser_read_nonEmpty,
          gsr_parser_convertibleFromInteger,
-         
+
          atGsrIo_optionalForCreate,
          atGsrIo_optional_ValueMissing_is_Nothing,
          gsrIo_optional_ValueMissing_is_Nothing,
-         
+
          gsrO_optional_from_mandatory_Nothing_isEmpty,
        )
        where
@@ -68,7 +49,7 @@ import qualified Wilde.Media.ElementSet as ES
 
 
 
-  
+
 -------------------------------------------------------------------------------
 -- - AttributeGenericStringRepIo -
 -------------------------------------------------------------------------------
@@ -157,7 +138,7 @@ gsr_parser_read_nonEmpty s =
   (Left ES.InvalidSyntax)
   Right
   (readCompletelyAndUnambigously s)
-  
+
 gsr_parser_convertibleFromInteger :: (Show a,Integral a
                                      ,Convertible Integer a)
                                   => GenericStringRep

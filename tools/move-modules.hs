@@ -1,22 +1,3 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 module Main where
 
 -------------------------------------------------------------------------------
@@ -66,7 +47,7 @@ type ModuleName  = String
 main = do
   (files,options) <- getProgramArguments
   processStdin options
-  
+
 
 -- | Reads (name,GHC-args,options)
 getProgramArguments :: IO ([String],Options)
@@ -103,17 +84,17 @@ options =
     (ReqArg ((\ filePath opts -> parseAndAddExcludesFromFile filePath opts))
      "FILE")
     "Read module names to move from the given file."
-  
+
   ,  Option ['m']     ["module"]
     (ReqArg ((\ moduleName opts -> return $ opts { optToMove = moduleName : (optToMove opts) }))
      "MODULE")
     "Specify a module to move. Repeat for moving many modules."
-  
+
   , Option ['d']     ["destination"]
     (ReqArg ((\ pkg opts -> return $ opts { optDestination = Just pkg }))
      "PACKAGE")
     "Destination package. If not given, the destination is the top-level package."
-  
+
   , Option ['h','?']     ["help"]
     (NoArg (\ opts -> return $ opts { optDisplayHelp = True }))
     "Display help and exit."
@@ -122,7 +103,7 @@ options =
 getOptionsAndArgs :: [String] -> IO (Options, [String])
 getOptionsAndArgs argv =
        case getOpt RequireOrder options argv of
-          (os,ns,[]  ) -> 
+          (os,ns,[]  ) ->
             do
               os' <- foldM (\soFar next -> next soFar) defaultOptions os
               when (optDisplayHelp os') $ displayHelpAndExit
@@ -163,7 +144,7 @@ processStdin :: Options -> IO ()
 processStdin options =
   do
     contents <- getContents
-    translate options contents 
+    translate options contents
 
 processLine :: Options -> String -> String
 processLine opts line =
@@ -172,7 +153,7 @@ processLine opts line =
     (Just rest) -> case stripPrefix "qualified " rest of
       Nothing   -> "import "           ++ replace opts rest
       (Just r2) -> "import qualified " ++ replace opts r2
-      
+
 replace :: Options -> String -> String
 replace options imp =
   let
@@ -212,7 +193,7 @@ processMatch mbDestinationPkg moduleName = newName
                       (\pkg -> pkg ++ ('.' : unqualifiedName))
                       mbDestinationPkg
     unqualifiedName = reverse $ takeWhile (/='.') $ reverse moduleName
-  
+
 
 unqualify :: String -> Either (String,String) String -- Either (Qualif,Unqualifd) Unqualifd
 unqualify identifier =

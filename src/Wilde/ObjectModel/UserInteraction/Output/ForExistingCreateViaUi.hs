@@ -1,34 +1,15 @@
-{-
-Copyright 2013 Emil Karlén.
-
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
-
 -- | Not sure what this outputer does.
 module Wilde.ObjectModel.UserInteraction.Output.ForExistingCreateViaUi
        (
          AttributeTypeInfo(..),
          ATTRIBUTE_OUTPUT_FOR_EXISTING(..),
-         
+
          AttributeInfo(..),
-       
+
          outputer,
-         
+
          -- * Re-exporting
-         
+
          module Wilde.ObjectModel.UserInteraction.Output.ExistingCommon,
        )
        where
@@ -73,7 +54,7 @@ outputer ot attributeTypesOrder =
     attributeTypeInfosOrder = map
                               (OmUtils.anyValueApply (AnyValue.Container . at2ati))
                               attributeTypesOrder
-    
+
     getObjectTypeOutput :: [ObjectName -> FormBlockRow] -> ObjectName -> FormBlock
     getObjectTypeOutput mkAttrOutputFunList objectName =
       FormBlock attributeOutputList []
@@ -87,7 +68,7 @@ outputer ot attributeTypesOrder =
                           attributeTypeInfosOrder
 
 -------------------------------------------------------------------------------
--- Output, for an existing object that is created via UI, of a single 
+-- Output, for an existing object that is created via UI, of a single
 -- 'AttributeTypeInfo'.
 -------------------------------------------------------------------------------
 getAttrOutput :: AttributeTypeInfo typeForExisting
