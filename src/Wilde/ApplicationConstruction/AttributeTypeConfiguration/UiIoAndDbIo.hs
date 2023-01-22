@@ -30,7 +30,7 @@ module Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAndDbIo
 -------------------------------------------------------------------------------
 
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import qualified Wilde.Media.Database as DatabaseMedia
 
@@ -156,5 +156,5 @@ atUiIoForExisting :: AttributeType (Configuration ann) dbTable typeForExisting t
 atUiIoForExisting at = uiIoForAttributeName . atConfiguration $ at
 
 eatiDatabaseColumns :: AttributeTypeDatabaseConfigForExisting dbTable typeForExisting
-                    -> NonEmpty.List (DatabaseMedia.DatabaseColumn dbTable)
+                    -> NonEmpty.NonEmpty (DatabaseMedia.DatabaseColumn dbTable)
 eatiDatabaseColumns = atdbioeStructure

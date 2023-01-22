@@ -35,7 +35,7 @@ module Wilde.ObjectModel.Database
 -------------------------------------------------------------------------------
 
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import Wilde.Media.Database
 import qualified Wilde.Media.Database.Monad as DbConn
@@ -95,7 +95,7 @@ class DATABASE_TABLE otConf => OBJECT_TYPE_INSERT otConf where
 
 class COLUMN_NAMES atConf where
   atColumns :: AttributeType atConf dbTable typeForExisting typeForCreate
-            -> NonEmpty.List (DatabaseColumn dbTable)
+            -> NonEmpty.NonEmpty (DatabaseColumn dbTable)
 
 class OUTPUT_FOR_CREATE atConf where
   atOutputerForCreate :: AttributeType atConf dbTable typeForExisting typeForCreate
@@ -112,7 +112,7 @@ class INPUT_FOR_EXISTING atConf where
 -- | Information for generating DDL for an 'AttributeType'.
 class DDL atConf where
   atDdlInfo :: AttributeType atConf dbTable typeForExisting typeForCreate
-            -> NonEmpty.List (DdlColumnInfo dbTable)
+            -> NonEmpty.NonEmpty (DdlColumnInfo dbTable)
 
 -- | Short cut class for input + output for existing.
 class (OUTPUT_FOR_EXISTING atConf,INPUT_FOR_EXISTING atConf) => IO_FOR_EXISTING atConf where

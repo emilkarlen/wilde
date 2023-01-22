@@ -103,7 +103,7 @@ import Data.Typeable ( Typeable )
 
 import Database.HDBC.ColTypes ( SqlColDesc )
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import Wilde.Media.Database
 
@@ -163,7 +163,7 @@ data AttributeTypeDatabaseInfoForExisting dbTable typeForExisting =
     -- Gives one element for each column used.
     -- The length of this list is the number of columns used for both input and output.
     -- Using this information it is possible to generate SQL DDL for the attribute.
-  , atdbiofeStructure :: NonEmpty.List (DdlColumnInfo dbTable)
+  , atdbiofeStructure :: NonEmpty.NonEmpty (DdlColumnInfo dbTable)
   }
 
 data AttributeTypeDatabaseConfigForExisting dbTable a =
@@ -171,7 +171,7 @@ data AttributeTypeDatabaseConfigForExisting dbTable a =
   AttributeTypeDatabaseConfigForExisting
   {
     atdbioeIo        :: DatabaseIo a
-  , atdbioeStructure :: NonEmpty.List (DatabaseColumn dbTable)
+  , atdbioeStructure :: NonEmpty.NonEmpty (DatabaseColumn dbTable)
   }
 
 -- | Makes a 'AttributeTypeDatabaseConfigForExisting'.

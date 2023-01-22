@@ -20,7 +20,7 @@ module Wilde.ApplicationTool.Commands.SqlDdl
 
 import Data.Maybe
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import Wilde.Database.Sql
 import Wilde.Database.SqlDdlInfo
@@ -183,5 +183,5 @@ mkBackEndColumnInfo ddlCi =
 -- | Short cut to get the columns of an 'AttributeType'.
 getAtCols :: DatabaseClasses.DDL atConf
           => AttributeType atConf dbTable typeForExisting typeForCreate
-          -> NonEmpty.List (DdlColumnInfo dbTable)
+          -> NonEmpty.NonEmpty (DdlColumnInfo dbTable)
 getAtCols = DatabaseClasses.atDdlInfo

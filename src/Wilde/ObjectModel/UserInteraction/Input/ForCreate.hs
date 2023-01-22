@@ -35,7 +35,7 @@ module Wilde.ObjectModel.UserInteraction.Input.ForCreate
 
 import Data.Either
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import qualified Wilde.Media.ElementSet as ES
 
@@ -157,8 +157,8 @@ inputerNoClass :: (forall e c . AttributeType atConf dbTable e c
 inputerNoClass at2InfoForInputAndConstructAttribute ot@(ObjectType {}) objectName =
   do
     idAttrR      <- inputAttr objectName iacaIdAt
-    nonIdAttrRs  <- sequence $ map (inputAttrAny objectName) iacaNonIdAts
-    let allAttrRs = (fmap Any idAttrR) : nonIdAttrRs
+    nonIdAttrRs  <- mapM (inputAttrAny objectName) iacaNonIdAts
+    let allAttrRs = fmap Any idAttrR : nonIdAttrRs
     let (errors,values) = partitionEithers allAttrRs
     case errors of
       [] ->
@@ -176,7 +176,7 @@ inputerNoClass at2InfoForInputAndConstructAttribute ot@(ObjectType {}) objectNam
       (e:es) -> pure $ Left $ OmUi.otUiObjectInputErrorInfo
                 (OmUtils.otCrossRefKey ot)
                 objectName
-                (NonEmpty.mk e es)
+                ((NonEmpty.:|) e es)
   where
     iacaIdAt     = at2InfoForInputAndConstructAttribute $ otIdAttributeType ot
     iacaNonIdAts = map

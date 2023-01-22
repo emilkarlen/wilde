@@ -42,7 +42,7 @@ module Wilde.Database.BackEndDdl
 
 import Database.HDBC.ColTypes as HDBC
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import Wilde.Database.Sql (SqlIdentifier)
 
@@ -107,7 +107,7 @@ data BackEndTableInfo columnInfo =
   {
     tblName              :: SqlIdentifier
   , tblColumns           :: [columnInfo]
-  , tblPrimaryKeyColumns :: NonEmpty.List SqlIdentifier
+  , tblPrimaryKeyColumns :: NonEmpty.NonEmpty SqlIdentifier
     -- | Foreign keys: (column in this table, info about destination table)
   , tblForeignKeys       :: [BackEndForeignKeyInfo]
   }

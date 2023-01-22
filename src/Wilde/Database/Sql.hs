@@ -98,7 +98,7 @@ module Wilde.Database.Sql
 -------------------------------------------------------------------------------
 
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 
 -------------------------------------------------------------------------------
@@ -381,7 +381,7 @@ data SqlUpdate fieldType =
   SqlUpdate
   {
     updateTable   :: SqlIdentifier,
-    updateColumns :: NonEmpty.List (fieldType,SqlExpr fieldType),
+    updateColumns :: NonEmpty.NonEmpty (fieldType,SqlExpr fieldType),
     updateWhere   :: Maybe (SqlExpr fieldType)
    }
 

@@ -26,7 +26,7 @@ import Data.List
 import System.IO
 
 import Wilde.Utils.Utils as Utils
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import Wilde.Database.Sql
 import qualified Wilde.ApplicationTool.DbExecution as SqlExec
@@ -87,7 +87,7 @@ printSqlForObjectType dmlRenderer sqlAction (AnyOWithDatabaseIo ot@(ObjectType {
                         maybe
                         "no updatable attributes"
                         (renderSql . toSI . SqlDmlUpdate . (SqlSansPres.updateOne ot))
-                        (NonEmpty.fromList . otNonIdAttributeTypes $ ot)
+                        (NonEmpty.nonEmpty . otNonIdAttributeTypes $ ot)
       DeleteOne      -> Just $ renderSql $ toSI $ SqlDmlDelete $ SqlSansPres.deleteOne ot
     renderSql = dmlRenderer
 

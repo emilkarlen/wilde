@@ -12,7 +12,7 @@ module Wilde.Database.DmlRendering
 -------------------------------------------------------------------------------
 
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import Text.PrettyPrint
 

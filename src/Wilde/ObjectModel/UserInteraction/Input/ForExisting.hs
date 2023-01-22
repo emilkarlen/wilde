@@ -37,7 +37,7 @@ module Wilde.ObjectModel.UserInteraction.Input.ForExisting
 
 import Data.Either
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import Wilde.Media.WildeMedia hiding (otKey)
 import Wilde.Media.ElementSet
@@ -162,7 +162,7 @@ inputerNoClass at2InfoForInputAndConstructAttribute ot objectName =
       (e:es) -> pure $ Left $ otUiObjectInputErrorInfo
                 (OmUtils.otCrossRefKey ot)
                 objectName
-                (NonEmpty.mk e es)
+                ((NonEmpty.:|) e es)
   where
     iacaIdAt     = at2InfoForInputAndConstructAttribute $ otIdAttributeType ot
     iacaNonIdAts = map

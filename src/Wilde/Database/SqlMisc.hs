@@ -21,7 +21,7 @@ module Wilde.Database.SqlMisc
 
 --import Wilde.Utils.Utils
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import Wilde.Database.Sql
 
@@ -50,14 +50,14 @@ ands :: [SqlExpr fieldType]
         -> SqlExpr fieldType
 ands l = foldl1 (SqlExprBinOp SqlBinOpAnd) l
 
-andsNonEmpty :: NonEmpty.List (SqlExpr fieldType)
+andsNonEmpty :: NonEmpty.NonEmpty (SqlExpr fieldType)
                 -> SqlExpr fieldType
-andsNonEmpty l = NonEmpty.foldl1 (SqlExprBinOp SqlBinOpAnd) l
+andsNonEmpty l = foldl1 (SqlExprBinOp SqlBinOpAnd) l
 
-eqFieldPosParamAndsNonEmpty :: NonEmpty.List (fieldType) -> SqlExpr fieldType
+eqFieldPosParamAndsNonEmpty :: NonEmpty.NonEmpty (fieldType) -> SqlExpr fieldType
 eqFieldPosParamAndsNonEmpty = andsNonEmpty . fmap (\f -> (field f) `eq` posParam)
 
-eqPosParamAndsNonEmpty :: NonEmpty.List (SqlExpr fieldType) -> SqlExpr fieldType
+eqPosParamAndsNonEmpty :: NonEmpty.NonEmpty (SqlExpr fieldType) -> SqlExpr fieldType
 eqPosParamAndsNonEmpty = andsNonEmpty . fmap (\e -> e `eq` posParam)
 
 eqPosParamAnds :: [fieldType] -> SqlExpr fieldType

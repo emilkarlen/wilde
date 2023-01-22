@@ -38,7 +38,7 @@ module Wilde.ApplicationConstruction.Service.ServiceUtils
 
 import Data.Either
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import qualified Wilde.Media.ElementSet as ElementSet
 import           Wilde.Media.WildeMedia
@@ -186,7 +186,7 @@ updateObject :: forall otConf atConf dbTable oNative idAtE idAtC.(Database.DATAB
                 ,DatabaseAndPresentation.ATTRIBUTE_TYPE_INFO atConf
                 )
              => ObjectType otConf atConf dbTable oNative idAtE idAtC
-             -> NonEmpty.List (Any (AttributeType atConf dbTable))
+             -> NonEmpty.NonEmpty (Any (AttributeType atConf dbTable))
              -> (ObjectName,idAtE) -- ^ (name,primary key)
              -> ServiceMonad (ObjectInputResult
                               (Object otConf atConf dbTable oNative idAtE idAtC))
@@ -201,7 +201,7 @@ updateObject ot updatableAts (oName,pk) =
       theErrorAsItIs err = pure $ Left err
 
       updateInDbAndpureObjectReadFromDb :: idAtE
-                                          -> NonEmpty.List (Any (Attribute atConf dbTable))
+                                          -> NonEmpty.NonEmpty (Any (Attribute atConf dbTable))
                                           -> ServiceMonad (ObjectInputResult
                                                            (Object otConf atConf dbTable oNative idAtE idAtC))
       updateInDbAndpureObjectReadFromDb pk attrs =
@@ -209,8 +209,8 @@ updateObject ot updatableAts (oName,pk) =
           o <- updateAndSelect ot pk attrs
           pure $ Right o
 
-      inputAttributes :: NonEmpty.List (Any (AttributeType atConf dbTable))
-                      -> ServiceMonad (ObjectInputResult (NonEmpty.List (Any (Attribute atConf dbTable))))
+      inputAttributes :: NonEmpty.NonEmpty (Any (AttributeType atConf dbTable))
+                      -> ServiceMonad (ObjectInputResult (NonEmpty.NonEmpty (Any (Attribute atConf dbTable))))
       inputAttributes ats =
         do
           attrs <- toServiceMonad $ mapM inputAttribute (NonEmpty.toList ats)
@@ -219,10 +219,10 @@ updateObject ot updatableAts (oName,pk) =
             []     -> pure $ pure attrsSuccessfullyInput_asNonEmpty
               where
                 attrsSuccessfullyInput_asNonEmpty =
-                  NonEmpty.mk (head attrsSuccessfullyInput) (tail attrsSuccessfullyInput)
-            (x:xs) -> pure $ Left $ errorInfo $ NonEmpty.mk x xs
+                  (NonEmpty.:|) (head attrsSuccessfullyInput) (tail attrsSuccessfullyInput)
+            (x:xs) -> pure $ Left $ errorInfo $ (NonEmpty.:|) x xs
 
-      errorInfo :: NonEmpty.List ElementSet.ElementLookupError
+      errorInfo :: NonEmpty.NonEmpty ElementSet.ElementLookupError
                 -> ObjectInputErrorInfo
       errorInfo errors = otUiObjectInputErrorInfo
                          (otCrossRefKey ot)
@@ -287,7 +287,7 @@ updateAndSelect :: (Database.DATABASE_TABLE otConf
                    )
                 => ObjectType otConf atConf dbTable oNative idAE idAC
                 -> idAE
-                -> NonEmpty.List (Any (Attribute atConf dbTable))
+                -> NonEmpty.NonEmpty (Any (Attribute atConf dbTable))
                 -> DbConn.Monad (Object otConf atConf dbTable oNative idAE idAC)
 updateAndSelect ot pk attrsToUpdate =
   do

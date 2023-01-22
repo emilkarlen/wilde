@@ -29,7 +29,7 @@ module Wilde.ApplicationConstruction.ObjectModel.ReferenceAttributeType
 
 import Database.HDBC
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import qualified Wilde.Database.SqlJoin as Sql
 
@@ -104,7 +104,7 @@ data ReferenceAttributeTypeInfo otConf atConf dbTableSrc dbTableDst otNativeDst 
     {
       ratiUiWidgetConstructor :: MultiWidgetConstructor
     , ratiRefDst              :: StandardServices.ObjectTypeSetup otConf atConf dbTableDst otNativeDst idAtExistingDst idAtCreateDst
-    , ratiTableColumns        :: NonEmpty.List dbTableSrc
+    , ratiTableColumns        :: NonEmpty.NonEmpty dbTableSrc
     , ratiPresSpec            :: ReferencePresentationSpec        otConf atConf dbTableDst otNativeDst idAtExistingDst idAtCreateDst
      }
 

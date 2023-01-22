@@ -271,7 +271,6 @@ Library
     Wilde.Utils.TextHtmlUtils
     Wilde.Utils.Debug
     Wilde.Utils.Empty
-    Wilde.Utils.NonEmptyList
     Wilde.Utils.Utils
     Wilde.Utils.ExceptReaderT
     Wilde.Utils.Monad

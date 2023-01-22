@@ -38,7 +38,7 @@ import Wilde.Database.SqlMisc
 import Database.HDBC
 
 import Wilde.Utils.Utils
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import Wilde.Media.Database
 
@@ -58,7 +58,7 @@ getOrderByCols orderBy = map columnName $ concatMap atColumnListAny orderBy
 -- | Non-empty list of columns for an 'AttributeType'.
 atColumnNames :: COLUMN_NAMES atConf
               => AttributeType atConf dbTable typeForExisting typeForCreate
-              -> NonEmpty.List dbTable
+              -> NonEmpty.NonEmpty dbTable
 atColumnNames = fmap columnName . atColumns
 
 -- | Non-empty list of columns for an 'AttributeType'.

@@ -7,7 +7,7 @@ module Wilde.Service.Error where
 -------------------------------------------------------------------------------
 
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 import qualified Wilde.Media.ElementSet as ES
 import           Wilde.Media.WildeMedia as WM
 import qualified Wilde.Media.Database as DbM
@@ -23,7 +23,7 @@ import qualified Wilde.Media.UserInteraction.Input as UiI
 data ServiceError = SInvocationError    InvocationError
                   | DbIoError           DbM.DatabaseError
                   | UiMediaLookupError  ES.ElementLookupError
-                  | UiObjectInputError  (NonEmpty.List ObjectInputErrorInfo)
+                  | UiObjectInputError  (NonEmpty.NonEmpty ObjectInputErrorInfo)
                   | UnclassifiedError   WM.UnclassifiedError
                   | NormalError         String
                   | SObjectModelError   String

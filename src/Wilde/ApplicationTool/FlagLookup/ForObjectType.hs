@@ -26,7 +26,7 @@ module Wilde.ApplicationTool.FlagLookup.ForObjectType
 -------------------------------------------------------------------------------
 
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import Wilde.ObjectModel.ObjectModel
 
@@ -69,7 +69,7 @@ types_single =
 types_oneOrMore :: ApplicationModel.OBJECT_TYPES m
                 => m
                 -> [Flag]
-                -> IO (NonEmpty.List (ApplicationModel.AnyAnyO ObjectType))
+                -> IO (NonEmpty.NonEmpty (ApplicationModel.AnyAnyO ObjectType))
 types_oneOrMore =
   lookupByObjectTypeFlag_oneOrMore withNothingSpecialConfig
 
@@ -109,7 +109,7 @@ typesWithDatabaseIo_single =
 typesWithDatabaseIo_oneOrMore :: ApplicationModel.OBJECT_TYPES_WITH_DATABASE_IO_INFO m
                                         => m
                                         -> [Flag]
-                                        -> IO (NonEmpty.List (ApplicationModel.AnyOWithDatabaseIo ObjectType))
+                                        -> IO (NonEmpty.NonEmpty (ApplicationModel.AnyOWithDatabaseIo ObjectType))
 typesWithDatabaseIo_oneOrMore =
   lookupByObjectTypeFlag_oneOrMore withDatabaseIoInfoConfig
 
@@ -149,7 +149,7 @@ typesWithDll_single =
 typesWithDll_oneOrMore :: ApplicationModel.OBJECT_TYPES_WITH_DDL_INFO m
                        => m
                        -> [Flag]
-                       -> IO (NonEmpty.List (ObjectTypeWithAtDdlInformation.AnyO ObjectType))
+                       -> IO (NonEmpty.NonEmpty (ObjectTypeWithAtDdlInformation.AnyO ObjectType))
 typesWithDll_oneOrMore =
   lookupByObjectTypeFlag_oneOrMore withDllInfoConfig
 
@@ -189,7 +189,7 @@ setupsWithDll_single =
 setupsWithDll_oneOrMore :: ApplicationModel.OBJECT_TYPE_SETUPS_WITH_DDL_INFO m
                         => m
                         -> [Flag]
-                        -> IO (NonEmpty.List (ObjectTypeWithAtDdlInformation.AnyO StandardServices.ObjectTypeSetup))
+                        -> IO (NonEmpty.NonEmpty (ObjectTypeWithAtDdlInformation.AnyO StandardServices.ObjectTypeSetup))
 setupsWithDll_oneOrMore =
   lookupByObjectTypeFlag_oneOrMore setupWithDllInfoConfig
 
@@ -229,7 +229,7 @@ lookupByObjectTypeFlag_single =
 lookupByObjectTypeFlag_oneOrMore :: ElementTypeConfig m e
                                  -> m
                                  -> [Flag]
-                                 -> IO (NonEmpty.List e)
+                                 -> IO (NonEmpty.NonEmpty e)
 lookupByObjectTypeFlag_oneOrMore =
   lookupObjectTypeForModel lookupSelection_oneOrMore
 

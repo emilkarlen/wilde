@@ -25,9 +25,9 @@ module Wilde.ApplicationConstruction.AttributeTypeConfiguration.DdlAtAnnotation
 -------------------------------------------------------------------------------
 
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
-import Wilde.Database.SqlDdlInfo
+import Wilde.Database.SqlDdlInfo ( DdlColumnInfo )
 
 import Wilde.ObjectModel.ObjectModel as ObjectModel hiding (AnyO)
 import Wilde.ObjectModel.Database as Database
@@ -41,14 +41,14 @@ import qualified Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAn
 
 
 -- | Empty annotation type used together with 'AnyO'.
-data DdlAtAnnotation dbTable e c =
+newtype DdlAtAnnotation dbTable e c =
   DdlAtAnnotation
   {
-    ddlAtaGetColumns :: NonEmpty.List (DdlColumnInfo dbTable)
+    ddlAtaGetColumns :: NonEmpty.NonEmpty (DdlColumnInfo dbTable)
   }
 
 -- | Constructor of 'DdlAtAnnotation'.
-mkDdlAtAnnotation :: NonEmpty.List (DdlColumnInfo dbTable)
+mkDdlAtAnnotation :: NonEmpty.NonEmpty (DdlColumnInfo dbTable)
                   -> DdlAtAnnotation dbTable e c
 mkDdlAtAnnotation = DdlAtAnnotation
 
@@ -60,8 +60,8 @@ type Configuration = UiIoAndDbIo.Configuration DdlAtAnnotation
 
 -- | Transforms the list of 'DdlColumnInfo's of a
 -- 'DdlAtAnnotation'.
-transformDdlAtAnnotation :: (NonEmpty.List (DdlColumnInfo dbTableA)
-                         -> NonEmpty.List (DdlColumnInfo dbTableB))
+transformDdlAtAnnotation :: (NonEmpty.NonEmpty (DdlColumnInfo dbTableA)
+                         -> NonEmpty.NonEmpty (DdlColumnInfo dbTableB))
                          -> DdlAtAnnotation dbTableA e c
                          -> DdlAtAnnotation dbTableB e c
 transformDdlAtAnnotation f (DdlAtAnnotation xs) = DdlAtAnnotation $ f xs

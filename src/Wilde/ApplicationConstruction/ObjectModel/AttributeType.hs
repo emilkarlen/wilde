@@ -140,7 +140,7 @@ import Data.Time.Calendar (Day)
 import Database.HDBC.Types
 import Database.HDBC.ColTypes
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 import           Wilde.Utils.Empty
 
 import Wilde.Database.Sql
@@ -481,7 +481,7 @@ getOtIdAtDdlColumnInfo_mustBeSingle refColForErrMsg otDst =
   where
     getOtIdAtDbColInfoList = NonEmpty.toList . DdlAtAnnotation.atDdlInfo . otIdAttributeType
 
-getSingletonDdlColForRefTarget :: NonEmpty.List (DdlColumnInfo dbTable) -> DdlColumnInfo dbTable
+getSingletonDdlColForRefTarget :: NonEmpty.NonEmpty (DdlColumnInfo dbTable) -> DdlColumnInfo dbTable
 getSingletonDdlColForRefTarget =
   getSingleton "at_ref: Invalid Object Model: Invalid num db-cols in ref-target"
 
@@ -1365,7 +1365,7 @@ ddlAnnotation = DdlAtAnnotation.mkDdlAtAnnotation .
 -------------------------------------------------------------------------------
 
 
-getSingleton :: String -> NonEmpty.List a -> a
+getSingleton :: String -> NonEmpty.NonEmpty a -> a
 getSingleton errMsgHead l =
   case NonEmpty.length l of
     1 -> NonEmpty.head l

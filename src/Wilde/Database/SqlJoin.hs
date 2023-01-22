@@ -70,7 +70,7 @@ module Wilde.Database.SqlJoin
 -------------------------------------------------------------------------------
 
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import Wilde.Database.Sql
 
@@ -129,10 +129,10 @@ Attribute types with the same @value@ type probably have identical
 storage structure (number, and type of database columns).
 -}
 -------------------------------------------------------------------------------
-data Attribute columnType value = Attribute (NonEmpty.List columnType)
+data Attribute columnType value = Attribute (NonEmpty.NonEmpty columnType)
 
 -- | Constructs an 'Attribute'.
-newAttribute :: NonEmpty.List columnType
+newAttribute :: NonEmpty.NonEmpty columnType
              -> Attribute columnType value
 newAttribute = Attribute
 
@@ -255,8 +255,8 @@ data JoinSpec base
   = JoinBase
     {
       jspcRightTableAndType :: SqlJoinTableAndType
-    , jspcColsInBaseTable   :: NonEmpty.List base
-    , jspcColsInRightTable  :: NonEmpty.List SqlIdentifier
+    , jspcColsInBaseTable   :: NonEmpty.NonEmpty base
+    , jspcColsInRightTable  :: NonEmpty.NonEmpty SqlIdentifier
     }
   | JoinTrans
     {
@@ -265,8 +265,8 @@ data JoinSpec base
       -- This is either the name of the link table itself
       -- or an alias for that table.
     , jspcLinkTableQualifier :: SqlIdentifier
-    , jspcColsInLinkTable    :: NonEmpty.List SqlIdentifier
-    , jspcColsInRightTable   :: NonEmpty.List SqlIdentifier
+    , jspcColsInLinkTable    :: NonEmpty.NonEmpty SqlIdentifier
+    , jspcColsInRightTable   :: NonEmpty.NonEmpty SqlIdentifier
     }
 
 instance Functor JoinSpec where
@@ -325,7 +325,7 @@ fieldExprList = fmap NonEmpty.toList . fieldExprs
 -- | A field expression for each column of the 'Attribute'.
 fieldExprs :: SQL_IDENTIFIER table
            => Attribute (BasedOn table) value
-           -> JoinMonad table (NonEmpty.List (SqlExpr (BasedOn table)))
+           -> JoinMonad table (NonEmpty.NonEmpty (SqlExpr (BasedOn table)))
 fieldExprs (Attribute cols) =
   do
     joinState <- get
@@ -614,7 +614,7 @@ joinSqlSelect joinState selectExprs whereExpr orderBy =
                              }
       where
         singleColEqExprList = fmap colsEq $ NonEmpty.zip colsInBase colsInRight
-        expr                = NonEmpty.foldl1 (binOp andOp) singleColEqExprList
+        expr                = foldl1 (binOp andOp) singleColEqExprList
         rightTableQualifier = maybe table id mbAlias
         colsEq (colInBase,colInRight) =
           let
@@ -635,7 +635,7 @@ joinSqlSelect joinState selectExprs whereExpr orderBy =
                              }
       where
         singleColEqExprList = fmap colsEq $ NonEmpty.zip colsInLink colsInRight
-        expr                = NonEmpty.foldl1 (binOp andOp) singleColEqExprList
+        expr                = foldl1 (binOp andOp) singleColEqExprList
         rightTableQualifier = maybe table id mbAlias
         colsEq (colInLink,colInRight) =
           let

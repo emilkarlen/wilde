@@ -20,7 +20,7 @@ import Data.Maybe
 import qualified Data.Set as Set
 import Data.Graph
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import Wilde.Database.Sql
 import Wilde.Database.SqlDdlInfo

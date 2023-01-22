@@ -29,7 +29,7 @@ module Wilde.ApplicationConstruction.StandardServices.UpdateOne
 -------------------------------------------------------------------------------
 
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import qualified Wilde.Media.MonadWithInputMedia as MIIA
 import           Wilde.Media.UserInteraction.Io
@@ -79,7 +79,7 @@ data Config (otConf :: * -> * -> * -> * -> *) atConf dbTable otNative idAtExisti
     -- Must contain at least one updatable attribute type.
   , inputFormConfig :: OutputForExisting.AttributeTypeConfigurations atConf dbTable
 
-  , updatables :: NonEmpty.List (Any (AttributeType atConf dbTable))
+  , updatables :: NonEmpty.NonEmpty (Any (AttributeType atConf dbTable))
   }
 
 mkService :: (Database.DATABASE_TABLE otConf
@@ -149,18 +149,13 @@ updateOneMain ot (Config titles displayUpdatedObjectConfig inputFormConfig updat
 
 -- | Gives the updatable 'AttributeType's of a configuration.
 updatableAts :: [OutputForExisting.AttributeTypeConfiguration atConf dbTable]
-             -> Maybe (NonEmpty.List (Any (AttributeType atConf dbTable)))
-updatableAts = NonEmpty.fromList . updatableAtsList
+             -> Maybe (NonEmpty.NonEmpty (Any (AttributeType atConf dbTable)))
+updatableAts = NonEmpty.nonEmpty . updatableAtsList
 
 updatableAtsList :: [OutputForExisting.AttributeTypeConfiguration atConf dbTable]
                  -> [Any (AttributeType atConf dbTable)]
 updatableAtsList = OutputForExisting.atsWith OutputForExisting.UserInteraction
 
-
--- updatableAts_debug_orig :: OutputForExisting.AttributeTypeConfigurations atConf dbTable
---              -> Maybe (NonEmpty.List (Any (AttributeType atConf dbTable)))
--- updatableAts_debug_orig = NonEmpty.fromList .
---                OutputForExisting.atsWith OutputForExisting.UserInteraction
 
 -- | Configuration for an updatable 'AttributeType'.
 mkUpdatable :: (Any (AttributeType atConf dbTable))

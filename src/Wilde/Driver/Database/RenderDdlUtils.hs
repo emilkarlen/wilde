@@ -28,7 +28,7 @@ import Database.HDBC.ColTypes as HDBC
 
 import Wilde.Utils.Utils
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import Wilde.Database.BackEndDdl
 

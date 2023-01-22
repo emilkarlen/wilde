@@ -38,7 +38,7 @@ module Wilde.ApplicationConstruction.Service.ServiceTools
 
 import Data.Either
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import qualified Wilde.Media.ElementSet as ES
 
@@ -270,11 +270,11 @@ otUiObjectInputErrorMonads ms =
       Right xs   -> pure xs
   where
     combineAllErrors :: Monad m => [m (ObjectInputResult a)]
-                    -> m (Either (NonEmpty.List ObjectInputErrorInfo) [a])
+                    -> m (Either (NonEmpty.NonEmpty ObjectInputErrorInfo) [a])
     combineAllErrors ms = do
       results <- sequence ms
       let (errors,oks) = partitionEithers results
       pure $
         case errors of
-          (e:es) -> Left $ NonEmpty.mk e es
+          (e:es) -> Left $ (NonEmpty.:|) e es
           _      -> Right oks

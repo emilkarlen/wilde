@@ -26,7 +26,7 @@ module Wilde.ObjectModel.Database.Execution.Update
 
 import Database.HDBC
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import qualified Wilde.Database.Sql as Sql
 
@@ -59,7 +59,7 @@ updateAll_attributes :: (Output.DATABASE_TABLE otConf
                         ,Output.COLUMN_NAMES atConf
                         )
                      => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
-                     -> NonEmpty.List (Any (Attribute atConf dbTable))
+                     -> NonEmpty.NonEmpty (Any (Attribute atConf dbTable))
                      -> DbConn.Monad (Maybe Integer)
 updateAll_attributes ot attrsToUpdate =
   update_attributes ot Nothing [] attrsToUpdate
@@ -74,7 +74,7 @@ updateOne :: (Output.DATABASE_TABLE otConf
              ,Output.COLUMN_NAMES atConf
              )
           => Object otConf atConf dbTable otNative idAtExisting idAtCreate
-          -> NonEmpty.List (Any (Attribute atConf dbTable))
+          -> NonEmpty.NonEmpty (Any (Attribute atConf dbTable))
           -> DbConn.Monad (Maybe Integer)
 updateOne o attrsToUpdate =
   updateOne_attributes
@@ -93,7 +93,7 @@ updateOne_attributes :: (Output.DATABASE_TABLE otConf
                         )
                      => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
                      -> idAtExisting
-                     -> NonEmpty.List (Any (Attribute atConf dbTable))
+                     -> NonEmpty.NonEmpty (Any (Attribute atConf dbTable))
                      -> DbConn.Monad (Maybe Integer)
 updateOne_attributes ot@(ObjectType {}) idAtValue attrsToUpdate =
   do
@@ -123,7 +123,7 @@ update_attributes :: (Output.DATABASE_TABLE otConf
                   -- ^ WHERE expression
                   -> [SqlValue]
                   -- ^ SQL parameters for the WHERE expression
-                  -> NonEmpty.List (Any (Attribute atConf dbTable))
+                  -> NonEmpty.NonEmpty (Any (Attribute atConf dbTable))
                   -- ^ ORDER BY
                   -> DbConn.Monad (Maybe Integer)
 update_attributes ot@(ObjectType {}) mbWhereExpr whereExprParams attrsToUpdate =
@@ -142,8 +142,8 @@ update_attributes ot@(ObjectType {}) mbWhereExpr whereExprParams attrsToUpdate =
                                 (Output.aOutputsExisting (NonEmpty.toList attrsToUpdate))
                                 :: ConvertResult [SqlValue]
 
-    getAts :: NonEmpty.List (Any (Attribute     atConf dbTable))
-           -> NonEmpty.List (Any (AttributeType atConf dbTable))
+    getAts :: NonEmpty.NonEmpty (Any (Attribute     atConf dbTable))
+           -> NonEmpty.NonEmpty (Any (AttributeType atConf dbTable))
     getAts attrs = fmap (OmUtils.anyValueApply2 attrType) attrs
 
 

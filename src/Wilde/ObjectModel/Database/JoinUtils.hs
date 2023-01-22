@@ -21,7 +21,7 @@ module Wilde.ObjectModel.Database.JoinUtils
 
 import Wilde.ObjectModel.ObjectModel
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import Database.HDBC
 
@@ -60,7 +60,7 @@ newSqlAttribute = Sql.newAttribute . Utils.atColumnNames
 
 atColumnExprs :: Database.COLUMN_NAMES atConf
               => AttributeType atConf dbTable e c
-              -> Sql.JoinMonad dbTable (NonEmpty.List (Sql.SqlExpr (Sql.BasedOn dbTable)))
+              -> Sql.JoinMonad dbTable (NonEmpty.NonEmpty (Sql.SqlExpr (Sql.BasedOn dbTable)))
 atColumnExprs at@(AttributeType {}) = Sql.fieldExprs sqlAttrInBasedOn
   where
     sqlAttr          = newSqlAttribute at

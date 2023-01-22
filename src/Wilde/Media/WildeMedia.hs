@@ -47,7 +47,7 @@ module Wilde.Media.WildeMedia
 
 import Data.Typeable
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 import Wilde.Utils.Utils
 
 import Wilde.Media.ElementSet
@@ -109,7 +109,7 @@ data ObjectInputErrorInfo =
   {
     otKey      :: CrossRefIdentifier
   , oName      :: Title
-  , attrErrors :: NonEmpty.List ElementLookupError
+  , attrErrors :: NonEmpty.NonEmpty ElementLookupError
   }
   deriving Show
 

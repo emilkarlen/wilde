@@ -61,7 +61,7 @@ module Wilde.ObjectModel.UserInteraction
 -------------------------------------------------------------------------------
 
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import qualified Wilde.Media.ElementSet as ES
 import Wilde.Media.WildeMedia hiding (otKey)
@@ -194,7 +194,7 @@ type ObjectInputResult a = Either ObjectInputErrorInfo a
 -- | Helper method for constructing a 'ObjectInputErrorInfo'.
 otUiObjectInputErrorInfo :: CrossRefIdentifier -- ^ Object Type ID
                          -> ObjectName -- ^ Object Name
-                         -> NonEmpty.List ES.ElementLookupError
+                         -> NonEmpty.NonEmpty ES.ElementLookupError
                          -> ObjectInputErrorInfo
 otUiObjectInputErrorInfo otKey objectName attrErrorInfos =
     ObjectInputErrorInfo otKey (show objectName) attrErrorInfos

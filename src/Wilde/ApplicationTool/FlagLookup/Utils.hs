@@ -76,7 +76,7 @@ module Wilde.ApplicationTool.FlagLookup.Utils
 
 import Data.List
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import Wilde.ApplicationTool.FlagsAndOptions as FlagsAndOptions
 
@@ -255,7 +255,7 @@ lookupSelection_single (ElementTypeAndFlagConfig
 lookupSelection_oneOrMore :: ElementTypeAndFlagConfig m a
                           -> m
                           -> [Flag]
-                          -> IO (NonEmpty.List a)
+                          -> IO (NonEmpty.NonEmpty a)
 lookupSelection_oneOrMore (ElementTypeAndFlagConfig
                       {
                         elementTypeConfig              = theElementTypeConfig
@@ -277,21 +277,21 @@ lookupSelection_oneOrMore (ElementTypeAndFlagConfig
       flags
       model
 
-    noElementExistWithTheSpecifiedName :: String -> IO (NonEmpty.List a)
+    noElementExistWithTheSpecifiedName :: String -> IO (NonEmpty.NonEmpty a)
     noElementExistWithTheSpecifiedName flagValue = msgFail reason
       where
         reason = "Cannot find " ++
                  typeName ++ ": " ++
                  flagValue
 
-    zeroOrMoreElementsSpecified :: [a] -> IO (NonEmpty.List a)
+    zeroOrMoreElementsSpecified :: [a] -> IO (NonEmpty.NonEmpty a)
 
     zeroOrMoreElementsSpecified [] = msgFail reason
       where
         reason = "The model does not contain any " ++
                  typeName ++ " elements"
 
-    zeroOrMoreElementsSpecified (x:xs) = pure $ NonEmpty.mk x xs
+    zeroOrMoreElementsSpecified (x:xs) = pure $ (NonEmpty.:|) x xs
 
     typeName = elementTypeName theElementTypeConfig
 

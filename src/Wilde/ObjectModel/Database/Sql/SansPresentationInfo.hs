@@ -49,7 +49,7 @@ import Wilde.ObjectModel.ObjectModelUtils
 import qualified Wilde.Database.Sql as Sql
 import qualified Wilde.Database.SqlMisc as SqlMisc
 
-import qualified Wilde.Utils.NonEmptyList as NonEmpty
+import qualified Data.List.NonEmpty as NonEmpty
 
 import Wilde.Media.Database
 
@@ -167,7 +167,7 @@ selectOne ot = select ot (justOtIdAtEqPosParamExpr ot) []
 update_attributes :: (COLUMN_NAMES atConf
                      ,DATABASE_TABLE otConf)
                   => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
-                  -> NonEmpty.List (Any (AttributeType atConf dbTable))
+                  -> NonEmpty.NonEmpty (Any (AttributeType atConf dbTable))
                   -- ^ Attributes to update
                   -> Maybe (Sql.SqlExpr dbTable)
                   -- ^ WHERE expr
@@ -176,12 +176,15 @@ update_attributes ot atsToUpdate mbWhereExpr =
   Sql.update theTableName colSets mbWhereExpr
   where
     colSets       = fmap setColumnName colsToUpdate
-    colsToUpdate  = NonEmpty.concat $ fmap (anyValueApply atColumnNames) atsToUpdate
+    colsToUpdate  = concatNE $ fmap (anyValueApply atColumnNames) atsToUpdate
     theTableName  = tableName $ otDatabaseTable ot
     -- Transforms a column name (dbTable) to one of the items in the
     -- UPDATE clauses SET list of (col = expr).
     setColumnName :: dbTable -> (dbTable,Sql.SqlExpr dbTable)
     setColumnName colName = (colName,Sql.posParam)
+
+    concatNE :: NonEmpty.NonEmpty (NonEmpty.NonEmpty a) -> NonEmpty.NonEmpty a
+    concatNE = foldr1 (<>)
 
 -------------------------------------------------------------------------------
 -- | SQL for updating an 'Object'.
@@ -197,7 +200,7 @@ update_attributes ot atsToUpdate mbWhereExpr =
 updateOne :: (COLUMN_NAMES atConf
              ,DATABASE_TABLE otConf)
           => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
-          -> NonEmpty.List (Any (AttributeType atConf dbTable))
+          -> NonEmpty.NonEmpty (Any (AttributeType atConf dbTable))
           -> Sql.SqlUpdate dbTable
 updateOne ot atsToUpdate =
   update_attributes ot atsToUpdate (justOtIdAtEqPosParamExpr ot)
@@ -210,7 +213,7 @@ updateOne_attributes :: (COLUMN_NAMES atConf
                         ,DATABASE_TABLE otConf
                         )
                      => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
-                     -> NonEmpty.List (Any (AttributeType atConf dbTable))
+                     -> NonEmpty.NonEmpty (Any (AttributeType atConf dbTable))
                      -- ^ Attributes to update.
                      -- The SQL expects as parameters values for all these
                      -- attributes.
