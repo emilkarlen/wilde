@@ -81,14 +81,14 @@ lookupService services name mbOtId =
       Just service ->
         case service of
           Left globalService ->
-            maybe (return globalService) (const $ Left $ InvalidServiceType True) mbOtId
+            maybe (pure globalService) (const $ Left $ InvalidServiceType True) mbOtId
           Right (ObjectTypeService.AnyOtService otServices) ->
             case mbOtId of
               Nothing   -> Left $ InvalidServiceType False
               Just otId ->
                 case ObjectTypeService.lookupService otServices otId of
                   Nothing      -> Left ObjectTypeNotSupportedByService
-                  Just service -> return service
+                  Just service -> pure service
 
 -- | Service lookup error.
 data LookupError = UnknownService String -- ^ Service does not exist

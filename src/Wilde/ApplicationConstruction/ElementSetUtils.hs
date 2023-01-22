@@ -70,7 +70,7 @@ lookupSingleton_maybeTrim_parser False = singleton_mandatory
 lookupSingleton_maybeTrim_parser True  = singleton_mandatory >=> trimEmptyIsMissing
 
 justAnythingIsTrue_parser :: Parser (Maybe a) Bool
-justAnythingIsTrue_parser = maybe (return False) (const $ return True)
+justAnythingIsTrue_parser = maybe (pure False) (const $ pure True)
 
 
 -------------------------------------------------------------------------------

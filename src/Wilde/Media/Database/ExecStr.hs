@@ -43,7 +43,7 @@ import Wilde.Media.Database.Error
 
 
 -- | Executes a non-SELECT statement,
--- returning the numer of rows operated upon.
+-- pureing the numer of rows operated upon.
 execSql_numRows :: String -- ^ SQL DML statement
                 -> [SqlValue] -- ^ positional parameters
                 -> DbConnM.Monad Integer
@@ -54,9 +54,9 @@ execSql_numRows sql params = Logging.loggBeginEnd Logging.LIBRARY "execSql_numRo
   liftIO $ HDBC.execute stmt params
 
 -- | Executes a non-SELECT statement,
--- returning the numer of rows operated upon.
+-- pureing the numer of rows operated upon.
 --
--- Nothing is returned if the number of rows
+-- Nothing is pureed if the number of rows
 -- operated upon is not supported by the DB backend.
 execSql_numRowsMb :: String -- ^ SQL DML statement
                   -> [SqlValue] -- ^ positional parameters

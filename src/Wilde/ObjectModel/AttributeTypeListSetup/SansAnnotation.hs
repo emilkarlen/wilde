@@ -74,7 +74,7 @@ mk :: ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
 mk ot ats =
   do
     validIndexes <- mapM indexOfAt ats
-    return $ Setup
+    pure $ Setup
         {
         atlsOt       = ot,
         atlsAts      = ats,
@@ -91,7 +91,7 @@ mk ot ats =
       (Right)
       (lookup atKey atKeyIndexes)
 
-    -- The method that is returned - looks up using indexes and the array.
+    -- The method that is pureed - looks up using indexes and the array.
     getAttrsFromObject :: [Int]
                        -> Object otConf atConf dbTable otNative idAtExisting idAtCreate
                        -> [Any (Attribute atConf dbTable)]

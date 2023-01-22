@@ -53,13 +53,13 @@ data Config (otConf :: * -> * -> * -> * -> *) (atConf :: * -> * -> * -> *) dbTab
 data Steps idAtExisting =
   Steps
   {
-    -- | If this computation returns 'Just' a message, then the deletion is
+    -- | If this computation pures 'Just' a message, then the deletion is
     -- concidered to be impossible, so the operation is halted.
     --
     -- Should not update the information in the database.
     messageIfImpossible             :: idAtExisting -> ServiceMonad (Maybe PopUp.Message)
 
-    -- | If this computation returns 'Just' a message, then the message is displayed
+    -- | If this computation pures 'Just' a message, then the message is displayed
     -- in a ask-if-continue PopUp, which lets the user halt the operation.
     --
     -- Should not update the information in the database.
@@ -67,7 +67,7 @@ data Steps idAtExisting =
 
     -- | Performs the actual deletion in the database.
     --
-    -- Returns 'Just' a message if the operation could not be completed.
+    -- pures 'Just' a message if the operation could not be completed.
   , doDeleteAndGiveMessageIfAborted :: idAtExisting -> ServiceMonad (Maybe PopUp.Message)
   }
 
@@ -82,13 +82,13 @@ defaultSteps :: (Database.DATABASE_TABLE otConf
 defaultSteps ot =
   Steps
   {
-    messageIfImpossible             = const $ return Nothing
+    messageIfImpossible             = const $ pure Nothing
   , messageIfWarnAboutConsequences  = \id ->
       toServiceMonad $ do
         msg <- UiOm.getEnvs $ Translations.trThisIsImpossibleToUndo . UiOm.outTranslations . UiOm.envOutputing
-        return $ Just msg
+        pure $ Just msg
   , doDeleteAndGiveMessageIfAborted = \id -> deleteObject ot id >>
-                                             return Nothing
+                                             pure Nothing
   }
 
 mkService :: OmGsr.ATTRIBUTE_INPUT_FOR_EXISTING atConf

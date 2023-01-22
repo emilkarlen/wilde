@@ -200,7 +200,7 @@ sdToNative = ObjectToNativeFunction f
          [Any aString@(Attribute {})] ->
            do
              mbString <- doOtnUnhide $ attrValue aString
-             return (word32,mbString,"Dummy")
+             pure (word32,mbString,"Dummy")
          attrs -> numAttributesError2 attrs 1
 
 
@@ -261,7 +261,7 @@ autoincToNative = ObjectToNativeFunction f
          [Any aString@(Attribute {})] ->
            do
              mbString <- doOtnUnhide $ attrValue aString
-             return (pkValue,mbString)
+             pure (pkValue,mbString)
          attrs -> numAttributesError2 attrs 1
 
 
@@ -344,7 +344,7 @@ refToNative = ObjectToNativeFunction f
         do
           refInt32Sd <- doOtnUnhide $ attrValue aRefSd
           refInt32Ai <- doOtnUnhide $ attrValue aRefAutoincPK
-          return (idInt32,refInt32Sd,refInt32Ai)
+          pure (idInt32,refInt32Sd,refInt32Ai)
       attrs -> numAttributesError2 attrs 1
       where
         idInt32 = attrValue $ oIdAttribute o

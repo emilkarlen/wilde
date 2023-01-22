@@ -65,7 +65,7 @@ renderDdlStatements :: [PrecededByCommentLines TranslatedDdlStatement]
 renderDdlStatements statements =
   do
     stmtDocs <- mapM renderStmt' statements
-    return $ vcat stmtDocs
+    pure $ vcat stmtDocs
   where
     renderStmt' = renderPrecededByCommentLinesM renderDdlStatement
 
@@ -78,7 +78,7 @@ renderCreateTables :: [PrecededByCommentLines (BackEndTableInfo BackEndColumnInf
 renderCreateTables statements =
   do
     stmtDocs <- mapM renderTable' statements
-    return $ vcat stmtDocs
+    pure $ vcat stmtDocs
   where
     renderTable' = renderPrecededByCommentLinesM renderCreateTable
 
@@ -88,7 +88,7 @@ renderPrecededByCommentLinesM :: (a -> RenderMonad Doc)
 renderPrecededByCommentLinesM renderValue x =
   do
     valueDoc <- renderValue (commentedValue x)
-    return $ vcat [commentsDoc,valueDoc]
+    pure $ vcat [commentsDoc,valueDoc]
   where
     commentsDoc :: Doc
     commentsDoc = vcat . map renderCommentLine $ commentLines x
@@ -96,16 +96,16 @@ renderPrecededByCommentLinesM renderValue x =
     renderCommentLine line = text "-- " <> text line
 
 renderAlterTable :: (SqlIdentifier,[AlterSpecification BackEndColumnInfo]) -> RenderMonad Doc
-renderAlterTable (_,[]) = return empty
+renderAlterTable (_,[]) = pure empty
 renderAlterTable (tableName,specifications) =
   do
     specificationDocs <- mapM renderAlterTableSpecification specifications
-    return $ (vcat $ header : specificationDocs) <> semi
+    pure $ (vcat $ header : specificationDocs) <> semi
   where
     header = text "ALTER TABLE" <+> text tableName
 
 renderAlterTableSpecification :: AlterSpecification BackEndColumnInfo -> RenderMonad Doc
-renderAlterTableSpecification (AddForeignKey backEndForeignKeyInfo) = return doc
+renderAlterTableSpecification (AddForeignKey backEndForeignKeyInfo) = pure doc
   where
     doc = text "ADD CONSTRAINT" <+>
           renderForeignKey backEndForeignKeyInfo
@@ -115,7 +115,7 @@ renderCreateTable ti =
   do
     columnDocs <- renderColumns (tblColumns ti)
     let clausesDoc = nest 2 $ separate $ columnDocs ++ [primKeyDoc] ++ fkDocs
-    return $ vcat [ text "CREATE TABLE" <+> text (tblName ti)
+    pure $ vcat [ text "CREATE TABLE" <+> text (tblName ti)
                   , lparen $+$ -- forces new line
                     clausesDoc
                   , rparen <> semi
@@ -147,7 +147,7 @@ renderColumns cis =
   do
     columnInfosAsStringLists <- mapM renderColumn cis
     let lines = table ' ' " " columnInfosAsStringLists :: [String]
-    return $ map text lines
+    pure $ map text lines
   -- where
   --   columnInfosAsStringLists = map ci2Strings cis
   --   ci2Strings :: BackEndColumnInfo -> [String]
@@ -158,5 +158,5 @@ renderColumn (BackEndColumnInfo name typ extras) =
   do
     colTypeTranslator <- getColTypeTranslator
     case colTypeTranslator typ of
-      Right typeString -> return $ [name,typeString] ++ extras
+      Right typeString -> pure $ [name,typeString] ++ extras
       Left  errMsg     -> error errMsg

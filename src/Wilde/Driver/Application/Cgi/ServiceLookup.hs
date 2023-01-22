@@ -53,7 +53,7 @@ lookupService applicationServices input@(AppInput.Input { AppInput.inputMedia = 
       Nothing    -> Left ServiceNotSpecified
       Just sSrvc ->
         case AppServices.lookupService applicationServices sSrvc mbOt of
-          Right srvc -> return (ServiceId sSrvc mbOt,srvc,inputWithoutServiceSpec)
+          Right srvc -> pure (ServiceId sSrvc mbOt,srvc,inputWithoutServiceSpec)
             where inputWithoutServiceSpec =
                     input {
                       AppInput.inputMedia = maybe id (\otId -> ElementSet.deleteRaw_stringKey otId) mbOt $
@@ -69,8 +69,8 @@ lookupServiceSpecValue :: ElementSet.ElementSet
                           -> Either ServiceSpecificationError (Maybe String)
 lookupServiceSpecValue es isObjectType =
   case ElementSet.lookupRaw_stringKey varName es of
-    Nothing  -> return Nothing
-    Just [v] -> return (Just v)
+    Nothing  -> pure Nothing
+    Just [v] -> pure (Just v)
     Just   _ -> Left (InvalidServiceSpecificationValue isObjectType)
   where
     varName = if isObjectType
@@ -91,7 +91,7 @@ getServiceAndEnvironment
   requestInput =
   do
     (serviceId,service,appInput) <- lookupService theServices requestInput
-    return $ (service,newServiceEnvironment appConf serviceId appInput)
+    pure $ (service,newServiceEnvironment appConf serviceId appInput)
 
 newServiceEnvironment :: AppConf.ApplicationConfiguration
                       -> ServiceId

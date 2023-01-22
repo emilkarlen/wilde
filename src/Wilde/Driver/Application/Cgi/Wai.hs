@@ -75,7 +75,7 @@ exceptionThrowingWaiApp (CodingConfiguration
     res <- AppCgiHtml.lookupAndRunService appConf rawRequestInput
     case res of
       Left err -> serviceLookupError theContentEncoder err
-      Right htmlString -> return $ okHtmlResponse theContentEncoder htmlString
+      Right htmlString -> pure $ okHtmlResponse theContentEncoder htmlString
   where
     rawRequestInput :: ElementSetIo.ServerVariables
     rawRequestInput = buildRawInput theQueryVarDecoder request
@@ -85,7 +85,7 @@ exceptionThrowingWaiApp (CodingConfiguration
 serviceLookupError :: ContentEncoder
                    -> AppCgiHtml.ServiceSpecificationError
                    -> IO Wai.Response
-serviceLookupError contentEncoder err = return $
+serviceLookupError contentEncoder err = pure $
                                         (errorResponse contentEncoder)
                                         HttpTypes.badRequest400
                                         "text/plain" $
@@ -97,7 +97,7 @@ topLevelErrorHandler :: ContentEncoder
                      -> Exception.SomeException
                      -> IO Wai.Response
 topLevelErrorHandler contentEncoder appConf ex =
-  return $
+  pure $
   (errorResponse contentEncoder)
   HttpTypes.internalServerError500
   "text/plain" $
@@ -153,7 +153,7 @@ buildRawInput :: ContentDecoder -> Wai.Request -> ElementSetIo.ServerVariables
 buildRawInput contentDecoder request = queryToServerVariables theQueryString
   -- unsafePerformIO $ do
   --   puts "________________________________________"
-  --   return $ queryToServerVariables theQueryString
+  --   pure $ queryToServerVariables theQueryString
   where
     theQueryString = Wai.queryString request
 

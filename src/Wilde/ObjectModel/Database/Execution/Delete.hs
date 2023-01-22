@@ -40,7 +40,7 @@ import qualified Wilde.ObjectModel.Database.Execution.Utils as ExecUtils
 -------------------------------------------------------------------------------
 -- | Deletes all objects/rows.
 --
--- Returns the number of deleted rows.  'Nothing' means this info is not
+-- pures the number of deleted rows.  'Nothing' means this info is not
 -- provided by the database backen.
 -------------------------------------------------------------------------------
 deleteAll :: (Database.DATABASE_TABLE otConf
@@ -54,7 +54,7 @@ deleteAll ot@(ObjectType {}) =
 -------------------------------------------------------------------------------
 -- | Deletes a selection of objects/rows.
 --
--- Returns the number of deleted rows.  'Nothing' means this info is not
+-- pures the number of deleted rows.  'Nothing' means this info is not
 -- provided by the database backen.
 -------------------------------------------------------------------------------
 delete :: (Database.DATABASE_TABLE otConf
@@ -73,7 +73,7 @@ delete ot@(ObjectType {}) mbWhereExpr sqlParameters =
 -- | Deletes the object/rows that is identified by the given
 -- ID-attribute value.
 --
--- Returns the number of deleted rows.  'Nothing' means this info is not
+-- pures the number of deleted rows.  'Nothing' means this info is not
 -- provided by the database backen.
 -------------------------------------------------------------------------------
 deleteOne :: (Output.DATABASE_TABLE otConf

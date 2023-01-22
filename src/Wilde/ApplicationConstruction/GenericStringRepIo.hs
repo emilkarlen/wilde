@@ -70,7 +70,7 @@ data AttributeGenericStringRepIo typeForExisting typeForCreate =
 atGsrIo_string :: AttributeGenericStringRepIo String String
 atGsrIo_string = AttributeGenericStringRepIo gsrIo gsrIo
   where
-    gsrIo = GenericStringRepIo return id
+    gsrIo = GenericStringRepIo pure id
 
 -- | A 'AttributeGenericStringRepIo' for types that implement
 -- 'Read' and 'Show', and who's 'show' always gives

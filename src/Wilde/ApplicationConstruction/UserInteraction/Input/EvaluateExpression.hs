@@ -114,11 +114,11 @@ eval exprParser = parse parser theSourceName . dropWhile isSpace
     parser = do
       x <- exprParser
       eof
-      return x
+      pure x
 
-binary  name fun assoc = Infix   (reservedOp name >> return fun) assoc
-prefix  name fun       = Prefix  (reservedOp name >> return fun)
-postfix name fun       = Postfix (reservedOp name >> return fun)
+binary  name fun assoc = Infix   (reservedOp name >> pure fun) assoc
+prefix  name fun       = Prefix  (reservedOp name >> pure fun)
+postfix name fun       = Postfix (reservedOp name >> pure fun)
 
 -- Use a lexer that uses the Haskell grammar.
 lexer          = P.makeTokenParser haskellDef

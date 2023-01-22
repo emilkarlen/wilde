@@ -40,14 +40,14 @@ lookupAndRunService
     })
   rawRequestInput =
       case ServiceLookup.getServiceAndEnvironment appConf requestInput of
-        Left err -> return (Left err)
+        Left err -> pure (Left err)
         Right (service,environment) -> do
           htmlString <- AppHtml.runService_htmlString
                         theAppCssFile
                         theTranslations
                         environment
                         service
-          return (Right htmlString)
+          pure (Right htmlString)
   where
     requestInput :: AppInput.Input
     requestInput = ElementSetIo.inputFromCgiValues rawRequestInput

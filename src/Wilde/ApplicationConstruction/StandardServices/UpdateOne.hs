@@ -128,7 +128,7 @@ updateOneMain ot (Config titles displayUpdatedObjectConfig inputFormConfig updat
                                                  o
                                                  theObjectName
                                  let formBlock = outputOriginalObjectId o formBlock'
-                                 return $ FormBlocksAndMetas [] [formBlock]
+                                 pure $ FormBlocksAndMetas [] [formBlock]
                                )
         continue formBlockAndMetas
 

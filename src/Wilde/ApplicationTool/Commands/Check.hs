@@ -67,7 +67,7 @@ checkObjectModel (CommandEnv { objectModel = om }) _ =
 -- ^ (Title of set of elements, Title/name/descr of single element)
 type ElementsInfo = (String,String)
 
--- | A method that checks a list of elements, and returns wether they passed it or not.
+-- | A method that checks a list of elements, and pures wether they passed it or not.
 type Checker a = ElementsInfo -> [a] -> IO Bool
 
 
@@ -81,7 +81,7 @@ applyCheckers :: ElementsInfo -> [a] -> [Checker a] -> IO Bool
 applyCheckers elementsInfo elements checkers =
   do
     passed <- mapM (\check -> check elementsInfo elements) checkers
-    return $ and passed
+    pure $ and passed
 
 -- | Executes a list of check methods.
 checkList :: [IO Bool] -> IO Bool
@@ -114,7 +114,7 @@ warnAboutDuplicateTableNames ots =
       ("Warning: Object Type Database Table Names",
        "Database Table Name")
       (map getTableName ots)
-    return ()
+    pure ()
   where
     getTableName :: ObjectTypeWithAtDdlInformation.AnyO ObjectType -> String
     getTableName (ObjectTypeWithAtDdlInformation.AnyO ot) = DbM.tableName $ Database.otDatabaseTable ot
@@ -171,7 +171,7 @@ checkPresentationSingleAtList (ObjectTypeWithAtDdlInformation.AnyO (StandardServ
                                      , StandardServices.alternativeAtsOrder = alternativeAtsOrder
                                        })) =
   case alternativeAtsOrder of
-    [] -> return True
+    [] -> pure True
     atsPresSingle ->
       let
         keysPresSingle = sort $ map getAtKey atsPresSingle
@@ -183,8 +183,8 @@ checkPresentationSingleAtList (ObjectTypeWithAtDdlInformation.AnyO (StandardServ
                          "All ats     : " ++ show keysAll,
                          "Pres-single : " ++ show keysPresSingle
                         ]
-         return False
-       else return True
+         pure False
+       else pure True
 
 checkColumnNames :: ObjectTypeWithAtDdlInformation.AnyO ObjectType -> IO Bool
 checkColumnNames (ObjectTypeWithAtDdlInformation.AnyO ot@(ObjectType {})) =
@@ -210,11 +210,11 @@ checkUniqueness (title,elementName) elements =
   do
     let nonUniques = getNonUniqueElements elements
     reportNonUnique nonUniques
-    return $ null nonUniques
+    pure $ null nonUniques
   where
     reportNonUnique :: [(String,Int)] -- ^ Elements and num occurencies.
                        -> IO ()
-    reportNonUnique [] = return ()
+    reportNonUnique [] = pure ()
     reportNonUnique nonUniques =
       do
         putStrLn $ title ++ ": " ++ show (length nonUniques) ++ " duplicates detected"
@@ -238,13 +238,13 @@ checkStringSyntax isValidChar (title,elementName) elements =
    do
      let invalidStrings = filter (not . isValidString) elements
      reportInvalidSyntax invalidStrings
-     return $ null invalidStrings
+     pure $ null invalidStrings
   where
     isValidString :: String -> Bool
     isValidString = and . map isValidChar
 
     reportInvalidSyntax :: [String] -> IO ()
-    reportInvalidSyntax []             = return ()
+    reportInvalidSyntax []             = pure ()
     reportInvalidSyntax invalidStrings =
       do
         putStrLn $ title ++ ": " ++ show (length invalidStrings) ++ " with invalid syntax"

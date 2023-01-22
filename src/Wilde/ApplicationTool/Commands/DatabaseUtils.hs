@@ -60,7 +60,7 @@ getObjects env objectType@(ObjectType {}) =
                 rows
     case osRes of
       Left msg      -> msgFail $ "Error: " ++ show msg
-      Right objects -> return objects
+      Right objects -> pure objects
 
 getObjectsWithConn :: (Database.DATABASE_TABLE otConf
                       ,Database.INPUT_FOR_EXISTING atConf

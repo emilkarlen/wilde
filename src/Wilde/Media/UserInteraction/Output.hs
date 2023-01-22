@@ -177,7 +177,6 @@ throwElementLookupError :: ES.ElementLookupError -> UserInteractionOutputMonad a
 throwElementLookupError err = throwErr $ Presentation.MediaLookupError err
 
 instance Monad UserInteractionOutputMonad where
-  return = UserInteractionOutputMonad . return
   (UserInteractionOutputMonad m) >>= f = UserInteractionOutputMonad $
                                          do a <- m
                                             let UserInteractionOutputMonad m' = f a
@@ -252,7 +251,7 @@ instance ToUserInteractionOutputMonad Presentation.Monad where
 
 instance Presentation.ToPresentationError err => ToUserInteractionOutputMonad (Either err) where
   toUserInteractionOutputMonad (Left err) = throwErr err
-  toUserInteractionOutputMonad (Right ok) = return ok
+  toUserInteractionOutputMonad (Right ok) = pure ok
 
 instance Presentation.ToPresentationError err =>
          ToUserInteractionOutputMonad (ExceptT err IO) where
@@ -271,7 +270,7 @@ liftIOWithError io =
     res <- liftIO io
     case res of
       Left err -> throwErr err
-      Right ok -> return ok
+      Right ok -> pure ok
 
 toUiOMonad_wDefaultDbConn ::
   DbConn.Monad a ->

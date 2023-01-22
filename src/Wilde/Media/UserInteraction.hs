@@ -172,7 +172,7 @@ type FormAction = String
 
 -- | A rectangular block of a 'Form'.
 --
--- A container of interaction and meta values, so that these can be returned
+-- A container of interaction and meta values, so that these can be pureed
 -- as a unit.
 --
 data FormBlock = FormBlock

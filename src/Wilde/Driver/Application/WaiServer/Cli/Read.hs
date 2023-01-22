@@ -96,7 +96,7 @@ exec appName defaults = do
             SysIO.hPutStrLn SysIO.stderr errMsg
             SysExit.exitFailure
 
--- Same as `exec` but returns an error message
+-- Same as `exec` but pures an error message
 -- instead of exiting.
 --
 -- Exposed for testing purposes.

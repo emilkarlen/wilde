@@ -4,7 +4,7 @@
 --
 -- * Date
 --
--- * Title 
+-- * Title
 --
 -- * Description
 --
@@ -12,7 +12,7 @@ module Common.ObjectType.DateTitleDescription
        (
          OtNative
        , DtdObjectTypeSetup
-       , ots       
+       , ots
        )
        where
 
@@ -45,14 +45,14 @@ type OtNative = ()
 
 type DtdObjectTypeSetup dbTable = StdAutoPkObjectTypeSetup_ddl dbTable OtNative
 
-ots :: (SQL_IDENTIFIER dbTable) 
-    => (dbTable,dbTable,dbTable,dbTable) 
+ots :: (SQL_IDENTIFIER dbTable)
+    => (dbTable,dbTable,dbTable,dbTable)
     -> SqlIdentifier
     -> String
     -> DtdObjectTypeSetup dbTable
 ots (colId,colDate,colTitle,colDescription)
   tableName title =
-  SS.objectTypeSetup otDtd 
+  SS.objectTypeSetup otDtd
   (withSingleClassStyle tableName title)
   `SS.withObjectListDisplaySetup`
   (OLS.ObjectListDisplaySetup
@@ -78,16 +78,16 @@ ots (colId,colDate,colTitle,colDescription)
     at_title       = dtd_title colTitle
     at_description = dtd_description colDescription
 
-    dtd_toNative = ObjectToNativeFunction $ \o -> return ()
+    dtd_toNative = ObjectToNativeFunction $ \o -> pure ()
 
-dtd_date :: (SQL_IDENTIFIER dbTable) 
+dtd_date :: (SQL_IDENTIFIER dbTable)
          => dbTable -> PlainAttributeType_ddl dbTable Day
 dtd_date col = at_Date_withConvenienteUiInput inputWidth_date col noDefault "Datum"
 
-dtd_title :: (SQL_IDENTIFIER dbTable) 
+dtd_title :: (SQL_IDENTIFIER dbTable)
           => dbTable -> PlainAttributeType_ddl dbTable String
 dtd_title = at_Name "Namn"
 
-dtd_description :: (SQL_IDENTIFIER dbTable) 
+dtd_description :: (SQL_IDENTIFIER dbTable)
                 => dbTable -> PlainAttributeType_optional_ddl dbTable String
 dtd_description col = at_Text_html_optional my_dbIo_string (40,5) col noDefault "Beskrivning"

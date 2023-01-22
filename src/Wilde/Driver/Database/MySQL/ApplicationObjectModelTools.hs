@@ -185,7 +185,7 @@ getAutoIncValue _ _ = getAutoIncValue'
 getAutoIncValue_optional :: (Integral idAtExisting,
                              Convertible SqlValue idAtExisting)
                          => Database.GetIdOfInsertedIntoDatabase idAtExisting (Maybe idAtExisting)
-getAutoIncValue_optional mbValue _ = maybe getAutoIncValue' return mbValue
+getAutoIncValue_optional mbValue _ = maybe getAutoIncValue' pure mbValue
 
 -- Helper for getting an AUTO_INCREMENT:ed value.
 getAutoIncValue' :: (Integral a,

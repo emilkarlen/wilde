@@ -233,6 +233,6 @@ tableWithFooterRowsM footerDataAccumulator s0 footerDataConstructor
                   records =
   do
     recordsElementWithStyleList <- mapM bodyDataRowGetter records
-    return $ conTable (footerDataConstructor sN,recordsElementWithStyleList)
+    pure $ conTable (footerDataConstructor sN,recordsElementWithStyleList)
   where
     sN = foldl footerDataAccumulator s0 records

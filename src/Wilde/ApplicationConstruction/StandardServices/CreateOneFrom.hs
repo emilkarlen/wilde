@@ -102,7 +102,7 @@ createOneFromMain ot (Config titles attributeTypesOrder) = stepService def
                                               attributeTypesOrder
                                               o
                                               theObjectName
-                                 return $ FormBlocksAndMetas [] [formBlock]
+                                 pure $ FormBlocksAndMetas [] [formBlock]
                              )
         continue formBlockAndMetas
 
@@ -118,4 +118,4 @@ mkFormBlock :: OutputForCreateFrom.ATTRIBUTE_OUTPUT_FOR_CREATE atConf
 mkFormBlock attributeTypesOrder o oName =
   do
     formBlockForObjectName <- OutputForCreateFrom.outputer attributeTypesOrder o
-    return $ formBlockForObjectName oName
+    pure $ formBlockForObjectName oName

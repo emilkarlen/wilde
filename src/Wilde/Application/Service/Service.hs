@@ -29,8 +29,8 @@ type Service = ServiceMonad ServiceOkResult
 
 -- | Makes the given page the result of the service.
 pageOkResult :: ServicePage -> ServiceMonad ServiceOkResult
-pageOkResult page = return $ OkResultPage page
+pageOkResult page = pure $ OkResultPage page
 
 -- | Makes the given popup the result of the service.
 popupOkResult :: ServicePopUp -> ServiceMonad ServiceOkResult
-popupOkResult popup = return $ OkResultPopUp popup
+popupOkResult popup = pure $ OkResultPopUp popup

@@ -284,14 +284,14 @@ exactly expected uiInput (Left  err   ) = assertFailure $ show uiInput ++ ": Exp
 -- | Checks for success, regardles of actual value.
 anySuccess :: (Eq a,Show a)
            => ResultChecker a
-anySuccess ui (Right _)   = return ()
+anySuccess ui (Right _)   = pure ()
 anySuccess ui (Left  err) = assertFailure $ show ui ++ ": Expected success (any value). Got " ++ show err
 
 -- | Checks for error, regardles of actual kind.
 anyError :: (Eq a,Show a)
          => ResultChecker a
 anyError ui (Right x)   = assertFailure $ show ui ++ ": Expected error. Got success with " ++ show x
-anyError ui (Left  err) = return ()
+anyError ui (Left  err) = pure ()
 
 -- | Checks for errors that match a given predicate.
 thisError :: (Eq a,Show a)

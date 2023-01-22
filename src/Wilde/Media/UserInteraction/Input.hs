@@ -91,7 +91,6 @@ data Environment =
   }
 
 instance MMonad.Monad Monad where
-  return = Monad . return
   (Monad m) >>= f = Monad $
                     do a <- m
                        let Monad m' = f a
@@ -102,7 +101,7 @@ instance Applicative Monad where
   (Monad ma) <*> (Monad mb) = Monad $ ma <*> mb
 
 instance Functor Monad where
-  fmap f m = do a <- m; return (f a)
+  fmap f m = do a <- m; pure (f a)
 
 instance MonadWithInputMedia Monad where
   getInputMedia = Monad $ MTrans.lift $ MReader.asks envInputMedia
@@ -163,7 +162,7 @@ class ToMonad m where
 
 instance ToError err => ToMonad (Either err) where
   toMonad (Left err) = throwErr err
-  toMonad (Right x)  = return x
+  toMonad (Right x)  = pure x
 
 -- | Integrates monads of type "IO (Either err a)"
 -- into the Monad monad
@@ -175,7 +174,7 @@ liftIOWithError io =
     res <- MTrans.liftIO io
     case res of
       Left err -> throwErr err
-      Right ok -> return ok
+      Right ok -> pure ok
 
 -- | Integrates monads of type "ExceptT err IO"
 -- into the Monad monad
@@ -185,4 +184,4 @@ liftIOWithErrorT :: ToError err
 liftIOWithErrorT io =
   do
     res <- MTrans.liftIO $ MExcept.runExceptT io
-    either throwErr return res
+    either throwErr pure res

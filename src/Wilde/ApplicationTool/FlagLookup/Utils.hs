@@ -226,7 +226,7 @@ lookupSelection_single (ElementTypeAndFlagConfig
 
     zeroOrMoreElementsSpecified :: [a] -> IO a
 
-    zeroOrMoreElementsSpecified [e] = return e
+    zeroOrMoreElementsSpecified [e] = pure e
 
     zeroOrMoreElementsSpecified [] = msgFail reason
       where
@@ -291,13 +291,13 @@ lookupSelection_oneOrMore (ElementTypeAndFlagConfig
         reason = "The model does not contain any " ++
                  typeName ++ " elements"
 
-    zeroOrMoreElementsSpecified (x:xs) = return $ NonEmpty.mk x xs
+    zeroOrMoreElementsSpecified (x:xs) = pure $ NonEmpty.mk x xs
 
     typeName = elementTypeName theElementTypeConfig
 
 flagMandatory :: (Flag -> Bool) -> [Flag] -> String -> IO Flag
 flagMandatory predicate flags flagName =
-  maybe (msgFailArgMissing flagName) return $ flagOptional predicate flags
+  maybe (msgFailArgMissing flagName) pure $ flagOptional predicate flags
 
 flagOptional :: (Flag -> Bool) -> [Flag] -> Maybe Flag
 flagOptional = find
@@ -310,10 +310,10 @@ implErrorForOption :: Show opt => opt -> a
 implErrorForOption = error . ("ImplementationError in flag lookup of: "++) . show
 
 mkMandatory :: String -> Maybe a -> IO a
-mkMandatory flagName mbVal = maybe (msgFailArgMissing flagName) return mbVal
+mkMandatory flagName mbVal = maybe (msgFailArgMissing flagName) pure mbVal
 
 mkMandatoryIO :: String -> IO (Maybe a) -> IO a
 mkMandatoryIO flagName getMbVal =
   do
     mbVal <- getMbVal
-    maybe (msgFailArgMissing flagName) return mbVal
+    maybe (msgFailArgMissing flagName) pure mbVal

@@ -56,7 +56,7 @@ insertAndSelectOne_withPresInfo oc =
     idAtValue <- Insert.insertOneGetId oc
     mbObject <- SelectWithPres.inputOne (ofcType oc) idAtValue
     let errMsg = "Just inserted an object, but did not get one when trying to read it from the DB"
-    maybe (DbConn.throwErr (DbUnclassifiedError errMsg)) return mbObject
+    maybe (DbConn.throwErr (DbUnclassifiedError errMsg)) pure mbObject
 
 -------------------------------------------------------------------------------
 -- | Inserts one object and reads it from the database.
@@ -75,4 +75,4 @@ insertAndSelectOne_sansPresInfo oc =
     idAtValue <- Insert.insertOneGetId oc
     mbObject <- SelectPlain.selectOne (ofcType oc) idAtValue
     let errMsg = "Just inserted an object, but did not get one when trying to read it from the DB"
-    maybe (DbConn.throwErr (DbUnclassifiedError errMsg)) return mbObject
+    maybe (DbConn.throwErr (DbUnclassifiedError errMsg)) pure mbObject

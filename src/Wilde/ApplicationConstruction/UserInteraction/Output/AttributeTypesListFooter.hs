@@ -100,9 +100,9 @@ import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ObjectList
 attributeTypesFooterCellsGetter :: ObjectType otConf atConf dbTable otNative idAtE idAtC
                                 -> AttributeTypesFooterSpecification atConf dbTable
                                 -> ObjListSetup.GetFooterRowsConstructor (AttributeTypesFooterSpecification atConf dbTable) otConf atConf dbTable otNative idAtE idAtC
-attributeTypesFooterCellsGetter _ [] = return Nothing
+attributeTypesFooterCellsGetter _ [] = pure Nothing
 attributeTypesFooterCellsGetter ot atCellConstructors =
-  return $
+  pure $
   Just $
   OmPres.FooterRowsConstructor
   {

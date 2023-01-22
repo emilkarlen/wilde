@@ -5,13 +5,13 @@ module Wilde.ApplicationTool.Command
          Command(..),
          CommandWithParsedArgs(..),
          Service(..),
-         
+
          withParsedArgs,
          getCar,
        )
        where
 
-       
+
 -------------------------------------------------------------------------------
 -- - import -
 -------------------------------------------------------------------------------
@@ -57,16 +57,16 @@ getCar :: CommandEnv om
 getCar (CommandEnv { connectionProvider = cp, dmlRenderer = dmlr }) =
   do
     conn <- cp
-    return $
+    pure $
       SqlExec.ConnectionAndRenderer
       {
         SqlExec.carConnection = conn
       , SqlExec.carRenderer   = dmlr
       }
 
-withParsedArgs :: CommandWithParsedArgs om 
-               -> CommandEnv om 
-               -> [String] 
+withParsedArgs :: CommandWithParsedArgs om
+               -> CommandEnv om
+               -> [String]
                -> IO ()
 withParsedArgs cmd env args =
   case getOpt Permute options args of

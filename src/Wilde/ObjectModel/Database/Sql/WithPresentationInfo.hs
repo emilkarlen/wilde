@@ -102,7 +102,7 @@ getOtAttributeTypeDbInputInfo ot =
   do
     idAtInfo     <- getAttributeTypeDbInputInfo idAt
     nonIdAtInfos <- mapM (\(Any at) -> fmap Any (getAttributeTypeDbInputInfo at)) nonIdAts
-    return $ (idAtInfo,nonIdAtInfos)
+    pure $ (idAtInfo,nonIdAtInfos)
   where
     idAt     = otIdAttributeType ot
     nonIdAts = otNonIdAttributeTypes ot
@@ -115,11 +115,11 @@ getAttributeTypeDbInputInfo :: ATTRIBUTE_TYPE_INFO atConf
                             -> Sql.JoinMonad dbTable (AttributeTypeDbInputInfo atConf dbTable e c)
 getAttributeTypeDbInputInfo at =
   case atDbPresentationInfoGetter at of
-    (AttributeWithPresentationInfoDbInputerInfo Nothing) -> return $ AttributeTypeDbInputInfo at Nothing
+    (AttributeWithPresentationInfoDbInputerInfo Nothing) -> pure $ AttributeTypeDbInputInfo at Nothing
     (AttributeWithPresentationInfoDbInputerInfo (Just (m,mkA))) ->
      do
        presInfoExprs <- m
-       return $ AttributeTypeDbInputInfo at (Just (presInfoExprs,mkA))
+       pure $ AttributeTypeDbInputInfo at (Just (presInfoExprs,mkA))
 
 -------------------------------------------------------------------------------
 -- | Inputer and generic select.
@@ -159,7 +159,7 @@ getInputInfosAndSelect ot@(ObjectType {}) mbWhereExpr orderByExprs =
   do
     inputInfo  <- getOtAttributeTypeDbInputInfo ot
     selectStmt <- selectStatement inputInfo mbWhereExpr orderByExprs
-    return (inputInfo,selectStmt)
+    pure (inputInfo,selectStmt)
 
 -------------------------------------------------------------------------------
 selectStatement :: InputExisting.COLUMN_NAMES atConf
@@ -186,7 +186,7 @@ atExprs (AttributeTypeDbInputInfo at@(AttributeType {}) mbPresInfo) =
   do
     baseAtExprs    <- OmDbJ.atColumnExprList at
     let presAtExprs = maybe [] fst mbPresInfo
-    return $ baseAtExprs ++ presAtExprs
+    pure $ baseAtExprs ++ presAtExprs
 
 
 -------------------------------------------------------------------------------
@@ -205,4 +205,4 @@ otDatabaseOrderBy orderByAts = fmap concat getOrderByAtsExprs
 
 -- | \"ORDER BY-expressions\" for no ordering.
 orderByNone :: Sql.JoinMonad dbTable [Sql.SqlExpr (Sql.BasedOn dbTable)]
-orderByNone = return []
+orderByNone = pure []

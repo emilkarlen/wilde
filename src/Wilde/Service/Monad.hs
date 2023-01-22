@@ -158,7 +158,7 @@ withFinally cleanup action =
         do
           res <- action
           cleanup
-          return res
+          pure res
       exceptionHandling error = cleanup >> throwErr error
   in  catchErr normal exceptionHandling
 
@@ -208,7 +208,6 @@ runService envWMkNewDbConnOnEveryInvokation (ServiceMonad m) =
         envWMkNewDbConnOnEveryInvokation { envDbConfiguration = newDbConf }
 
 instance Monad ServiceMonad where
-  return = ServiceMonad . return
   (ServiceMonad m) >>= f = ServiceMonad $
                            do a <- m
                               let ServiceMonad m' = f a
@@ -292,7 +291,7 @@ class ToServiceMonad m where
 
 -- For, among others, 'TranslationResult'.
 instance ToServiceError err => ToServiceMonad (Either err) where
-  toServiceMonad (Right x) = return x
+  toServiceMonad (Right x) = pure x
   toServiceMonad (Left er) = throwErr er
 
 instance ToServiceMonad Presentation.Monad where

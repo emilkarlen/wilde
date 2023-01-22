@@ -120,7 +120,7 @@ type RawValuesChecker = [RawMultiItem] -> Ui.UserInteractionOutputMonad ()
 
 -- | A 'RawValuesChecker' for optional values - no check at all.
 rawValuesChecker_optional :: RawValuesChecker
-rawValuesChecker_optional _ = return ()
+rawValuesChecker_optional _ = pure ()
 
 
 -------------------------------------------------------------------------------
@@ -175,7 +175,7 @@ reference_mandatory rati@(ReferenceAttributeTypeInfo {
     attributeGenericStringRepIo = atGsrIo_existing_only_forIdAt otRefTarget
     valuesChecker :: RawValuesChecker
     valuesChecker [] = Ui.throwErr $ OmUtils.unclassifiedError errMsg
-    valuesChecker _  = return ()
+    valuesChecker _  = pure ()
     errMsg = wildeStyled title ++ ": No objects for reference to " ++ targetObjectTypeName
     targetObjectTypeName = wildeStyled . StandardServices.titleWithStyle $ otSetupRefTarget
 
@@ -260,7 +260,7 @@ attributeOutputForReferenceForExisting valuesChecker otRefTarget@(ObjectType {})
                              refPresSpecTarget
                              attributeName
                              widgetConstructor
-    return $ attrOutputFunForMaybe .
+    pure $ attrOutputFunForMaybe .
              fmap (OmGsr.gsrOutputer $ OmGsr.otIoForIdAtForExisting otRefTarget)
 
 atInfoForCreate_ref_mandatory :: Database.DATABASE_TABLE otConf
@@ -317,7 +317,7 @@ atInfoForCreate_ref_optional rati@(ReferenceAttributeTypeInfo {}) field =
   let
     UiIoAndDbIo.AttributeTypeMediaIoForCreate dbOutputer (UiIo.UserInteractionIo _ uiInputer_mandatory)
       = atInfoForCreate_ref_mandatory rawValuesChecker_optional rati field
-    dbOutputer_o = maybe (return [SqlNull]) dbOutputer
+    dbOutputer_o = maybe (pure [SqlNull]) dbOutputer
     uiInputer_o  = inputerForObjectName_optional_from_mandatory uiInputer_mandatory
     uiOutputer_o = uiOutputForCreate_optional rati
   in
@@ -394,7 +394,7 @@ uiIoExistingForReference_optional rati@(ReferenceAttributeTypeInfo {}) =
   {
     UiIo.uiOutputer = \attributeName -> do
        forMaybe <- output_mandatory attributeName
-       return $ maybe (forMaybe Nothing) forMaybe,
+       pure $ maybe (forMaybe Nothing) forMaybe,
     UiIo.uiInputer  = inputerForObjectName_optional_from_mandatory input_mandatory
   }
   where
@@ -474,7 +474,7 @@ uiOutputForCreate valuesChecker
                                           rati
     let otRefTarget = StandardServices.objectType $ ratiRefDst rati
     outputerForMaybeExisting <- outputMaybeExistingForRefTarget attributeName
-    return $ \mbAttributeDefault ->
+    pure $ \mbAttributeDefault ->
       let
         translateToTypeForExisting = OmGsr.otInputerForIdAtForExisting otRefTarget
         mbExisting = case mbAttributeDefault of
@@ -511,13 +511,13 @@ dbIoForExisting_optional (AtDbInfo.AttributeTypeDatabaseConfigForExisting {
   {
     AtDbInfo.atdbioeIo =
        DatabaseIo
-       { dbOutputer = maybe (return [SqlNull]) output
+       { dbOutputer = maybe (pure [SqlNull]) output
        , dbInputer  = inputMaybe
        },
     AtDbInfo.atdbioeStructure = structure
   }
   where
-    inputMaybe [SqlNull] = return Nothing
+    inputMaybe [SqlNull] = pure Nothing
     inputMaybe xs        = fmap Just $ input xs
 
 
@@ -580,7 +580,7 @@ attributeWithPresInfoReader_mandatory (StandardServices.ObjectTypeSetup
   do
     let presAt     = patiAt pati
     presAtVal     <- InputExisting.inputAttributeValue presAt sqlValsForPres
-    return $ getObjectPresValForExisting ot pati repVal presAtVal
+    pure $ getObjectPresValForExisting ot pati repVal presAtVal
 
 attributeWithPresInfoReader_optional :: (Database.INPUT_FOR_EXISTING atConf
                                         ,OmGsr.ATTRIBUTE_OUTPUT_FOR_EXISTING atConf
@@ -588,7 +588,7 @@ attributeWithPresInfoReader_optional :: (Database.INPUT_FOR_EXISTING atConf
                                      => StandardServices.ObjectTypeSetup       otConf atConf dbTable' otN e         c''
                                      -> PresentationAttributeTypeInfo          atConf dbTable'     e'        c'
                                      -> AttributeWithPresentationInfoDbInputer                  (Maybe e)
-attributeWithPresInfoReader_optional _ _ Nothing _ = return (return empty)
+attributeWithPresInfoReader_optional _ _ Nothing _ = pure (pure empty)
 attributeWithPresInfoReader_optional (StandardServices.ObjectTypeSetup
                                       {
                                         StandardServices.objectType = ot@(ObjectType {})
@@ -596,7 +596,7 @@ attributeWithPresInfoReader_optional (StandardServices.ObjectTypeSetup
   do
     let presAt     = patiAt pati
     presAtVal     <- InputExisting.inputAttributeValue presAt sqlValues
-    return $ getObjectPresValForExisting ot pati repVal presAtVal
+    pure $ getObjectPresValForExisting ot pati repVal presAtVal
 
 -- | Generates the presentation string for a reference to an existing object.
 getObjectPresValForExisting :: OmGsr.ATTRIBUTE_OUTPUT_FOR_EXISTING atConf
@@ -641,11 +641,11 @@ getAttrOutputForReferenceAttribute valuesChecker otRefTarget@(ObjectType {}) ref
       values <- Ui.toUiOMonad_wDefaultDbConn $
                 readObjectKeyAndPresentationStringList otRefTarget refPresSpecTarget
       valuesChecker values
-      return $ attrOutput_oneOfManyAttribute
+      pure $ attrOutput_oneOfManyAttribute
         widgetConstructor attributeName values
 
 
--- | Returns (key,presentation) for each object in the database.
+-- | pures (key,presentation) for each object in the database.
 readObjectKeyAndPresentationStringList :: (Database.DATABASE_TABLE otConf
                                           ,Database.INPUT_FOR_EXISTING atConf
                                           ,Database.COLUMN_NAMES atConf
@@ -661,7 +661,7 @@ readObjectKeyAndPresentationStringList ot@(ObjectType {}) refPresSpec =
     let getObjectInfo o =
           do
             presStr <- DbConn.toMonad $ getPresStr o
-            return (OmGsr.objOutputForIdAt o,presStr)
+            pure (OmGsr.objOutputForIdAt o,presStr)
     objects <- SelectPlain.selectAll ot orderByAts
     mapM getObjectInfo objects
 
@@ -688,7 +688,7 @@ mkShowOneLink :: (ServiceLink.MonadWithServiceLinkConstructor m
 mkShowOneLink ot objId linkText =
   do
     serviceLinkTarget <- ServiceLink.mkLink srvcRefWp
-    return $ RenderServiceLink.renderServiceLink_string
+    pure $ RenderServiceLink.renderServiceLink_string
       linkText
       serviceLinkTarget
   where
@@ -704,4 +704,4 @@ mkShowOneLink ot objId linkText =
 
 
 getIdOfInsertedIntoDatabase_fromMandatory :: Database.GetIdOfInsertedIntoDatabase e e
-getIdOfInsertedIntoDatabase_fromMandatory value _ = return value
+getIdOfInsertedIntoDatabase_fromMandatory value _ = pure value

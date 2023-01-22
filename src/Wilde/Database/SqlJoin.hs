@@ -298,12 +298,12 @@ liftExprFromBase = fmap liftFieldFromBase
 liftMbExprInMonad :: (SQL_IDENTIFIER table)
                   => Maybe (SqlExpr table)
                   -> JoinMonad table (Maybe (SqlExpr (BasedOn table)))
-liftMbExprInMonad mbExpr = return $ fmap liftExprFromBase mbExpr
+liftMbExprInMonad mbExpr = pure $ fmap liftExprFromBase mbExpr
 
 liftExprInMonad :: (SQL_IDENTIFIER table)
                 => SqlExpr table
                 -> JoinMonad table (SqlExpr (BasedOn table))
-liftExprInMonad expr = return $ liftExprFromBase expr
+liftExprInMonad expr = pure $ liftExprFromBase expr
 
 includeFromBase :: Attribute table value
                 -> Attribute (BasedOn table) value
@@ -330,7 +330,7 @@ fieldExprs (Attribute cols) =
   do
     joinState <- get
     let baseTableName = entityTable $ jsBaseEntity joinState
-    return $ fmap (_fieldExpr baseTableName) cols
+    pure $ fmap (_fieldExpr baseTableName) cols
 
 
 -------------------------------------------------------------------------------
@@ -446,7 +446,7 @@ newAlias (Entity baseTableName) aliasMap (Entity otherTableName) =
 -- | Helper for 'join' - \"monadic\" version of 'joinHelper'.
 --
 -- Updates the monad state according to the state information received from
--- 'joinHelper'.  Returns the 'Join' given from 'joinHelper'.
+-- 'joinHelper'.  pures the 'Join' given from 'joinHelper'.
 -------------------------------------------------------------------------------
 joinHelperM :: Entity other
             -> (Maybe SqlIdentifier -> JoinSpec base)
@@ -456,12 +456,12 @@ joinHelperM entity newJspec =
     joinState         <- get
     let (joins',join)  = joinHelper joinState entity newJspec
     modify $ \js -> js { jsJoins = joins' }
-    return join
+    pure join
 
 -------------------------------------------------------------------------------
 -- | Helper for 'join'.
 --
--- Constructs a new set of joins ('Joins') and the 'Join' to return from the
+-- Constructs a new set of joins ('Joins') and the 'Join' to pure from the
 -- \"main\" function.
 -------------------------------------------------------------------------------
 joinHelper :: JoinState base
@@ -570,7 +570,7 @@ selectStatement :: SQL_IDENTIFIER base
 selectStatement selectExprs whereExpr orderBy =
   do
     joinState <- get
-    return $ joinSqlSelect joinState selectExprs whereExpr orderBy
+    pure $ joinSqlSelect joinState selectExprs whereExpr orderBy
 
 simpleSelectStatement :: SQL_IDENTIFIER base
                       => SimpleSelect base
@@ -583,7 +583,7 @@ simpleSelectStatement (SimpleSelect
                       }) =
   do
     joinState <- get
-    return $ joinSqlSelect joinState expressions whereExpression orderBy
+    pure $ joinSqlSelect joinState expressions whereExpression orderBy
 
 joinSqlSelect :: SQL_IDENTIFIER base
               => JoinState base

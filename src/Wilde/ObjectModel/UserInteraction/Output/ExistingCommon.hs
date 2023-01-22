@@ -122,7 +122,7 @@ getMkAttributeOutputFun (UserInteraction,(AttributeTypeInfo {
   =
   do
     getWidget <- theOutputerGetter theCrossRefKey
-    return $
+    pure $
       \mbDefault objectName ->
       let
         ek     = (objectName,theCrossRefKey)
@@ -136,7 +136,7 @@ getMkAttributeOutputFun (_,(AttributeTypeInfo {
                                atiTitle         = titleWithStyle
                                }))
   =
-    return $
+    pure $
       \mbValue objectName -> Right (wildeStyled titleWithStyle,
                                     maybe empty presOutputer mbValue)
 

@@ -152,16 +152,16 @@ mkResolverConstructor_std mbCreateOption attributeName objectName
       OutputCommon.FixAndDefaultResolverForApplicationConfiguration
       {
         OutputCommon.appFix     = theAppFix
-      , OutputCommon.appDefault = return theAppDefault
+      , OutputCommon.appDefault = pure theAppDefault
       }
 
     theEnvResolver =
       OutputCommon.FixAndDefaultResolverForEnvironment
       {
         OutputCommon.envFix     = do mbValue <- inputSpecialValueFromEnv UiCommon.Fix
-                                     return $ fmap Left mbValue
+                                     pure $ fmap Left mbValue
       , OutputCommon.envDefault = do mbValue <- inputSpecialValueFromEnv UiCommon.Default
-                                     return $ fmap DefaultCreateFromUiPreFill mbValue
+                                     pure $ fmap DefaultCreateFromUiPreFill mbValue
       }
 
     theAppFix = case mbCreateOption of

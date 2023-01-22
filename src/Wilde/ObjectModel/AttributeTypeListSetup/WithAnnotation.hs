@@ -68,7 +68,7 @@ mk :: ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
 mk ot atAndAnnList =
   do
     idxAtAnnList <- Prelude.mapM indexOfAt atAndAnnList
-    Prelude.return Prelude.$ Setup
+    Prelude.pure Prelude.$ Setup
              {
                atlsaOt       = ot
              , atlsaAts      = idxAtAnnList
@@ -151,10 +151,10 @@ mapM
                   \(idx,at,a) ->
                     do
                       b <- f (at,a)
-                      Prelude.return (idx,at,b)
+                      Prelude.pure (idx,at,b)
                 )
                 theAts
-      Prelude.return Prelude.$
+      Prelude.pure Prelude.$
         Setup
         {
           atlsaOt       = theOt

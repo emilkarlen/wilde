@@ -228,16 +228,16 @@ uiIo_Date_optional inputWidth = uiIo_asString_optional inputWidth True show read
 uiIo_Date_withConvenienteUiInput :: Int
                                  -> AttributeTypeUserInteractionIo Day Day
 uiIo_Date_withConvenienteUiInput inputWidth =
-  uiIo_asStringInM inputWidth True (return show) getParser
+  uiIo_asStringInM inputWidth True (pure show) getParser
   where
     getParser = do
       tm <- liftIO getCurrentTime
-      return $ parse (utctDay tm)
+      pure $ parse (utctDay tm)
 
     parse :: Day -> ElementKey -> String -> ElementInputResult Day
     parse baseDate ek s = case DateParser.parseEmlFormat defaultTimeLocale Nothing baseDate s of
       Left _  -> Left (ek,InvalidSyntax,Just s)
-      Right x -> return x
+      Right x -> pure x
 
 uiIo_Date_optional_withConvenienteUiInput :: Int
                                           -> AttributeTypeUserInteractionIo (Maybe Day) (Maybe Day)
@@ -245,22 +245,22 @@ uiIo_Date_optional_withConvenienteUiInput inputWidth =
   uiIo_optional_from_mandatory $ uiIo_Date_withConvenienteUiInput inputWidth
 
 uiIo_String  :: Int -> AttributeTypeUserInteractionIo String String
-uiIo_String inputWidth = uiIo_asString inputWidth False id (\ek s -> return s)
+uiIo_String inputWidth = uiIo_asString inputWidth False id (\ek s -> pure s)
 
 uiIo_String_optional :: Int
                      -> AttributeTypeUserInteractionIo (Maybe String) (Maybe String)
 uiIo_String_optional inputWidth =
-  uiIo_asString_optional inputWidth False id (\ek s -> return s)
+  uiIo_asString_optional inputWidth False id (\ek s -> pure s)
 
 uiIo_Text :: (Int,Int)
           -> AttributeTypeUserInteractionIo String String
 uiIo_Text size =
-  uiIo_asTextArea size False id (\ek s -> return s)
+  uiIo_asTextArea size False id (\ek s -> pure s)
 
 uiIo_Text_optional :: (Int,Int)
                    -> AttributeTypeUserInteractionIo (Maybe String) (Maybe String)
 uiIo_Text_optional size =
-  uiIo_optional_from_mandatory $ uiIo_asTextArea size False id (\ek s -> return s)
+  uiIo_optional_from_mandatory $ uiIo_asTextArea size False id (\ek s -> pure s)
 
 uiIo_mandatory  :: (Show a,Read a)
                 => Int
@@ -293,13 +293,13 @@ uiIo_asStringInM inputWidth trimAndEmptyIsMissing getRenderValue getParseString 
      atuiioCreateIo = UserInteractionIo
                       { uiOutputer = \attributeName -> do
                            renderValue <- getRenderValue
-                           return $ output (renderAttributeUiDefaultForCreate renderValue) attributeName
+                           pure $ output (renderAttributeUiDefaultForCreate renderValue) attributeName
                       , uiInputer  = \attributeName -> attrInputInM trimAndEmptyIsMissing getParseString attributeName
                       },
      atuiioExistingIo = UserInteractionIo
                         { uiOutputer = \attributeName -> do
                              renderValue <- getRenderValue
-                             return $ output renderValue attributeName
+                             pure $ output renderValue attributeName
                         , uiInputer  = \attributeName -> attrInputInM trimAndEmptyIsMissing getParseString attributeName
                         }
    }
@@ -319,14 +319,14 @@ uiIo_asString_optionalOnCreate inputWidth existingTrimAndEmptyIsMissing createTr
    AttributeTypeUserInteractionIo
    {
      atuiioCreateIo = UserInteractionIo
-                      { uiOutputer = \attributeName ->  return $
+                      { uiOutputer = \attributeName ->  pure $
                                      output
                                      (renderAttributeUiDefaultForCreate_optionalOnCreate renderValue)
                                      attributeName
                       , uiInputer  = \attributeName -> attrInput_optional createTrimAndEmptyNothing parseString attributeName
                       },
      atuiioExistingIo = UserInteractionIo
-                        { uiOutputer = \attributeName -> return $ output renderValue attributeName
+                        { uiOutputer = \attributeName -> pure $ output renderValue attributeName
                         , uiInputer  = \attributeName -> attrInput existingTrimAndEmptyIsMissing parseString attributeName
                         }
    }
@@ -344,14 +344,14 @@ uiIo_asString_optional inputWidth trimAndEmptyNothing renderValue parseString =
    AttributeTypeUserInteractionIo
    {
      atuiioCreateIo = UserInteractionIo
-                      { uiOutputer = \attributeName ->  return $
+                      { uiOutputer = \attributeName ->  pure $
                                      output
                                      (renderAttributeUiDefaultForCreate_optional renderValue)
                                      attributeName
                       , uiInputer  = \attributeName -> attrInput_optional trimAndEmptyNothing parseString attributeName
                       },
      atuiioExistingIo = UserInteractionIo
-                        { uiOutputer = \attributeName -> return $ outputMaybe attributeName
+                        { uiOutputer = \attributeName -> pure $ outputMaybe attributeName
                         , uiInputer  = \attributeName -> attrInput_optional trimAndEmptyNothing parseString attributeName
                         }
    }
@@ -379,7 +379,7 @@ uiIo_optional_from_mandatory atUiIo@(AttributeTypeUserInteractionIo {
     outputerCreate = \attributeName ->
       do
         mandatoryOutputer <- mandatoryOutpCreate attributeName
-        return $ \mbDefault objectName ->
+        pure $ \mbDefault objectName ->
           case mbDefault of
             Nothing -> mandatoryOutputer Nothing objectName
             Just d  -> mandatoryOutputer (fromOptionalDefault d) objectName
@@ -398,7 +398,7 @@ uiIo_optional_from_mandatory atUiIo@(AttributeTypeUserInteractionIo {
     mkOptionalOutp m =
       do
         mandatory <- m
-        return $ \mbMbA objectName ->
+        pure $ \mbMbA objectName ->
           case mbMbA of
             Nothing   -> mandatory Nothing objectName
             Just mbX  -> mandatory mbX objectName
@@ -450,14 +450,14 @@ parseEnum_optional values ek valueAsString =
         Nothing -> Left (ek,InvalidSyntax,Just valueAsString)
         Just v  -> maybe
                    (Left (ek,InvalidValue,Just valueAsString))
-                   (const $ return (Just v))
+                   (const $ pure (Just v))
                    (lookup v values)
 
 trimAndEmptyIsMissing :: ES.Parser String String
 trimAndEmptyIsMissing input =
   case dropWhile Char.isSpace input of
     [] -> Left ValueMissing
-    s  -> return s
+    s  -> pure s
 
 uiIo_forStringConvertible :: (forall defaultValue . LabelAndWidget.AttrOutputAsString defaultValue)
                           -> Bool -- ^ Trim input, and treat an empty string as if a value is missing.
@@ -470,7 +470,7 @@ uiIo_forStringConvertible attrOutputForDefault trimAndEmptyIsMissing
     {
       atuiioCreateIo =
          UserInteractionIo
-         { uiOutputer = \attributeName -> return $
+         { uiOutputer = \attributeName -> pure $
                                           output
                                           (renderAttributeUiDefaultForCreate renderValue)
                                           attributeName
@@ -479,7 +479,7 @@ uiIo_forStringConvertible attrOutputForDefault trimAndEmptyIsMissing
 
       atuiioExistingIo =
         UserInteractionIo
-        { uiOutputer = \attributeName -> return $
+        { uiOutputer = \attributeName -> pure $
                                          output
                                          renderValue
                                          attributeName
@@ -550,8 +550,8 @@ readUiiMonad ek singletonValue =
   (readUnambigousValue singletonValue)
 
 readUiiMonadMaybeString ek s = case s of
-  "" -> return Nothing
-  _  -> return $ Just s
+  "" -> pure Nothing
+  _  -> pure $ Just s
 
 
 
@@ -586,7 +586,7 @@ attrInput_optional trimAndEmptyNothing parseString attributeName objectName =
     -- theLookuper :: ES.Lookuper (Maybe a)
     theLookuper set = do
       mbSingletonValue <- ESU.lookupSingleton_optional_maybeTrim trimAndEmptyNothing ek set
-      maybe (return Nothing) (fmap Just . parseString ek) mbSingletonValue
+      maybe (pure Nothing) (fmap Just . parseString ek) mbSingletonValue
 
     ek = (objectName,attributeName)
 

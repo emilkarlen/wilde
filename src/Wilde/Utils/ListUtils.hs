@@ -44,8 +44,8 @@ stringSep :: String -> [String] -> String
 stringSep sep = concat . intersperse sep
 
 -------------------------------------------------------------------------------
--- | Returns the first non-null (non-empty) list in the given list of lists.
--- If there is non, then the fallback is returned.
+-- | pures the first non-null (non-empty) list in the given list of lists.
+-- If there is non, then the fallback is pureed.
 -------------------------------------------------------------------------------
 firstNonNull :: [a] -> [[a]] -> [a]
 firstNonNull fallback []           = fallback

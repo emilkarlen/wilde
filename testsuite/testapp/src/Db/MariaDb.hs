@@ -37,7 +37,7 @@ newConf db user =
     getConnection =
       do
         conn <- MariaDB.connectMariaDB connectionInfo
-        return $ ConnWrapper conn
+        pure $ ConnWrapper conn
 
     connectionInfo = MariaDB.defaultMariaDBConnectInfo {
       MariaDB.mysqlUnixSocket = "/var/run/mysqld/mysqld.sock",

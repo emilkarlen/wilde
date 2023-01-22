@@ -95,5 +95,5 @@ showMany' ot (Config title
                                else Just $ LayoutComponents.svalueComponent $
                                     LayoutValues.horizontal
                                     objTypeBtnsBelow
-      return (title,
+      pure (title,
               tableComponent : maybe [] (:[]) mbButtonsComponent)

@@ -193,7 +193,7 @@ class ToMonad m where
 
 instance ToDatabaseError e => ToMonad (Either e) where
   toMonad (Left err) = throwErr err
-  toMonad (Right x)  = return x
+  toMonad (Right x)  = pure x
 
 instance ToDatabaseError e => ToMonad (ExceptT e IO) where
   toMonad m =

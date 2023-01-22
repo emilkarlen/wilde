@@ -49,7 +49,7 @@ type PresentationOutputChecker = Checker WildeMedia.PresentationOutput
 
 -- | A checker that never fails.
 noCheck :: Checker a
-noCheck _ _ _ = return ()
+noCheck _ _ _ = pure ()
 
 checkFormBlockRowInfo :: WidgetChecker
                       -> PresentationOutputChecker

@@ -171,7 +171,7 @@ p_funCall p_expression = try p
     p = do
         ident <- p_identifier
         args  <- p_parens p_argList
-        return $ FunCall ident args
+        pure $ FunCall ident args
 
     p_argList = p_expression `sepBy` p_comma
 
@@ -191,5 +191,5 @@ columnParserForListedColumns columns = try p
       let failMsg = "Not a column: " ++ ident
       maybe
         (fail failMsg)
-        return $
+        pure $
         lookup identLower columns

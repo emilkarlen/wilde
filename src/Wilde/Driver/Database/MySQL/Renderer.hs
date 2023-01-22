@@ -88,7 +88,7 @@ colTypeTranslator colDesc = fmap (++nullModifier) typ
       -- SqlIntervalT SqlInterval -> undefined
       -- Global unique identifier
       SqlGUIDT -> int
-      SqlUnknownT s -> return s
+      SqlUnknownT s -> pure s
     notImplemented = error $ "Not implemented: MySQL translation of column type " ++
                      (show (colType colDesc))
     nullModifier :: String
@@ -98,18 +98,18 @@ colTypeTranslator colDesc = fmap (++nullModifier) typ
                    else " NOT NULL"
     char        = withSize mkChar
     varchar     = withSize mkVarchar
-    text        = return "TEXT"
-    int         = return "INT"
-    smallint    = return "SMALLINT"
-    tinyint     = return "TINYINT"
-    date        = return "DATE"
-    time        = return "TIME"
-    real        = return "REAL"
+    text        = pure "TEXT"
+    int         = pure "INT"
+    smallint    = pure "SMALLINT"
+    tinyint     = pure "TINYINT"
+    date        = pure "DATE"
+    time        = pure "TIME"
+    real        = pure "REAL"
     --size        = maybe (Left sizeMissing) Right (colSize colDesc)
     sizeMissing = "MySQL: size is missing: " ++ show colDesc
 
     withSize :: (Int -> String) -> Either RenderDdlUtils.ErrorMessage String
-    withSize mkType = maybe (error sizeMissing) (return . mkType) (colSize colDesc)
+    withSize mkType = maybe (error sizeMissing) (pure . mkType) (colSize colDesc)
 
 mkChar :: Int -> String
 mkChar size = "CHAR(" ++ show size ++ ")"

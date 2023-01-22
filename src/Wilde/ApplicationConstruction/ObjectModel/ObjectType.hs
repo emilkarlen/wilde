@@ -108,7 +108,7 @@ refPresSpec_default :: OmGsr.ATTRIBUTE_OUTPUT_FOR_EXISTING atConf
 refPresSpec_default pati@(PresentationAttributeTypeInfo { patiAt = (AttributeType {}) }) =
   ReferencePresentationSpec
   {
-    otpsPresentationString            = return . AnyVALUE . UnquotedStringValue . OmGsr.objOutputForIdAt
+    otpsPresentationString            = pure . AnyVALUE . UnquotedStringValue . OmGsr.objOutputForIdAt
   , otpsPresentationStringOrder       = []
   , otpsPresentationAttributeTypeInfo = Any pati
   }
@@ -137,7 +137,7 @@ refPresSpec_4_at toString at@(AttributeType {}) =
       Nothing      -> throwError $ ObjectModelError $ "Attribute not found: " ++ atCrossRefKey at
       Just convRes -> case convRes of
         Left convError -> throwError $ AttributeTranslationError "refPresSpec_4_stringAt" convError
-        Right x        -> return (toString x)
+        Right x        -> pure (toString x)
 
 
 -------------------------------------------------------------------------------
@@ -209,4 +209,4 @@ type StdAutoPkObjectTypeToNative dbTable native =
 -- is the same as the value given when creating the object in the database.
 --
 getIdOfInsertedWhenEqualToCreate :: Database.GetIdOfInsertedIntoDatabase e e
-getIdOfInsertedWhenEqualToCreate value dbOutput = return value
+getIdOfInsertedWhenEqualToCreate value dbOutput = pure value

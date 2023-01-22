@@ -200,7 +200,6 @@ instance ToPresentationError ObjectAndObjectTypeMismatchError where
     ImplementationError $ descr ++ ": " ++ show cause
 
 instance MMonad.Monad Monad where
-  return = Monad . return
   (Monad m) >>= f = Monad $
     do
       a <- m
@@ -300,7 +299,7 @@ catchErr m handler =
 
 instance ToPresentationError err => ToPresentationMonad (Either err) where
   toPresentationMonad (Left err) = throwErr err
-  toPresentationMonad (Right ok) = return ok
+  toPresentationMonad (Right ok) = pure ok
 
 instance
   ToPresentationError err =>
@@ -322,7 +321,7 @@ liftIOWithError io =
     res <- MTrans.liftIO io
     case res of
       Left err -> throwErr err
-      Right ok -> return ok
+      Right ok -> pure ok
 
 -- runDbConnMonadWithConnFromEnv_noDisconnect ::
 toPresentationMonad_wDefaultDbConn

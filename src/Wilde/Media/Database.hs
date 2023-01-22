@@ -113,7 +113,6 @@ instance ME.MonadError TranslationError TranslationMonad where
         in  m
 
 instance Monad TranslationMonad where
-  return = TranslationMonad . return
   (TranslationMonad m) >>= f = TranslationMonad $
                            do a <- m
                               let TranslationMonad m' = f a

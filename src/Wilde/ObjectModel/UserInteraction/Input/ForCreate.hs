@@ -166,14 +166,14 @@ inputerNoClass at2InfoForInputAndConstructAttribute ot@(ObjectType {}) objectNam
           Right idAttr = idAttrR
           nonIdAttrs   = tail values
         in
-         return $ return $
+         pure $ pure $
          ObjectForCreate
          {
            ofcType            = ot
          , ofcIdAttribute     = idAttr
          , ofcNonIdAttributes = nonIdAttrs
          }
-      (e:es) -> return $ Left $ OmUi.otUiObjectInputErrorInfo
+      (e:es) -> pure $ Left $ OmUi.otUiObjectInputErrorInfo
                 (OmUtils.otCrossRefKey ot)
                 objectName
                 (NonEmpty.mk e es)
@@ -212,7 +212,7 @@ inputAttr objectName
    , atiaaForAttributeConstruction = theAttributeType
    })
   =
-    return $ return $
+    pure $ pure $
     AttributeForCreate
     {
       attrfcType  = theAttributeType
@@ -237,9 +237,9 @@ inputAttr objectName
               theGsrInputer theInputer
               theAttributeName objectName
     case valueR of
-      Left err -> return $ Left err
+      Left err -> pure $ Left err
       Right value ->
-        return $ return $
+        pure $ pure $
         AttributeForCreate
         {
           attrfcType  = theAttributeType
@@ -254,13 +254,13 @@ inputAttrAny :: ObjectName
 inputAttrAny objectName (Any x) =
   do
     attrRes <- inputAttr objectName x
-    return $ fmap Any attrRes
+    pure $ fmap Any attrRes
 
 lookupFixedAttributeGenericStringRep :: ElementKey
                                      -> ES.Lookuper (ES.ElementInputResult
                                                      (ElementKey,
                                                       Maybe OmGsr.GenericStringRep))
 lookupFixedAttributeGenericStringRep ek set =
-  return $ either Left (\mbValue -> Right (ek,mbValue)) mbValueR
+  pure $ either Left (\mbValue -> Right (ek,mbValue)) mbValueR
   where
     mbValueR = ES.lookupSingleton_optional ek set

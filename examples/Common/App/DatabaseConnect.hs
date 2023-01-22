@@ -51,7 +51,7 @@ connectToDsnOdbc :: String -> IO ConnWrapper
 connectToDsnOdbc dataSourceName =
   do
     conn <- connectODBC connectionString
-    return $ ConnWrapper conn
+    pure $ ConnWrapper conn
   where
     connectionString = "DSN=" ++ dataSourceName
 
@@ -59,7 +59,7 @@ connectToDsnMysql :: String -> IO ConnWrapper
 connectToDsnMysql dataSourceName =
   do
     conn <- connectMySQL $ mysqlConnectionInfo dataSourceName
-    return $ ConnWrapper conn
+    pure $ ConnWrapper conn
 
 mysqlConnectionInfo databaseName = defaultMySQLConnectInfo {
   mysqlUnixSocket = "/var/run/mysqld/mysqld.sock",

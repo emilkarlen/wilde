@@ -44,7 +44,7 @@ databaseTable = DatabaseTable "character_encoding_experiment"
 type NativeType = (PrimaryKeyType,Maybe String)
 
 title :: StyledTitle
-title = wildeStyling 
+title = wildeStyling
         (WildeStyle ["character_encoding_experiment"])
         "Character Encoding Experiment"
 
@@ -59,7 +59,7 @@ ots :: StdAutoPkObjectTypeSetup_ddl Table NativeType
 ots = objectTypeSetup ot title
       `withModifiedObjectListDisplaySetup`
       (setOrderByInDb [Any atId])
-      
+
 ot :: StdAutoPkObjectType_ddl Table NativeType
 ot = ToolsMySql.ot_PrimaryKey_dbAutogen_MySql
      databaseTable
@@ -89,5 +89,5 @@ toNative = ObjectToNativeFunction f
          [Any aString@(Attribute {})] ->
            do
              mbString <- doOtnUnhide $ attrValue aString
-             return (pkValue,mbString)
+             pure (pkValue,mbString)
          attrs -> numAttributesError2 attrs 1

@@ -161,7 +161,7 @@ ots_and_rps_IdName config =
     refPresSpec_4_stringAt atName,
     objectTypeSetup ot (objectTypeTitle config)
     `withObjectListDisplaySetup`
-    OLS.ObjectListDisplaySetup [anyAtName] [anyAtName] (return Nothing)
+    OLS.ObjectListDisplaySetup [anyAtName] [anyAtName] (pure Nothing)
    )
   where
     anyAtName   = Any atName
@@ -210,5 +210,5 @@ ot_IdName_andNameAt config =
          [Any aName@(Attribute {})] ->
            do
              name <- doOtnUnhide $ attrValue aName
-             return (pk,name)
+             pure (pk,name)
          attrs -> numAttributesError2 attrs 1

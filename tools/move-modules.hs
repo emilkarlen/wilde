@@ -60,7 +60,7 @@ getProgramArguments =
         putStrLn usageHeader
         exitFailure
       )
-    return (additional,options)
+    pure (additional,options)
 
 data Options =
   Options
@@ -86,17 +86,17 @@ options =
     "Read module names to move from the given file."
 
   ,  Option ['m']     ["module"]
-    (ReqArg ((\ moduleName opts -> return $ opts { optToMove = moduleName : (optToMove opts) }))
+    (ReqArg ((\ moduleName opts -> pure $ opts { optToMove = moduleName : (optToMove opts) }))
      "MODULE")
     "Specify a module to move. Repeat for moving many modules."
 
   , Option ['d']     ["destination"]
-    (ReqArg ((\ pkg opts -> return $ opts { optDestination = Just pkg }))
+    (ReqArg ((\ pkg opts -> pure $ opts { optDestination = Just pkg }))
      "PACKAGE")
     "Destination package. If not given, the destination is the top-level package."
 
   , Option ['h','?']     ["help"]
-    (NoArg (\ opts -> return $ opts { optDisplayHelp = True }))
+    (NoArg (\ opts -> pure $ opts { optDisplayHelp = True }))
     "Display help and exit."
   ]
 
@@ -108,7 +108,7 @@ getOptionsAndArgs argv =
               os' <- foldM (\soFar next -> next soFar) defaultOptions os
               when (optDisplayHelp os') $ displayHelpAndExit
               when (null (optToMove os')) $ displayErrAndExit ["No modules to move given (-m)"]
-              return (os', ns)
+              pure (os', ns)
           (_,_,errs) -> ioError (userError (concat errs ++ usageInfo usageHeader options))
 
 displayErrAndExit :: [String] -> IO ()
@@ -132,13 +132,13 @@ parseAndAddExcludesFromFile fileName options =
     newModules <- readModuleNames
     let prevModules = optToMove options
     let nextModules = prevModules ++ newModules
-    return $ options { optToMove = nextModules }
+    pure $ options { optToMove = nextModules }
 
   where
     readModuleNames :: IO [String]
     readModuleNames = do
       contents <- readFile fileName
-      return $ lexemes contents
+      pure $ lexemes contents
 
 processStdin :: Options -> IO ()
 processStdin options =
@@ -207,7 +207,7 @@ relevantIdentifierFirstChar = isAlpha
 
 
 translate :: Options -> String -> IO ()
-translate os []           = return ()
+translate os []           = pure ()
 translate os ('-':'-':xs) = putStr "--" >> skipUntilNextLine xs            >>= translate os
 translate os ('{':'-':xs) = putStr "{-" >> skipUntilDelimitedCommentEnd xs >>= translate os
 translate os (x      :xs)
@@ -219,13 +219,13 @@ translate os (x      :xs)
   | otherwise = putChar x >> translate os xs
 
 skipUntilNextLine :: String -> IO String
-skipUntilNextLine [] = return []
-skipUntilNextLine ('\n' : xs) = putChar '\n' >> return xs
+skipUntilNextLine [] = pure []
+skipUntilNextLine ('\n' : xs) = putChar '\n' >> pure xs
 skipUntilNextLine (x    : xs) = putChar x    >> skipUntilNextLine xs
 
 skipUntilDelimitedCommentEnd :: String -> IO String
-skipUntilDelimitedCommentEnd [] = return []
-skipUntilDelimitedCommentEnd ('-':'}':xs) = putStr "-}" >> return xs
+skipUntilDelimitedCommentEnd [] = pure []
+skipUntilDelimitedCommentEnd ('-':'}':xs) = putStr "-}" >> pure xs
 skipUntilDelimitedCommentEnd ('{':'-':xs) = putStr "{-" >>
                                             skipUntilDelimitedCommentEnd xs >>=
                                             skipUntilDelimitedCommentEnd

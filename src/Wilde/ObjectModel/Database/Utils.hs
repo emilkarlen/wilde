@@ -170,7 +170,7 @@ aEqExpr (Attribute at value _) =
         msg      = "Num values for attribute as SqlValue not equal to num columns: " ++ show mismatch
       in
        Left $ ConvertError "" "" "" msg
-      else return $ (mkEqExpr $ zip columnNames columnValues,columnValues)
+      else pure $ (mkEqExpr $ zip columnNames columnValues,columnValues)
    where
     columnNames    = map columnName $ NonEmpty.toList $ atColumns at
     outputExisting = atOutputerExisting at

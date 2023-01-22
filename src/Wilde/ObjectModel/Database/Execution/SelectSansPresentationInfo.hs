@@ -109,9 +109,9 @@ selectOneWithSqlValues ot@(ObjectType {}) idAtSqlValues =
   do
     databaseInput <- SqlExec.select_lazy sql idAtSqlValues
     case databaseInput of
-      []    -> return Nothing
+      []    -> pure Nothing
       [row] -> do o <- DbConn.toMonad $ InputExisting.inputObject ot row
-                  return $ Just o
+                  pure $ Just o
       _     -> let msg = "Expected none or a single row. Got " ++ show databaseInput
                in  DbConn.throwErr $ DbConn.ImplementationTranslationError msg
   where

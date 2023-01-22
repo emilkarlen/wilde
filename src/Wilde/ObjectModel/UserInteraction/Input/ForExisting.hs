@@ -158,8 +158,8 @@ inputerNoClass at2InfoForInputAndConstructAttribute ot objectName =
           Right idAttr = idAttrR
           nonIdAttrs   = tail values
         in
-         return $ return (conObject ot idAttr nonIdAttrs)
-      (e:es) -> return $ Left $ otUiObjectInputErrorInfo
+         pure $ pure (conObject ot idAttr nonIdAttrs)
+      (e:es) -> pure $ Left $ otUiObjectInputErrorInfo
                 (OmUtils.otCrossRefKey ot)
                 objectName
                 (NonEmpty.mk e es)
@@ -209,14 +209,14 @@ inputAttrNoClass objectName
      valueR <- UiICommon.inputer_fixedFromEnvHasPrecedence
                theGsrInputer theWidgetInputer
                theAttributeName objectName
-     return $ fmap newPlainAttr valueR
+     pure $ fmap newPlainAttr valueR
   where
     newPlainAttr value =
       Attribute
       {
         attrType         = theAttributeType
       , attrValue        = value
-      , attrPresentation = return presentation
+      , attrPresentation = pure presentation
       }
       where
         presentation = thePresentationO value
@@ -231,4 +231,4 @@ inputAttrAny :: ObjectName
 inputAttrAny objectName (Any x) =
   do
     attrRes <- inputAttrNoClass objectName x
-    return $ fmap Any attrRes
+    pure $ fmap Any attrRes

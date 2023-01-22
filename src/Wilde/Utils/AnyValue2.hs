@@ -38,4 +38,4 @@ applyM :: Monad m
 applyM f (Container x) =
   do
     x' <- f x
-    return $ Container x'
+    pure $ Container x'

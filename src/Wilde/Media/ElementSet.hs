@@ -119,7 +119,7 @@ type ElementInputResult a = Either ElementLookupError a
 -- \"Looking up\" here means looking up AND possibly \"parsing\" a value.
 --
 -- TODO Split ValueMissing and (InvalidSyntax...) into different datatypes,
--- that (InvalidSyntax...) can be used as return type for parsers.
+-- that (InvalidSyntax...) can be used as pure type for parsers.
 -- Eg: Parser a b = a -> Either (InvalidSyntax...) b
 data ElementLookupErrorType = ValueMissing  -- ^ The set does not contain a value for a given key.
                             | InvalidSyntax -- ^ Value is found in the set but has invalid syntax.
@@ -165,7 +165,7 @@ parser_optional_ValueMissing_is_Nothing :: Parser a b
 parser_optional_ValueMissing_is_Nothing parser a =
   case parser a of
     Right x            -> Right (Just x)
-    Left ValueMissing  -> return Nothing
+    Left ValueMissing  -> pure Nothing
     Left err           -> Left err
 
 -------------------------------------------------------------------------------
@@ -175,7 +175,7 @@ parser_optional_ValueMissing_is_Nothing parser a =
 -------------------------------------------------------------------------------
 nothingIsNothing :: Parser a b
                  -> Parser (Maybe a) (Maybe b)
-nothingIsNothing parser = maybe (return Nothing) (fmap Just . parser)
+nothingIsNothing parser = maybe (pure Nothing) (fmap Just . parser)
 
 -------------------------------------------------------------------------------
 -- | A variant of 'nothingIsNothing'
@@ -184,7 +184,7 @@ nothingIsNothing parser = maybe (return Nothing) (fmap Just . parser)
 -------------------------------------------------------------------------------
 nothingIsNothing2 :: Parser a         (Maybe b)
                   -> Parser (Maybe a) (Maybe b)
-nothingIsNothing2 parser = maybe (return Nothing) parser
+nothingIsNothing2 parser = maybe (pure Nothing) parser
 
 -------------------------------------------------------------------------------
 -- | Nothing is regarded as 'ValueMissing'.
@@ -199,19 +199,19 @@ nothingIsValueMissing = maybe (Left ValueMissing) Right
 nothingIs :: b
           -> Parser a         b
           -> Parser (Maybe a) b
-nothingIs x p = maybe (return x) p
+nothingIs x p = maybe (pure x) p
 
 trimEmptyIsNothing :: Parser String (Maybe String)
 trimEmptyIsNothing s =
   case dropWhile isSpace s of
-    [] -> return Nothing
-    s  -> return $ Just s
+    [] -> pure Nothing
+    s  -> pure $ Just s
 
 trimEmptyIsMissing :: Parser String String
 trimEmptyIsMissing s =
   case dropWhile isSpace s of
     [] -> Left ValueMissing
-    s  -> return s
+    s  -> pure s
 
 -------------------------------------------------------------------------------
 -- | The input must be a singleton list.
@@ -219,7 +219,7 @@ trimEmptyIsMissing s =
 -- All other lists are regarded as 'InvalidSyntax'.
 -------------------------------------------------------------------------------
 singletonList :: Parser [ElementValue] ElementValue
-singletonList [x] = return x
+singletonList [x] = pure x
 singletonList xs  = Left InvalidSyntax
 
 -------------------------------------------------------------------------------
@@ -229,7 +229,7 @@ singletonList xs  = Left InvalidSyntax
 -------------------------------------------------------------------------------
 nonEmptyList :: Parser [ElementValue] [ElementValue]
 nonEmptyList [] = Left InvalidValue
-nonEmptyList xs = return xs
+nonEmptyList xs = pure xs
 
 singleton_optional :: Parser (Maybe [ElementValue]) (Maybe ElementValue)
 singleton_optional = nothingIsNothing singletonList
@@ -281,7 +281,7 @@ mkLookuper parser ek set =
   in
     case parser mbValues of
       Left errType -> throw (ek,errType,maybe Nothing (Just . show) mbValues)
-      Right a      -> return a
+      Right a      -> pure a
 
 throw :: ElementLookupError -> LookupResult a
 throw = Left
@@ -347,7 +347,7 @@ integrateLookup (ElementSetMonadIntegration getSet throwError) lookup =
   do
     set <- getSet
     let lookupResult = lookup set
-    either throwError return lookupResult
+    either throwError pure lookupResult
 
 -------------------------------------------------------------------------------
 -- | \"Integrates\" functionality on a specific 'ElementSet' into a monad.
@@ -361,4 +361,4 @@ integrateSetFunction :: Monad m
 integrateSetFunction (ElementSetMonadIntegration getSet _) f =
   do
     set <- getSet
-    return $ f set
+    pure $ f set

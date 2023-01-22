@@ -77,7 +77,7 @@ inputObjectUtil (ot@(ObjectType {}),
        do
          attrId     <- inputAttribute  atId sqlValuesForIdAt
          attrNonIds <- inputAttributes atNonIds sqlValuesForNonIdAts
-         return $ conObject ot attrId (reverse attrNonIds)
+         pure $ conObject ot attrId (reverse attrNonIds)
   where
     recErr :: String -> TranslationError
     recErr head = let sExpected = show ((map . map) (fmap sqlIdentifier) dbColGroupsPerAt)
@@ -103,7 +103,7 @@ inputAttributes ats sqlValuess = read ([],ats,sqlValuess)
              [Any (AttributeType atConf dbTable)],
              [[SqlValue]]) -- ^ (acc of attrs read so far, attr types to read, The SQL-values for each attribute)
          -> TranslationMonad [Any (Attribute atConf dbTable)]
-    read (attrs,[],_) = return attrs
+    read (attrs,[],_) = pure attrs
     read (attrs,(Any at):ats,colVals:colValss) =
       do
         attr <- inputAttribute at colVals
@@ -126,7 +126,7 @@ inputAttribute :: INPUT_FOR_EXISTING atConf
 inputAttribute at colVals =
   do
     v <- inputAttributeValue at colVals
-    return $ atConPlainAttr at v
+    pure $ atConPlainAttr at v
 
 -------------------------------------------------------------------------------
 inputAttributeValue :: INPUT_FOR_EXISTING atConf
@@ -140,4 +140,4 @@ inputAttributeValue at colVals =
         msg = atCrossRefKey at
       in
        throwError $ AttributeTranslationError msg e
-    Right v -> return v
+    Right v -> pure v

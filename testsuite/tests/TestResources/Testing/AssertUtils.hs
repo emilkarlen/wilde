@@ -76,7 +76,7 @@ checkMaybes :: (String -> a -> a -> Assertion)
             -> Maybe a
             -- ^ Actual value.
             -> Assertion
-checkMaybes _ _       _      Nothing Nothing = return ()
+checkMaybes _ _       _      Nothing Nothing = pure ()
 checkMaybes _ showVal header Nothing (Just actual) = assertFailure msg
   where
     msg = header ++ ": expected Nothing" ++

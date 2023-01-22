@@ -137,13 +137,13 @@ mkLink :: MonadWithServiceLinkConstructor m
 mkLink serviceReferenceWithParams =
   do
     constructor <- getServiceLinkConstructor
-    return $ constructor serviceReferenceWithParams
+    pure $ constructor serviceReferenceWithParams
 
 instance (Monad m, MonadWithCustomEnvironment m) => MonadWithServiceLinkConstructor m where
   getServiceLinkConstructor =
     do
       custEnv <- getCustomEnvironment
-      return $ \serviceReferenceWithParams ->
+      pure $ \serviceReferenceWithParams ->
         ServiceLink
         {
           slServiceReferenceWithParams = serviceReferenceWithParams

@@ -86,7 +86,7 @@ formForCurrentService formBlocksAndMetas formMetas =
     serviceId  <- getEnvs envCurrentService
     mbObjectId <- MIIA.inInputMedia $ ES.lookupSingleton_optional objectIdElementKey
     let objectIdElements = maybe [] (\val -> [(objectIdElementKey,val)]) mbObjectId
-    return $ formForService formBlocksAndMetas (objectIdElements ++ formMetas) serviceId
+    pure $ formForService formBlocksAndMetas (objectIdElements ++ formMetas) serviceId
   where
     objectIdElementKey = globalElementKey VariableNames.pk
 
@@ -97,7 +97,7 @@ currentServiceLink =
     mbCustomEnv <- getEnvs envCustomEnvironment
     mbObjectId <- MIIA.inInputMedia $
                   ES.lookupSingleton_optional (globalElementKey VariableNames.pk)
-    return $ ServiceLink.ServiceLink
+    pure $ ServiceLink.ServiceLink
              {
                ServiceLink.slServiceReferenceWithParams =
                   ServiceLink.ServiceReferenceWithParams
@@ -253,7 +253,7 @@ swallowError :: ObjectInputResult a -> ServiceMonad a
 swallowError result =
     case result of
       Left errorInfo -> throwErr $ UiObjectInputError $ NonEmpty.singleton errorInfo
-      Right x        -> return x
+      Right x        -> pure x
 
 otUiObjectInputErrorMonad :: ServiceMonad (ObjectInputResult a)
                           -> ServiceMonad a
@@ -267,14 +267,14 @@ otUiObjectInputErrorMonads ms =
     result <- toServiceMonad $ combineAllErrors ms
     case result of
       Left error -> throwErr $ UiObjectInputError error
-      Right xs   -> return xs
+      Right xs   -> pure xs
   where
     combineAllErrors :: Monad m => [m (ObjectInputResult a)]
                     -> m (Either (NonEmpty.List ObjectInputErrorInfo) [a])
     combineAllErrors ms = do
       results <- sequence ms
       let (errors,oks) = partitionEithers results
-      return $
+      pure $
         case errors of
           (e:es) -> Left $ NonEmpty.mk e es
           _      -> Right oks

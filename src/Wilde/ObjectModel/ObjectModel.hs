@@ -157,7 +157,7 @@ atConPlainAttr at@(AttributeType { atPresentationO = presO }) value =
   {
     attrType         = at
   , attrValue        = value
-  , attrPresentation = return presentation
+  , attrPresentation = pure presentation
    }
   where
     presentation = presO value

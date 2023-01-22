@@ -68,7 +68,7 @@ inputAll :: (Database.DATABASE_TABLE otConf
 inputAll ot orderByInDb = input
                                ot
                                (SqlGen.otDatabaseOrderBy orderByInDb)
-                               (return Nothing)
+                               (pure Nothing)
                                []
 
 -------------------------------------------------------------------------------
@@ -102,7 +102,7 @@ inputOneMandatory ot pk =
       Nothing -> DbConn.throwErr $ DbNoRows
                  ("InputOneMandatory/" ++ otCrossRefKey ot)
                  (Just (Mismatch 0 1))
-      Just o  -> return o
+      Just o  -> pure o
 
 -------------------------------------------------------------------------------
 inputOne :: (Database.DATABASE_TABLE otConf
@@ -119,8 +119,8 @@ inputOne ot@(ObjectType {}) pk =
                      SqlGen.orderByNone getMbWhereExpr
                      (getEqExprParams pk)
     case objects of
-      []  -> return Nothing
-      [o] -> return (Just o)
+      []  -> pure Nothing
+      [o] -> pure (Just o)
       xs  -> DbConn.throwErr $ DbTooManyRows
              ("InputOne/" ++ otCrossRefKey ot)
              (Just (Mismatch (length xs) 1))
@@ -214,7 +214,7 @@ inputObject ot (idAtInfo,nonIdAtInfos) record =
    (idAtData,nonIdAtDatas) <- getInputData (idAtInfo,nonIdAtInfos) record
    idA                     <- inputAttribute idAtData
    nonIdAs                 <- mapM (anyValueApplyM inputAttribute) nonIdAtDatas
-   return $ conObject ot idA nonIdAs
+   pure $ conObject ot idA nonIdAs
 
 -------------------------------------------------------------------------------
 inputAttribute :: Database.INPUT_FOR_EXISTING atConf
@@ -226,7 +226,7 @@ inputAttribute (AttributeTypeDbInputData ((at@(AttributeType {}),plainAtValues),
   do
     v               <- InputExisting.inputAttributeValue at plainAtValues
     presValueGetter <- mkPresValueGetter v presValues
-    return $
+    pure $
       Attribute
       {
         attrType         = at
@@ -248,7 +248,7 @@ getInputData (idAtInfo,nonIdAtInfos) record =
     (idAtData,rest) = splitForAt    record idAtInfo
     nonIdAtDatas    = splitNonIdAts rest   nonIdAtInfos
   in
-   return (idAtData,nonIdAtDatas)
+   pure (idAtData,nonIdAtDatas)
   where
     splitNonIdAts :: Database.COLUMN_NAMES atConf
                   => [SqlValue]

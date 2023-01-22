@@ -41,4 +41,4 @@ withInputMedia f = getInputMedia >>= f
 inInputMedia_raw :: MonadWithInputMedia m
                  => ES.Lookuper a
                  -> m (ES.LookupResult a)
-inInputMedia_raw lookuper = getInputMedia >>= (return . lookuper)
+inInputMedia_raw lookuper = getInputMedia >>= (pure . lookuper)

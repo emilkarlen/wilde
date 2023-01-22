@@ -186,7 +186,7 @@ update_attributes ot atsToUpdate mbWhereExpr =
 -------------------------------------------------------------------------------
 -- | SQL for updating an 'Object'.
 --
--- Otherwise, a 'SqlUpdate' is returned.  This SQL has positional parameters
+-- Otherwise, a 'SqlUpdate' is pureed.  This SQL has positional parameters
 -- for
 --
 -- * the columns of each 'AttributeType' that is updatable, in the order they
@@ -221,7 +221,7 @@ updateOne_attributes ot atsToUpdate =
 -------------------------------------------------------------------------------
 -- | SQL for deleting an 'Object'.
 --
--- A  'SqlDelete' is returned.  This SQL has positional parameters
+-- A  'SqlDelete' is pureed.  This SQL has positional parameters
 -- for the columns of the ID 'AttributeType'.
 -------------------------------------------------------------------------------
 delete :: (COLUMN_NAMES atConf
@@ -236,7 +236,7 @@ delete ot mbWhereExpr = Sql.delete theTableName mbWhereExpr
 -------------------------------------------------------------------------------
 -- | SQL for deleting all records of a table.
 --
--- A  'SqlDelete' is returned.  This SQL has NO parameters.
+-- A  'SqlDelete' is pureed.  This SQL has NO parameters.
 -------------------------------------------------------------------------------
 deleteAll :: (COLUMN_NAMES atConf
              ,DATABASE_TABLE otConf)
@@ -247,7 +247,7 @@ deleteAll ot = delete ot Nothing
 -------------------------------------------------------------------------------
 -- | SQL for deleting an 'Object'.
 --
--- A  'SqlDelete' is returned.  This SQL has positional parameters
+-- A  'SqlDelete' is pureed.  This SQL has positional parameters
 -- for the columns of the ID 'AttributeType'.
 -------------------------------------------------------------------------------
 deleteOne :: (COLUMN_NAMES atConf

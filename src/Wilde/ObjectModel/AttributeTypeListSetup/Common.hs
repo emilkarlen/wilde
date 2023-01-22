@@ -33,7 +33,7 @@ toMkResult2GeneralMonad :: ObjectType otConf atConf dbTable otNative idAtExistin
                            (Any (AttributeType atConf dbTable))
                            a
                         -> GeneralResult a
-toMkResult2GeneralMonad _ (Right x) = return x
+toMkResult2GeneralMonad _ (Right x) = pure x
 toMkResult2GeneralMonad ot (Left (Any at)) =
   Left $ GeneralObjectModelError msg
   where

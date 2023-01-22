@@ -27,14 +27,14 @@ module Common.ObjectType.AttributeType
          amount_optional,
 
          percentage_optional,
-         
+
          EnumNative,
          enum,
          enum_optional,
 
          href,
          href_optional,
-         
+
          my_dbIo_string,
        )
        where
@@ -143,13 +143,13 @@ href :: SQL_IDENTIFIER dbTable
       => Title
       -> dbTable
       -> PlainAttributeType_ddl dbTable String
-href title column = at_Href my_dbIo_string maxSize_href inputWidth_href column Nothing title 
+href title column = at_Href my_dbIo_string maxSize_href inputWidth_href column Nothing title
 
 href_optional :: SQL_IDENTIFIER dbTable
                  => Title
                  -> dbTable
                  -> PlainAttributeType_optional_ddl dbTable String
-href_optional title column = at_Href_optional my_dbIo_string_optional maxSize_href inputWidth_href column Nothing title 
+href_optional title column = at_Href_optional my_dbIo_string_optional maxSize_href inputWidth_href column Nothing title
 
 name :: SQL_IDENTIFIER dbTable
      => Title
@@ -233,7 +233,7 @@ percentage_optional :: SQL_IDENTIFIER dbTable
                     -> dbTable
                     -> PlainAttributeType_optional_ddl dbTable Double
 percentage_optional title column = amount_at { atPresentationO = percentagePresenter }
-  
+
   where
     amount_at = amount_optional title column
     percentagePresenter :: PresentationOutputer (Maybe Double)
@@ -284,7 +284,7 @@ enum_optional values title column =
 --                -> SqlIdentifier -- ^ Database Table Name
 --                -> dbTable       -- ^ PK attribute
 --                -> dbTable       -- ^ Name attribute
---                -> ToolsMySql.IdNameOtConfiguration dbTable 
+--                -> ToolsMySql.IdNameOtConfiguration dbTable
 -- mkIdNameConfig objectTypeTitle dbTableName colPk colName =
 --   ToolsMySql.IdNameOtConfiguration
 --   {
@@ -324,7 +324,7 @@ enum_optional values title column =
 -- negPosSumCells = AnyCellConstructor negPosSumCellsRaw
 
 -- negPosSumCellsRaw :: CellConstructor NegPosSumAcc Double
--- negPosSumCellsRaw = 
+-- negPosSumCellsRaw =
 --   CellConstructor
 --   {
 --     fccInitial     = (fromInteger 0,fromInteger 0)
@@ -404,8 +404,8 @@ my_dbIo_string =
 
 dbI_string :: DatabaseInputer String
 dbI_string [sqlValue] = case sqlValue of
-  (SqlString x)     -> return x
-  (SqlByteString x) -> return $ Char8.unpack x
+  (SqlString x)     -> pure x
+  (SqlByteString x) -> pure $ Char8.unpack x
   sqlValue          -> Left $
                        invalidSqlValuesError
                        "String"
@@ -414,4 +414,4 @@ dbI_string [sqlValue] = case sqlValue of
 dbI_string sqlValues = Left $ numberOfSqlValuesError "String" sqlValues
 
 dbO_string :: DatabaseOutputer String
-dbO_string x = return [SqlByteString $ Char8.pack x]
+dbO_string x = pure [SqlByteString $ Char8.pack x]

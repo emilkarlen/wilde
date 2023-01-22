@@ -53,7 +53,7 @@ mapM f (List (x,xs)) =
   do
     b  <- f x
     bs <- P.mapM f xs
-    P.return P.$ mk b bs
+    P.pure P.$ mk b bs
 
 cons :: a -> List a -> List a
 cons x (List (y,ys)) = List (x,y:ys)

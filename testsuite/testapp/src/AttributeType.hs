@@ -58,8 +58,8 @@ dbIo_string =
 
 dbI_string :: DatabaseInputer String
 dbI_string [sqlValue] = case sqlValue of
-  (SqlString x)     -> return x
-  (SqlByteString x) -> return $ Char8.unpack x
+  (SqlString x)     -> pure x
+  (SqlByteString x) -> pure $ Char8.unpack x
   sqlValue          -> Left $
                        invalidSqlValuesError
                        "String"
@@ -68,4 +68,4 @@ dbI_string [sqlValue] = case sqlValue of
 dbI_string sqlValues = Left $ numberOfSqlValuesError "String" sqlValues
 
 dbO_string :: DatabaseOutputer String
-dbO_string x = return [SqlByteString $ Char8.pack x]
+dbO_string x = pure [SqlByteString $ Char8.pack x]

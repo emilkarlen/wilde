@@ -62,7 +62,7 @@ showOneComponent getAttrs o =
   do
     unstyledTable <- showOneTable (getAttrs o)
     let styledTable = addStyleToSTYLING WS.presentationTableSingle unstyledTable
-    return $ AnyCOMPONENT $ TableListComponent Nothing styledTable
+    pure $ AnyCOMPONENT $ TableListComponent Nothing styledTable
 
 showOneTable :: ATTRIBUTE_PRESENTATION atConf
              => [Any (Attribute atConf dbTable)]
@@ -70,7 +70,7 @@ showOneTable :: ATTRIBUTE_PRESENTATION atConf
 showOneTable attrs =
   do
     headerValueRowList <- getHeaderValueRowList
-    return $
+    pure $
       wildeHeaderValueTable
       renderTitle
       renderValue
@@ -87,7 +87,7 @@ showOneTable attrs =
     headerValueRow (Attribute at val getPresVal) =
      do
        presVal <- getPresVal
-       return (theTitle,presVal)
+       pure (theTitle,presVal)
       where
         theTitle = wildeStyled . atTitle $ at
         presO = atPresentationO at
@@ -140,7 +140,7 @@ objectRow :: (idAtExisting -> AnySVALUE)
 objectRow leftSideContentConstructor rightSideContentConstructor o =
   do
     attributeValues <- sequence getAttributeValues
-    return $ leftContentElem : attributeValues ++ [rightContentElem]
+    pure $ leftContentElem : attributeValues ++ [rightContentElem]
   where
     leftContent        = leftSideContentConstructor $ attrValue $ oIdAttribute o
     leftContentElem    = SeValue leftContent
@@ -212,7 +212,7 @@ objectRow' :: (idAtExisting -> AnySVALUE)
 objectRow' leftSideContentConstructor rightSideContentConstructor getDisplayAttrs o =
   do
     attributeValues <- sequence getAttributeValues
-    return $ leftContentElem : attributeValues ++ [rightContentElem]
+    pure $ leftContentElem : attributeValues ++ [rightContentElem]
   where
     leftContent        = leftSideContentConstructor $ attrValue $ oIdAttribute o
     leftContentElem    = SeValue leftContent
@@ -244,6 +244,6 @@ getAttributesInGivenOrder :: [Any (AttributeType atConf dbTable)]
 getAttributesInGivenOrder attributeTypesOrder o =
   do
     atListSetup <- AttributeTypeListSetup.mkGeneral ot attributeTypesOrder
-    return $ AttributeTypeListSetup.apply atListSetup o
+    pure $ AttributeTypeListSetup.apply atListSetup o
   where
     ot = oType o

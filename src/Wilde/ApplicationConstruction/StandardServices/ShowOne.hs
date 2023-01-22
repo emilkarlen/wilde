@@ -103,4 +103,4 @@ mainForObj' o (Config
      let mainComponent             = LayoutComponents.verticalComponents mainComponents
      depComponentMbs <- sequence mkDepComponents
      let depComponents = catMaybes depComponentMbs
-     return (title,mainComponent : depComponents)
+     pure (title,mainComponent : depComponents)

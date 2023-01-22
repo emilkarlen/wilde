@@ -4,24 +4,24 @@
 -------------------------------------------------------------------------------
 module Wilde.ApplicationConstruction.UserInteraction.FixAndDefaultResolver.FixAndDefaultCollection
        (
-         -- * Construction of resolver and setup 
-         
+         -- * Construction of resolver and setup
+
          mkAttributeTypeSetup,
          mkResolverConstructor,
 
          -- * Collection Fixed and Default values
-         
+
          -- ** Default values
-         
+
          AttributeWidgetDefaultValue(..),
          AttributeWidgetDefaultValues,
-                  
+
          -- ** Fixed and default values
-         
+
          FixedOrDefaultedValue(..),
          FixedAndDefaultValues(..),
          lookupFixedOrDefaultValue,
-         
+
        )
        where
 
@@ -48,7 +48,7 @@ import qualified Wilde.ObjectModel.UserInteraction.Output.CreateCommon as Create
 -- - implementation -
 -------------------------------------------------------------------------------
 
-  
+
 mkAttributeTypeSetup :: ATTRIBUTE_OUTPUT_FOR_CREATE atConf
                      => FixedAndDefaultValues atConf dbTable
                      -> AttributeType atConf dbTable typeForExisting typeForCreate
@@ -87,20 +87,20 @@ mkResolverConstructor fixAndDefaults at
       OutputCommon.FixAndDefaultResolverForApplicationConfiguration
       {
         OutputCommon.appFix     = Nothing
-      , OutputCommon.appDefault = return Nothing
+      , OutputCommon.appDefault = pure Nothing
       }
 
     theEnvResolver =
       OutputCommon.FixAndDefaultResolverForEnvironment
       {
         OutputCommon.envFix = case fixOrDefault of
-           Just (FixedOrDefaultedIsFixed gsr) -> return $ Just (Left gsr)
-           _ -> return Nothing
+           Just (FixedOrDefaultedIsFixed gsr) -> pure $ Just (Left gsr)
+           _ -> pure Nothing
 
       , OutputCommon.envDefault = case fixOrDefault of
            Just (FixedOrDefaultedIsDefaulted genericWidgetDefault) ->
-             return (Just (DefaultCreateFromUiPreFill genericWidgetDefault))
-           _ -> return Nothing
+             pure (Just (DefaultCreateFromUiPreFill genericWidgetDefault))
+           _ -> pure Nothing
       }
 
     fixOrDefault = lookupFixedOrDefaultValue fixAndDefaults attributeName
@@ -119,11 +119,11 @@ data FixedAndDefaultValues atConf dbTable =
   , fadvDefaulted :: AttributeWidgetDefaultValues atConf dbTable
   }
 
-instance Semigroup (FixedAndDefaultValues atConf dbTable) where 
+instance Semigroup (FixedAndDefaultValues atConf dbTable) where
   (FixedAndDefaultValues f1 d1) <> (FixedAndDefaultValues f2 d2) =
     FixedAndDefaultValues (f1 ++ f2) (d1 ++ d2)
 
-instance Monoid (FixedAndDefaultValues atConf dbTable) where 
+instance Monoid (FixedAndDefaultValues atConf dbTable) where
   mempty = FixedAndDefaultValues [] []
 
 
@@ -156,7 +156,7 @@ data FixedOrDefaultedValue = FixedOrDefaultedIsFixed     Gsr.GenericStringRep
 
 
 -- | Default values for some or all of the 'AttributeType's of an 'ObjectType'.
-type AttributeWidgetDefaultValues atConf dbTable = 
+type AttributeWidgetDefaultValues atConf dbTable =
   [AttributeWidgetDefaultValue atConf dbTable]
 
 -- | A default value for the widget of an 'AttributeType'.
@@ -190,7 +190,7 @@ lookupWidgetDefaultValue :: AttributeWidgetDefaultValues atConf dbTable
                          -> Maybe UiO.GenericWidgetDefaultValue
 lookupWidgetDefaultValue defaults atTargetKey =
   maybe
-  Nothing 
+  Nothing
   (Just . widgetDefaultValue)
   (find isMatch defaults)
   where

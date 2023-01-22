@@ -63,7 +63,7 @@ parseEmlFormat timeLocale mbFormatString baseDay s =
                                    let (y',m',d') = (absolute y by,
                                                      absolute m bm,
                                                      absolute d bd)
-                                   return $ fromGregorianInteger (y',m',d')
+                                   pure $ fromGregorianInteger (y',m',d')
 
     -- Replaces the \"relative\" value 0 with it's absolute counterpart.
     absolute :: Integer -> Integer -> Integer
@@ -76,7 +76,7 @@ parseEmlFormat timeLocale mbFormatString baseDay s =
         dateComponents <- parseDateParts diffString
         let (dy,dm,dd) = fill (0,0) dateComponents
         let (by,bm,bd) = toGregorianInteger baseDay
-        return $ fromGregorianInteger (by `oper` dy,
+        pure $ fromGregorianInteger (by `oper` dy,
                                        bm `oper` dm,
                                        bd `oper` dd)
 
@@ -115,13 +115,13 @@ datePartsParser =
     x <- number4
     xs <- maxCount 2 followingPart
     eof
-    return $ x : xs
+    pure $ x : xs
 
 number4 :: Stream s m Char => ParsecT s u m Integer
 number4 =
   do
     digits <- maxCount1 3 digitAsInt
-    return $ fromIntegral $ positionalNumber 10 digits
+    pure $ fromIntegral $ positionalNumber 10 digits
 
 followingPart :: Stream s m Char => ParsecT s u m Integer
 followingPart =
@@ -132,15 +132,15 @@ followingPart =
 maxCount :: Stream s m t => Int -> ParsecT s u m a -> ParsecT s u m [a]
 maxCount n p =
   if n <= 0
-     then return []
+     then pure []
   else
     do
       mbX  <- optionMaybe p
       case mbX of
-        Nothing -> return []
+        Nothing -> pure []
         Just x  -> do
           xs <- maxCount (n-1) p
-          return $ x : xs
+          pure $ x : xs
 
 maxCount1 :: Stream s m t
           => Int -- ^ The max number of optional elements (the first is non-optional)
@@ -150,7 +150,7 @@ maxCount1 n p =
   do
     x <- p
     xs <- maxCount n p
-    return $ x :xs
+    pure $ x :xs
 
 digitAsInt :: Stream s m Char => ParsecT s u m Int
 digitAsInt = fmap digitToInt digit

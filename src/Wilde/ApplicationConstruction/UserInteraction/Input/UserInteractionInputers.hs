@@ -74,7 +74,7 @@ inputer_optional_from_mandatory :: UiI.Monad (ElementInputResult a)
 inputer_optional_from_mandatory ma =
   do
     result <- ma
-    return $
+    pure $
          case result of
            Right a  -> Right (Just a)
            Left err@(_,errorType,_) ->

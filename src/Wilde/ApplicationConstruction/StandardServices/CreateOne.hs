@@ -92,4 +92,4 @@ createOneMain ot (Config titles attributeTypesOrder) = stepService def
     outputForm' =
       do
         formBlock <- OutputForCreate.outputerForStdSetup attributeTypesOrder theObjectName
-        return $ FormBlocksAndMetas [] [formBlock]
+        pure $ FormBlocksAndMetas [] [formBlock]

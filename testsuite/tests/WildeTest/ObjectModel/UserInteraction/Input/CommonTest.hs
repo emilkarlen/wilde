@@ -156,16 +156,16 @@ theWidgetValue = "WIDGET-VALUE"
 widgetInputerThatGives :: AtValueType
                        -> WidgetInputer
 widgetInputerThatGives x attributeName objectName =
-  return $ return x
+  pure $ pure x
 
 widgetInputerThatFailsWith :: ES.ElementLookupErrorType
                            -> WidgetInputer
 widgetInputerThatFailsWith error attributeName objectName =
-  return $ Left (theAttributeElementKey,error,Nothing)
+  pure $ Left (theAttributeElementKey,error,Nothing)
 
 
 successfullGsrInputer :: Gsr.GenericStringRepInputer AtValueType
-successfullGsrInputer = return
+successfullGsrInputer = pure
 
 gsrInputerThatFailsWith :: ES.ElementLookupErrorType
                         -> Gsr.GenericStringRepInputer AtValueType

@@ -51,7 +51,7 @@ import qualified Wilde.ObjectModel.Database.Utils as Utils
 -------------------------------------------------------------------------------
 -- | Updates the given 'Attribute's of all objects.
 --
--- Returns the number of updated rows.  'Nothing' means this info is not provided
+-- pures the number of updated rows.  'Nothing' means this info is not provided
 -- by the database backen.
 -------------------------------------------------------------------------------
 updateAll_attributes :: (Output.DATABASE_TABLE otConf
@@ -111,8 +111,8 @@ updateOne_attributes ot@(ObjectType {}) idAtValue attrsToUpdate =
 -- | Updates the given 'Attribute's of objects that
 -- matches a given WHERE expression.
 --
--- Returns the number of updated rows. 'Nothing' means that this info is not
--- returned by the DB backed.
+-- pures the number of updated rows. 'Nothing' means that this info is not
+-- pureed by the DB backed.
 -------------------------------------------------------------------------------
 update_attributes :: (Output.DATABASE_TABLE otConf
                      ,Output.COLUMN_NAMES atConf
@@ -131,7 +131,7 @@ update_attributes ot@(ObjectType {}) mbWhereExpr whereExprParams attrsToUpdate =
      paramValuesForUpdates <- DbConn.toMonad getAttrsToUpdateSqlValues
      let paramValues = paramValuesForUpdates ++ whereExprParams
      numUpdatedRows <- SqlExec.update updateStmt paramValues
-     return $ if numUpdatedRows < 0
+     pure $ if numUpdatedRows < 0
               then Nothing
               else Just numUpdatedRows
   where
@@ -151,7 +151,7 @@ update_attributes ot@(ObjectType {}) mbWhereExpr whereExprParams attrsToUpdate =
 -- | Executes a SQL statement where the WHERE expression is quality on
 -- a single 'Attribute' given by it's type and value.
 --
--- Returns the number of rows affected by the statement.
+-- pures the number of rows affected by the statement.
 -------------------------------------------------------------------------------
 execForOne :: (Output.OUTPUT_FOR_EXISTING atConf
               ,Output.COLUMN_NAMES atConf
@@ -183,7 +183,7 @@ execForOne newSqlForWhereExpr
 -- | Executes a SQL statement given a way to construct it from a given WHERE
 -- expression, and the SQL parameters expected by the constructed SQL.
 --
--- Returns the number of rows affected by the statement.
+-- pures the number of rows affected by the statement.
 -------------------------------------------------------------------------------
 execForWhereExpr :: Sql.SQL_IDENTIFIER dbTable
                  => (Maybe (Sql.SqlExpr dbTable) -> Sql.SqlDmlStatement dbTable)

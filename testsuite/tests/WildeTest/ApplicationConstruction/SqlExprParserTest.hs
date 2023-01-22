@@ -105,6 +105,6 @@ checkOk expected (Right actual) = assertEqual "OK" expected actual
 checkError :: (Eq tableColumn,Show tableColumn)
            => Either ParseError (Expression tableColumn)
            -> Assertion
-checkError (Left errMsg)  = return ()
+checkError (Left errMsg)  = pure ()
 checkError (Right actual) = assertFailure $
                             "Unexpected OK result: " ++ (show actual)

@@ -183,7 +183,7 @@ anyValueApplyM :: Monad m
 anyValueApplyM f (Any x) =
   do
     x' <- f x
-    return $ Any x'
+    pure $ Any x'
 
 
 -------------------------------------------------------------------------------
@@ -227,7 +227,7 @@ anyOApplyM :: Monad m
 anyOApplyM f (AnyO x) =
   do
     x' <- f x
-    return $ AnyO x'
+    pure $ AnyO x'
 
 
 -- | Helper for transforming a common kind of functions that operate on

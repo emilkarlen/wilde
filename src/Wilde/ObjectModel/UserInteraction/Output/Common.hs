@@ -160,7 +160,7 @@ attributeOutputForValue :: AttributeTypeInfo d a
                         -> AttributeOutputValueSpecification d a
                         -> UiO.ObjectName
                         -> UiO.UserInteractionOutputMonad UiO.FormBlockRowInfo
-attributeOutputForValue _ NoOutput _ = return empty
+attributeOutputForValue _ NoOutput _ = pure empty
 attributeOutputForValue (AttributeTypeInfo {
                             atiGsrOutputer = theGsrOutputer,
                             atiCrossRefKey = theAttributeName
@@ -168,7 +168,7 @@ attributeOutputForValue (AttributeTypeInfo {
   (FixValue fixValue)
   objectName
   =
-  return $
+  pure $
   UiO.mkFormBlockRowInfoForMetas $
   UiCommon.metaValuesForRole UiCommon.Fix theAttributeName objectName $
   either id theGsrOutputer fixValue
@@ -185,7 +185,7 @@ attributeOutputForValue (AttributeTypeInfo {
   do
     widgetConstructor <- theWidgetOutputerGetter theAttributeName
     let widget = widgetConstructor mbDefaultValue objectName
-    return $
+    pure $
       UiO.mkFormBlockRowInfoForLabelAndWidget (label,widget)
   where
     ek          = UiO.elementKey objectName theAttributeName
@@ -210,13 +210,13 @@ resolveAttributeOutputValueSpecification (FixAndDefaultResolver
       outputIsFixValue
       mbFixValue
   where
-    outputIsFixValue Nothing  = return NoOutput
-    outputIsFixValue (Just x) = return (FixValue x)
+    outputIsFixValue Nothing  = pure NoOutput
+    outputIsFixValue (Just x) = pure (FixValue x)
 
     outputIsEitherDefaultValueOrNoValue =
       do
         mbDefaultValue <- resolveWidgetDefaultValue appDefault envDefault
-        return $ WidgetWithPossibleDefaultValue mbDefaultValue
+        pure $ WidgetWithPossibleDefaultValue mbDefaultValue
 
 -------------------------------------------------------------------------------
 -- | Gives the default value for the widget, or no value, if there
@@ -234,7 +234,7 @@ resolveWidgetDefaultValue resolverForAppConfig resolverForEnvironment =
     mbDefaultFromEnv <- resolverForEnvironment
     case mbDefaultFromEnv of
       Nothing -> resolverForAppConfig
-      justX   -> return justX
+      justX   -> pure justX
 
 -------------------------------------------------------------------------------
 -- | Gives the fixed value to output in the form, if one should
@@ -259,18 +259,18 @@ resolveFixValue :: Maybe FixValuePrecedence
 resolveFixValue Nothing getEnvFix =
   do
     fixValueFromEnv <- getEnvFix
-    return $ maybe
+    pure $ maybe
       Nothing
       (Just . Just)
       fixValueFromEnv
 
 resolveFixValue (Just FixFromApplicationHasPrecedence) getEnvFix =
-  return (Just Nothing)
+  pure (Just Nothing)
 
 resolveFixValue (Just FixFromEnvironmentHasPrecedence) getEnvFix =
   do
     fixValueFromEnv <- getEnvFix
-    return $ maybe
+    pure $ maybe
       (Just Nothing)
       (Just . Just)
       fixValueFromEnv
@@ -331,4 +331,4 @@ objectOutputer setups objectName =
                          (\(AnyValue2.Container atSetup)
                           -> attributeOutputer atSetup objectName)
                          setups
-    return $ UiO.concatAtFormBlockInfos formBlockRowInfos
+    pure $ UiO.concatAtFormBlockInfos formBlockRowInfos

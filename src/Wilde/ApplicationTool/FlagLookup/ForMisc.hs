@@ -33,7 +33,7 @@ import Wilde.ApplicationTool.FlagsAndOptions as FlagsAndOptions
 flagSqlStatement :: [Flag] -> IO (Maybe SqlStatement)
 flagSqlStatement flags =
     case flagOptional flagIsSql flags of
-      Nothing -> return Nothing
+      Nothing -> pure Nothing
       (Just (TheSql sql)) -> parse sql
       _                   -> implError "TheSql"
   where
@@ -41,7 +41,7 @@ flagSqlStatement flags =
     parse s =
       case Utils.readCompletelyAndUnambigously s of
         Nothing -> msgFail $ "Sql statement must be one of " ++ show sqlStatement_all
-        Just x  -> return (Just x)
+        Just x  -> pure (Just x)
 
 flagSqlStatement_mandatory :: [Flag] -> IO SqlStatement
 flagSqlStatement_mandatory flags = mkMandatoryIO "SQL-STMT" $ flagSqlStatement flags

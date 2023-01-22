@@ -51,7 +51,7 @@ mkWidgetConstructorGetterForAt :: (defaultType -> String)
                                -> UiO.AttributeName
                                -> UiO.WidgetConstructorGetter defaultType
 mkWidgetConstructorGetterForAt showDefaultValue atName =
-  return $ mkWidget showDefaultValue atName
+  pure $ mkWidget showDefaultValue atName
 
 -------------------------------------------------------------------------------
 -- | Constructs a widget which HTML rendering is a string suited for testing.

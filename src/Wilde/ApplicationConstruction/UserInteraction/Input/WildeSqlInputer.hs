@@ -57,7 +57,7 @@ expression_mandatory :: DatabaseClasses.COLUMN_NAMES atConf
 expression_mandatory ot string =
   case ExprParser.parseWithListedColumns tableColumnInfos string of
     Left parseError -> Left ES.InvalidSyntax -- (show parseError)
-    Right expr      -> return (Translate.translate expr)
+    Right expr      -> pure (Translate.translate expr)
   where
     tableColumnInfos = columnInfosForParsing ot
 

@@ -49,7 +49,7 @@ outputer :: (ATTRIBUTE_OUTPUT_FOR_EXISTING atConf)
 outputer ot attributeTypesOrder =
   do
     mkAttrOutputList <- sequence mkAttrOutputFunList
-    return $ getObjectTypeOutput mkAttrOutputList
+    pure $ getObjectTypeOutput mkAttrOutputList
   where
     attributeTypeInfosOrder = map
                               (OmUtils.anyValueApply (AnyValue.Container . at2ati))
@@ -77,4 +77,4 @@ getAttrOutput :: AttributeTypeInfo typeForExisting
 getAttrOutput ati =
    do
      mkAttributeOutput <- getMkAttributeOutputFun (UserInteraction,ati)
-     return $ mkAttributeOutput Nothing
+     pure $ mkAttributeOutput Nothing

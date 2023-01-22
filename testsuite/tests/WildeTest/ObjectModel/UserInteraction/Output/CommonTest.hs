@@ -275,13 +275,13 @@ resolver_with_no_defaults_but_fixeds_for_app_and_env mbPrecedence mbFixFromEnv =
        Common.FixAndDefaultResolverForApplicationConfiguration
        {
          Common.appFix     = mbPrecedence
-       , Common.appDefault = return Nothing
+       , Common.appDefault = pure Nothing
        }
   , Common.envResolver =
        Common.FixAndDefaultResolverForEnvironment
        {
-         Common.envFix     = return $ mbFixFromEnv
-       , Common.envDefault = return Nothing
+         Common.envFix     = pure $ mbFixFromEnv
+       , Common.envDefault = pure Nothing
        }
   }
 
@@ -307,13 +307,13 @@ mkResolver (FixConfiguration fix_app fix_env)
        Common.FixAndDefaultResolverForApplicationConfiguration
        {
          Common.appFix     = fix_app
-       , Common.appDefault = return default_app
+       , Common.appDefault = pure default_app
        }
   , Common.envResolver =
          Common.FixAndDefaultResolverForEnvironment
          {
-           Common.envFix     = return fix_env
-         , Common.envDefault = return default_env
+           Common.envFix     = pure fix_env
+         , Common.envDefault = pure default_env
          }
   }
 

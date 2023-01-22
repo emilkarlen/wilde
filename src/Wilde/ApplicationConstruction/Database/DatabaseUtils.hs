@@ -77,7 +77,7 @@ convertOneValue :: (SqlValue -> ConvertResult a) -- ^ Converts from SQL to \"Has
 convertOneValue converter errMsg [sqlValue] =
     case converter sqlValue of
       Left err -> DbConn.throwErr $ DbTranslationError $ AttributeTranslationError errMsg err
-      Right x  -> return x
+      Right x  -> pure x
 convertOneValue converter errMsg xs = DbConn.throwErr $ RecordTranslationError errMsg numValuesMismatch
   where
     numValuesMismatch =

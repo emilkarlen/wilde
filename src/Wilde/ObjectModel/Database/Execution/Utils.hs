@@ -46,7 +46,7 @@ data DmlExecutionInfoConstruction dbTable =
 -- | Executes a SQL statement where the WHERE expression is equality on
 -- the ID 'Attribute' of an 'ObjectType'.
 --
--- Returns the number of rows affected by the statement.
+-- pures the number of rows affected by the statement.
 -------------------------------------------------------------------------------
 execForIdAtObject :: (Output.OUTPUT_FOR_EXISTING atConf
                      ,Output.COLUMN_NAMES atConf
@@ -74,7 +74,7 @@ execForIdAtObject newSqlForWhereExpr
 -- | Executes a SQL statement where the WHERE expression is equality on
 -- a single 'Attribute' given by it's type and value.
 --
--- Returns the number of rows affected by the statement.
+-- pures the number of rows affected by the statement.
 -------------------------------------------------------------------------------
 execForOne :: (Output.OUTPUT_FOR_EXISTING atConf
               ,Output.COLUMN_NAMES atConf
@@ -109,7 +109,7 @@ execForOne newSqlForWhereExpr
 -- | Executes a SQL statement given a way to construct it from a given WHERE
 -- expression, and the SQL parameters expected by the constructed SQL.
 --
--- Returns the number of rows affected by the statement.
+-- pures the number of rows affected by the statement.
 -------------------------------------------------------------------------------
 execForWhereExpr :: Sql.SQL_IDENTIFIER dbTable
                  => (Maybe (Sql.SqlExpr dbTable) -> Sql.SqlDmlStatement dbTable)

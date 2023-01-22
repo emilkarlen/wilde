@@ -218,7 +218,7 @@ lookupFixedAttributeGenericStringRep :: ElementKey
                                                      (ElementKey,
                                                       Maybe GenericStringRep))
 lookupFixedAttributeGenericStringRep ek set =
-  return $ either Left (\mbValue -> Right (ek,mbValue)) mbValueR
+  pure $ either Left (\mbValue -> Right (ek,mbValue)) mbValueR
   where
     mbValueR = ES.lookupSingleton_optional ek set
 

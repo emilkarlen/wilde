@@ -394,7 +394,7 @@ objectServiceLinkButton oServiceEnum objSrvcRef =
   do
     srvcLinkCon   <- ServiceLink.getServiceLinkConstructor
     linkRenderer  <- linkRendererFor oServiceEnum
-    return $ \pk ->
+    pure $ \pk ->
       let srvcLink = srvcLinkCon (objSrvcRef pk)
       in  linkRenderer srvcLink
 
@@ -509,7 +509,7 @@ rendererLinkFor :: NEW_LINK_RENDERER a
 rendererLinkFor serviceSpec serviceLink =
   do
     linkRenderer <- linkRendererFor serviceSpec
-    return $ linkRenderer serviceLink
+    pure $ linkRenderer serviceLink
 
 linkRendererFor :: NEW_LINK_RENDERER a
                 => a
@@ -518,7 +518,7 @@ linkRendererFor serviceSpec =
   do
     standardServiceLinkRenderer <- Presentation.getEnvs
                                    Presentation.envStandardServiceLinkRenderer
-    return $ newLinkRenderer serviceSpec standardServiceLinkRenderer
+    pure $ newLinkRenderer serviceSpec standardServiceLinkRenderer
 
 
 -------------------------------------------------------------------------------

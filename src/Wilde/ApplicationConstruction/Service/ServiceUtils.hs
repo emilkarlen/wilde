@@ -110,7 +110,7 @@ showOnePage attributeTypesOrder title o =
                    AttributeTypeListSetup.mkGeneral (oType o) attributeTypesOrder
     let getAttrs = AttributeTypeListSetup.apply atListSetup
     anyComponent <- OmPres.showOneComponent getAttrs o
-    return  (title,[anyComponent])
+    pure  (title,[anyComponent])
 
 showOnePageService :: Presentation.ATTRIBUTE_PRESENTATION atConf
                    => [Any (AttributeType atConf dbTable)]
@@ -140,7 +140,7 @@ deleteOnePage ot title = (title, [])
 
 -- | Inputs an 'ObjectForCreate' from the User Interaction media,
 -- inserts the object into the database and reads it from the
--- database including presentation info and returns it.
+-- database including presentation info and pures it.
 createObject :: (Database.OBJECT_TYPE_INSERT otConf
                 ,Database.DATABASE_IO atConf
                 ,InputForCreate.ATTRIBUTE_INPUT_FOR_CREATE atConf
@@ -153,7 +153,7 @@ createObject ot oName =
   do
     oForCreateR <- toServiceMonad $ InputForCreate.inputer ot oName
     case oForCreateR of
-      Left err -> return $ Left err
+      Left err -> pure $ Left err
       Right oForCreate ->
         let myInsertAndSelect = do
                 o <- insertAndSelect oForCreate
@@ -179,7 +179,7 @@ createObjectAny anyOt oName = toAnyForOtAndArg createObject (oName,anyOt)
 -- | Inputs the 'Attribute's of the given 'ObjectType' that are updatable
 -- from the User Interaction media,
 -- updates the 'Object' in the database, reads it from the
--- database including presentation info and returns it.
+-- database including presentation info and pures it.
 updateObject :: forall otConf atConf dbTable oNative idAtE idAtC.(Database.DATABASE_TABLE otConf
                 ,Database.COLUMNS_AND_IO_FOR_EXISTING atConf
                 ,InputForExisting.ATTRIBUTE_INPUT_FOR_EXISTING atConf
@@ -195,16 +195,16 @@ updateObject ot updatableAts (oName,pk) =
     attrsToUpdateResult <- inputAttributes updatableAts
     either
       theErrorAsItIs
-      (updateInDbAndReturnObjectReadFromDb pk)
+      (updateInDbAndpureObjectReadFromDb pk)
       attrsToUpdateResult
     where
-      theErrorAsItIs err = return $ Left err
+      theErrorAsItIs err = pure $ Left err
 
-      updateInDbAndReturnObjectReadFromDb :: idAtE
+      updateInDbAndpureObjectReadFromDb :: idAtE
                                           -> NonEmpty.List (Any (Attribute atConf dbTable))
                                           -> ServiceMonad (ObjectInputResult
                                                            (Object otConf atConf dbTable oNative idAtE idAtC))
-      updateInDbAndReturnObjectReadFromDb pk attrs =
+      updateInDbAndpureObjectReadFromDb pk attrs =
         Service.toServiceMonad_wDefaultDbConn $ DbConn.inTransaction $ do
           o <- updateAndSelect ot pk attrs
           pure $ Right o
@@ -216,11 +216,11 @@ updateObject ot updatableAts (oName,pk) =
           attrs <- toServiceMonad $ mapM inputAttribute (NonEmpty.toList ats)
           let (errors,attrsSuccessfullyInput) = partitionEithers $ attrs
           case errors of
-            []     -> return $ return attrsSuccessfullyInput_asNonEmpty
+            []     -> pure $ pure attrsSuccessfullyInput_asNonEmpty
               where
                 attrsSuccessfullyInput_asNonEmpty =
                   NonEmpty.mk (head attrsSuccessfullyInput) (tail attrsSuccessfullyInput)
-            (x:xs) -> return $ Left $ errorInfo $ NonEmpty.mk x xs
+            (x:xs) -> pure $ Left $ errorInfo $ NonEmpty.mk x xs
 
       errorInfo :: NonEmpty.List ElementSet.ElementLookupError
                 -> ObjectInputErrorInfo
@@ -234,7 +234,7 @@ updateObject ot updatableAts (oName,pk) =
       inputAttribute (Any at) =
         do
           res <- InputForExisting.inputAttr oName at
-          return $ fmap Any res
+          pure $ fmap Any res
 
 
 -------------------------------------------------------------------------------
@@ -277,7 +277,7 @@ insertAndSelect ofc =
     idAtValue <- DbExInsert.insertOneGetId ofc
     mbObject  <- InputWithPresentation.inputOne (ofcType ofc) idAtValue
     let errMsg = "Just inserted an object, but did not get one when trying to get it from the DB"
-    maybe (DbConn.throwErr (DbM.DbUnclassifiedError errMsg)) return mbObject
+    maybe (DbConn.throwErr (DbM.DbUnclassifiedError errMsg)) pure mbObject
 
 -- | Updates one 'Object' in the database and then inputs the updated 'Object' including
 -- presentation information.
@@ -294,4 +294,4 @@ updateAndSelect ot pk attrsToUpdate =
     DbExUpdate.updateOne_attributes ot pk attrsToUpdate
     mbObject  <- InputWithPresentation.inputOne ot pk
     let errMsg = "Just updated an object, but did not get one when trying to get it from the DB"
-    maybe (DbConn.throwErr (DbM.DbUnclassifiedError errMsg)) return mbObject
+    maybe (DbConn.throwErr (DbM.DbUnclassifiedError errMsg)) pure mbObject

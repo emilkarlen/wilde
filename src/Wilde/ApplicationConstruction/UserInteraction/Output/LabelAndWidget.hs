@@ -157,7 +157,7 @@ nonMonadicSimpleUiOutputer :: (GenericWidgetDefaultValue -> Maybe a)
                            -> AttributeName
                            -> UiOExisting.WidgetConstructorGetter (AttributeWidgetDefaultValueForCreate a a)
 nonMonadicSimpleUiOutputer parseStringDefault mkWidget attributeName =
-  return $ \mbDefaultC objectName ->
+  pure $ \mbDefaultC objectName ->
     let
       mbEC   = simplifyECDefault parseStringDefault mbDefaultC
       ek     = elementKey objectName attributeName       :: ElementKey
@@ -177,7 +177,7 @@ atUiOutputerEfromC :: (AttributeName -> UiOExisting.WidgetConstructorGetter (Att
 atUiOutputerEfromC atUiOutputerC attributeName =
   do
     mkAttrOutputForCreateDefault <- atUiOutputerC attributeName
-    return $ \mbE objectName ->
+    pure $ \mbE objectName ->
       mkAttrOutputForCreateDefault (fmap DefaultCreateFromExisting mbE) objectName
 
 newAttributeOutput :: WIDGET widgetInfo

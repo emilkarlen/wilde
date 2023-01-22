@@ -53,7 +53,7 @@ inputer_fixedFromEnvHasPrecedence gsrInputer widgetInputer attributeName objectN
              -> Gsr.GenericStringRep
              -> UiI.Monad (ES.ElementInputResult a)
     parseGsr inputer gsrString =
-      return $
+      pure $
       either
       (\attributeTypeError -> Left $ (elementKeyForAttr,attributeTypeError,Just gsrString))
       Right

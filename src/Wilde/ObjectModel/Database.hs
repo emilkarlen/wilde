@@ -71,7 +71,7 @@ type OutputerWithConnection a = a -> DbConn.Monad DatabaseOutput
 -- The ID AttributeType value in the ObjectForCreate that is inserted.
 --
 -- [@DatabaseOutput@]
--- The 'SqlValue's that was returned for the ID AttributeForCreate
+-- The 'SqlValue's that was pureed for the ID AttributeForCreate
 -------------------------------------------------------------------------------
 type GetIdOfInsertedIntoDatabase e c =
   c

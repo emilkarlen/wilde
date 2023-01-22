@@ -99,16 +99,16 @@ lookupStringForRole :: Role
                     -> ES.Lookuper (Maybe String)
 lookupStringForRole requestedRole attributeName objectName es =
   case ES.lookupSingleton_optional keyForRole es of
-    Left err        -> return Nothing
-    Right Nothing   -> return Nothing
+    Left err        -> pure Nothing
+    Right Nothing   -> pure Nothing
     Right (Just indicator) ->
       if indicator `indicatesRole` requestedRole
       then
         case ES.lookupSingleton_optional keyForValue es of
-          Right mbV -> return $ Just $ maybe Gsr.emptyValue id mbV
+          Right mbV -> pure $ Just $ maybe Gsr.emptyValue id mbV
           Left err  -> Left err
       else
-        return Nothing
+        pure Nothing
   where
     keyForValue = elementKeyForAttributeValue attributeName objectName
     keyForRole  = elementKeyForRoleIndicator  attributeName objectName
@@ -116,7 +116,7 @@ lookupStringForRole requestedRole attributeName objectName es =
 -------------------------------------------------------------------------------
 -- | Gets the fixed Generic String Representation for an attribute.
 --
--- Return value
+-- pure value
 --
 -- [@Nothing@] There is no fixed value in environment.
 -- [@Just Nothing@] There is a fixed value, but the actual value is
@@ -133,7 +133,7 @@ inputFixedFromEnv = inputValueForRoleFromEnv Fix
 -------------------------------------------------------------------------------
 -- | Gets the Widget Default Value for an attribute.
 --
--- See 'inputFixedFromEnv' for info about return value.
+-- See 'inputFixedFromEnv' for info about pure value.
 -------------------------------------------------------------------------------
 inputDefaultFromEnv :: MonadWithInputMedia m
                     => AttributeName
@@ -144,7 +144,7 @@ inputDefaultFromEnv = inputValueForRoleFromEnv Default
 -------------------------------------------------------------------------------
 -- | Gets the Value for a Role, for an attribute.
 --
--- Return value
+-- pure value
 --
 -- [@Nothing@] There is no fixed value in environment.
 -- [@Just Nothing@] There is a fixed value, but the actual value is
@@ -163,8 +163,8 @@ inputValueForRoleFromEnv requestedRole attributeName objectName =
            (lookupStringForRole requestedRole attributeName objectName)
     case res of
       Right x ->
-        return x
+        pure x
       Left (_, ES.ValueMissing,_) ->
-        return Nothing
+        pure Nothing
       _ ->
         error "inputValueForRoleFromEnv: Implementation Error"

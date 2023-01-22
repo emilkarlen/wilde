@@ -88,11 +88,11 @@ type InformationPopUpInfo = PopUp.Message
 
 -- | Makes the service halt with a displayed page.
 haltWithPage :: ServicePage -> NonLastStep
-haltWithPage = return . Halt . Left
+haltWithPage = pure . Halt . Left
 
 -- | Makes the service halt with an information popup.
 haltWithInformationPopup :: PopUp.Message -> NonLastStep
-haltWithInformationPopup = return . Halt . Right
+haltWithInformationPopup = pure . Halt . Right
 
 -- | Makes the service continue to the next step
 continue :: FormBlocksAndMetas -> NonLastStep
@@ -102,7 +102,7 @@ continue info = continueTo Following info
 -- determine the next step.
 continueTo :: StepReference -> FormBlocksAndMetas -> NonLastStep
 continueTo nextStep info =
-  return $
+  pure $
   Continue
   {
     stepReference = nextStep
@@ -121,7 +121,7 @@ askIfContinue msg = askIfContinueTo Following msg
 -- determine the next step.
 askIfContinueTo :: StepReference -> PopUp.Message -> NonLastStep
 askIfContinueTo nextStep msg =
-  return $
+  pure $
   Continue
   {
     stepReference = nextStep
@@ -159,14 +159,14 @@ stepService (StepService {
        serviceForNextStep (Right x) nextStepIdx = askIfContinueWithMsg   mainTitle' x nextStepIdx
 
        getNextStepIdx :: Int -> StepReference -> ServiceMonad Int
-       getNextStepIdx currentStepIdx LastStep    = return lastStepIdx
-       getNextStepIdx currentStepIdx Following   = returnOrThrowIfInvalid (currentStepIdx + 1)
-       getNextStepIdx currentStepIdx (Indexed n) = returnOrThrowIfInvalid (n + 1)
+       getNextStepIdx currentStepIdx LastStep    = pure lastStepIdx
+       getNextStepIdx currentStepIdx Following   = pureOrThrowIfInvalid (currentStepIdx + 1)
+       getNextStepIdx currentStepIdx (Indexed n) = pureOrThrowIfInvalid (n + 1)
 
-       returnOrThrowIfInvalid :: Int -> ServiceMonad Int
-       returnOrThrowIfInvalid n = do
+       pureOrThrowIfInvalid :: Int -> ServiceMonad Int
+       pureOrThrowIfInvalid n = do
          when (n > lastStepIdx) (throwInvalidStep $ "step too large: " ++ show n)
-         return n
+         pure n
 
        throwInvalidStep :: String -> ServiceMonad a
        throwInvalidStep msg = throwErr $ ValueValue "step" msg
@@ -194,7 +194,7 @@ askIfContinueWithMsg presSpec msg nextStepIdx =
 varStep :: String
 varStep = "_step"
 
--- | Returns a value >= 0.
+-- | pures a value >= 0.
 getStepIdx :: ServiceMonad Int
 getStepIdx = MIIA.inInputMedia (lookupStepIdx ek)
   where

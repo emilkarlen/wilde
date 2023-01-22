@@ -201,12 +201,12 @@ withPresentationOutputer at newOutputer = at { atPresentationO = newOutputer }
 
 -- | A 'GetFooterRowsConstructor' that generates no footer rows.
 noFooterRows :: OLS.GetFooterRowsConstructor () otConf atConf dbTable otNative idAtExisting idAtCreate
-noFooterRows = return Nothing
+noFooterRows = pure Nothing
 
 -- | A 'GetFooterRowsConstructor' that outputs one line with the
 -- number of objects in the list.
 numberOfObjectsFooterRow :: OLS.GetFooterRowsConstructor () otConf atConf dbTable otNative idAtExisting idAtCreate
-numberOfObjectsFooterRow = return $ Just frc
+numberOfObjectsFooterRow = pure $ Just frc
   where
     frc =
       OmPres.FooterRowsConstructor

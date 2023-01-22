@@ -174,7 +174,7 @@ mkComponent ot
                                   buttonsBelow]
     let totalComponent = LayoutComponents.verticalComponents $
                          tableComponent : buttonsComponents
-    return $ Just totalComponent
+    pure $ Just totalComponent
   where
     buttonsSetup              = theMkButtonsSetup refVal
     atsIncludeBeforeExclusion = theDisplayAts
@@ -224,10 +224,10 @@ getWhereExprGetter :: Database.COLUMN_NAMES atConf
 getWhereExprGetter otSubObj@(ObjectType {}) getSubObjWhereExpr =
   do
     getMbExprFromEnv <- StdFilterExpr.lookupExpression_BasedOn otSubObj
-    return $ do
+    pure $ do
       subObjExpr    <- getSubObjWhereExpr
       mbExprFromEnv <- getMbExprFromEnv
-      return $ Just $ maybe subObjExpr (Sql.binOp Sql.andOp subObjExpr) mbExprFromEnv
+      pure $ Just $ maybe subObjExpr (Sql.binOp Sql.andOp subObjExpr) mbExprFromEnv
 
 tableStyleForObjectTypeSubObjects :: Bool -> WildeStyle
 tableStyleForObjectTypeSubObjects listIsEmpty = WildeStyle stdClasses

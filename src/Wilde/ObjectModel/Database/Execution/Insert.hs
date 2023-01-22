@@ -34,7 +34,7 @@ import qualified Wilde.ObjectModel.Database.Output as Output
 
 
 -------------------------------------------------------------------------------
--- | Inserts one 'ObjectForCreate' and returns the 'DatabaseOutput' for
+-- | Inserts one 'ObjectForCreate' and pures the 'DatabaseOutput' for
 -- the ID 'AttributeType'.
 -------------------------------------------------------------------------------
 insertOne :: (Database.DATABASE_TABLE otConf
@@ -48,7 +48,7 @@ insertOne oc@(ObjectForCreate {}) =
     let sqlValuesAllAts = sqlValuesIdAt ++ sqlValuesNonIdAts
     let sql = SqlPlain.insertOne (ofcType oc)
     SqlExec.insert sql sqlValuesAllAts
-    return sqlValuesIdAt
+    pure sqlValuesIdAt
 
 -------------------------------------------------------------------------------
 -- | Output for (ID-AT,non-ID-ATs).
@@ -60,7 +60,7 @@ databaseOutputForInsert oc =
   do
     forIdAt     <- getForIdAt
     forNonIdAts <- sequence getForNonIdAts
-    return (forIdAt,concat forNonIdAts)
+    pure (forIdAt,concat forNonIdAts)
   where
     ot             = ofcType oc
     getForIdAt     = Output.aOutputForCreate $ ofcIdAttribute oc

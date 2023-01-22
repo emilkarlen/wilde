@@ -86,7 +86,7 @@ atExprEq at = (getExprs,getSqlValues)
   where
     getExprs = do
       columnExprs <- atColumnExprs at
-      return $ SqlMisc.eqPosParamAndsNonEmpty columnExprs
+      pure $ SqlMisc.eqPosParamAndsNonEmpty columnExprs
 
     getSqlValues = Database.atOutputerExisting at
 

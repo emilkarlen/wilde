@@ -37,4 +37,4 @@ newConf db =
     connect =
       do
         conn <- ODBC.connectODBC odbcConnectionString
-        return $ ConnWrapper conn
+        pure $ ConnWrapper conn

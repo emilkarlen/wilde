@@ -64,7 +64,7 @@ outputerNoClass at2ati attributeTypesOrder o@(Object {}) =
                               OmPres.getAttributesInGivenOrder attributeTypesOrder o
      let mkAttrOutputerList = map (getMkAttrOutputer at2ati) attributeList
      attrOutputerList      <- sequence mkAttrOutputerList
-     return $ getObjectTypeOutput attrOutputerList
+     pure $ getObjectTypeOutput attrOutputerList
   where
     getMkAttrOutputer :: (forall e c . AttributeType atConf dbTable e c
                           -> AttributeTypeInfo e c)
@@ -75,7 +75,7 @@ outputerNoClass at2ati attributeTypesOrder o@(Object {}) =
         let ati = (at2ati . attrType) attr
         outputer <- atiOutputerForCreate ati (atiCrossRefKey ati)
         let defaultValue = Just $ DefaultCreateFromExisting (attrValue attr)
-        return $
+        pure $
           \objectName -> mkFormBlockRowInfoForWidget
                          (atiCrossRefKey ati)
                          (atiTitle ati)

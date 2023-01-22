@@ -139,7 +139,7 @@ lookupService :: OtService config otConf atConf -> CrossRefIdentifier -> Maybe S
 lookupService service objectTypeId =
   do
     setup <- lookupSetup  (types service)
-    return $ otServiceAny (main  service) setup
+    pure $ otServiceAny (main  service) setup
   where
     lookupSetup :: [AnyO (OtServiceOtSetup config otConf atConf)] -> Maybe (AnyO (OtServiceOtSetup config otConf atConf))
     lookupSetup = find isMatch

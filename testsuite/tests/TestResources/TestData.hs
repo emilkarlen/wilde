@@ -115,14 +115,14 @@ mkObject id name = conObject otPkName idAttr [Any (nameAttr)]
       {
         attrType         = at_pk
       , attrValue        = id
-      , attrPresentation = return $ AnySVALUE (Word32Value id)
+      , attrPresentation = pure $ AnySVALUE (Word32Value id)
       }
     nameAttr =
       Attribute
       {
         attrType         = at_name
       , attrValue        = name
-      , attrPresentation = return $ AnySVALUE (UnquotedStringValue name)
+      , attrPresentation = pure $ AnySVALUE (UnquotedStringValue name)
       }
 
 otsPkName :: StandardServices.ObjectTypeSetup
@@ -151,7 +151,7 @@ otPkName = ObjectType
              otCrossRefKey             = tableName dbPkNameTable
            , otIdAttributeType         = at_pk
            , otNonIdAttributeTypes     = [Any at_name]
-           , otToNative                = ObjectToNativeFunction $ return $ return ()
+           , otToNative                = ObjectToNativeFunction $ pure $ pure ()
            , otConfiguration =
              OtDbConfig.Configuration
              {

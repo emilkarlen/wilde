@@ -56,7 +56,7 @@ objectListTableAccordingToSetup tableStyle
                            rightSideContentConstructor
       genericTable      <- mkGenericTable mbTitle os
       let styledTable    = addStyleToSTYLING tableStyle genericTable
-      return $ AnyCOMPONENT $ TableListComponent Nothing styledTable
+      pure $ AnyCOMPONENT $ TableListComponent Nothing styledTable
   where
     mkSideContent mkButtons pk  = if null mkButtons
                                   then empty

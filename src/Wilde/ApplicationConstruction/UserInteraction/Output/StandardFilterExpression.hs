@@ -86,4 +86,4 @@ lookupExpression_BasedOn :: (DatabaseClasses.COLUMN_NAMES atConf
                          => ObjectType otConf atConf dbTable otNative idAtE idAtC
                          -> m (Sql.JoinMonad dbTable (Maybe (Sql.SqlExpr (Sql.BasedOn dbTable))))
 lookupExpression_BasedOn ot =
-    lookupExpression ot >>= return . Sql.liftMbExprInMonad
+    lookupExpression ot >>= pure . Sql.liftMbExprInMonad

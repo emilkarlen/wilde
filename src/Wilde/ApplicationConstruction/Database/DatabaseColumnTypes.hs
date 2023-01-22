@@ -300,8 +300,8 @@ dbIo_string_byteString_utf8 =
 
 dbI_string_byteString_utf8 :: DatabaseInputer String
 dbI_string_byteString_utf8 [sqlValue] = case sqlValue of
-  (SqlString x)     -> return x
-  (SqlByteString x) -> return $ BsUtf8.toString x
+  (SqlString x)     -> pure x
+  (SqlByteString x) -> pure $ BsUtf8.toString x
   sqlValue          -> Left $
                        invalidSqlValuesError
                        "String"
@@ -310,7 +310,7 @@ dbI_string_byteString_utf8 [sqlValue] = case sqlValue of
 dbI_string_byteString_utf8 sqlValues = Left $ numberOfSqlValuesError "String" sqlValues
 
 dbO_string_byteString_utf8 :: DatabaseOutputer String
-dbO_string_byteString_utf8 x = return [SqlByteString $ BsUtf8.fromString x]
+dbO_string_byteString_utf8 x = pure [SqlByteString $ BsUtf8.fromString x]
 
 -------------------------------------------------------------------------------
 -- - LongString -
@@ -369,7 +369,7 @@ dbIo_Bool =
   }
   where
     outputer :: DatabaseOutputer Bool
-    outputer x = return [SqlWord32 (if x then 1 else 0)]
+    outputer x = pure [SqlWord32 (if x then 1 else 0)]
 
     inputer  :: DatabaseInputer Bool
     inputer [x] = safeFromSql x
@@ -412,7 +412,7 @@ dbIo_convertible =
      outputer x =
        do
          v <- safeConvert x
-         return [v]
+         pure [v]
 
      inputer :: (Typeable a,Convertible SqlValue a)
              => DatabaseInputer a
@@ -431,12 +431,12 @@ dbIo_convertible_optional =
     outputer :: (Convertible SqlValue a,Convertible a SqlValue)
              => DatabaseOutputer (Maybe a)
     outputer x = do
-      v <- maybe (return SqlNull) safeConvert x
-      return [v]
+      v <- maybe (pure SqlNull) safeConvert x
+      pure [v]
 
     inputer :: (Typeable a,Convertible SqlValue a)
             => DatabaseInputer (Maybe a)
-    inputer [SqlNull]  = return Nothing
+    inputer [SqlNull]  = pure Nothing
     inputer [sqlValue] = fmap Just $ safeFromSql sqlValue
     inputer xs         = inputTooManyValues undefined xs
 
@@ -474,10 +474,10 @@ dbIo_mkOptional (DatabaseIo outputer_m inputer_m) =
    }
   where
     outputer x = do
-      vs <- (maybe (return [SqlNull]) outputer_m) x
-      return vs
+      vs <- (maybe (pure [SqlNull]) outputer_m) x
+      pure vs
 
-    inputer [SqlNull]  = return Nothing
+    inputer [SqlNull]  = pure Nothing
     inputer [sqlValue] = fmap Just $ inputer_m [sqlValue]
     inputer xs         = inputTooManyValues undefined xs
 
@@ -516,7 +516,7 @@ mkOutputerWithConnection outputer value =
     Left err -> DbConn.throwErr $ AttributeTranslationError errorInfo err
       where
         errorInfo = "Type: " ++ show (typeOf value)
-    Right sqlValues -> return sqlValues
+    Right sqlValues -> pure sqlValues
 
 
 -------------------------------------------------------------------------------

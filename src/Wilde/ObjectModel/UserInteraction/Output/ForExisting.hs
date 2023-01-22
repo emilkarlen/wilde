@@ -105,12 +105,12 @@ outputerObj ot atConfigurations =
     setupForMkAttrOutput <- ListSetupWithAnnotation.mapM
                             getMkAttributeOutputForAt
                             setupForRole
-    return $ attrOutputsForSetup setupForMkAttrOutput
+    pure $ attrOutputsForSetup setupForMkAttrOutput
   where
     getSetupForMkAttrOutput =
       do
         setupForRole <- getSetupForRole ot atConfigurations
-        return $
+        pure $
           ListSetupWithAnnotation.mapM
           getMkAttributeOutputForAt
           setupForRole
@@ -152,7 +152,7 @@ attrOutputsForSetup :: ListSetupWithAnnotation.Setup
 attrOutputsForSetup setup (objectName,o) =
   do
     formBlockRows <- mapM (attrOutputAny objectName) mkaoAndattriList
-    return $ FormBlock formBlockRows []
+    pure $ FormBlock formBlockRows []
   where
     mkaoAndattriList = map
                        (\(Any attr,anyMkAo) ->
@@ -188,11 +188,11 @@ attrOutput undefinedForErrMsg objectName
         mismatch = Mismatch (typeOf theValue) (typeOf undefinedForErrMsg)
       in
        Left $ ObjectAndObjectTypeMismatchError errMsg (AttributeTypeError mismatch)
-    Just castedValue -> return $ mkAttributeOutput castedValue objectName
+    Just castedValue -> pure $ mkAttributeOutput castedValue objectName
 
 getMkAttributeOutput :: (AttributeTypeRole,AnyValue.Container AttributeTypeInfo)
                      -> UserInteractionOutputMonad (AnyValue.Container MkAttributeOutput)
 getMkAttributeOutput (role,AnyValue.Container ati@(AttributeTypeInfo {})) =
    do
      mkForMaybe <- getMkAttributeOutputFun (role,ati)
-     return $ AnyValue.Container $ MkAttributeOutput (mkForMaybe . Just)
+     pure $ AnyValue.Container $ MkAttributeOutput (mkForMaybe . Just)

@@ -35,13 +35,13 @@ ot_autoPk = ToolsMySql.ot_PrimaryKey_dbAutogen_MySql
 -- | A 'StdAutoPkObjectTypeToNative' for 'ObjectType's that
 -- has the unit type as native type.
 unit_toNative :: StdAutoPkObjectTypeToNative dbTable ()
-unit_toNative = ObjectToNativeFunction $ const (return ())
+unit_toNative = ObjectToNativeFunction $ const (pure ())
 
 databaseTable :: String -> DatabaseTable
 databaseTable theTableName =
   DatabaseTable
   {
-    tableName = theTableName  
+    tableName = theTableName
   }
 
 refPresSpec_4_optionalString

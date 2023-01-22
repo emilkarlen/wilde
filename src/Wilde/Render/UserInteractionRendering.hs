@@ -85,7 +85,7 @@ formComponent form =
     let formContents     = [AnyCOMPONENT $ HtmlOnly allMetasHtml,
                             verticalComponents $ (map formBlockComponent (formBlocks form)),
                             AnyCOMPONENT $ FormButtons (buttonTexter PopUp.Ok) (buttonTexter PopUp.Reset)]
-    return $
+    pure $
       AnyCOMPONENT $ FormComponent
                     {
                       WC.formAction  = UI.formAction form,

@@ -52,7 +52,7 @@ import qualified Wilde.ApplicationTool.ApplicationModel as ApplicationModel
 -------------------------------------------------------------------------------
 -- | Finds a single element identified by the Object Type flag/option.
 --
--- Return value: see 'lookupSelection_single'.
+-- pure value: see 'lookupSelection_single'.
 -------------------------------------------------------------------------------
 types_single :: ApplicationModel.OBJECT_TYPES m
              => m
@@ -64,7 +64,7 @@ types_single =
 -------------------------------------------------------------------------------
 -- | Finds a single element identified by the Object Type flag/option.
 --
--- Return value: see 'lookupSelection_single'.
+-- pure value: see 'lookupSelection_single'.
 -------------------------------------------------------------------------------
 types_oneOrMore :: ApplicationModel.OBJECT_TYPES m
                 => m
@@ -92,7 +92,7 @@ withNothingSpecialConfig =
 -------------------------------------------------------------------------------
 -- | Finds a single element identified by the Object Type flag/option.
 --
--- Return value: see 'lookupSelection_single'.
+-- pure value: see 'lookupSelection_single'.
 -------------------------------------------------------------------------------
 typesWithDatabaseIo_single :: ApplicationModel.OBJECT_TYPES_WITH_DATABASE_IO_INFO m
                            => m
@@ -104,7 +104,7 @@ typesWithDatabaseIo_single =
 -------------------------------------------------------------------------------
 -- | Finds a single element identified by the Object Type flag/option.
 --
--- Return value: see 'lookupSelection_single'.
+-- pure value: see 'lookupSelection_single'.
 -------------------------------------------------------------------------------
 typesWithDatabaseIo_oneOrMore :: ApplicationModel.OBJECT_TYPES_WITH_DATABASE_IO_INFO m
                                         => m
@@ -132,7 +132,7 @@ withDatabaseIoInfoConfig =
 -------------------------------------------------------------------------------
 -- | Finds a single element identified by the Object Type flag/option.
 --
--- Return value: see 'lookupSelection_single'.
+-- pure value: see 'lookupSelection_single'.
 -------------------------------------------------------------------------------
 typesWithDll_single :: ApplicationModel.OBJECT_TYPES_WITH_DDL_INFO m
                     => m
@@ -144,7 +144,7 @@ typesWithDll_single =
 -------------------------------------------------------------------------------
 -- | Finds a single element identified by the Object Type flag/option.
 --
--- Return value: see 'lookupSelection_single'.
+-- pure value: see 'lookupSelection_single'.
 -------------------------------------------------------------------------------
 typesWithDll_oneOrMore :: ApplicationModel.OBJECT_TYPES_WITH_DDL_INFO m
                        => m
@@ -172,7 +172,7 @@ withDllInfoConfig =
 -------------------------------------------------------------------------------
 -- | Finds a single element identified by the Object Type flag/option.
 --
--- Return value: see 'lookupSelection_single'.
+-- pure value: see 'lookupSelection_single'.
 -------------------------------------------------------------------------------
 setupsWithDll_single :: ApplicationModel.OBJECT_TYPE_SETUPS_WITH_DDL_INFO m
                      => m
@@ -184,7 +184,7 @@ setupsWithDll_single =
 -------------------------------------------------------------------------------
 -- | Finds a single element identified by the Object Type flag/option.
 --
--- Return value: see 'lookupSelection_single'.
+-- pure value: see 'lookupSelection_single'.
 -------------------------------------------------------------------------------
 setupsWithDll_oneOrMore :: ApplicationModel.OBJECT_TYPE_SETUPS_WITH_DDL_INFO m
                         => m
@@ -212,7 +212,7 @@ setupWithDllInfoConfig =
 -------------------------------------------------------------------------------
 -- | Finds a single element identified by the Object Type flag/option.
 --
--- Return value: see 'lookupSelection_single'.
+-- pure value: see 'lookupSelection_single'.
 -------------------------------------------------------------------------------
 lookupByObjectTypeFlag_single :: ElementTypeConfig m e
                               -> m
@@ -224,7 +224,7 @@ lookupByObjectTypeFlag_single =
 -------------------------------------------------------------------------------
 -- | Finds one or more element identified by the Object Type flag/option.
 --
--- Return value: see 'lookupSelection_oneOrMore'.
+-- pure value: see 'lookupSelection_oneOrMore'.
 -------------------------------------------------------------------------------
 lookupByObjectTypeFlag_oneOrMore :: ElementTypeConfig m e
                                  -> m

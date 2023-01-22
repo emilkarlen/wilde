@@ -71,4 +71,4 @@ anyODdlApplyM :: Monad m =>
 anyODdlApplyM f (AnyO x) =
   do
     x' <- f x
-    return $ AnyO x'
+    pure $ AnyO x'

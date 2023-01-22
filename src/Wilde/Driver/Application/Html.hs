@@ -52,7 +52,7 @@ runService_html mbCssFile tr env service =
   do
     serviceResult <- liftIO $ runService env service
     let wildePage = renderServiceResult tr env serviceResult
-    return $ renderPageAsHtml wildePage
+    pure $ renderPageAsHtml wildePage
   where
     renderPageAsHtml :: (StyledTitle,[AnyCOMPONENT]) -> THtml.Html
     renderPageAsHtml (title,components) = renderPage mbCssFile title components
@@ -68,7 +68,7 @@ runService_htmlString :: Maybe String
 runService_htmlString mbCssFile tr env service =
     do
       html <- runService_html mbCssFile tr env service
-      return $ renderHtmlAsString html
+      pure $ renderHtmlAsString html
   where
     renderHtmlAsString :: THtml.Html -> String
     renderHtmlAsString = if VariableNames.pretty `Map.member` (envMedia env)
