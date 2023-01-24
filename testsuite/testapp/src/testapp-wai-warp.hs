@@ -36,11 +36,20 @@ main :: IO ()
 main = WarpMain.main newAppConfigForServer constants cliConfigurable
 
 newAppConfigForServer :: Logging.AnyLogger -> AppConf.ApplicationConfiguration
-newAppConfigForServer logger = (TestAppConf.newAppConfig logger)
+newAppConfigForServer logger = original
   {
-    AppConf.standardServiceLinkRenderer = NoResourceRenderer.renderer
-  , AppConf.appCssFile                  = Just $ "/style/" ++ TestAppConf.cssFileName
+    AppConf.serviceLinks = newSrvcLinks
+  , AppConf.appCssFile   = Just $ "/style/" ++ TestAppConf.cssFileName
   }
+  where
+    original :: AppConf.ApplicationConfiguration
+    original = TestAppConf.newAppConfig logger
+
+    newSrvcLinks :: AppConf.ServiceLinks
+    newSrvcLinks = (AppConf.serviceLinks original)
+      {
+        AppConf.standardServiceLinkRenderer = NoResourceRenderer.renderer
+      }
 
 constants :: WarpMain.NonConfigurable
 constants =

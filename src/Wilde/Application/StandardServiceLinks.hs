@@ -39,11 +39,11 @@ import Wilde.Media.WildeMedia (CrossRefIdentifier)
 import Wilde.Media.WildeStyleType (WildeStyling)
 import Wilde.WildeUi.StdValueTypes (LinkLabel)
 
+
 -------------------------------------------------------------------------------
 -- - implementation -
 -------------------------------------------------------------------------------
---  , ssObjectTypeName :: Maybe CrossRefIdentifier
---  , ssObjectIdentity :: Maybe GenericStringRep
+
 
 -- | Renders a UI element that is a link to a standard object type service.
 type MkObjectTypeServiceLink =

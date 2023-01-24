@@ -56,7 +56,7 @@ lookupService applicationServices input@(AppInput.Input { AppInput.inputMedia = 
           Right srvc -> pure (ServiceId sSrvc mbOt,srvc,inputWithoutServiceSpec)
             where inputWithoutServiceSpec =
                     input {
-                      AppInput.inputMedia = maybe id (\otId -> ElementSet.deleteRaw_stringKey otId) mbOt $
+                      AppInput.inputMedia = maybe id ElementSet.deleteRaw_stringKey mbOt $
                                             ElementSet.deleteRaw_stringKey sSrvc theInputMedia
                           }
           Left   err -> Left $ InvalidServiceSpecification err
@@ -102,10 +102,7 @@ newServiceEnvironment
   {
     AppConf.translations                = theTranslations
   , AppConf.dbConfiguration             = theDbConfiguration
-  , AppConf.standardServiceLinkRenderer = theStdSrvcLinkRenderer
-  , AppConf.getMkStdObjectTypeService   = theStdObjectTypeSrvcLinkRenderer
-  , AppConf.getMkStdObjectService       = theStdObjectSrvcLinkRenderer
-  , AppConf.getMkGenericServiceLink     = theGetGenericSLR
+  , AppConf.serviceLinks                = theServiceLinks
   , AppConf.appLogger                   = theLogger
   }
 
@@ -119,9 +116,6 @@ newServiceEnvironment
   where
     outputing = UiOm.Outputing
         {
-          UiOm.outTranslations                = theTranslations
-        , UiOm.outStandardServiceLinkRenderer = theStdSrvcLinkRenderer
-        , UiOm.outMkStdObjectTypeServiceLink  = theStdObjectTypeSrvcLinkRenderer
-        , UiOm.outMkStdObjectServiceLink      = theStdObjectSrvcLinkRenderer
-        , UiOm.outgetMkGenericServiceLink     = theGetGenericSLR
+          UiOm.outTranslations = theTranslations
+        , UiOm.outServiceLinks = theServiceLinks
         }

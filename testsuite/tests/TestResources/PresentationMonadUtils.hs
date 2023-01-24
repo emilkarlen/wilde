@@ -4,6 +4,8 @@ module TestResources.PresentationMonadUtils
          -- * Test environments
 
          emptyEnv,
+         emptyOutputing,
+
          withCustomEnv,
          check,
        )
@@ -15,10 +17,10 @@ module TestResources.PresentationMonadUtils
 -------------------------------------------------------------------------------
 
 
-import Test.HUnit.Base (Assertion)
+import           Test.HUnit.Base (Assertion)
 
 import qualified Wilde.Media.Presentation as Presentation
-import Wilde.Media.UserInteraction.Output
+import           Wilde.Media.UserInteraction.Output
 
 import qualified Wilde.Media.ElementSet as ES
 
@@ -47,10 +49,14 @@ emptyOutputing =
   Outputing
   {
     outTranslations                = Tr.translations
-  , outStandardServiceLinkRenderer = StandardServiceLinkRenderer.renderer
-  , outMkStdObjectTypeServiceLink  = CgiServiceLinkRenderers.getMkStandardObjectTypeServiceLink
-  , outMkStdObjectServiceLink      = CgiServiceLinkRenderers.getMkStandardObjectServiceLink
-  , outgetMkGenericServiceLink     = CgiServiceLinkRenderers.getMkGenericServiceLink
+  , outServiceLinks =
+    Presentation.ServiceLinks
+    {
+      Presentation.standardServiceLinkRenderer = StandardServiceLinkRenderer.renderer
+    , Presentation.mkStdObjectTypeServiceLink  = CgiServiceLinkRenderers.getMkStandardObjectTypeServiceLink
+    , Presentation.mkStdObjectServiceLink      = CgiServiceLinkRenderers.getMkStandardObjectServiceLink
+    , Presentation.mkGenericServiceLink        = CgiServiceLinkRenderers.getMkGenericServiceLink
+    }
   }
 
 -------------------------------------------------------------------------------

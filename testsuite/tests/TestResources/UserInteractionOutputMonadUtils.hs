@@ -17,8 +17,10 @@ module TestResources.UserInteractionOutputMonadUtils
 
 import Test.HUnit.Base (Assertion)
 
-import Wilde.Media.UserInteraction.Output
+import           Wilde.Media.UserInteraction.Output
 import qualified Wilde.Media.Database.Configuration as DbConf
+import qualified Wilde.Media.Presentation as Presentation
+
 import qualified Wilde.Utils.Logging.Class as Logger
 
 import qualified Wilde.Media.ElementSet as ES
@@ -29,6 +31,7 @@ import qualified Wilde.Driver.UserInteraction.StandardServiceLinkRenderer as Sta
 import qualified Wilde.Driver.Application.Cgi.ServiceLinkRenderers as CgiDriver
 
 import qualified TestResources.Environment as Env
+import           TestResources.PresentationMonadUtils (emptyOutputing)
 
 -------------------------------------------------------------------------------
 -- - implementation -
@@ -42,16 +45,6 @@ emptyEnv :: UserInteractionOutputEnvironment
 emptyEnv =
   newEnvironment ES.empty ES.empty Env.emptyDbConfig emptyOutputing Env.emptyLogging
 
-emptyOutputing :: Outputing
-emptyOutputing =
-  Outputing
-  {
-    outTranslations                  = Tr.translations
-  , outStandardServiceLinkRenderer   = StandardServiceLinkRenderer.renderer
-  , outMkStdObjectTypeServiceLink    = CgiDriver.getMkStandardObjectTypeServiceLink
-  , outMkStdObjectServiceLink        = CgiDriver.getMkStandardObjectServiceLink
-  , outgetMkGenericServiceLink = CgiDriver.getMkGenericServiceLink
-  }
 
 -------------------------------------------------------------------------------
 -- | Assigns media to an environment.

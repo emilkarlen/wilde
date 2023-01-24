@@ -42,9 +42,13 @@ newAppConfig logger =  AppConf.ApplicationConfiguration
   , AppConf.appCssFile                  = Just cssFileName
   , AppConf.translations                = Tr.translations
   , AppConf.dbConfiguration             = DbConn.theDbConfiguration
-  , AppConf.standardServiceLinkRenderer = StandardServiceLinkRenderer.renderer
-  , AppConf.getMkStdObjectTypeService   = CgiDriver.getMkStandardObjectTypeServiceLink
-  , AppConf.getMkStdObjectService       = CgiDriver.getMkStandardObjectServiceLink
-  , AppConf.getMkGenericServiceLink     = CgiDriver.getMkGenericServiceLink
+  , AppConf.serviceLinks                =
+    AppConf.ServiceLinks
+    {
+      AppConf.standardServiceLinkRenderer = StandardServiceLinkRenderer.renderer
+    , AppConf.mkStdObjectTypeServiceLink      = CgiDriver.getMkStandardObjectTypeServiceLink
+    , AppConf.mkStdObjectServiceLink          = CgiDriver.getMkStandardObjectServiceLink
+    , AppConf.mkGenericServiceLink        = CgiDriver.getMkGenericServiceLink
+    }
   , AppConf.appLogger                   = logger
   }

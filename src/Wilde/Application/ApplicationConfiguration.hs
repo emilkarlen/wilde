@@ -2,13 +2,14 @@
 -- Driver.
 module Wilde.Application.ApplicationConfiguration
        (
-         module Wilde.Application.ApplicationServices,
+          module Wilde.Application.ApplicationServices,
 
-         ApplicationConfiguration(..),
+          ServiceLinks(..),
+          ApplicationConfiguration(..),
 
-         Translations.Translations(..),
+          Translations.Translations(..),
 
-         DbConf.Configuration(..),
+          DbConf.Configuration(..),
        )
        where
 
@@ -19,22 +20,16 @@ module Wilde.Application.ApplicationConfiguration
 
 
 import qualified Wilde.Utils.Logging.Class as Logger
+
 import qualified Wilde.Media.Database.Configuration as DbConf
 import qualified Wilde.Media.Translations as Translations
+import           Wilde.Media.Presentation (ServiceLinks(..))
 
-import Wilde.Application.ApplicationServices
-import Wilde.Application.StandardServices
-import qualified Wilde.Media.Presentation as Presentation
-import Wilde.Application.StandardServiceLinks
+import           Wilde.Application.ApplicationServices
 
 
 -------------------------------------------------------------------------------
 -- - implementation -
--------------------------------------------------------------------------------
-
-
--------------------------------------------------------------------------------
--- | Configuration of an application
 -------------------------------------------------------------------------------
 
 
@@ -44,10 +39,7 @@ data ApplicationConfiguration =
        appServices                  :: ApplicationServices
      , translations                 :: Translations.Translations
      , dbConfiguration              :: DbConf.Configuration
-     , standardServiceLinkRenderer  :: StandardServiceLinkRenderer
-     , getMkStdObjectTypeService    :: Presentation.Monad MkObjectTypeServiceLink
-     , getMkStdObjectService        :: Presentation.Monad MkObjectServiceLink
-     , getMkGenericServiceLink      :: Presentation.Monad Presentation.MkGenericServiceLink
+     , serviceLinks                 :: ServiceLinks
      , appCssFile                   :: Maybe String
      , appLogger                    :: Logger.AnyLogger
      }

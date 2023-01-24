@@ -131,7 +131,7 @@ setLogger l env = env { envLogger = l }
 -- 'Environment'.
 envStandardServiceLinkRenderer :: UserInteractionOutputEnvironment
                                -> StandardServices.StandardServiceLinkRenderer
-envStandardServiceLinkRenderer = Presentation.outStandardServiceLinkRenderer . envOutputing
+envStandardServiceLinkRenderer = Presentation.standardServiceLinkRenderer . Presentation.outServiceLinks . envOutputing
 
 -- | Gets the 'PopUpButtonTexter' from a
 -- 'UserInteractionOutputEnvironment'.
