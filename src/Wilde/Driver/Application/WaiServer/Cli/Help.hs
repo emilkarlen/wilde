@@ -197,8 +197,8 @@ servingFiles = Section "Serving Files" $ SectionContents initialParas [types]
         mime_types :: Conf.MimeTypeMapping
         mime_types = M.fromList
             [
-                (T.pack ext_style,mt_style)
-            ,   (T.pack ext_image, mt_image)
+                (T.pack ext_style,T.pack mt_style)
+            ,   (T.pack ext_image,T.pack  mt_image)
             ]
 
         path_style, fs_path_style, path_image, fs_path_image :: String

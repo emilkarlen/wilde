@@ -7,8 +7,8 @@ module Wilde.Driver.Application.Utils where
 -------------------------------------------------------------------------------
 
 
-import           Data.String as S
 import           Data.Text
+import Data.Text.Encoding as E
 import qualified Data.ByteString as BS
 import qualified Blaze.ByteString.Builder as B
 
@@ -24,7 +24,7 @@ import           Wilde.Driver.Application.Types
 
 singleResponseHeaders :: MimeType
                       -> [HttpTypes.Header]
-singleResponseHeaders mimeType = [(HttpTypes.hContentType, S.fromString mimeType)]
+singleResponseHeaders mimeType = [(HttpTypes.hContentType, E.encodeUtf8 mimeType)]
 
 headers_plainText :: TextEncoder
                   -> [HttpTypes.Header]

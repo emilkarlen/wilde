@@ -81,7 +81,7 @@ newtype ParsableFilePaths = ParsableFilePaths (M.Map T.Text T.Text)
 newtype ParsableMimeTypes = ParsableMimeTypes (M.Map T.Text T.Text)
 
 plainMimeTypes :: ParsableMimeTypes -> MimeTypeMapping
-plainMimeTypes (ParsableMimeTypes text_2_text) = T.unpack <$> text_2_text
+plainMimeTypes (ParsableMimeTypes text_2_text) = text_2_text
 
 -- | Corresponds to `Configuration`,
 -- used for Yaml parsing via instances of `FromJSON`.

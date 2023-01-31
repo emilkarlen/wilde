@@ -33,7 +33,7 @@ throwBadRequest = throwRequestHandlerException
 -- | The (parsed) path of a Wai request.
 type RequestPath = [Text]
 
-type MimeType = String
+type MimeType = Text
 
 type ContentEncoder = String -> B.Builder
 
