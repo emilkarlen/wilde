@@ -58,7 +58,7 @@ Executable testapp-wai-warp
   import:  common-properties
   Main-is: testapp-wai-warp.hs
   Build-Depends:
-    warp == 3.3.21,
+    warp,
     text
 
 Executable testapp-tool
