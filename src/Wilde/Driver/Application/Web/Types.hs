@@ -1,4 +1,4 @@
-module Wilde.Driver.Application.Types where
+module Wilde.Driver.Application.Web.Types where
 
 
 -------------------------------------------------------------------------------
@@ -17,6 +17,9 @@ import           Control.Monad.Trans.Except (ExceptT, throwE)
 -- - implementation -
 -------------------------------------------------------------------------------
 
+
+-- HTML rendered as a sequence of characters.
+type HtmlAsString = String
 
 type ErrorMessage = Text
 

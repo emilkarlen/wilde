@@ -6,7 +6,7 @@ module Wilde.Render.RenderAsHtml
          renderComponent,
          renderComponentTitle,
 
-         Wilde.Render.AbstractTableToHtml.renderTable,
+         renderTable,
 
          renderServiceTitle,
          renderPage,

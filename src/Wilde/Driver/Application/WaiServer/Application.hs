@@ -30,7 +30,7 @@ module Wilde.Driver.Application.WaiServer.Application
 
 import qualified Network.Wai as Wai
 
-import           Wilde.Driver.Application.Types
+import           Wilde.Driver.Application.Web.Types
 
 import           Wilde.Application.ApplicationConfiguration as AppConf
 

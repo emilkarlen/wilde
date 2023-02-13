@@ -21,7 +21,7 @@ import           Data.String (IsString)
 import qualified Data.Text as T
 import qualified Data.Map.Strict as Map
 
-import           Wilde.Driver.Application.Types
+import           Wilde.Driver.Application.Web.Types
 import           Wilde.Driver.Application.WaiServer.RequestHandling.File.Types
 
 

@@ -1,6 +1,8 @@
 -- | Tools for application drivers that implement HTML based applications.
-module Wilde.Driver.Application.Html
+module Wilde.Driver.Application.Web.RunService
        (
+         HtmlAsString,
+
          runService_html,
          runService_htmlString,
        )
@@ -34,8 +36,9 @@ import qualified Wilde.Driver.Application.Cgi.VariableNames as VariableNames
 
 import qualified Wilde.Application.Service.PopUp as PopUp
 
-import Wilde.Application.ApplicationConfiguration
-import Wilde.Application.Service.Service
+import           Wilde.Application.ApplicationConfiguration
+import           Wilde.Application.Service.Service
+import           Wilde.Driver.Application.Web.Types (HtmlAsString)
 
 
 -------------------------------------------------------------------------------
@@ -64,7 +67,7 @@ runService_htmlString :: Maybe String
                       -> Translations
                       -> ServiceEnvironment
                       -> Service
-                      -> IO String
+                      -> IO HtmlAsString
 runService_htmlString mbCssFile tr env service =
     do
       html <- runService_html mbCssFile tr env service

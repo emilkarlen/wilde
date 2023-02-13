@@ -29,7 +29,7 @@ import qualified Network.Wai.Handler.Warp as Warp
 
 import qualified Wilde.Application.ApplicationConfiguration as AppConf
 
-import qualified Wilde.Driver.Application.Types as AppTypes
+import qualified Wilde.Driver.Application.Web.Types as AppTypes
 import qualified Wilde.Driver.Application.WaiServer.RequestHandling.Main.Types as Types
 import qualified Wilde.Driver.Application.WaiServer.RequestHandling.Types as RqH
 import qualified Wilde.Driver.Application.WaiServer.Cli.Read as CliRead

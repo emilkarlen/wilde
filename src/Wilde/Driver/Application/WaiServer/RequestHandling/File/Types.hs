@@ -1,6 +1,6 @@
 module Wilde.Driver.Application.WaiServer.RequestHandling.File.Types
 (
-    module Wilde.Driver.Application.Types,
+    module Wilde.Driver.Application.Web.Types,
     MimeTypeMapping,
 ) where
 
@@ -13,7 +13,7 @@ module Wilde.Driver.Application.WaiServer.RequestHandling.File.Types
 import Data.Text (Text)
 import Data.Map.Strict (Map)
 
-import Wilde.Driver.Application.Types
+import Wilde.Driver.Application.Web.Types
 
 
 -------------------------------------------------------------------------------

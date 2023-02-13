@@ -18,10 +18,10 @@ import qualified Wilde.Utils.Logging.Class as Logging
 import qualified Wilde.Render.Cgi.ElementSetIo as ElementSetIo
 
 import qualified Wilde.Application.ApplicationConfiguration as AppConf
-import qualified Wilde.Driver.Application.Utils as Utils
+import qualified Wilde.Driver.Application.Web.Utils as Utils
 
-import qualified Wilde.Driver.Application.Cgi.CgiHtml as AppCgiHtml
-import Wilde.Driver.Application.Types
+import qualified Wilde.Driver.Application.Web.LookupAndRunService as AppCgiHtml
+import Wilde.Driver.Application.Web.Types
 import Wilde.Driver.Application.Wai.Utils as WaiUtils
 import Wilde.Driver.Application.WaiServer.RequestHandling.Types (RequestHandlerResolver, ValidRequestHandler)
 

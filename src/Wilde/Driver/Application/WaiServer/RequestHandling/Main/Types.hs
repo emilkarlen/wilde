@@ -14,7 +14,7 @@ where
 -------------------------------------------------------------------------------
 
 
-import           Wilde.Driver.Application.Types (CodingConfiguration, RequestPath)
+import           Wilde.Driver.Application.Web.Types (CodingConfiguration, RequestPath)
 import           Wilde.Driver.Application.WaiServer.RequestHandling.Types (RequestHandlerResolver, FilePaths)
 
 import qualified Wilde.Driver.Application.WaiServer.RequestHandling.File.Types as FileTypes

@@ -2,7 +2,7 @@
 
 module Wilde.Driver.Application.WaiServer.RequestHandling.Main.RequestTypeResolving
 (
-    module Wilde.Driver.Application.Types,
+    module Wilde.Driver.Application.Web.Types,
 
     RequestType(..),
     PathPrefixesSetup(..),
@@ -20,7 +20,7 @@ where
 import Data.Map as M
 import Data.List as L
 
-import Wilde.Driver.Application.Types
+import Wilde.Driver.Application.Web.Types
 import Wilde.Driver.Application.WaiServer.RequestHandling.Types (FilePaths)
 
 

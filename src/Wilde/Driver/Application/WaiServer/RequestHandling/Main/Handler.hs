@@ -25,13 +25,13 @@ import           Data.Text
 import qualified Network.Wai as Wai
 import qualified Network.HTTP.Types as HttpTypes
 
-import qualified Wilde.Driver.Application.Utils as Utils
+import qualified Wilde.Driver.Application.Web.Utils as Utils
 
 import qualified Wilde.Application.ApplicationConfiguration as AppConf
 
 import qualified Wilde.Utils.Logging.Class as Logging
 
-import           Wilde.Driver.Application.Types
+import           Wilde.Driver.Application.Web.Types
 import qualified Wilde.Driver.Application.WaiServer.RequestHandling.Main.RequestTypeResolving as RTR
 import           Wilde.Driver.Application.WaiServer.RequestHandling.Types (ValidRequestHandler, ErrorHandler, WaiResponder)
 

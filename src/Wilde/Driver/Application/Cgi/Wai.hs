@@ -36,14 +36,14 @@ import qualified Wilde.Render.Cgi.ElementSetIo as ElementSetIo
 
 import qualified Wilde.Application.ApplicationConfiguration as AppConf
 
-import qualified Wilde.Driver.Application.Cgi.CgiHtml as AppCgiHtml
+import qualified Wilde.Driver.Application.Web.LookupAndRunService as AppCgiHtml
 
 
 import qualified Data.String as String
 
 import qualified Blaze.ByteString.Builder as B
 
-import Wilde.Driver.Application.Types
+import Wilde.Driver.Application.Web.Types
 
 
 -------------------------------------------------------------------------------

@@ -9,7 +9,7 @@ module Wilde.Driver.Application.WaiServer.RequestHandling.Types where
 import           Data.Map.Strict as M
 import qualified Network.Wai as Wai
 
-import           Wilde.Driver.Application.Types (HandlerResolvingMonad, HandlingError, RequestPath)
+import           Wilde.Driver.Application.Web.Types (HandlerResolvingMonad, HandlingError, RequestPath)
 
 
 -------------------------------------------------------------------------------

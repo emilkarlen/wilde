@@ -25,7 +25,7 @@ import qualified Network.HTTP.Types as HttpTypes
 import qualified Network.Wai as Wai
 
 import qualified Wilde.Utils.Logging.Class as Logging
-import qualified Wilde.Driver.Application.Utils as Utils
+import qualified Wilde.Driver.Application.Web.Utils as Utils
 
 import           Wilde.Driver.Application.WaiServer.RequestHandling.File.Types
 import qualified Wilde.Driver.Application.WaiServer.RequestHandling.File.PathHandling as PathHandling

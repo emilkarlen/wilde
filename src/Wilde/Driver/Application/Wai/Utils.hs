@@ -15,7 +15,7 @@ import qualified Network.HTTP.Types as HttpTypes
 
 import qualified Wilde.Render.Cgi.ElementSetIo as ElementSetIo
 
-import Wilde.Driver.Application.Types
+import Wilde.Driver.Application.Web.Types
 
 
 -------------------------------------------------------------------------------
@@ -59,4 +59,3 @@ buildRawInput contentDecoder request = queryToServerVariables theQueryString
     queryToServerVariables = map tr
 
     tr (bs,mbBs) = (contentDecoder bs,fmap contentDecoder mbBs)
-

@@ -1,5 +1,5 @@
 -- Utilities for Appliation Drivers that use CGI _and_ HTML.
-module Wilde.Driver.Application.Cgi.CgiHtml
+module Wilde.Driver.Application.Web.LookupAndRunService
        (
          lookupAndRunService,
          ServiceLookup.ServiceSpecificationError(..),
@@ -15,7 +15,7 @@ module Wilde.Driver.Application.Cgi.CgiHtml
 import qualified Wilde.Render.Cgi.ElementSetIo as ElementSetIo
 
 import qualified Wilde.Driver.Application.Cgi.ServiceLookup as ServiceLookup
-import qualified Wilde.Driver.Application.Html as AppHtml
+import qualified Wilde.Driver.Application.Web.RunService as AppHtml
 
 import qualified Wilde.Application.ApplicationInput as AppInput
 import qualified Wilde.Application.ApplicationConfiguration as AppConf
@@ -30,7 +30,7 @@ import qualified Wilde.Application.ApplicationConfiguration as AppConf
 -- and 'AppHtml.runService_htmlString'.
 lookupAndRunService :: AppConf.ApplicationConfiguration
                     -> ElementSetIo.ServerVariables
-                    -> IO (Either ServiceLookup.ServiceSpecificationError String)
+                    -> IO (Either ServiceLookup.ServiceSpecificationError AppHtml.HtmlAsString)
 lookupAndRunService
   appConf@(
     AppConf.ApplicationConfiguration

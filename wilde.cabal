@@ -32,6 +32,7 @@ Library
     old-locale    ==1.0.0.7,
     time          ==1.11.1.1,
     html          ==1.0.1.2,
+    blaze-html    ==0.9.1.2,
     HTTP          ==4000.4.1,
     wai           ==3.2.3,
     text          ==1.2.5.0,
@@ -181,14 +182,13 @@ Library
     Wilde.Database.BackEndDdl
     Wilde.Database.DmlRendering
 
-    Wilde.Driver.Application.Types
-    Wilde.Driver.Application.Utils
-
-    Wilde.Driver.Application.Html
+    Wilde.Driver.Application.Web.Types
+    Wilde.Driver.Application.Web.Utils
+    Wilde.Driver.Application.Web.RunService
+    Wilde.Driver.Application.Web.LookupAndRunService
 
     Wilde.Driver.Application.Wai.Utils
 
-    Wilde.Driver.Application.Cgi.CgiHtml
     Wilde.Driver.Application.Cgi.ServiceLink
     Wilde.Driver.Application.Cgi.ServiceLookup
     Wilde.Driver.Application.Cgi.Wai

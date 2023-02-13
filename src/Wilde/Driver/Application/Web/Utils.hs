@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Wilde.Driver.Application.Utils where
+
+module Wilde.Driver.Application.Web.Utils where
 
 
 -------------------------------------------------------------------------------
@@ -14,7 +15,7 @@ import qualified Blaze.ByteString.Builder as B
 
 import qualified Network.HTTP.Types as HttpTypes
 
-import           Wilde.Driver.Application.Types
+import           Wilde.Driver.Application.Web.Types
 
 
 -------------------------------------------------------------------------------
