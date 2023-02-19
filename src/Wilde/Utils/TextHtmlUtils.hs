@@ -1,22 +1,31 @@
--- | Utilities for Text.Html
+-- | Utilities for Html
 
 module Wilde.Utils.TextHtmlUtils
        (
          renderClasses,
          withclasses,
-         thead,
-         tbody,
-         tfoot,
-         linkelem,
          thsForStrings,
-         accesskey,
          ButtonLabel,
          ButtonType(..),
          button,
        )
        where
 
-import Text.Html
+
+-------------------------------------------------------------------------------
+-- - import -
+-------------------------------------------------------------------------------
+
+
+import           Wilde.Render.Html.Types
+import qualified Wilde.Render.Html.Attribute as HA
+import qualified Wilde.Render.Html.Element as HE
+
+
+-------------------------------------------------------------------------------
+-- - implementation -
+-------------------------------------------------------------------------------
+
 
 -- |Makes the HTML class value of a list of classes.
 renderClasses :: [String] -> String
@@ -27,33 +36,15 @@ renderClasses cs = foldr1 (\x y -> x ++ " " ++ y) cs
 -- given classes to add.
 withclasses :: [String] -> Html -> Html
 withclasses [] html = html
-withclasses classes html = html ! [theclass (renderClasses classes)]
-
-thead :: Html -> Html
-thead = tag "THEAD"
-
-tbody :: Html -> Html
-tbody = tag "TBODY"
-
-tfoot :: Html -> Html
-tfoot = tag "TFOOT"
-
-linkelem :: Html
-linkelem = tag "LINK" noHtml
+withclasses classes html = html `HE.withAttrs` [HA.class_ (renderClasses classes)]
 
 -- | Constructs TH elements for a list of header-info.
 -- (header text,header classes)
-thsForStrings :: [(String,
-                   [String])
-                 ]
+thsForStrings :: [(String,[String])]
               -> Html
-thsForStrings xs = foldl (+++) noHtml $ map mkTh xs
-    where mkTh (t,cs) = withclasses cs (th $ stringToHtml t)
-
-
--- | The accesskey attribute (of input controls).
-accesskey :: Char -> HtmlAttr
-accesskey ch = strAttr "accesskey" [ch]
+thsForStrings xs = HE.seq $ map mkTh xs
+    where
+      mkTh (t,cs) = withclasses cs (HE.th $ HE.str t)
 
 
 -------------------------------------------------------------------------------
@@ -66,7 +57,7 @@ type ButtonLabel = (String,Maybe Char) -- ^ Labe, maybe accesskey.
 data ButtonType = SubmitButtonType | ResetButtonType | PlainButtonType
 
 buttonTypeHtmlAttr :: ButtonType -> HtmlAttr
-buttonTypeHtmlAttr buttonType = HtmlAttr "type" typeStr
+buttonTypeHtmlAttr buttonType = HA.type_ typeStr
                                 where
                                   typeStr = case buttonType of
                                     SubmitButtonType -> "submit"
@@ -74,10 +65,10 @@ buttonTypeHtmlAttr buttonType = HtmlAttr "type" typeStr
                                     PlainButtonType  -> "button"
 
 button :: ButtonType
-          -> ButtonLabel
-          -> Html
+       -> ButtonLabel
+       -> Html
 button buttonType (label,mbAccessKey) =
   let attrs = [buttonTypeHtmlAttr buttonType,
-                value label] ++ accessKeyAttrs
-      accessKeyAttrs = maybe [] (\ch -> [accesskey ch]) mbAccessKey
-  in  input ! attrs
+                HA.value label] ++ accessKeyAttrs
+      accessKeyAttrs = maybe [] (\ch -> [HA.accesskey ch]) mbAccessKey
+  in  HE.input `HE.withAttrs` attrs

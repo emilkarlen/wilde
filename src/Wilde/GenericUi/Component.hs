@@ -18,7 +18,7 @@ module Wilde.GenericUi.Component
 -------------------------------------------------------------------------------
 
 
-import Text.Html
+import qualified Wilde.Render.Html.Element as HE
 
 import Wilde.Utils.Empty
 
@@ -35,7 +35,7 @@ import Wilde.Utils.Empty
 
 -- | A GUI page consists of a sequence of components.
 class COMPONENT a where
-    componentHtml :: a -> Html
+    componentHtml :: a -> HE.Html
 
 
 -------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ class COMPONENT a where
 -------------------------------------------------------------------------------
 
 
-data HtmlOnly = HtmlOnly Html
+newtype HtmlOnly = HtmlOnly HE.Html
 
 instance COMPONENT HtmlOnly where
   componentHtml (HtmlOnly html) = html
@@ -56,7 +56,7 @@ instance COMPONENT HtmlOnly where
 
 -- | () is the empty component.
 instance COMPONENT () where
-    componentHtml _ = noHtml
+    componentHtml _ = HE.empty
 
 instance EMPTY AnyCOMPONENT where
   empty = AnyCOMPONENT ()

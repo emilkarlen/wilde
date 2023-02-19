@@ -18,7 +18,8 @@ import qualified Data.Map as Map
 
 import Control.Monad.Trans
 
-import qualified Text.Html as THtml
+import           Wilde.Render.Html.Types
+import qualified Wilde.Render.Html.Render as HR
 
 import Wilde.GenericUi.Components
 
@@ -50,14 +51,14 @@ runService_html :: Maybe String
                 -> Translations
                 -> ServiceEnvironment
                 -> Service
-                -> IO THtml.Html
+                -> IO Html
 runService_html mbCssFile tr env service =
   do
     serviceResult <- liftIO $ runService env service
     let wildePage = renderServiceResult tr env serviceResult
     pure $ renderPageAsHtml wildePage
   where
-    renderPageAsHtml :: (StyledTitle,[AnyCOMPONENT]) -> THtml.Html
+    renderPageAsHtml :: (StyledTitle,[AnyCOMPONENT]) -> Html
     renderPageAsHtml (title,components) = renderPage mbCssFile title components
 
 -- | A variant of 'runService_html' that also renders the HTML as a string.
@@ -73,10 +74,10 @@ runService_htmlString mbCssFile tr env service =
       html <- runService_html mbCssFile tr env service
       pure $ renderHtmlAsString html
   where
-    renderHtmlAsString :: THtml.Html -> String
+    renderHtmlAsString :: Html -> String
     renderHtmlAsString = if VariableNames.pretty `Map.member` (envMedia env)
-                         then THtml.prettyHtml
-                         else THtml.renderHtml
+                         then HR.pretty
+                         else HR.standard
 
 renderServiceResult :: Translations
                     -> ServiceEnvironment

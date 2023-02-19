@@ -41,7 +41,9 @@ module Wilde.ApplicationConstruction.UserInteraction.Widgets
 
 import Data.Maybe
 
-import qualified Text.Html as H
+import Wilde.Render.Html.Types ( Html, HtmlAttr )
+import qualified Wilde.Render.Html.Attribute as HA
+import qualified Wilde.Render.Html.Element as HE
 
 import Wilde.GenericUi.Widget
 import Wilde.GenericUi.Value
@@ -130,9 +132,9 @@ instance WIDGET LineInputInfo where
                    }) =
     inputWithTypeAndAts "text" (catMaybes attributes)
      where
-       thevalue   = maybe Nothing (Just . H.value) theDefault
-       thesize    = Just $ H.size (show theSize)
-       attributes = [thevalue,thesize] :: [Maybe H.HtmlAttr]
+       thevalue   = maybe Nothing (Just . HA.value) theDefault
+       thesize    = Just $ HA.size theSize :: Maybe HtmlAttr
+       attributes = [thevalue,thesize] :: [Maybe HtmlAttr]
 
 
 -------------------------------------------------------------------------------
@@ -154,12 +156,12 @@ instance WIDGET TextAreaInfo where
                    { textAreaSize = (width,height)
                    , textDefault  = theDefault
                    }) =
-    (H.textarea thevalue) H.! attributes
+    HE.textarea thevalue `HE.withAttrs` attributes
      where
-       thevalue   = maybe H.noHtml H.stringToHtml theDefault
-       cols       = H.cols (show width)  :: H.HtmlAttr
-       rows       = H.rows (show height) :: H.HtmlAttr
-       attributes = [cols,rows]  :: [H.HtmlAttr]
+       thevalue   = maybe HE.empty HE.str theDefault
+       cols       = HA.cols width  :: HtmlAttr
+       rows       = HA.rows height :: HtmlAttr
+       attributes = [cols,rows]  :: [HtmlAttr]
 
 
 -------------------------------------------------------------------------------
@@ -181,11 +183,11 @@ instance WIDGET CheckBoxInfo where
                    { checkBoxValue   = theValue
                    , checkBoxDefault = theDefault
                    }) =
-    H.input H.! ([atType,atValue] ++ atChecked)
+    HE.input `HE.withAttrs` ([atType,atValue] ++ atChecked)
      where
-       atType    = H.thetype "checkbox"
-       atValue   = H.value theValue :: H.HtmlAttr
-       atChecked = if theDefault then [H.checked] else [] :: [H.HtmlAttr]
+       atType    = HA.type_ "checkbox"
+       atValue   = HA.value theValue :: HtmlAttr
+       atChecked = if theDefault then [HA.checked] else [] :: [HtmlAttr]
 
 
 -------------------------------------------------------------------------------
@@ -207,23 +209,23 @@ instance WIDGET DropDownListInfo where
                    { dropDownOptions = options
                    , dropDownDefault = mbDefault
                    }) =
-    H.select (H.concatHtml theOptions)
+    HE.select $ HE.seq theOptions
      where
        mkOption   = maybe optionWithoutDefault optionWithDefault mbDefault
        theOptions = map mkOption options
 
        -- An option in a selection list, when there is no default specified.
-       optionWithoutDefault :: (String,AnyVALUE) -> H.Html
-       optionWithoutDefault (value,pres) = H.option (valueHtml pres) H.! [H.value value]
+       optionWithoutDefault :: (String,AnyVALUE) -> Html
+       optionWithoutDefault (value,pres) = HE.option (valueHtml pres) `HE.withAttrs` [HA.value value]
 
        -- An option in a selection list, when there is a default specified.
-       optionWithDefault :: GenericStringRep -> (String,AnyVALUE) -> H.Html
+       optionWithDefault :: GenericStringRep -> (String,AnyVALUE) -> Html
        optionWithDefault defaultValue (value,pres) =
          let
-           withoutDefault = H.option (valueHtml pres) H.! [H.value value]
+           withoutDefault = HE.option (valueHtml pres) `HE.withAttrs` [HA.value value]
          in
-          if (defaultValue == value)
-          then withoutDefault H.! [H.selected]
+          if defaultValue == value
+          then withoutDefault `HE.withAttrs` [HA.selected]
           else withoutDefault
 
 
@@ -233,20 +235,20 @@ instance WIDGET DropDownListInfo where
 
 
 htmlForWithWidgetKey :: WithWidgetKey a
-                     -> (a -> H.Html)
-                     -> H.Html
+                     -> (a -> Html)
+                     -> Html
 htmlForWithWidgetKey (WithWidgetKey ek widgetInfo) renderWidgetInfo =
-  renderWidgetInfo widgetInfo H.! [keyAttribute]
+  renderWidgetInfo widgetInfo `HE.withAttrs` [keyAttribute]
   where
-    keyAttribute = H.name $ elementKeyRender ek :: H.HtmlAttr
+    keyAttribute = HA.name $ elementKeyRender ek :: HtmlAttr
 
 -- | Constructs a Html "input" tag with type and key.
 inputWithType :: String -- ^ input type (text, checkbox, ...)
-              -> H.Html
-inputWithType inputType = H.input H.! [H.thetype inputType]
+              -> Html
+inputWithType inputType = HE.input `HE.withAttrs` [HA.type_ inputType]
 
 -- | Constructs a Html "input" tag with type and key.
 inputWithTypeAndAts :: String -- ^ input type (text, checkbox, ...)
-                    -> [H.HtmlAttr]
-                    -> H.Html
-inputWithTypeAndAts inputType ats = inputWithType inputType H.! ats
+                    -> [HtmlAttr]
+                    -> Html
+inputWithTypeAndAts inputType ats = inputWithType inputType `HE.withAttrs` ats

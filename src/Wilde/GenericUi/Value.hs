@@ -20,7 +20,10 @@ module Wilde.GenericUi.Value
 -------------------------------------------------------------------------------
 
 
-import Text.Html
+import qualified Text.Html as H
+
+import           Wilde.Render.Html.Types ( HTML(..), Html )
+import qualified Wilde.Render.Html.Element as HE
 
 import Wilde.Utils.Empty
 
@@ -38,7 +41,7 @@ class VALUE a where
     valueString = const ""
 
 instance VALUE a => VALUE (Maybe a) where
-    valueHtml Nothing  = noHtml
+    valueHtml Nothing  = HE.empty
     valueHtml (Just x) = valueHtml x
 
 instance (VALUE a,VALUE b) => VALUE (Either a b) where
@@ -46,7 +49,7 @@ instance (VALUE a,VALUE b) => VALUE (Either a b) where
     valueHtml (Right y) = valueHtml y
 
 instance VALUE a => VALUE ([] a) where
-    valueHtml xs = concatHtml $ map valueHtml xs
+    valueHtml xs = HE.seq $ map valueHtml xs
 
 
 -------------------------------------------------------------------------------
@@ -60,6 +63,9 @@ data AnyVALUE = forall a . VALUE a => AnyVALUE a
 instance VALUE AnyVALUE where
     valueHtml (AnyVALUE x) = valueHtml x
 
+instance H.HTML AnyVALUE where
+    toHtml = valueHtml
+
 instance HTML AnyVALUE where
     toHtml = valueHtml
 
@@ -70,7 +76,7 @@ instance Show AnyVALUE where
 newtype ValueEmpty = ValueEmpty ()
 
 instance VALUE ValueEmpty where
-    valueHtml _ = noHtml
+    valueHtml _ = HE.empty
 
 instance EMPTY AnyVALUE where
     empty = AnyVALUE $ ValueEmpty ()

@@ -26,7 +26,7 @@ module Wilde.GenericUi.Widget
 -------------------------------------------------------------------------------
 
 
-import qualified Text.Html as Html
+import           Wilde.Render.Html.Types
 
 import Wilde.GenericUi.Value
 
@@ -37,7 +37,6 @@ import Wilde.Media.GenericStringRep
 -------------------------------------------------------------------------------
 -- - implementation -
 -------------------------------------------------------------------------------
-
 
 
 -------------------------------------------------------------------------------
@@ -62,7 +61,7 @@ data Label = Label
 
 
 class WIDGET a where
-  widgetHtml :: a -> Html.Html
+  widgetHtml :: a -> Html
 
 data AnyWIDGET = forall a . WIDGET a => AnyWIDGET a
 

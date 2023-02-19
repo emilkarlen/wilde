@@ -11,9 +11,9 @@ module Wilde.WildeUi.LayoutValues
 -------------------------------------------------------------------------------
 
 
-import Text.Html
+import qualified Wilde.Render.Html.Element as HE
 
-import Wilde.Media.WildeValue
+import           Wilde.Media.WildeValue
 
 
 -------------------------------------------------------------------------------
@@ -27,8 +27,8 @@ horizontal = AnySVALUE . Horizontal
 newtype Horizontal a = Horizontal [a]
 
 instance VALUE a => VALUE (Horizontal a) where
-  valueHtml   (Horizontal []) = noHtml
-  valueHtml   (Horizontal xs) = concatHtml $ map valueHtml xs
+  valueHtml   (Horizontal []) = HE.empty
+  valueHtml   (Horizontal xs) = HE.seq $ map valueHtml xs
   -- valueHtml   (Horizontal xs) = concatHtml $ map valueHtmlStyled xs
   valueString (Horizontal xs) = concatMap valueString xs
 

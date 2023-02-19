@@ -1,3 +1,5 @@
+{-# LANGUAGE TypeSynonymInstances #-}
+
 -- | Functionallity for rendering the
 -- types of a Wilde application related to the User Interface
 -- as HTML.
@@ -20,7 +22,10 @@ module Wilde.Render.RenderAsHtml
 -------------------------------------------------------------------------------
 
 
-import qualified Text.Html  as H hiding (HtmlTable)
+import           Wilde.Render.Html.Types
+import qualified Wilde.Render.Html.Attribute as HA
+import qualified Wilde.Render.Html.Element as HE
+import qualified Wilde.Render.Html.Document as HD
 
 import Wilde.Utils.TextHtmlUtils
 
@@ -39,15 +44,15 @@ import Wilde.Render.AbstractTableToHtml
 
 
 -- | Renders a component with a given title and content.
-renderComponent :: Maybe StyledTitle -> H.Html -> H.Html
-renderComponent Nothing html = H.center html
-renderComponent (Just title) html = H.center (renderComponentTitle title) H.+++ html
+renderComponent :: Maybe StyledTitle -> Html -> Html
+renderComponent Nothing html = HE.center html
+renderComponent (Just title) html = HE.seq [HE.center (renderComponentTitle title), html]
 
 -- | Renders a component title.
 renderComponentTitle :: StyledTitle -- ^ Component title
-                        -> H.Html
+                     -> Html
 renderComponentTitle title =
-    withclasses classes $ H.thediv (H.stringToHtml titleString)
+    withclasses classes $ HE.div (HE.str titleString)
   where
     classes       = titleClasses ++ systemClasses
     systemClasses = Wilde.Media.WildeStyle.componentTitleClasses :: [ClassName]
@@ -57,11 +62,10 @@ renderComponentTitle title =
 
 -- | Renders a page title.
 renderServiceTitle :: StyledTitle
-                   -> H.Html
+                   -> Html
 renderServiceTitle title =
     withclasses classes $
-    H.thediv (H.stringToHtml
-              titleString)
+    HE.div (HE.str titleString)
   where
     classes       = titleClasses ++ systemClasses
     systemClasses = Wilde.Media.WildeStyle.pageTitleClasses :: [ClassName]
@@ -71,33 +75,36 @@ renderServiceTitle title =
 
 
 -- | Renders a page.
-renderPage :: Maybe String
+renderPage :: Maybe String -- CSS file
            -> StyledTitle
-           -> [AnyCOMPONENT] -> H.Html
+           -> [AnyCOMPONENT] -- ^ body
+           -> HD.Document
 renderPage mbCssFilePath title components =
-    let pageHead  = H.header $ H.thetitle (H.stringToHtml titleString) H.+++ hdrCssLink
-        hdrCssLink = maybe
-                     H.noHtml
-                     (\cssFile -> linkelem H.! [H.rel "stylesheet"
-                                               ,H.href cssFile
-                                               ,H.HtmlAttr "type" "text/css"])
-                     mbCssFilePath
-        compsHtml = foldl (H.+++) H.noHtml $ map (renderComponent Nothing . componentHtml) components
-        pageBody  = (renderServiceTitle title) H.+++ compsHtml
-    in  H.thehtml $ pageHead H.+++ (applyStyleToHtml styleForPage (H.body pageBody))
+    let headContents = HE.seq [HD.title titleString, hdrCssLink]
+        hdrCssLink   = maybe HE.empty cssRefElem mbCssFilePath
+        compsHtml    = map (renderComponent Nothing . componentHtml) components :: [Html]
+        srvcTitle    = renderServiceTitle title :: Html
+        bodyContents = HE.seq $ srvcTitle : compsHtml :: Html
+    in  HD.document headContents bodyContents (applyStyleToHtml styleForPage)
   where
+    cssRefElem   :: String -> Html
+    cssRefElem cssFile = HE.link `HE.withAttrs`
+                         [HA.rel "stylesheet"
+                         ,HA.href cssFile
+                         ,HA.custom "type" "text/css"]
+
     styleForPage  = WildeStyle [pageClass]
     titleString   = wildeStyled title :: Title
     titleStyle    = wildeStyle  title :: WildeStyle
     titleClasses  = getClasses titleStyle :: [ClassName]
 
-instance COMPONENT H.Html where
+instance COMPONENT Html where
   componentHtml = id
 
 -- | Renders a page given simple Html.
-renderPageHtml :: Maybe String
+renderPageHtml :: Maybe String -- ^ CSS file
                -> StyledTitle -- ^ Page and service title
-               -> H.Html
-               -> H.Html
-renderPageHtml mbCssFilePath title html =
-  renderPage mbCssFilePath title [AnyCOMPONENT html]
+               -> Html -- ^ body
+               -> HD.Document
+renderPageHtml mbCssFilePath title body =
+  renderPage mbCssFilePath title [AnyCOMPONENT body]

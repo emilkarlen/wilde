@@ -7,7 +7,9 @@ module Common.App.Ui.UiResources where
 -------------------------------------------------------------------------------
 
 
-import qualified Text.Html as TH
+import           Wilde.Render.Html.Types
+import qualified Wilde.Render.Html.Attribute as HA
+import qualified Wilde.Render.Html.Element as HE
 
 import Wilde.Media.WildeValue
 
@@ -26,10 +28,10 @@ import qualified Common.App.Ui.UiResourcesRaw as UiResourcesRaw
 -------------------------------------------------------------------------------
 
 
-image :: TH.URL -> ElementWithStyle
-image url = SeHtml $ TH.image TH.! [TH.src url]
+image :: URL -> ElementWithStyle
+image url = SeHtml $ HE.image `HE.withAttrs` [HA.src url]
 
-imageAnySV :: TH.URL -> AnySVALUE
+imageAnySV :: URL -> AnySVALUE
 imageAnySV = AnySVALUE . image
 
 
@@ -38,7 +40,7 @@ imageAnySV = AnySVALUE . image
 -------------------------------------------------------------------------------
 
 
-imagePlayHtml = TH.image TH.! [TH.src UiResourcesRaw.play]
+imagePlayHtml = HE.image `HE.withAttrs` [HA.src UiResourcesRaw.play]
 
 imagePlayASV,imagePlaySmallASV,imageDownASV,imageHourglassASV :: AnySVALUE
 

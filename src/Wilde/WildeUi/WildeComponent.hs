@@ -21,7 +21,8 @@ module Wilde.WildeUi.WildeComponent
 -------------------------------------------------------------------------------
 
 
-import qualified Text.Html  as H hiding (HtmlTable)
+import qualified Wilde.Render.Html.Element as HE
+import qualified Wilde.Render.Html.Attribute as HA
 
 import Wilde.Render.AbstractTableToHtml
 
@@ -79,11 +80,11 @@ instance Show FormMethod where
 instance COMPONENT FormComponent where
     componentHtml (FormComponent action method content) =
       let
-        contentHtml    = H.concatHtml $ map componentHtml content
-        attrListAction = maybe [] (\actn -> [H.action actn]) action
-        formAttrs      = H.method (show method) : attrListAction
+        contentHtml    = HE.seq $ map componentHtml content
+        attrListAction = maybe [] (\actn -> [HA.action actn]) action
+        formAttrs      = HA.method (show method) : attrListAction
       in
-       H.form contentHtml H.! formAttrs
+       HE.form contentHtml `HE.withAttrs` formAttrs
 
 
 -------------------------------------------------------------------------------
@@ -100,7 +101,7 @@ data FormButtons =
 
 instance COMPONENT FormButtons where
   componentHtml (FormButtons submitText resetText) =
-    let
-      attrsSubmit = [H.thetype "submit",H.value submitText]
-    in
-     (H.reset "reset-button" resetText) H.+++ (H.input H.! attrsSubmit)
+    HE.seq [HE.reset "reset-button" resetText
+           ,HE.input `HE.withAttrs` attrsSubmit]
+    where
+      attrsSubmit = [HA.type_ "submit",HA.value submitText]

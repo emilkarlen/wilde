@@ -19,7 +19,7 @@ module Wilde.WildeUi.LayoutComponents
 
 import Data.List
 
-import qualified Text.Html  as H hiding (HtmlTable)
+import qualified Wilde.Render.Html.Element as HE
 
 import Wilde.WildeUi.UiPrimitives
 import Wilde.Media.WildeValue
@@ -42,7 +42,7 @@ verticalComponents xs = AnyCOMPONENT $ Vertical xs
 newtype Vertical a = Vertical [a]
 
 instance COMPONENT a => COMPONENT (Vertical a) where
-    componentHtml (Vertical xs) = H.concatHtml $ intersperse H.br $ map componentHtml xs
+    componentHtml (Vertical xs) = HE.seq $ intersperse HE.br $ map componentHtml xs
 
 
 -------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ horizontalComponents xs = AnyCOMPONENT $ Horizontal xs
 newtype Horizontal a = Horizontal [a]
 
 instance COMPONENT a => COMPONENT (Horizontal a) where
-    componentHtml (Horizontal xs) = H.concatHtml $ map componentHtml xs
+    componentHtml (Horizontal xs) = HE.seq $ map componentHtml xs
 
 
 -------------------------------------------------------------------------------

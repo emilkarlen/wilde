@@ -17,7 +17,6 @@ You should have received a copy of the GNU General Public License
 along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
 -}
 {-# LANGUAGE ExistentialQuantification #-}
-{-# LANGUAGE InstanceSigs #-}
 
 -- | Classes and datatypes for encapsulating data.
 module Wilde.Media.WildeValue
@@ -39,7 +38,11 @@ where
 -- - import -
 -------------------------------------------------------------------------------
 
-import Text.Html
+import qualified Text.Html as H
+
+import           Wilde.Render.Html.Types ( Html )
+import qualified Wilde.Render.Html.Element as HE
+
 import Wilde.GenericUi.Style
 import Wilde.GenericUi.Value
 import Wilde.Media.WildeStyleType
@@ -83,17 +86,19 @@ defaultHtmlStyled ::
   -- | See `SVALUE`.
   Maybe (Html -> Html) ->
   Html
-defaultHtmlStyled style unstyledHtml wrapper =
-  if style == neutral
-    then unstyledHtml
-    else
+defaultHtmlStyled style unstyledHtml wrapper
+ | style == neutral = unstyledHtml
+ | otherwise =
       let html = case wrapper of
             Nothing -> unstyledHtml
-            Just f -> f unstyledHtml
-       in case getHtmlElements html of
-            [] -> noHtml
-            [HtmlTag {}] -> applyStyleToHtml style html
-            _ -> applyStyleToHtml style (thespan html)
+            Just f  -> f unstyledHtml
+       in case H.getHtmlElements html of
+            -- empty - nothing to display, so no styling needed:
+            [] -> HE.empty
+            -- an element - add style to the element:
+            [H.HtmlTag {}] -> applyStyleToHtml style html
+            -- anything else - wrap in "span" (what about comments and processing instructions??)
+            _ -> applyStyleToHtml style (HE.span html)
 
 instance VALUE a => VALUE (WildeStyling a) where
   valueHtml (WildeStyling styling) = (valueHtml . getStyled) styling
@@ -201,7 +206,7 @@ anySvalue2Value (AnySVALUE x) = AnyVALUE x
 withNeutralStyleAny :: VALUE a => a -> AnySVALUE
 withNeutralStyleAny v = AnySVALUE $ WithNeutralStyle v
 
-data WithNeutralStyle a = WithNeutralStyle a
+newtype WithNeutralStyle a = WithNeutralStyle a
 
 instance VALUE a => VALUE (WithNeutralStyle a) where
   valueHtml (WithNeutralStyle x) = valueHtml x

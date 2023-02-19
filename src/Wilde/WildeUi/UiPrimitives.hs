@@ -30,7 +30,8 @@ module Wilde.WildeUi.UiPrimitives
 
 import Wilde.Utils.Empty
 
-import Text.Html
+import           Wilde.Render.Html.Types
+import qualified Wilde.Render.Html.Element as HE
 
 import Wilde.GenericUi.AbstractTable
 
@@ -61,7 +62,7 @@ instance SVALUE ElementWithStyle where
     valueStyle (SeHtml _)              = neutral
 
 instance EMPTY ElementWithStyle where
-    empty = SeHtml noHtml
+    empty = SeHtml HE.empty
 
 
 -------------------------------------------------------------------------------

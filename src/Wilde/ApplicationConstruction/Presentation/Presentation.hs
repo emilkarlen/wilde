@@ -72,7 +72,7 @@ import Data.Word
 import Data.Int
 import Data.Time.Calendar (Day)
 
-import qualified Text.Html as Html
+import qualified Wilde.Render.Html.Element as HE
 
 import Wilde.Media.WildeValue
 import Wilde.WildeUi.StdValueTypes
@@ -242,7 +242,7 @@ newtype HtmlMultiLineTextValue = HtmlMultiLineTextValue String
 
 instance VALUE HtmlMultiLineTextValue where
   valueString (HtmlMultiLineTextValue x) = x
-  valueHtml   (HtmlMultiLineTextValue x) = Html.primHtml x
+  valueHtml   (HtmlMultiLineTextValue x) = HE.htmlString x
 
 
 instance SVALUE HtmlMultiLineTextValue

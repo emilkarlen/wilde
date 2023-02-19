@@ -21,7 +21,9 @@ module TestResources.UserInteraction.WidgetResources
 
 import Test.HUnit
 
-import qualified Text.Html as Html
+import           Wilde.Render.Html.Types
+import qualified Wilde.Render.Html.Attribute as HA
+import qualified Wilde.Render.Html.Element as HE
 
 import qualified Wilde.Media.WildeMedia as WildeMedia
 
@@ -93,4 +95,4 @@ newtype StringWidgetForTest = StringWidgetForTest String
 
 -- | Widget that is a plain string.
 instance UiO.WIDGET StringWidgetForTest where
-  widgetHtml (StringWidgetForTest s) = Html.primHtml s
+  widgetHtml (StringWidgetForTest s) = HE.htmlString s

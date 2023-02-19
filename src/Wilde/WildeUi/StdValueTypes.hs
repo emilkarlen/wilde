@@ -46,7 +46,9 @@ module Wilde.WildeUi.StdValueTypes
 
 import Data.Word
 
-import qualified Text.Html as Html
+import           Wilde.Render.Html.Types
+import qualified Wilde.Render.Html.Attribute as HA
+import qualified Wilde.Render.Html.Element as HE
 
 import Network.HTTP.Base (urlEncodeVars)
 
@@ -56,6 +58,7 @@ import Wilde.Render.Cgi.ServerVariables
 import Wilde.Render.Cgi.HRef
 
 import Wilde.Render.StyleForHtml (STYLE_FOR_HTML(..))
+import Data.List (intersperse)
 
 -------------------------------------------------------------------------------
 -- - ...Value -
@@ -73,10 +76,9 @@ newtype BoolValueAsCheckBox = BoolValueAsCheckBox Bool
 instance VALUE BoolValueAsCheckBox where
   valueString (BoolValueAsCheckBox b) = if b then "T" else "F"
 
-  valueHtml   (BoolValueAsCheckBox b) = Html.input Html.! attrs
+  valueHtml   (BoolValueAsCheckBox b) = HE.input `HE.withAttrs` attrs
     where
-      ro    = "readonly"
-      attrs = [Html.thetype "checkbox",Html.HtmlAttr ro ro] ++ (if b then [Html.checked] else [])
+      attrs = [HA.type_ "checkbox",HA.readonly] ++ (if b then [HA.checked] else [])
 
 instance SVALUE BoolValueAsCheckBox
 
@@ -90,7 +92,7 @@ newtype IntValue = IntValue Int
     deriving (Eq,Show,Ord)
 
 instance VALUE IntValue where
-    valueHtml   (IntValue x) = Html.stringToHtml $ show x
+    valueHtml   (IntValue x) = HE.str $ show x
     valueString (IntValue x) = show x
 
 instance SVALUE IntValue
@@ -105,7 +107,7 @@ newtype Word32Value = Word32Value Word32
     deriving (Eq,Show,Ord)
 
 instance VALUE Word32Value where
-    valueHtml   (Word32Value x) = Html.stringToHtml $ show x
+    valueHtml   (Word32Value x) = HE.str $ show x
     valueString (Word32Value x) = show x
 
 instance SVALUE Word32Value
@@ -129,7 +131,7 @@ newtype QuotedStringValue = QuotedStringValue String
     deriving (Eq,Show)
 
 instance VALUE UnquotedStringValue where
-    valueHtml   (UnquotedStringValue x) = Html.stringToHtml x
+    valueHtml   (UnquotedStringValue x) = HE.str x
     valueString (UnquotedStringValue x) = x
 
 instance SVALUE UnquotedStringValue
@@ -141,7 +143,7 @@ quotedStringValue :: String -> AnyVALUE
 quotedStringValue = AnyVALUE . QuotedStringValue
 
 instance VALUE QuotedStringValue where
-    valueHtml   (QuotedStringValue x) = Html.primHtml x
+    valueHtml   (QuotedStringValue x) = HE.htmlString x
     valueString (QuotedStringValue x) = x
 
 instance SVALUE QuotedStringValue
@@ -166,16 +168,16 @@ instance VALUE UnquotedMultiLineTextValue where
 
 instance SVALUE UnquotedMultiLineTextValue
 
-layoutParagraphs :: [[String]] -> Html.Html
-layoutParagraphs paras = foldl combine Html.noHtml unwrappedParas
+layoutParagraphs :: [[String]] -> Html
+layoutParagraphs paras = foldl combine HE.empty unwrappedParas
   where
     unwrappedParas = map layoutPara paras
-    combine wrapped unwrapped = wrapped Html.+++ (Html.paragraph unwrapped)
+    combine wrapped unwrapped = HE.seq [wrapped, HE.paragraph unwrapped]
 
-    layoutPara :: [String] -> Html.Html
-    layoutPara lines = case map Html.stringToHtml lines of
-      []     -> Html.noHtml
-      (l:ls) -> l Html.+++ map (\html -> Html.br Html.+++ html) ls
+    layoutPara :: [String] -> Html
+    layoutPara lines = case map HE.str lines of
+      []     -> HE.empty
+      ls     -> HE.seq $ intersperse HE.br ls
 
 -- | Each element of the result is a paragraph.
 -- The elements in a paragraph are separated by line-breaks.
@@ -213,12 +215,13 @@ paraAndLineBreakSplit s = splitParas [] (dropWhileNewline s)
 
 
 -- | A Hypertext reference, with a text to display and the target URL.
-newtype HrefValue = HrefValue (String,Html.URL) -- ^ link text, URL.
+newtype HrefValue = HrefValue (String,URL) -- ^ link text, URL.
 
 instance VALUE HrefValue where
   valueString (HrefValue (linkText,url)) = url
-  valueHtml   (HrefValue (linkText,url)) = Html.anchor Html.! [Html.href url] $
-                                           Html.stringToHtml linkText
+  valueHtml   (HrefValue (linkText,url)) =
+    HE.anchor (HE.str linkText) `HE.withAttrs` [HA.href url]
+
 
 instance SVALUE HrefValue
 
@@ -227,12 +230,6 @@ instance SVALUE HrefValue
 -- - WwwLinkValue -
 -------------------------------------------------------------------------------
 
-
-data DomEvent = OnClick
-                deriving (Show,Read,Eq,Ord,Enum,Bounded)
-
--- | A program in JavaScript.
-type JavaScriptProgram = String
 
 -- | Constructs a link without any DOM-events.
 wwwLinkValue :: HRef -> a -> WwwLinkValue a
@@ -254,9 +251,9 @@ instance VALUE a => VALUE (WwwLinkValue a) where
   valueString  (WwwLinkValue (HRef urlBase urlArgs) domEvents display) = '[' : valueString display ++ "]"
 
   valueHtml    (WwwLinkValue href domEvents display) =
-    Html.anchor (valueHtml display) Html.! (Html.href (hrefToUrl href) : domEventAttrs)
+    HE.anchor (valueHtml display) `HE.withAttrs` (HA.href (hrefToUrl href) : domEventAttrs)
     where
-      domEventAttrs = [Html.HtmlAttr (show event) jsPgm | (event,jsPgm) <- domEvents]
+      domEventAttrs = [HA.domEvent event jsPgm | (event,jsPgm) <- domEvents]
 
 -- | If the value has a non-neutral style, then it is applied to the
 -- HTML A element.
@@ -295,14 +292,14 @@ instance VALUE WwwLinkValueDoneRight where
   valueString (WwwLinkValueDoneRight {linkDrHref = href}) = hrefToUrl href
 
   valueHtml   (WwwLinkValueDoneRight href domEvents display) =
-    Html.anchor labelHtml Html.! (Html.href (hrefToUrl href) : domEventAttrs)
+    HE.anchor labelHtml `HE.withAttrs` (HA.href (hrefToUrl href) : domEventAttrs)
     where
       labelHtml     = label2Html (wildeStyled display)
-      domEventAttrs = [Html.HtmlAttr (show event) jsPgm | (event,jsPgm) <- domEvents]
+      domEventAttrs = [HA.custom (show event) jsPgm | (event,jsPgm) <- domEvents]
 
-label2Html :: LinkLabel -> Html.Html
-label2Html (TextLabel  text)      = Html.stringToHtml text
-label2Html (ImageLabel imagePath) = Html.image Html.! [Html.src imagePath]
+label2Html :: LinkLabel -> Html
+label2Html (TextLabel  text)      = HE.str text
+label2Html (ImageLabel imagePath) = HE.image `HE.withAttrs` [HA.src imagePath]
 
 hrefToUrl :: HRef -> String
 hrefToUrl (HRef urlBase urlArgs) =
@@ -337,6 +334,6 @@ button :: String  -- ^ label
 button = Button
 
 instance VALUE Button where
-    valueHtml (Button label) = Html.submit "_" label
+    valueHtml (Button label) = HE.submit "_" label
 
 instance SVALUE Button

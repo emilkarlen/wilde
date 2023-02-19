@@ -10,12 +10,14 @@ module Wilde.Render.AbstractTableToHtml
 -------------------------------------------------------------------------------
 
 
-import Text.Html
+import qualified Data.Maybe
 
-import Wilde.Utils.TextHtmlUtils
+import           Wilde.Render.Html.Types
+import qualified Wilde.Render.Html.Element as HE
+import qualified Wilde.Render.Html.Attribute as HA
 
 import Wilde.GenericUi.AbstractTable
-import Wilde.Render.StyleForHtml
+import Wilde.Render.StyleForHtml ( STYLE_FOR_HTML(..) )
 
 
 -------------------------------------------------------------------------------
@@ -34,33 +36,33 @@ renderTable = tableMapSimple applyStyleToHtml
               renderRowContents renderCellContents . applyColGroupsToCells
 
 renderTableContents :: (Maybe Html,Maybe Html,Html) -> Html
-renderTableContents (mbHead,mbFoot,body) = table $ concatHtml [mb mbHead,mb mbFoot,body]
+renderTableContents (mbHead,mbFoot,body) = HE.table $ HE.seq [mb mbHead,mb mbFoot,body]
     where
-      mb = maybe noHtml id
+      mb = Data.Maybe.fromMaybe HE.empty
 
 renderRowGroupContents :: STYLE_FOR_HTML style =>
                           RowGroupType
                        -> ([ColGroup style],[Html]) -- ^ Rows
                        -> Html
-renderRowGroupContents Head (_,htmls) = thead $ concatHtml htmls
-renderRowGroupContents Foot (_,htmls) = tfoot $ concatHtml htmls
-renderRowGroupContents Body (_,htmls) = tbody $ concatHtml htmls
+renderRowGroupContents Head (_,htmls) = HE.thead $ HE.seq htmls
+renderRowGroupContents Foot (_,htmls) = HE.tfoot $ HE.seq htmls
+renderRowGroupContents Body (_,htmls) = HE.tbody $ HE.seq htmls
 
 
 renderRowContents :: RowGroupType
                   -> [Html] -- ^ Cells
                   -> Html
-renderRowContents _ = tr . concatHtml
+renderRowContents _ = HE.tr . HE.seq
 
 renderCellContents :: HTML a => RowGroupType -> (Span,a) -> Html
 renderCellContents rgt (cellspan,c) =
     let tablecell = if rgt == Head
-                    then th
-                    else td
-    in  tablecell (toHtml c) ! spans cellspan
+                    then HE.th
+                    else HE.td
+    in  tablecell (toHtml c) `HE.withAttrs` spans cellspan
         where
           spans :: (Int,Int) -> [HtmlAttr]
-          spans (x,y) = span colspan x ++ span rowspan y
+          spans (x,y) = span HA.colspan x ++ span HA.rowspan y
 
           span :: (Int -> HtmlAttr) -> Int -> [HtmlAttr]
           span _      1 = []

@@ -1,7 +1,7 @@
 -- | Styling of HTML.
 module Wilde.Render.StyleForHtml where
 
-import Text.Html
+import Wilde.Render.Html.Types
 import Wilde.GenericUi.Style
 
 -- | A style that can be applied to HTML.

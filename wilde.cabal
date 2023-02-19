@@ -165,6 +165,12 @@ Library
     Wilde.Media.Element
     Wilde.Media.MonadWithInputMedia
 
+    Wilde.Render.Html.Types
+    Wilde.Render.Html.Attribute
+    Wilde.Render.Html.Element
+    Wilde.Render.Html.Document
+    Wilde.Render.Html.Render
+
     Wilde.Render.AbstractTableToHtml
     Wilde.Render.RenderAsHtml
     Wilde.Render.Cgi.ElementSetIo
