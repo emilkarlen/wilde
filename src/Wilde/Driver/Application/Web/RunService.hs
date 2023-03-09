@@ -47,31 +47,31 @@ import           Wilde.Driver.Application.Web.Types (HtmlAsString)
 -------------------------------------------------------------------------------
 
 
-runService_html :: Maybe String
+runService_html :: [URL]
                 -> Translations
                 -> ServiceEnvironment
                 -> Service
                 -> IO Html
-runService_html mbCssFile tr env service =
+runService_html cssFiles tr env service =
   do
     serviceResult <- liftIO $ runService env service
     let wildePage = renderServiceResult tr env serviceResult
     pure $ renderPageAsHtml wildePage
   where
     renderPageAsHtml :: (StyledTitle,[AnyCOMPONENT]) -> Html
-    renderPageAsHtml (title,components) = renderPage mbCssFile title components
+    renderPageAsHtml (title,components) = renderPage cssFiles title components
 
 -- | A variant of 'runService_html' that also renders the HTML as a string.
 --
 -- Renders \"pretty\" if 'VariableNames.pretty' is found in the input media.
-runService_htmlString :: Maybe String
+runService_htmlString :: [URL]
                       -> Translations
                       -> ServiceEnvironment
                       -> Service
                       -> IO HtmlAsString
-runService_htmlString mbCssFile tr env service =
+runService_htmlString cssFiles tr env service =
     do
-      html <- runService_html mbCssFile tr env service
+      html <- runService_html cssFiles tr env service
       pure $ renderHtmlAsString html
   where
     renderHtmlAsString :: Html -> String

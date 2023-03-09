@@ -39,7 +39,7 @@ newAppConfigForServer :: Logging.AnyLogger -> AppConf.ApplicationConfiguration
 newAppConfigForServer logger = original
   {
     AppConf.serviceLinks = newSrvcLinks
-  , AppConf.appCssFile   = Just $ "/style/" ++ TestAppConf.cssFileName
+--   , AppConf.appCssFiles  = ["/style/" <> TestAppConf.cssFileName]
   }
   where
     original :: AppConf.ApplicationConfiguration

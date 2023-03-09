@@ -55,19 +55,19 @@ renderPageTitle title =
 
 
 -- | Renders a page.
-renderPage :: Maybe String -- CSS file
+renderPage :: [URL] -- ^ CSS files
            -> StyledTitle
            -> [AnyCOMPONENT] -- ^ body
            -> HD.Document
-renderPage mbCssFilePath title components =
+renderPage cssFiles title components =
     let headContents = HE.seq [HD.title titleString, hdrCssLink]
-        hdrCssLink   = maybe HE.empty cssRefElem mbCssFilePath
+        hdrCssLink   = HE.seq $ map cssRefElem cssFiles
         compsHtml    = map renderTopLevelComponent components :: [Html]
         srvcTitle    = renderPageTitle title :: Html
         bodyContents = HE.seq $ srvcTitle : compsHtml :: Html
     in  HD.document headContents bodyContents (applyStyleToHtml styleForPage)
   where
-    cssRefElem   :: String -> Html
+    cssRefElem   :: URL -> Html
     cssRefElem cssFile = HE.link `HE.withAttrs`
                          [HA.rel "stylesheet"
                          ,HA.href cssFile
@@ -77,12 +77,12 @@ renderPage mbCssFilePath title components =
     titleString   = wildeStyled title :: Title
 
 -- | Renders a page given simple Html.
-renderPageHtml :: Maybe String -- ^ CSS file
+renderPageHtml :: [URL] -- ^ CSS files
                -> StyledTitle -- ^ Page and service title
                -> Html -- ^ body
                -> HD.Document
-renderPageHtml mbCssFilePath title body =
-  renderPage mbCssFilePath title [AnyCOMPONENT (HtmlOnly body)]
+renderPageHtml cssFiles title body =
+  renderPage cssFiles title [AnyCOMPONENT (HtmlOnly body)]
 
 -- | Renders a component with a given title and content.
 renderTopLevelComponent :: AnyCOMPONENT -> Html

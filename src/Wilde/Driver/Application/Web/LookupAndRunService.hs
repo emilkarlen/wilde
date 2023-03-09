@@ -36,7 +36,7 @@ lookupAndRunService
     AppConf.ApplicationConfiguration
     {
       AppConf.translations = theTranslations
-    , AppConf.appCssFile   = theAppCssFile
+    , AppConf.appCssFiles   = theAppCssFile
     })
   rawRequestInput =
       case ServiceLookup.getServiceAndEnvironment appConf requestInput of

@@ -42,15 +42,15 @@ cssFileName :: String
 cssFileName = "video.css"
 
 cssFilePath :: Maybe String
-cssFilePath = Just $ "/style/css/" ++ cssFileName
+cssFilePath = ["/style/css/" <> cssFileName]
 
 odbcDataSourceName = "video"
 
 appConfig :: ApplicationConfiguration
-appConfig =  ApplicationConfiguration         
+appConfig =  ApplicationConfiguration
              {
                appServices                 = services
-             , appCssFile                  = cssFilePath
+             , appCssFiles                 = cssFilePath
              , translations                = Tr.translations
              , dbConfiguration             = DatabaseConnect.dmlExecutorConfiguration
                                              odbcDataSourceName

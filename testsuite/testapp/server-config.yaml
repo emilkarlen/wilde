@@ -3,7 +3,8 @@ files:
   mime-types:
     css: text/css
   paths:
-    style: html
+    style-lib: ../../web
+    style-app: web
 logging:
   enabled: true
   level: LIBRARY

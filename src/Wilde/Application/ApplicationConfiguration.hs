@@ -21,6 +21,8 @@ module Wilde.Application.ApplicationConfiguration
 
 import qualified Wilde.Utils.Logging.Class as Logger
 
+import           Wilde.Render.Html.Types
+
 import qualified Wilde.Media.Database.Configuration as DbConf
 import qualified Wilde.Media.Translations as Translations
 import           Wilde.Media.Presentation (ServiceLinks(..))
@@ -40,6 +42,6 @@ data ApplicationConfiguration =
      , translations                 :: Translations.Translations
      , dbConfiguration              :: DbConf.Configuration
      , serviceLinks                 :: ServiceLinks
-     , appCssFile                   :: Maybe String
+     , appCssFiles                  :: [URL]
      , appLogger                    :: Logger.AnyLogger
      }
