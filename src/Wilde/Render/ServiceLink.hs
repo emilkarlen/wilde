@@ -92,4 +92,4 @@ linkValueWithConfirm confirmationMessage serviceLink display =
   wwwLinkValueWithOnClick javaScriptPgm (href serviceLink) display
   where
     -- TODO Fix possible quotes (singlet-quotes only?) inside confirmationMessage
-    javaScriptPgm = "pure confirm('" ++ confirmationMessage ++ "')"
+    javaScriptPgm = "return confirm('" ++ confirmationMessage ++ "')"
