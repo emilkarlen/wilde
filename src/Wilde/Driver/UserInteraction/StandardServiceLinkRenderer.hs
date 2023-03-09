@@ -22,9 +22,10 @@ module Wilde.Driver.UserInteraction.StandardServiceLinkRenderer
 -------------------------------------------------------------------------------
 
 
-import Wilde.Render.ServiceLink
+import           Wilde.Media.WildeStyle as WS
+import           Wilde.Render.ServiceLink
 
-import Wilde.ApplicationConstruction.StandardServices
+import           Wilde.ApplicationConstruction.StandardServices
 
 
 -------------------------------------------------------------------------------
@@ -63,4 +64,4 @@ instance LABEL_OF StandardObjectServiceEnum where
 -- need any further formating.
 -------------------------------------------------------------------------------
 renderLink :: String -> ServiceLink -> AnySVALUE
-renderLink = renderServiceLink_string
+renderLink = renderServiceLink_string WS.textButtonStyle

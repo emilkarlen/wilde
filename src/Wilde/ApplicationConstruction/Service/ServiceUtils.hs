@@ -12,6 +12,7 @@ module Wilde.ApplicationConstruction.Service.ServiceUtils
 
          -- * Utilities for standard services
 
+         showOneComponent,
          showOnePage,
          showOnePageService,
 
@@ -99,6 +100,20 @@ twoStepServiceTitlesWithSameStyle style title1 title2 =
   , page2Title = wildeStyling style title2
    }
 
+-- | Gives a component showing given attributes (in given order) of
+-- the given object.
+showOneComponent
+  :: Presentation.ATTRIBUTE_PRESENTATION atConf
+  => [Any (AttributeType atConf dbTable)]
+  -> Object otConf atConf dbTable otNative idAtExisting idAtCreate
+  -> Presentation.Monad AnyCOMPONENT
+showOneComponent attributeTypesOrder o =
+  do
+    atListSetup <- Presentation.toPresentationMonad $
+                   AttributeTypeListSetup.mkGeneral (oType o) attributeTypesOrder
+    let getAttrs = AttributeTypeListSetup.apply atListSetup
+    OmPres.showOneComponent getAttrs o
+
 showOnePage :: Presentation.ATTRIBUTE_PRESENTATION atConf
             => [Any (AttributeType atConf dbTable)]
             -> StyledTitle
@@ -106,10 +121,7 @@ showOnePage :: Presentation.ATTRIBUTE_PRESENTATION atConf
             -> Presentation.Monad ServicePage
 showOnePage attributeTypesOrder title o =
   do
-    atListSetup <- Presentation.toPresentationMonad $
-                   AttributeTypeListSetup.mkGeneral (oType o) attributeTypesOrder
-    let getAttrs = AttributeTypeListSetup.apply atListSetup
-    anyComponent <- OmPres.showOneComponent getAttrs o
+    anyComponent <- showOneComponent attributeTypesOrder o
     pure  (title,[anyComponent])
 
 showOnePageService :: Presentation.ATTRIBUTE_PRESENTATION atConf

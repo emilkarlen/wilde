@@ -22,7 +22,6 @@ common common-properties
     transformers,
     convertible,
     pretty,
-    html,
     cgi,
     parsec,
     time,

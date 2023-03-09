@@ -88,6 +88,8 @@ module Wilde.Media.UserInteraction
 -------------------------------------------------------------------------------
 
 
+import Data.Maybe (maybeToList)
+
 import Wilde.Utils.Empty
 
 import Wilde.GenericUi.Widget
@@ -235,7 +237,7 @@ formBlockInfoAsFormBlock atFbInfo@(FormBlockRowInfo {
   =
   FormBlock formBlockRows theMetaValues
   where
-    formBlockRows = maybe [] (:[]) mbFormBlockRow
+    formBlockRows = maybeToList mbFormBlockRow
 
 instance EMPTY FormBlockRowInfo where
   empty =
@@ -286,7 +288,7 @@ data FormBlocksAndMetas =
 
 instance Semigroup FormBlocksAndMetas where
   (FormBlocksAndMetas mL bL) <> (FormBlocksAndMetas mR bR) =
-    (FormBlocksAndMetas (mL ++ mR) (bL ++ bR))
+    FormBlocksAndMetas (mL <> mR) (bL <> bR)
 
 instance Monoid FormBlocksAndMetas where
   mempty = FormBlocksAndMetas [] []

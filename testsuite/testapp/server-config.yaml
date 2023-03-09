@@ -1,0 +1,9 @@
+port: 8082
+files:
+  mime-types:
+    css: text/css
+  paths:
+    style: html
+logging:
+  enabled: true
+  level: LIBRARY

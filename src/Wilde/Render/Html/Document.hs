@@ -33,7 +33,7 @@ where
 -------------------------------------------------------------------------------
 
 
-import qualified Text.Html as H
+import qualified Text.Blaze.XHtml5 as H
 
 import           Wilde.Render.Html.Types
 
@@ -50,11 +50,11 @@ document
     -> Html -- ^ body contents
     -> (Html -> Html) -- ^ body element transformer, for setting attributes
     -> Document
-document headContents bodyContents transBody = H.thehtml $ head H.+++ body
+document headContents bodyContents transBody = H.docTypeHtml $ head <> body
     where
-        head = H.header headContents :: Html
+        head = H.head headContents :: Html
         body = transBody $ H.body bodyContents :: Html
 
 
 title :: String -> Html
-title = H.thetitle . H.stringToHtml
+title = H.title . H.toHtml

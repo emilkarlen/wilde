@@ -1,16 +1,13 @@
-{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 -- | Functionallity for rendering the
 -- types of a Wilde application related to the User Interface
 -- as HTML.
 module Wilde.Render.RenderAsHtml
        (
-         renderComponent,
-         renderComponentTitle,
-
          renderTable,
 
-         renderServiceTitle,
+         renderPageTitle,
          renderPage,
          renderPageHtml,
        )
@@ -43,27 +40,10 @@ import Wilde.Render.AbstractTableToHtml
 -------------------------------------------------------------------------------
 
 
--- | Renders a component with a given title and content.
-renderComponent :: Maybe StyledTitle -> Html -> Html
-renderComponent Nothing html = HE.center html
-renderComponent (Just title) html = HE.seq [HE.center (renderComponentTitle title), html]
-
--- | Renders a component title.
-renderComponentTitle :: StyledTitle -- ^ Component title
-                     -> Html
-renderComponentTitle title =
-    withclasses classes $ HE.div (HE.str titleString)
-  where
-    classes       = titleClasses ++ systemClasses
-    systemClasses = Wilde.Media.WildeStyle.componentTitleClasses :: [ClassName]
-    titleString   = wildeStyled title :: Title
-    titleStyle    = wildeStyle  title :: WildeStyle
-    titleClasses  = getClasses titleStyle :: [ClassName]
-
 -- | Renders a page title.
-renderServiceTitle :: StyledTitle
+renderPageTitle :: StyledTitle
                    -> Html
-renderServiceTitle title =
+renderPageTitle title =
     withclasses classes $
     HE.div (HE.str titleString)
   where
@@ -82,8 +62,8 @@ renderPage :: Maybe String -- CSS file
 renderPage mbCssFilePath title components =
     let headContents = HE.seq [HD.title titleString, hdrCssLink]
         hdrCssLink   = maybe HE.empty cssRefElem mbCssFilePath
-        compsHtml    = map (renderComponent Nothing . componentHtml) components :: [Html]
-        srvcTitle    = renderServiceTitle title :: Html
+        compsHtml    = map renderTopLevelComponent components :: [Html]
+        srvcTitle    = renderPageTitle title :: Html
         bodyContents = HE.seq $ srvcTitle : compsHtml :: Html
     in  HD.document headContents bodyContents (applyStyleToHtml styleForPage)
   where
@@ -91,15 +71,10 @@ renderPage mbCssFilePath title components =
     cssRefElem cssFile = HE.link `HE.withAttrs`
                          [HA.rel "stylesheet"
                          ,HA.href cssFile
-                         ,HA.custom "type" "text/css"]
+                         ,HA.type_ "text/css"]
 
     styleForPage  = WildeStyle [pageClass]
     titleString   = wildeStyled title :: Title
-    titleStyle    = wildeStyle  title :: WildeStyle
-    titleClasses  = getClasses titleStyle :: [ClassName]
-
-instance COMPONENT Html where
-  componentHtml = id
 
 -- | Renders a page given simple Html.
 renderPageHtml :: Maybe String -- ^ CSS file
@@ -107,4 +82,14 @@ renderPageHtml :: Maybe String -- ^ CSS file
                -> Html -- ^ body
                -> HD.Document
 renderPageHtml mbCssFilePath title body =
-  renderPage mbCssFilePath title [AnyCOMPONENT body]
+  renderPage mbCssFilePath title [AnyCOMPONENT (HtmlOnly body)]
+
+-- | Renders a component with a given title and content.
+renderTopLevelComponent :: AnyCOMPONENT -> Html
+renderTopLevelComponent component = addStyleTo unstyled
+  where
+    addStyleTo :: Html -> Html
+    addStyleTo  = withclasses pageTopLevelComponentClasses
+
+    unstyled :: Html
+    unstyled  = HE.div $ componentHtml component

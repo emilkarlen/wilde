@@ -12,7 +12,8 @@ where
 -------------------------------------------------------------------------------
 
 
-import qualified Text.Html as H
+import qualified Text.Blaze.Html.Renderer.String as RS
+import qualified Text.Blaze.Html.Renderer.Pretty as RP
 
 import           Wilde.Render.Html.Types
 
@@ -24,5 +25,5 @@ import           Wilde.Render.Html.Types
 
 standard, pretty :: Html -> String
 
-standard = H.renderHtml
-pretty   = H.prettyHtml
+standard = RS.renderHtml
+pretty   = RP.renderHtml

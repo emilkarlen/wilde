@@ -295,7 +295,7 @@ instance VALUE WwwLinkValueDoneRight where
     HE.anchor labelHtml `HE.withAttrs` (HA.href (hrefToUrl href) : domEventAttrs)
     where
       labelHtml     = label2Html (wildeStyled display)
-      domEventAttrs = [HA.custom (show event) jsPgm | (event,jsPgm) <- domEvents]
+      domEventAttrs = [HA.domEvent event jsPgm | (event,jsPgm) <- domEvents]
 
 label2Html :: LinkLabel -> Html
 label2Html (TextLabel  text)      = HE.str text
@@ -334,6 +334,6 @@ button :: String  -- ^ label
 button = Button
 
 instance VALUE Button where
-    valueHtml (Button label) = HE.submit "_" label
+    valueHtml (Button label) = HE.submit label
 
 instance SVALUE Button

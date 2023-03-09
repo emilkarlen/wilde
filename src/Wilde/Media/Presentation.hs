@@ -340,9 +340,8 @@ liftIOWithError io =
 
 -- runDbConnMonadWithConnFromEnv_noDisconnect ::
 toPresentationMonad_wDefaultDbConn
- ::
-  DbConn.Monad a ->
-  Monad a
+  :: DbConn.Monad a
+  -> Monad a
 toPresentationMonad_wDefaultDbConn dbm =
   do
     dbConnMonadEnv <- getDbConnMonadEnv
@@ -351,10 +350,10 @@ toPresentationMonad_wDefaultDbConn dbm =
   where
     getDbConnMonadEnv :: Monad DbConn.Environment
     getDbConnMonadEnv = do
-      env            <- getEnv
+      env             <- getEnv
       let dbConf       = envDbConfiguration env
-      let dmlRenderer = DbConf.dmlRenderer dbConf
-      conn           <- liftIO $ DbConf.connectionProvider dbConf
+      let dmlRenderer  = DbConf.dmlRenderer dbConf
+      conn            <- liftIO $ DbConf.connectionProvider dbConf
       let custEnv      = envCustomEnvironment env
       let logger       = envLogger env
       pure $ DbConn.newEnv custEnv dmlRenderer conn logger

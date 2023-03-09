@@ -26,7 +26,7 @@ module Wilde.GenericUi.Widget
 -------------------------------------------------------------------------------
 
 
-import           Wilde.Render.Html.Types
+import           Wilde.Render.Html.Types hiding (Label)
 
 import Wilde.GenericUi.Value
 

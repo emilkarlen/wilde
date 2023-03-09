@@ -22,6 +22,8 @@ module TestResources.UserInteraction.FormBlockResources
 
 import Test.HUnit
 
+import qualified Text.Blaze.Html.Renderer.String as HRS
+
 import qualified Wilde.Media.UserInteraction.Output as UiO
 import qualified Wilde.Media.WildeMedia as WildeMedia
 
@@ -84,7 +86,7 @@ showFormBlockRow = either showLabelAndWidget showTitleAndPresentationOutput
       "LabelAndWidget/label=" ++ show (UiO.labelString label) ++
       ":widget=" ++ widgetString
       where
-        widgetString = show $ show $ UiO.widgetHtml widget
+        widgetString = HRS.renderHtml $ UiO.widgetHtml widget
     showTitleAndPresentationOutput :: (WildeMedia.Title,WildeMedia.PresentationOutput) -> String
     showTitleAndPresentationOutput (title,presentationOutput) =
       "TitleAndPresentationOutput/title=" ++ show title

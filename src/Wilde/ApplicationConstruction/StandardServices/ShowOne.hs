@@ -1,4 +1,7 @@
 -- | Import this module qualified.
+
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Wilde.ApplicationConstruction.StandardServices.ShowOne
        (
          mkService,
@@ -21,9 +24,6 @@ import Data.Maybe
 import           Wilde.Media.WildeValue (AnySVALUE)
 import qualified Wilde.Media.Presentation as Presentation
 
-import qualified Wilde.WildeUi.LayoutValues as LayoutValues
-import qualified Wilde.WildeUi.LayoutComponents  as LayoutComponents
-
 import           Wilde.ObjectModel.ObjectModel
 import qualified Wilde.ObjectModel.Presentation as Presentation
 import qualified Wilde.ObjectModel.Database as Database
@@ -36,6 +36,7 @@ import Wilde.Application.ObjectTypeService
 import Wilde.ApplicationConstruction.UserInteraction.Output.ObjectDependentComponent
 import Wilde.ApplicationConstruction.Service.ObjectTypeServiceUtils
 import Wilde.ApplicationConstruction.Service.ServiceUtils
+import qualified Wilde.Render.DataAndButtonsComponent as TopComp
 
 
 -------------------------------------------------------------------------------
@@ -74,7 +75,8 @@ mainForObj o config =
       titleAndComponents <- toServiceMonad $ mainForObj' o config
       pageOkResult titleAndComponents
 
-mainForObj' :: Presentation.ATTRIBUTE_PRESENTATION atConf
+mainForObj' :: forall otConf atConf dbTable otNative idAtExisting idAtCreate.
+               Presentation.ATTRIBUTE_PRESENTATION atConf
             => Object otConf atConf dbTable otNative idAtExisting idAtCreate
             -> Config otConf atConf dbTable otNative idAtExisting idAtCreate
             -> Presentation.Monad (StyledTitle,[AnyCOMPONENT])
@@ -85,22 +87,31 @@ mainForObj' o (Config
                , dependentComponents = depComps
                , buttons             = getMkButtonComponents
                }) =
-  let
-    ot               = oType o
-    pk               = attrValue $ oIdAttribute o
-    mkDepComponents  = map (\depCompFun -> depCompFun o) depComps
-  in
-   do
-     mkButtonComponents           <- sequence getMkButtonComponents
-     let buttonComponents          = map (\mk -> mk pk) mkButtonComponents
-     let buttonsComponentList      = if null buttonComponents
-                                     then []
-                                     else [LayoutComponents.svalueComponent $
-                                           LayoutValues.horizontal
-                                           buttonComponents] :: [AnyCOMPONENT]
-     (title,showOneComponents)    <- showOnePage atsOrder theTitle o
-     let mainComponents            = showOneComponents ++ buttonsComponentList
-     let mainComponent             = LayoutComponents.verticalComponents mainComponents
-     depComponentMbs <- sequence mkDepComponents
-     let depComponents = catMaybes depComponentMbs
-     pure (title,mainComponent : depComponents)
+  do
+    mainComponent <- getMainComponent
+    depComponents <- getDepComponents
+    pure (theTitle,mainComponent : depComponents)
+  where
+    getButtons :: Presentation.Monad [AnySVALUE]
+    getButtons = do
+      id2btnList <- sequence getMkButtonComponents
+      pure $ map (\id2btn -> id2btn pk) id2btnList
+
+    getMainComponent :: Presentation.Monad AnyCOMPONENT
+    getMainComponent = do
+      dataComponent <- showOneComponent atsOrder o
+      buttons       <- getButtons
+      pure $ TopComp.new dataComponent buttons
+
+    getDepComponents :: Presentation.Monad [AnyCOMPONENT]
+    getDepComponents = do
+      depComponentMbs <- sequence mkDepComponents
+      pure $ catMaybes depComponentMbs
+      where
+        mkDepComponents = map (\depCompFun -> depCompFun o) depComps
+
+    pk :: idAtExisting
+    pk = attrValue $ oIdAttribute o
+
+    ot :: ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
+    ot = oType o

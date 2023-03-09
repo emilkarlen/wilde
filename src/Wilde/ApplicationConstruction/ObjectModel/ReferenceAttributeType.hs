@@ -35,6 +35,7 @@ import qualified Wilde.Database.SqlJoin as Sql
 
 import qualified Wilde.Render.ServiceLink as RenderServiceLink
 
+import           Wilde.Media.WildeStyle as WS
 import qualified Wilde.Media.Presentation as Presentation
 
 import           Wilde.ObjectModel.ObjectModel
@@ -688,7 +689,7 @@ mkShowOneLink :: (ServiceLink.MonadWithServiceLinkConstructor m
 mkShowOneLink ot objId linkText =
   do
     serviceLinkTarget <- ServiceLink.mkLink srvcRefWp
-    pure $ RenderServiceLink.renderServiceLink_string
+    pure $ RenderServiceLink.renderServiceLink_string WS.referenceAttributeStyle
       linkText
       serviceLinkTarget
   where

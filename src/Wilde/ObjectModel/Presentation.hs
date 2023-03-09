@@ -62,7 +62,7 @@ showOneComponent getAttrs o =
   do
     unstyledTable <- showOneTable (getAttrs o)
     let styledTable = addStyleToSTYLING WS.presentationTableSingle unstyledTable
-    pure $ AnyCOMPONENT $ TableListComponent Nothing styledTable
+    pure $ AnyCOMPONENT $ TableListComponent styledTable
 
 showOneTable :: ATTRIBUTE_PRESENTATION atConf
              => [Any (Attribute atConf dbTable)]

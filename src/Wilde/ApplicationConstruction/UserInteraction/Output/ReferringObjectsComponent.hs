@@ -1,5 +1,3 @@
-{-# LANGUAGE ExistentialQuantification #-}
-
 -------------------------------------------------------------------------------
 -- | A component that displays a list of 'Object's that
 -- has a reference to another given \"target\" 'Object'.
@@ -7,6 +5,10 @@
 -- Such a component is suitable to display on the page that displays
 -- the target object.
 -------------------------------------------------------------------------------
+
+{-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Wilde.ApplicationConstruction.UserInteraction.Output.ReferringObjectsComponent
        (
          mandatory,
@@ -25,6 +27,7 @@ import qualified Wilde.Database.SqlJoin as Sql
 import qualified Wilde.Media.Presentation as Presentation
 import           Wilde.Media.WildeValue
 import qualified Wilde.Media.WildeStyle as WS
+import qualified Wilde.Media.Database.Monad as DbConn
 
 
 import           Wilde.ObjectModel.ObjectModel
@@ -46,9 +49,7 @@ import           Wilde.ApplicationConstruction.UserInteraction.Output.ObjectDepe
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.SpecialComponents as SpecialComponents
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ObjectListSetup as OLS
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.StandardFilterExpression as StdFilterExpr
-
-import qualified Wilde.WildeUi.LayoutValues as LayoutValues
-import qualified Wilde.WildeUi.LayoutComponents as LayoutComponents
+import qualified Wilde.Render.DataAndButtonsComponent as DabComp
 
 
 -------------------------------------------------------------------------------
@@ -123,16 +124,18 @@ optional
     config  = mkShowAllReferringObjsSetup otSubSetup atSuperRef
     superPk = attrValue $ oIdAttribute oSuper
 
-mkComponent :: (Database.DATABASE_TABLE otConf
-               ,DatabaseAndPresentation.ATTRIBUTE_TYPE_INFO atConf
-               ,OmGsr.ATTRIBUTE_IO_FOR_EXISTING atConf
-               ,OmGsr.ATTRIBUTE_OUTPUT_FOR_CREATE atConf
-               )
-            => ObjectType            otConf atConf     dbTable otN idAtE idAtCreate
-            -> ShowAllReferingConfig otConf atConf ref dbTable otN idAtE idAtCreate
-            -> AttributeType                atConf     dbTable ref ref
-            -> ref
-            -> Presentation.Monad (Maybe AnyCOMPONENT)
+mkComponent
+  :: forall otConf atConf ref dbTable otN idAtE idAtCreate.
+     (Database.DATABASE_TABLE otConf
+     ,DatabaseAndPresentation.ATTRIBUTE_TYPE_INFO atConf
+     ,OmGsr.ATTRIBUTE_IO_FOR_EXISTING atConf
+     ,OmGsr.ATTRIBUTE_OUTPUT_FOR_CREATE atConf
+     )
+  => ObjectType            otConf atConf     dbTable otN idAtE idAtCreate
+  -> ShowAllReferingConfig otConf atConf ref dbTable otN idAtE idAtCreate
+  -> AttributeType                atConf     dbTable ref ref
+  -> ref
+  -> Presentation.Monad (Maybe AnyCOMPONENT)
 mkComponent ot
   (ShowAllReferingConfig
    {
@@ -158,33 +161,26 @@ mkComponent ot
     getWhereExpr          <- getWhereExprGetter ot getSubObjWhereExpr
     os                    <- Presentation.toPresentationMonad_wDefaultDbConn $
                              inputObjects getWhereExpr
-    tableComponent <- SpecialComponents.objectListTableAccordingToSetup
-                      (tableStyle os)
-                      atListSetup
-                      footerRowsConstructor
-                      (OLS.objectButtonsLeft  buttonsSetup)
-                      (OLS.objectButtonsRight buttonsSetup)
-                      mbTitle
-                      os
-    buttonsBelow <- sequence $ OLS.objectTypeButtonsBelow buttonsSetup
-    let buttonsComponents = if null buttonsBelow
-                            then []
-                            else [LayoutComponents.svalueComponent $
-                                  LayoutValues.horizontal
-                                  buttonsBelow]
-    let totalComponent = LayoutComponents.verticalComponents $
-                         tableComponent : buttonsComponents
-    pure $ Just totalComponent
+    dataComponent         <- SpecialComponents.objectListTableAccordingToSetup
+                             (tableStyle os)
+                             atListSetup
+                             footerRowsConstructor
+                             (OLS.objectButtonsLeft  buttonsSetup)
+                             (OLS.objectButtonsRight buttonsSetup)
+                             mbTitle
+                             os
+    buttonsBelow          <- sequence $ OLS.objectTypeButtonsBelow buttonsSetup
+    pure $ Just $ DabComp.new dataComponent buttonsBelow
   where
     buttonsSetup              = theMkButtonsSetup refVal
     atsIncludeBeforeExclusion = theDisplayAts
     tableStyle                :: [a] -> WildeStyle
     tableStyle os             = tableStyleForObjectTypeSubObjects (null os)
     mbTitle                   :: Maybe StyledTitle
-    mbTitle                   = Just (theTitle
-                                     `withAdjustedStyle`
-                                      addStyle (WildeStyle [WS.componentClass])
-                                      )
+    mbTitle                   = Just $
+                                  theTitle
+                                  `withAdjustedStyle`
+                                   addStyle (WildeStyle [WS.componentClass])
     (getSubObjWhereExpr,getSqlParamsForRef) = OmDbJ.atExprEq atSuperRef
 
     createOneSubObjButton :: Presentation.Monad AnySVALUE
@@ -193,6 +189,8 @@ mkComponent ot
       where
         fixedValues = [attributeFixForCreate_fromValue atSuperRef refVal]
 
+    inputObjects :: Sql.JoinMonad dbTable (Maybe (Sql.SqlExpr (Sql.BasedOn dbTable)))
+                 -> DbConn.Monad [Object otConf atConf dbTable otN idAtE idAtCreate]
     inputObjects getWhereExpr =
       InputPres.inputForConvertibleParams ot
                                           (SqlWithPres.otDatabaseOrderBy theOrderByInDb)
@@ -233,14 +231,11 @@ tableStyleForObjectTypeSubObjects :: Bool -> WildeStyle
 tableStyleForObjectTypeSubObjects listIsEmpty = WildeStyle stdClasses
   where
     stdStyle   = WildeStyle stdClasses
-    stdClasses = multiEmpty ++ WS.presMultiClasses ++
+    stdClasses = multiEmpty <> WS.presMultiClasses <>
                  [WS.componentClass
                  ,WS.weObjectClass
-                 ,subObjectListClass]
-    multiEmpty = if listIsEmpty then [WS.multiEmptyClass] else []
-
-subObjectListClass :: ClassName
-subObjectListClass = "_rl_dependent_component"
+                 ,WS.subObjectListClass]
+    multiEmpty = [WS.multiEmptyClass | listIsEmpty]
 
 -- | Configuration for displaying a list of sub-objects (refering objects).
 data ShowAllReferingConfig otConf atConf atRef dbTable otNative idAtExisting idAtCreate =

@@ -16,7 +16,7 @@ module Wilde.Render.UserInteractionRendering
 -------------------------------------------------------------------------------
 
 
-import           Wilde.Render.Html.Types
+import           Wilde.Render.Html.Types hiding (Label)
 import qualified Wilde.Render.Html.Element as HE
 import qualified Wilde.Render.Html.Attribute as HA
 
@@ -28,11 +28,14 @@ import qualified Wilde.Media.WildeStyle as WS
 import           Wilde.WildeUi.TableUtils
 import           Wilde.WildeUi.WildeComponent as WC
 import qualified Wilde.WildeUi.StdValueTypes
-import           Wilde.WildeUi.LayoutComponents
+
+import           Wilde.WildeUi.LayoutComponents as LayoutComponents
 
 import qualified Wilde.Render.Cgi.ElementSetIo as ElementSetIo
+import qualified Wilde.Render.DataAndButtonsComponent as DataAndButtons
 
 import qualified Wilde.Application.Service.PopUp as PopUp
+import Wilde.Media.UserInteraction.Output (PopUpButtonTexter)
 
 
 -------------------------------------------------------------------------------
@@ -46,7 +49,7 @@ formBlockComponent :: FormBlock -> AnyCOMPONENT
 formBlockComponent (FormBlock interaction metaValues)  =
     let
       formContents   = [AnyCOMPONENT $ HtmlOnly metaValuesHtml
-                       ,AnyCOMPONENT $ TableListComponent Nothing styledTable]
+                       ,AnyCOMPONENT $ TableListComponent styledTable]
       styledTable    = addStyleToSTYLING WS.userInteractionTable wildeTable
       wildeTable    :: WildeTable
       wildeTable     = wildeHeaderValueTable
@@ -78,16 +81,15 @@ formComponent :: Form
               -> UiOm.UserInteractionOutputMonad AnyCOMPONENT
 formComponent form =
   do
-
     custEnv             <- UiOm.getCustomEnvironment
     buttonTexter        <- UiOm.getEnvs UiOm.envButtonTexter
     let custEnvCgiVals   = ElementSetIo.customEnvironmentSetToCgiValues custEnv
     let custEnvHtml      = HE.seq $ map cgiValueInput custEnvCgiVals
     let formMetasHtml    = HE.seq $ map metaValueInput (formMetaValues form)
     let allMetasHtml     = HE.seq [formMetasHtml,custEnvHtml]
-    let formContents     = [AnyCOMPONENT $ HtmlOnly allMetasHtml,
-                            verticalComponents $ map formBlockComponent (formBlocks form),
-                            AnyCOMPONENT $ FormButtons (buttonTexter PopUp.Ok) (buttonTexter PopUp.Reset)]
+    let formContents     = [ AnyCOMPONENT $ HtmlOnly allMetasHtml
+                           , dataAndButtons (formBlocks form) buttonTexter
+                           ]
     pure $
       AnyCOMPONENT $ FormComponent
                     {
@@ -95,6 +97,19 @@ formComponent form =
                       WC.formMethod  = Get,
                       WC.formContent = formContents
                      }
+  where
+    dataAndButtons :: [FormBlock] -> PopUpButtonTexter -> AnyCOMPONENT
+    dataAndButtons formBlocks buttonTexter =
+      DataAndButtons.new formBlocksC (buttons buttonTexter)
+      where
+        formBlocksC :: AnyCOMPONENT
+        formBlocksC  = verticalComponents $ map formBlockComponent formBlocks
+
+    buttons :: PopUpButtonTexter -> [AnySVALUE]
+    buttons buttonTexter =
+      [ WC.formButton WC.Reset  (buttonTexter PopUp.Reset)
+      , WC.formButton WC.Submit (buttonTexter PopUp.Ok)
+      ]
 
 
 -------------------------------------------------------------------------------

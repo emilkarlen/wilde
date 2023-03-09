@@ -21,9 +21,6 @@ module Wilde.Render.ServiceLink
 -------------------------------------------------------------------------------
 
 
-
-import           Wilde.Media.WildeStyle as WS
-
 import           Wilde.WildeUi.StdValueTypes
 
 import           Wilde.Service.ServiceLink
@@ -41,21 +38,21 @@ type ServiceLinkRenderer = ServiceLink -> AnySVALUE
 
 
 -------------------------------------------------------------------------------
--- | Renders a link to a service as CGI invokation.
+-- | Renders a link to a service.
 --
 -- The display of the link is an attribute value in the form of a string.
 -------------------------------------------------------------------------------
-renderServiceLink_string :: String -> ServiceLinkRenderer
-renderServiceLink_string display serviceLink =
+renderServiceLink_string :: WildeStyle -> String -> ServiceLinkRenderer
+renderServiceLink_string style display serviceLink =
   let
     wwwLink = linkValue serviceLink (UnquotedStringValue display)
   in
    AnySVALUE $ withNeutralWildeStyle $
    hideStyle $
-   withWildeStyle WS.referenceAttributeStyle wwwLink
+   withWildeStyle style wwwLink
 
 -------------------------------------------------------------------------------
--- | Renders a link to a service as CGI invokation.
+-- | Renders a link to a service.
 --
 -- The display of the link is a \"button\" (whatever this means!) that does not
 -- need any further formating.

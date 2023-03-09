@@ -21,6 +21,7 @@ helpClass      = "_help"
 varnameClass   = "_varname"
 varFormatClass = "_varformat"
 
+-- Wilde Elements
 weObjectClass,weAttributeClass :: ClassName
 weObjectClass    = "_weO"
 weAttributeClass = "_weA"
@@ -34,6 +35,10 @@ pageClass,componentClass :: ClassName
 pageClass      = "_cPg" -- "Page" class.
 componentClass = "_cC"  -- "Component" class.
 
+subObjectListClass :: ClassName
+subObjectListClass = "_rl_dependent_component"
+
+-- UI type of output
 presentationClass,inputClass :: ClassName
 presentationClass = "_uP"
 inputClass        = "_uI"
@@ -51,8 +56,8 @@ spOdd             = "_spO"
 
 -- | Role classes.
 titleClass,labelClass,valueClass,sumClass :: ClassName
-titleClass        = "_rT"
-labelClass        = "_rL"
+titleClass        = "_rT" -- ^ title of page, component
+labelClass        = "_rL" -- ^ label of field
 valueClass        = "_rV"
 sumClass          = "_summary"
 commentClass      = "_comment"
@@ -113,9 +118,16 @@ pageTitleClasses,componentTitleClasses :: [ClassName]
 pageTitleClasses      = [pageClass,titleClass]
 componentTitleClasses = [componentClass,titleClass]
 
+pageTopLevelComponentClasses :: [ClassName]
+pageTopLevelComponentClasses = [pageClass, componentClass]
+-- pageTopLevelComponentClasses = ["_develop__top_level_component"]
+
 pageTitle,componentTitle :: WildeStyle
 pageTitle      = WildeStyle pageTitleClasses
 componentTitle = WildeStyle componentTitleClasses
+
+buttonsComponentClasses :: [ClassName]
+buttonsComponentClasses = [componentClass, buttonClass]
 
 presMultiClasses,presMultiValueClasses,presMultiLabelClasses :: [ClassName]
 presMultiClasses      = [presentationClass,multiClass]

@@ -24,6 +24,7 @@ import Test.HUnit
 import           Wilde.Render.Html.Types
 import qualified Wilde.Render.Html.Attribute as HA
 import qualified Wilde.Render.Html.Element as HE
+import qualified Text.Blaze.Html.Renderer.String as HRS
 
 import qualified Wilde.Media.WildeMedia as WildeMedia
 
@@ -40,8 +41,8 @@ checkWidgetByHtmlString :: String -> UiO.AnyWIDGET -> UiO.AnyWIDGET -> Assertion
 checkWidgetByHtmlString msgHeader (UiO.AnyWIDGET expected) (UiO.AnyWIDGET actual) =
   assertEqual "widget html" html_expected html_actual
   where
-    html_expected = show $ UiO.widgetHtml expected
-    html_actual   = show $ UiO.widgetHtml actual
+    html_expected = HRS.renderHtml $ UiO.widgetHtml expected
+    html_actual   = HRS.renderHtml $ UiO.widgetHtml actual
 
 
 -------------------------------------------------------------------------------

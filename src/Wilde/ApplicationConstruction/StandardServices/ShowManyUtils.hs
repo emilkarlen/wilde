@@ -18,9 +18,6 @@ import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ObjectList
 
 import qualified Wilde.Media.WildeStyle as WS
 
-import qualified Wilde.WildeUi.LayoutValues as LayoutValues
-import qualified Wilde.WildeUi.LayoutComponents as LayoutComponents
-
 import qualified Wilde.Media.Presentation as Presentation
 
 import           Wilde.ObjectModel.ObjectModel
@@ -28,6 +25,7 @@ import qualified Wilde.ObjectModel.AttributeTypeListSetup.SansAnnotation as Attr
 import           Wilde.ObjectModel.Presentation
 
 import Wilde.ApplicationConstruction.UserInteraction.Output.SpecialComponents
+import qualified Wilde.Render.DataAndButtonsComponent as TopComp
 import Wilde.Application.ObjectTypeService
 
 import Wilde.Application.Service.Service
@@ -82,18 +80,12 @@ showMany' ot (Config title
       atListSetup             <- Presentation.toPresentationMonad $
                                  AttributeTypeListSetup.mkGeneral ot theDisplayAts
       mbFooterRowsConstructor <- theGetFooterRowsConstructor
-      tableComponent          <- objectListTableAccordingToSetup
+      objectListComponent     <- objectListTableAccordingToSetup
                                  WS.presentationTableMulti
                                  atListSetup
                                  mbFooterRowsConstructor
                                  objBtnsLeft objBtnsRight
                                  Nothing
                                  os
-      objTypeBtnsBelow <- sequence getObjTypeBtnsBelow
-      let mbButtonsComponent = if null objTypeBtnsBelow
-                               then Nothing
-                               else Just $ LayoutComponents.svalueComponent $
-                                    LayoutValues.horizontal
-                                    objTypeBtnsBelow
-      pure (title,
-              tableComponent : maybe [] (:[]) mbButtonsComponent)
+      buttonsBelow            <- sequence getObjTypeBtnsBelow
+      pure (title, [TopComp.new objectListComponent buttonsBelow])

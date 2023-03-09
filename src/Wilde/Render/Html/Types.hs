@@ -16,6 +16,8 @@ of less use after that.
 
 module Wilde.Render.Html.Types
 (
+    Label,
+
     DomEvent(..),
     JavaScriptProgram,
 
@@ -34,12 +36,14 @@ where
 -------------------------------------------------------------------------------
 
 
-import qualified Text.Html as H
+import qualified Text.Blaze.XHtml5 as H
 
 
 -------------------------------------------------------------------------------
 -- - implementation -
 -------------------------------------------------------------------------------
+
+type Label = String
 
 data DomEvent = OnClick
                 deriving (Show,Read,Eq,Ord,Enum,Bounded)
@@ -49,10 +53,10 @@ type JavaScriptProgram = String
 
 type URL = String
 
-type HtmlAttr = H.HtmlAttr
+type HtmlAttr = H.Attribute
 
 type Html = H.Html
 
-class H.HTML a => HTML a where
+-- class H.ToMarkup a => HTML a where
+class HTML a where
     toHtml :: a -> Html
-    toHtml = H.toHtml

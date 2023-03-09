@@ -52,10 +52,10 @@ module Wilde.Render.Html.Element
 
     -- * Misc
 
+    nbsp,
     br,
     image,
 
-    center,
     paragraph,
 
     textarea,
@@ -72,7 +72,9 @@ where
 
 import           Prelude hiding (seq, div, span)
 
-import qualified Text.Html as H
+import qualified Text.Blaze.XHtml5 as H
+
+import qualified Wilde.Render.Html.Attribute as RHA
 
 import           Wilde.Render.Html.Types
 
@@ -83,32 +85,33 @@ import           Wilde.Render.Html.Types
 
 
 empty :: Html
-empty = H.noHtml
+empty = mempty
 
 seq :: [Html] -> Html
-seq = foldl (H.+++) empty
+seq = mconcat
 
+-- | Unquoted string
 str :: String -> Html
-str = H.stringToHtml
+str = H.toHtml
 
 -- | A string that is valid html
 htmlString :: String -> Html
-htmlString = H.primHtml
+htmlString = H.preEscapedToHtml
 
 withAttrs :: Html -> [HtmlAttr] -> Html
-withAttrs = (H.!)
+withAttrs elem = foldl (H.!) elem
 
 anchor :: Html -> Html
-anchor = H.anchor
+anchor = H.a
 
 link :: Html
-link = H.tag "LINK" empty
+link = H.link
 
 div :: Html -> Html
-div = H.thediv
+div = H.div
 
 span :: Html -> Html
-span = H.thespan
+span = H.span
 
 -- Tables
 
@@ -116,13 +119,13 @@ table :: Html -> Html
 table = H.table
 
 thead :: Html -> Html
-thead = H.tag "THEAD"
+thead = H.thead
 
 tbody :: Html -> Html
-tbody = H.tag "TBODY"
+tbody = H.tbody
 
 tfoot :: Html -> Html
-tfoot = H.tag "TFOOT"
+tfoot = H.tfoot
 
 tr, th, td :: Html -> Html
 tr = H.tr
@@ -134,28 +137,28 @@ td = H.td
 form :: Html -> Html
 form = H.form
 
-reset :: String -> String -> Html
-reset = H.reset
-
 input :: Html
 input = H.input
 
-submit :: String -> String -> Html
-submit = H.submit
+reset :: Label -> Html
+reset lbl = input `withAttrs` [RHA.type_ "reset", RHA.value lbl]
+
+submit :: Label -> Html
+submit lbl = input `withAttrs` [RHA.type_ "submit", RHA.value lbl]
 
 -- Misc
 
-image :: Html
-image = H.image
+nbsp :: Html
+nbsp  = H.preEscapedToMarkup "&nbsp;"
 
-center :: Html -> Html
-center = H.center
+image :: Html
+image = H.img
 
 br :: Html
 br = H.br
 
 paragraph :: Html -> Html
-paragraph = H.paragraph
+paragraph = H.p
 
 textarea :: Html -> Html
 textarea = H.textarea

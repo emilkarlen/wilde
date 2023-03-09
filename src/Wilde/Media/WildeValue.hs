@@ -38,12 +38,10 @@ where
 -- - import -
 -------------------------------------------------------------------------------
 
-import qualified Text.Html as H
-
 import           Wilde.Render.Html.Types ( Html )
 import qualified Wilde.Render.Html.Element as HE
+import qualified Wilde.Render.Html.Utils as HU
 
-import Wilde.GenericUi.Style
 import Wilde.GenericUi.Value
 import Wilde.Media.WildeStyleType
 import Wilde.Render.StyleForHtml
@@ -79,26 +77,25 @@ class VALUE a => SVALUE a where
 
 -- | Adds style to html.
 defaultHtmlStyled ::
-  -- | Style to add (may be none=neutral)
   WildeStyle ->
-  -- | Unstyled html
+  -- ^ Style to add (may be none=neutral)
   Html ->
-  -- | See `SVALUE`.
+  -- ^ Unstyled html
   Maybe (Html -> Html) ->
+  -- ^ See `SVALUE`.
   Html
 defaultHtmlStyled style unstyledHtml wrapper
  | style == neutral = unstyledHtml
  | otherwise =
-      let html = case wrapper of
-            Nothing -> unstyledHtml
-            Just f  -> f unstyledHtml
-       in case H.getHtmlElements html of
-            -- empty - nothing to display, so no styling needed:
-            [] -> HE.empty
-            -- an element - add style to the element:
-            [H.HtmlTag {}] -> applyStyleToHtml style html
-            -- anything else - wrap in "span" (what about comments and processing instructions??)
-            _ -> applyStyleToHtml style (HE.span html)
+    maybe HE.empty (applyStyleToHtml style) htmlWRootElem
+    where
+      htmlWRootElem :: Maybe Html
+      htmlWRootElem = HU.rootElemOrEmpty HE.span html
+
+      html :: Html
+      html = case wrapper of
+        Nothing -> unstyledHtml
+        Just f  -> f unstyledHtml
 
 instance VALUE a => VALUE (WildeStyling a) where
   valueHtml (WildeStyling styling) = (valueHtml . getStyled) styling

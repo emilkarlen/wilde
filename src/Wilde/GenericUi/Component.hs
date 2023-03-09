@@ -4,6 +4,7 @@ module Wilde.GenericUi.Component
        (
          COMPONENT(..),
 
+         sequenceComponent,
          HtmlOnly(..),
 
          AnyCOMPONENT(..),
@@ -60,6 +61,21 @@ instance COMPONENT () where
 
 instance EMPTY AnyCOMPONENT where
   empty = AnyCOMPONENT ()
+
+
+-------------------------------------------------------------------------------
+-- - sequence -
+-------------------------------------------------------------------------------
+
+
+-- | Constructs a component that is a sequence components.
+sequenceComponent :: COMPONENT a => [a] -> AnyCOMPONENT
+sequenceComponent xs = AnyCOMPONENT $ Sequence xs
+
+newtype Sequence a = Sequence [a]
+
+instance COMPONENT a => COMPONENT (Sequence a) where
+    componentHtml (Sequence xs) = HE.seq $ map componentHtml xs
 
 
 -------------------------------------------------------------------------------

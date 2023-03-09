@@ -20,8 +20,6 @@ module Wilde.GenericUi.Value
 -------------------------------------------------------------------------------
 
 
-import qualified Text.Html as H
-
 import           Wilde.Render.Html.Types ( HTML(..), Html )
 import qualified Wilde.Render.Html.Element as HE
 
@@ -31,6 +29,7 @@ import Wilde.Utils.Empty
 -------------------------------------------------------------------------------
 -- - VALUE -
 -------------------------------------------------------------------------------
+
 
 -- | An "unstyled" values that can be rendered on all the supported output
 -- formats.
@@ -62,9 +61,6 @@ data AnyVALUE = forall a . VALUE a => AnyVALUE a
 
 instance VALUE AnyVALUE where
     valueHtml (AnyVALUE x) = valueHtml x
-
-instance H.HTML AnyVALUE where
-    toHtml = valueHtml
 
 instance HTML AnyVALUE where
     toHtml = valueHtml

@@ -23,7 +23,6 @@ module Wilde.Render.Html.Attribute
     class_,
     domEvent,
 
-    custom,
     rel,
     src,
     href,
@@ -55,7 +54,8 @@ where
 -------------------------------------------------------------------------------
 
 
-import qualified Text.Html as H
+import qualified Text.Blaze.XHtml5 as H
+import qualified Text.Blaze.XHtml5.Attributes as HA
 
 import           Wilde.Render.Html.Types
 
@@ -65,52 +65,52 @@ import           Wilde.Render.Html.Types
 -------------------------------------------------------------------------------
 
 
-custom :: String -> String -> HtmlAttr
-custom = H.HtmlAttr
-
 domEvent :: DomEvent -> JavaScriptProgram -> HtmlAttr
-domEvent de = custom $ show de
+domEvent OnClick  = HA.onclick . H.stringValue
 
 class_:: String -> HtmlAttr
-class_ = H.theclass
+class_ = HA.class_ . H.stringValue
 
 rel :: String -> HtmlAttr
-rel = H.rel
+rel = HA.rel . H.stringValue
 
 src :: String -> HtmlAttr
-src = H.src
+src = HA.src . H.stringValue
 
 href :: String -> HtmlAttr
-href = H.href
+href = HA.href . H.stringValue
 
 size :: Int -> HtmlAttr
-size = H.size . show
+size = HA.size .  H.stringValue . show
 
 colspan, rowspan :: Int -> HtmlAttr
-colspan = H.colspan
-rowspan = H.rowspan
+colspan = HA.colspan . H.stringValue . show
+rowspan = HA.rowspan . H.stringValue . show
 
 cols, rows :: Int -> HtmlAttr
-cols = H.cols . show
-rows = H.rows . show
+cols = HA.cols . H.stringValue . show
+rows = HA.rows . H.stringValue . show
 
 type_, value, method, action :: String -> HtmlAttr
 
-type_ = H.thetype
-value = H.value
-method = H.method
-action = H.action
+type_  = HA.type_ . H.stringValue
+value  = HA.value . H.stringValue
+method = HA.method . H.stringValue
+action = HA.action . H.stringValue
 
 readonly, checked, selected :: HtmlAttr
-readonly = custom "readonly" "readonly"
-checked = H.checked
-selected = H.selected
+readonly = HA.readonly true
+checked  = HA.checked true
+selected = HA.selected true
 
 type_hidden :: HtmlAttr
-type_hidden = H.thetype "hidden"
+type_hidden = HA.type_ $ H.stringValue "hidden"
 
 name :: String -> HtmlAttr
-name = H.name
+name = HA.name . H.stringValue
 
 accesskey :: Char -> HtmlAttr
-accesskey ch = H.HtmlAttr "accesskey" [ch]
+accesskey ch = HA.accesskey $ H.stringValue [ch]
+
+true :: H.AttributeValue
+true = H.stringValue "true"

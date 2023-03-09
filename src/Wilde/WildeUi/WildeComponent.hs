@@ -3,15 +3,15 @@ module Wilde.WildeUi.WildeComponent
        (
          -- * Table
 
-         WildeTableDatatype,
          TableListComponent(..),
 
          -- * Forms
 
          FormComponent(..),
          FormMethod(..),
-         FormButtons(..),
 
+         formButton,
+         FormButtonType(..),
        )
        where
 
@@ -21,25 +21,20 @@ module Wilde.WildeUi.WildeComponent
 -------------------------------------------------------------------------------
 
 
+import           Wilde.Render.Html.Types
 import qualified Wilde.Render.Html.Element as HE
 import qualified Wilde.Render.Html.Attribute as HA
 
-import Wilde.Render.AbstractTableToHtml
+import           Wilde.Render.AbstractTableToHtml
 
-import Wilde.Media.WildeMedia
-
-import Wilde.Render.RenderAsHtml
+import           Wilde.Media.WildeMedia
+import           Wilde.GenericUi.Value (VALUE(..))
+import           Wilde.Media.WildeValue (AnySVALUE(..), withNeutralStyleAny)
 
 
 -------------------------------------------------------------------------------
--- - WildeTableDatatype -
+-- - implementation -
 -------------------------------------------------------------------------------
-
-
-newtype WildeTableDatatype = WildeTableDatatype WildeTable
-
-instance COMPONENT WildeTableDatatype where
-    componentHtml (WildeTableDatatype x) = Wilde.Render.AbstractTableToHtml.renderTable x
 
 
 -------------------------------------------------------------------------------
@@ -48,15 +43,11 @@ instance COMPONENT WildeTableDatatype where
 
 
 -- | A component containing a table list.
-data TableListComponent = TableListComponent
-    {
-      tlcTitle :: Maybe StyledTitle,
-      tlcTable :: WildeTable
-    }
+newtype TableListComponent = TableListComponent WildeTable
 
 instance COMPONENT TableListComponent where
-    componentHtml tlc = renderComponent (tlcTitle tlc) $
-                        Wilde.Render.AbstractTableToHtml.renderTable (tlcTable tlc)
+    componentHtml (TableListComponent wt) = Wilde.Render.AbstractTableToHtml.renderTable wt
+
 
 -------------------------------------------------------------------------------
 -- - FormComponent -
@@ -66,7 +57,7 @@ instance COMPONENT TableListComponent where
 data FormComponent =
   FormComponent
   {
-    formAction  :: Maybe String,
+    formAction  :: Maybe URL,
     formMethod  :: FormMethod,
     formContent :: [AnyCOMPONENT]
    }
@@ -92,16 +83,16 @@ instance COMPONENT FormComponent where
 -------------------------------------------------------------------------------
 
 
-data FormButtons =
-  FormButtons
-  {
-    formButtonsSubmitText :: String
-  , formButtonsResetText  :: String
-  }
+formButton :: FormButtonType -> String -> AnySVALUE
+formButton buttonType label = AnySVALUE $ withNeutralStyleAny $ FormButton buttonType label
 
-instance COMPONENT FormButtons where
-  componentHtml (FormButtons submitText resetText) =
-    HE.seq [HE.reset "reset-button" resetText
-           ,HE.input `HE.withAttrs` attrsSubmit]
-    where
-      attrsSubmit = [HA.type_ "submit",HA.value submitText]
+data FormButtonType
+  = Submit
+  | Reset
+
+-- | A form button - type and label
+data FormButton = FormButton FormButtonType String
+
+instance VALUE FormButton where
+  valueHtml (FormButton Submit label) = HE.submit label
+  valueHtml (FormButton Reset  label) = HE.reset  label

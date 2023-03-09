@@ -244,9 +244,18 @@ DIV._cPg._rT
   font-style        : italic;
 }
 
+DIV._cC._cPg
+{
+  margin        : auto;
+  margin-bottom : 2em;
+  width         : fit-content;
+}
+
 DIV._cC._btn
 {
-  margin            : 10px;
+  margin-top    : 0.3em;
+  font-weight   : bold;
+  text-align    : center;
 }
 
 /******************************************************************************
@@ -338,12 +347,12 @@ PRE
   text-align        : center;
 }
 
-/*                                                                                                                                                  
-  Value Presentation (attribte) in an input form.                                                                                                   
-  Use same style as for Value Input.  Otherwise, the form background will switch                                                                    
-  style for individual attributes (the Input attributes), which look very bad.                                                                      
-  Note: If the Value becomes difficult to read, the text style may need to be                                                                       
-  adjusted.                                                                                                                                         
+/*
+  Value Presentation (attribte) in an input form.
+  Use same style as for Value Input.  Otherwise, the form background will switch
+  style for individual attributes (the Input attributes), which look very bad.
+  Note: If the Value becomes difficult to read, the text style may need to be
+  adjusted.
 */
 ._cC._uI ._rV._uP
 {
