@@ -68,10 +68,11 @@ commentStyle = WildeStyle [commentClass]
 objectButtonClass :: ClassName
 objectButtonClass = "_a"
 
-buttonClass, imageClass,textClass :: ClassName
+buttonClass, imageClass,textClass, sepaClass :: ClassName
 buttonClass = "_btn"
 imageClass  = "_img"
 textClass   = "_txt"
+sepaClass   = "_sepa"
 
 referenceAttribute :: ClassName
 referenceAttribute = "_refattr"
@@ -126,8 +127,9 @@ pageTitle,componentTitle :: WildeStyle
 pageTitle      = WildeStyle pageTitleClasses
 componentTitle = WildeStyle componentTitleClasses
 
-buttonsComponentClasses :: [ClassName]
+buttonsComponentClasses, buttonsSepaClasses :: [ClassName]
 buttonsComponentClasses = [componentClass, buttonClass]
+buttonsSepaClasses      = [buttonClass, sepaClass]
 
 presMultiClasses,presMultiValueClasses,presMultiLabelClasses :: [ClassName]
 presMultiClasses      = [presentationClass,multiClass]

@@ -36,7 +36,7 @@ import Wilde.Application.ObjectTypeService
 import Wilde.ApplicationConstruction.UserInteraction.Output.ObjectDependentComponent
 import Wilde.ApplicationConstruction.Service.ObjectTypeServiceUtils
 import Wilde.ApplicationConstruction.Service.ServiceUtils
-import qualified Wilde.Render.DataAndButtonsComponent as TopComp
+import qualified Wilde.ApplicationConstruction.Presentation.DataAndButtonsComponent as TopComp
 
 
 -------------------------------------------------------------------------------

@@ -25,7 +25,7 @@ import qualified Wilde.ObjectModel.AttributeTypeListSetup.SansAnnotation as Attr
 import           Wilde.ObjectModel.Presentation
 
 import Wilde.ApplicationConstruction.UserInteraction.Output.SpecialComponents
-import qualified Wilde.Render.DataAndButtonsComponent as TopComp
+import qualified Wilde.ApplicationConstruction.Presentation.DataAndButtonsComponent as TopComp
 import Wilde.Application.ObjectTypeService
 
 import Wilde.Application.Service.Service

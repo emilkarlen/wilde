@@ -49,7 +49,7 @@ import           Wilde.ApplicationConstruction.UserInteraction.Output.ObjectDepe
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.SpecialComponents as SpecialComponents
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ObjectListSetup as OLS
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.StandardFilterExpression as StdFilterExpr
-import qualified Wilde.Render.DataAndButtonsComponent as DabComp
+import qualified Wilde.ApplicationConstruction.Presentation.DataAndButtonsComponent as DabComp
 
 
 -------------------------------------------------------------------------------

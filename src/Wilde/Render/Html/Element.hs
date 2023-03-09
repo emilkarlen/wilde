@@ -54,6 +54,8 @@ module Wilde.Render.Html.Element
 
     nbsp,
     br,
+    p,
+    pre,
     image,
 
     paragraph,
@@ -156,6 +158,12 @@ image = H.img
 
 br :: Html
 br = H.br
+
+p :: Html -> Html
+p = H.p
+
+pre :: Html -> Html
+pre = H.pre
 
 paragraph :: Html -> Html
 paragraph = H.p

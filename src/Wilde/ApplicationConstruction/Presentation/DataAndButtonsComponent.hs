@@ -1,6 +1,6 @@
 -- | A component made up of a data/info component followed by a button row.
 
-module Wilde.Render.DataAndButtonsComponent
+module Wilde.ApplicationConstruction.Presentation.DataAndButtonsComponent
 (
     new,
 )
@@ -17,8 +17,6 @@ import qualified Wilde.Render.Html.Element as HE
 import           Wilde.Media.WildeValue (AnySVALUE, SVALUE(..))
 import qualified Wilde.Media.WildeStyle as WS
 
-import qualified Wilde.WildeUi.LayoutValues as LayoutValues
-import qualified Wilde.WildeUi.LayoutComponents  as LayoutComponents
 import qualified Wilde.GenericUi.Component as Comp
 
 import qualified Wilde.Media.Presentation as Presentation
@@ -26,6 +24,8 @@ import qualified Wilde.Media.Presentation as Presentation
 import           Wilde.ObjectModel.ObjectModel
 
 import qualified Wilde.Utils.TextHtmlUtils as HU
+
+import qualified Wilde.ApplicationConstruction.Presentation.ButtonSequenceValue as BtnSeq
 
 
 -------------------------------------------------------------------------------
@@ -70,9 +70,7 @@ newtype ButtonsRowComponent = ButtonsRowComponent [AnySVALUE]
 
 instance COMPONENT ButtonsRowComponent where
   componentHtml (ButtonsRowComponent buttons) =
-    HU.withclasses WS.buttonsComponentClasses $ HE.div buttonsHtml
+    HU.withclasses WS.buttonsComponentClasses $ HE.div elements
     where
-      buttonsHtml = HE.seq $ map valueHtmlStyled buttons :: HE.Html
-      component = LayoutComponents.svalueComponent $
-                              LayoutValues.horizontal
-                              buttons
+      elements :: HE.Html
+      elements = valueHtmlStyled $ BtnSeq.new buttons

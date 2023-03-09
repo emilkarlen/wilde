@@ -32,7 +32,7 @@ import qualified Wilde.WildeUi.StdValueTypes
 import           Wilde.WildeUi.LayoutComponents as LayoutComponents
 
 import qualified Wilde.Render.Cgi.ElementSetIo as ElementSetIo
-import qualified Wilde.Render.DataAndButtonsComponent as DataAndButtons
+import qualified Wilde.ApplicationConstruction.Presentation.DataAndButtonsComponent as DataAndButtons
 
 import qualified Wilde.Application.Service.PopUp as PopUp
 import Wilde.Media.UserInteraction.Output (PopUpButtonTexter)

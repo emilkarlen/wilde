@@ -1,6 +1,6 @@
 Cabal-Version:       >=1.10
 Name:                wilde
-Version:             0.7.0.1
+Version:             0.8
 License:             GPL
 License-file:        LICENSE
 Build-Type:          Simple
@@ -66,6 +66,8 @@ Library
     Wilde.ApplicationConstruction.GenericStringRepIo
 
     Wilde.ApplicationConstruction.Presentation.Presentation
+    Wilde.ApplicationConstruction.Presentation.DataAndButtonsComponent
+    Wilde.ApplicationConstruction.Presentation.ButtonSequenceValue
 
     Wilde.ApplicationConstruction.Database.DatabaseUtils
     Wilde.ApplicationConstruction.Database.AttributeTypeDatabaseInfo
@@ -175,7 +177,6 @@ Library
     Wilde.Render.Html.Utils
 
     Wilde.Render.AbstractTableToHtml
-    Wilde.Render.DataAndButtonsComponent
     Wilde.Render.RenderAsHtml
     Wilde.Render.UserInteractionRendering
     Wilde.Render.ServiceLink

@@ -1,14 +1,24 @@
 <html>
 <head>
   <title>Wilde Test Application</title>
+  <style>
+table
+{
+  border-collapse: collapse;
+}
+td
+{
+  border-style: solid;
+  border-width: 2px;
+}
+  </style>
 </head>
-The Test App run as a server on localhost:8082 (accoring to server-config.yaml).
 <body>
-<h1>Object Types and Services</h1>
+<p>The Test App run as a server on localhost:8082 (accoring to server-config.yaml).</p>
 
-<h2>Global services</h2>
+<h1>Global services</h1>
 
-<h3>Simple services</h3>
+<h2>Simple services</h2>
 
 <ul>
     <li><a href="http://localhost:8082?_srvc=ok">Just OK</a></li>
@@ -16,16 +26,16 @@ The Test App run as a server on localhost:8082 (accoring to server-config.yaml).
     <li><a href="http://localhost:8082?_srvc=ask-if-cont">Ask if to continue</a></li>
 </ul>
 
-<h3>Invalid requests</h3>
+<h2>Invalid requests</h2>
 
 <ul>
   <li><a href="http://localhost:8082?_ot=nonexisting_objecttype">Service not specified</a></li>
   <li><a href="http://localhost:8082?_ot=nonexisting_objecttype&_srvc=ShowMany">Non-existing Objecttype</a></li>
 </ul>
 
-<h2>Object Type services</h2>
+<h1>Object Type services</h1>
 
-<table border=1>
+<table>
   <tr>
     <td>Simple Datatypes</td>
     <td><a href="http://localhost:8082?_ot=simple_datatypes&_srvc=ShowMany">All</a></td>

@@ -21,6 +21,7 @@ module Wilde.Render.Html.Attribute
     module Wilde.Render.Html.Types,
 
     class_,
+    style,
     domEvent,
 
     rel,
@@ -70,6 +71,9 @@ domEvent OnClick  = HA.onclick . H.stringValue
 
 class_:: String -> HtmlAttr
 class_ = HA.class_ . H.stringValue
+
+style:: String -> HtmlAttr
+style = HA.style . H.stringValue
 
 rel :: String -> HtmlAttr
 rel = HA.rel . H.stringValue
