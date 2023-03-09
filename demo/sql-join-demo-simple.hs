@@ -4,6 +4,8 @@ module Main where
 
 import qualified Wilde.Database.SqlJoin as Sql
 
+import qualified Wilde.Database.DmlRenderer as DmlRenderer
+
 import qualified Wilde.Driver.Database.MySQL.DmlExcutor as DmlExecutor
 
 
@@ -98,10 +100,10 @@ selectAllProjectsAndTheirLanguageName =
     languageJoin <- prjLanguageRefAttr `Sql.joinNatural` (lngEntity,lngPkAttr)
 
     let lngName   = Sql.includeFromJoined languageJoin lngNameAttr
-    
+
     prjNameExprs <- Sql.fieldExprList prjName
     lngNameExprs <- Sql.fieldExprList lngName
-    
+
     let select = Sql.simpleSelectWith
                  {
                    Sql.simpleSelectExpressions = prjNameExprs ++ lngNameExprs
@@ -124,7 +126,7 @@ dmlStatement :: Sql.SqlDmlStatement (Sql.BasedOn ProjectTable)
 dmlStatement = Sql.SqlDmlSelect selectStatement
 
 renderableDmlStatement :: Sql.SqlDmlStatement Sql.SqlIdentifier
-renderableDmlStatement = DmlExecutor.toRenderable dmlStatement
+renderableDmlStatement = DmlRenderer.toRenderable dmlStatement
 
 main :: IO ()
 main = putStrLn $ renderer renderableDmlStatement

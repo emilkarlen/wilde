@@ -1,0 +1,22 @@
+Cabal-Version:       2.4
+Name:                wilde-demo
+Version:             1
+License:             GPL-3.0-or-later
+Build-Type:          Simple
+Author:              Emil Karlén (emil@member.fsf.org)
+Maintainer:          emil@member.fsf.org
+Synopsis:            Demo of the Wilde library
+
+common demo-properties
+  hs-source-dirs: .
+  build-depends:
+    base,
+    wilde
+
+executable sql-join-demo-simple
+  import: demo-properties
+  main-is: sql-join-demo-simple.hs
+
+executable sql-join-demo-complex
+  import: demo-properties
+  main-is: sql-join-demo-complex.hs

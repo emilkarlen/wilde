@@ -1,7 +1,7 @@
-Cabal-Version:       >=1.10
+Cabal-Version:       2.4
 Name:                wilde
 Version:             0.8
-License:             GPL
+License:             GPL-3.0-or-later
 License-file:        LICENSE
 Build-Type:          Simple
 Author:              Emil Karlén (emil@member.fsf.org)
