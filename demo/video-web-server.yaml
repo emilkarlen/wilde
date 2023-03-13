@@ -1,0 +1,10 @@
+port: 8081
+files:
+  mime-types:
+    css: text/css
+  paths:
+    style/lib: ../web
+    style/app: video-app/web
+logging:
+  enabled: true
+  level: LIBRARY

@@ -7,16 +7,69 @@ Author:              Emil Karlén (emil@member.fsf.org)
 Maintainer:          emil@member.fsf.org
 Synopsis:            Demo of the Wilde library
 
-common demo-properties
+common sql-properties
   hs-source-dirs: sql
   build-depends:
     base,
     wilde
 
+common app-properties
+  default-language:  Haskell2010
+  hs-source-dirs: video-app/src
+  ghc-options: -threaded -fwarn-unused-imports -Wno-missing-home-modules
+  build-depends:
+    base,
+    containers,
+    blaze-builder,
+    bytestring,
+    text,
+    wai,
+    wai-extra,
+    HDBC,
+    -- HDBC-odbc,
+    HDBC-mariadb,
+    wilde
+  other-modules:
+    Common.ObjectType.AttributeType
+    Common.ObjectType.ObjectType
+    Common.ObjectType.IdName
+
+    Video.Conf.WaiSystemConfiguration
+    Video.Conf.DatabaseConnect
+    Video.Conf.AppConf
+    Video.Ui.Style
+    Video.Ui.LinkRenderer
+    Video.Ui.UiResourcesRaw
+    Video.Ui.UiResources
+    Video.ObjectType.AttributeType
+    Video.ObjectModel
+    Video.ObjectModel.SpecificSubject
+    Video.ObjectModel.Country
+    Video.ObjectModel.Title
+    Video.ObjectModel.Season
+    Video.ObjectModel.Episode
+    Video.ObjectModel.Genre
+    Video.ObjectModel.Director
+    Video.ObjectModel.Recording
+    Video.ObjectModel.Unit
+
+
 executable sql-join-demo-simple
-  import: demo-properties
+  import: sql-properties
   main-is: sql-join-demo-simple.hs
 
 executable sql-join-demo-complex
-  import: demo-properties
+  import: sql-properties
   main-is: sql-join-demo-complex.hs
+
+executable video.cgi
+  import: app-properties
+  main-is: video-cgi.hs
+
+executable video-web-server
+  import: app-properties
+  main-is: video-web-server.hs
+
+executable video-tool
+  import: app-properties
+  main-is: video-tool.hs

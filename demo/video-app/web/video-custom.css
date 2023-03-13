@@ -1,0 +1,44 @@
+.country
+{
+  background-color : silver;
+}
+
+.genre
+{
+  background-color : purple;
+}
+
+.specific_subject
+{
+  background-color : purple;
+}
+
+.director
+{
+  background-color : navy;
+}
+
+.title
+{
+  background-color : maroon;
+}
+
+.season
+{
+  background-color : aqua;
+}
+
+.episode
+{
+  background-color : blue;
+}
+
+.unit
+{
+  background-color : green;
+}
+
+.recording
+{
+  background-color : lime;
+}
