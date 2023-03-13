@@ -49,11 +49,6 @@ singleClass       = "_m1"
 multiClass        = "_mN"
 multiEmptyClass   = "_mN0"
 
--- Sequence Position
-spEven,spOdd :: ClassName
-spEven            = "_spE"
-spOdd             = "_spO"
-
 -- | Role classes.
 titleClass,labelClass,valueClass,sumClass :: ClassName
 titleClass        = "_rT" -- ^ title of page, component
@@ -111,9 +106,8 @@ multiColumnTitle = WildeStyle [titleClass]
 attributeTitle :: WildeStyle
 attributeTitle = WildeStyle [weAttributeClass,titleClass]
 
-multiRowEven,multiRowOdd :: WildeStyle
-multiRowEven = WildeStyle [weObjectClass,spEven]
-multiRowOdd  = WildeStyle [weObjectClass,spOdd]
+multiRow :: WildeStyle
+multiRow = WildeStyle [weObjectClass]
 
 pageTitleClasses,componentTitleClasses :: [ClassName]
 pageTitleClasses      = [pageClass,titleClass]

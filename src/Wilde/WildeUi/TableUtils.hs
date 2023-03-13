@@ -107,7 +107,7 @@ conWildeHeaderRowTable bodyRowStyle mbTitle columnTitles mbFoot bodyData =
     conTable neutral
              (conHead mbTitle columnTitles)
              (conFoot mbFoot)
-             (conBodyRowGroupEvenOdd bodyRowStyle (map wildeStyle columnTitles) bodyData)
+             (conBodyRowGroup bodyRowStyle (map wildeStyle columnTitles) bodyData)
 
 conFoot :: (Maybe ([ColGroup WildeStyle],[[WildeStyledCell]])) -> Maybe WildeRowGroup
 conFoot Nothing = Nothing
@@ -152,24 +152,6 @@ conBodyRowGroup rowStyle columnStyles rows =
       conRow' :: [ElementWithStyle] -> StyledRow WildeStyle AnyVALUE
       conRow' cols = conRow rowStyle $ map elementWithStyleToCell cols
 
-conBodyRowGroupEvenOdd :: WildeStyle           -- ^ The style of each row.
-                       -> [WildeStyle]         -- ^ The style for each column.
-                                               -- Length is equal to the
-                       -> [[ElementWithStyle]] -- ^ Cells: rows containing a cell for each
-                                               -- column.
-                       -> WildeRowGroup
-conBodyRowGroupEvenOdd rowStyle columnStyles rows =
-  conRowGroup neutral (map (ColGroup 1) columnStyles) $ map conRow' $ zip [0..] rows
-    where
-      conRow' :: (Int, [ElementWithStyle]) -> StyledRow WildeStyle AnyVALUE
-      conRow' (n,cols) = conRow (rowStyle `addStyle` (oddEvenRowStyle n))
-                         (map elementWithStyleToCell cols)
-
-      oddEvenRowStyle :: Int -> WildeStyle
-      oddEvenRowStyle n = case even n of
-        True  -> WS.multiRowEven
-        False -> WS.multiRowOdd
-
 -- | Transforms to a cell of span (1,1).
 elementWithStyleToCell :: ElementWithStyle -> WildeStyledCell
 elementWithStyleToCell ews@(SeHtml _) = conCell neutral        (1,1) $ AnyVALUE ews
@@ -181,7 +163,7 @@ conStandardTable :: Maybe StyledTitle
                  -> ([[WildeStyledCell]],[[ElementWithStyle]])
                  -> WildeTable
 conStandardTable mbTitle titles (footRows,bodyRows) =
-  conWildeHeaderRowTable neutral mbTitle titles mbFoot bodyRows
+  conWildeHeaderRowTable WS.multiRow mbTitle titles mbFoot bodyRows
   where
     mbFoot = if null footRows
              then Nothing

@@ -5,13 +5,17 @@
     Upgrades to HTML 2 - replaces "center" element with
     new element layout.
 
-    Removes title from TableListComponent
+    Removes unused title argument from TableListComponent
 
   - Improves layout of buttons
 
   - FIX JavaScript bug (due to aggressive search-replace "return" -> "pure")
 
   - ADD posibility to reference multiple CSS files
+
+  - REFACT Mark odd/even rows using CSS (instead of special classes)
+
+  - ADD CSS hover object table rows
 
 # 0.7.0.1 -- 2023-02-11
 

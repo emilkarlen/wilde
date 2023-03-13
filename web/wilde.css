@@ -329,38 +329,26 @@ PRE
   background-color  : #FCFCFC;
 }
 
-/* Sequences : even rows. */
-._spE ._rV._uP
+/* object sequences : even/odd rows. */
+
+
+TBODY > TR._weO:nth-child(even)
 {
   background-color  : #F3F3F3;
 }
 
-._cC._uP ._spE TD
-{
-  background-color  : #FCFCFC;
-}
-
-._cC._uP ._spE TD._a
-{
-  background-color  : #B0B0B0;
-  text-align        : center;
-}
-
-/* Sequences : odd rows. */
-._spO ._rV._uP
+TBODY > TR._weO:nth-child(odd)
 {
   background-color  : #EEEEEE;
 }
 
-._cC._uP ._spO TD
-{
-  background-color  : #F5F5F5;
-}
+/* object sequences : hover. */
 
-._cC._uP ._spO TD._a
+TBODY > TR._weO:hover
 {
-  background-color  : #B0B0B0;
-  text-align        : center;
+  /* background-color  : #404040; */
+  background-color     : black;
+  color                : white;
 }
 
 /*
