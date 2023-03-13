@@ -8,7 +8,7 @@ Maintainer:          emil@member.fsf.org
 Synopsis:            Demo of the Wilde library
 
 common demo-properties
-  hs-source-dirs: .
+  hs-source-dirs: sql
   build-depends:
     base,
     wilde
