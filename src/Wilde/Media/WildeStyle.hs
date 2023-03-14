@@ -50,24 +50,22 @@ multiClass        = "_mN"
 multiEmptyClass   = "_mN0"
 
 -- | Role classes.
-titleClass,labelClass,valueClass,sumClass :: ClassName
+titleClass,labelClass,valueClass,actionsClass, sumClass :: ClassName
 titleClass        = "_rT" -- ^ title of page, component
 labelClass        = "_rL" -- ^ label of field
 valueClass        = "_rV"
+actionsClass      = "_rA"
 sumClass          = "_summary"
 commentClass      = "_comment"
 
 commentStyle :: WildeStyle
 commentStyle = WildeStyle [commentClass]
 
-objectButtonClass :: ClassName
-objectButtonClass = "_a"
 
-buttonClass, imageClass,textClass, sepaClass :: ClassName
+buttonClass, imageClass,textClass :: ClassName
 buttonClass = "_btn"
 imageClass  = "_img"
 textClass   = "_txt"
-sepaClass   = "_sepa"
 
 referenceAttribute :: ClassName
 referenceAttribute = "_refattr"
@@ -86,7 +84,7 @@ referenceAttributeStyle :: WildeStyle
 referenceAttributeStyle = WildeStyle [referenceAttribute]
 
 objectButtonStyle :: WildeStyle
-objectButtonStyle = WildeStyle [objectButtonClass]
+objectButtonStyle = WildeStyle [actionsClass]
 
 tableListBodyRowGroup :: WildeStyle
 tableListBodyRowGroup = WildeStyle [valueClass]
@@ -121,9 +119,8 @@ pageTitle,componentTitle :: WildeStyle
 pageTitle      = WildeStyle pageTitleClasses
 componentTitle = WildeStyle componentTitleClasses
 
-buttonsComponentClasses, buttonsSepaClasses :: [ClassName]
-buttonsComponentClasses = [componentClass, buttonClass]
-buttonsSepaClasses      = [buttonClass, sepaClass]
+actionsComponentClasses :: [ClassName]
+actionsComponentClasses = [componentClass, actionsClass]
 
 presMultiClasses,presMultiValueClasses,presMultiLabelClasses :: [ClassName]
 presMultiClasses      = [presentationClass,multiClass]

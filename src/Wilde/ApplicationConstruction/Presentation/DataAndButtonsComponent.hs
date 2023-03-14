@@ -70,7 +70,7 @@ newtype ButtonsRowComponent = ButtonsRowComponent [AnySVALUE]
 
 instance COMPONENT ButtonsRowComponent where
   componentHtml (ButtonsRowComponent buttons) =
-    HU.withclasses WS.buttonsComponentClasses $ HE.div elements
+    HU.withclasses WS.actionsComponentClasses $ HE.div elements
     where
       elements :: HE.Html
       elements = valueHtmlStyled $ BtnSeq.new buttons

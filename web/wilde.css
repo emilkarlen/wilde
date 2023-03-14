@@ -49,32 +49,31 @@ DIV._cPg._rT._error
 /*****************************************************************************/
 
 
-
-._a
+._rA
 {
   background-color  : #A0A0A0;
   border-color      : #A0A0A0;
   text-align        : center;
 }
 
-TH._a
+TH._rA
 {
   font-style        : italic;
   text-align        : left;
 }
 
-._a A:link
+._rA A:link
 {
   color             : inherit;
   text-decoration   : none;
 }
 
-._a A:hover
+._rA A:hover
 {
   text-decoration   : none;
 }
 
-._a A:visited
+._rA A:visited
 {
   color             : inherit;
   text-decoration   : none;
@@ -130,7 +129,7 @@ A._btn._txt:visited
   text-decoration   : none;
 }
 
-A._btn:hover
+A._btn._txt:hover
 {
   color             : white;
   background-color  : #606060;
@@ -251,32 +250,19 @@ DIV._cC._cPg
   width         : fit-content;
 }
 
-DIV._cC._btn
+DIV._cC._rA
 {
+  background-color: inherit;
   margin-top    : 0.3em;
   font-weight   : bold;
   text-align    : center;
 }
 
-/******************************************************************************
-* - separators -
-******************************************************************************/
-
-DIV._cC._btn > SPAN._btn._sepa
-{
-  display  : inline-block;
-  width    : 1em;
-}
-
-._a > SPAN._btn._sepa
-{
-  display  : inline-block;
-  width    : 0.2em;
-}
 
 /******************************************************************************
 * - PRE -
 ******************************************************************************/
+
 
 PRE
 {
@@ -284,9 +270,11 @@ PRE
   font-family       : monospace;
 }
 
+
 /******************************************************************************
 * - ... -
 ******************************************************************************/
+
 
 ._uP
 {
