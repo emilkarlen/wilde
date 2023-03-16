@@ -32,7 +32,7 @@ module Wilde.ApplicationConstruction.StandardServices.Tools
 -------------------------------------------------------------------------------
 
 
-import Wilde.WildeUi.TableUtils (cellSpaned)
+import Wilde.WildeUi.TableUtils (dataCellSpaned)
 import Wilde.WildeUi.StdValueTypes (IntValue(..))
 
 import Wilde.ObjectModel.ObjectModel
@@ -218,7 +218,7 @@ numberOfObjectsFooterRow = pure $ Just frc
          then ([],[])
          else
            let
-             numObjectsCell = cellSpaned (numCols,1) (IntValue numObjects)
+             numObjectsCell = dataCellSpaned (numCols,1) (IntValue numObjects)
              numCols        = length colInfos
            in
             ([],[[numObjectsCell]])

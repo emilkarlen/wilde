@@ -25,17 +25,17 @@ module Wilde.ObjectModel.Presentation
 -------------------------------------------------------------------------------
 
 
-import Wilde.WildeUi.StdValueTypes as SVT
-import Wilde.WildeUi.TableUtils
-import qualified Wilde.Media.WildeStyle as WS
+import           Wilde.GenericUi.AbstractTable (CellType(..))
 
+import           Wilde.WildeUi.WildeComponent
+import           Wilde.WildeUi.StdValueTypes as SVT
+import           Wilde.WildeUi.TableUtils
+
+import qualified Wilde.Media.WildeStyle as WS
 import qualified Wilde.Media.Presentation as Presentation
 import qualified Wilde.ObjectModel.AttributeTypeListSetup.SansAnnotation as AttributeTypeListSetup
-import Wilde.ObjectModel.ObjectModelUtils
-
-import Wilde.WildeUi.WildeComponent
-
-import Wilde.ObjectModel.Presentation.FooterRowsConstructor
+import           Wilde.ObjectModel.ObjectModelUtils as OmUtils
+import           Wilde.ObjectModel.Presentation.FooterRowsConstructor
 
 
 -------------------------------------------------------------------------------
@@ -78,12 +78,12 @@ showOneTable attrs =
       WS.tableColumnStylesShowOne
       headerValueRowList
   where
-    getHeaderValueRowList :: Presentation.Monad [(Wilde.ObjectModel.ObjectModelUtils.Title,AnySVALUE)]
+    getHeaderValueRowList :: Presentation.Monad [(OmUtils.Title,AnySVALUE)]
     getHeaderValueRowList = sequence $ mapAttributeAnyValue headerValueRow attrs
 
     headerValueRow :: ATTRIBUTE_PRESENTATION atConf
                    => Attribute atConf dbTable typeForExisting typeForCreate
-                   -> Presentation.Monad (Wilde.ObjectModel.ObjectModelUtils.Title,AnySVALUE)
+                   -> Presentation.Monad (OmUtils.Title,AnySVALUE)
     headerValueRow (Attribute at val getPresVal) =
      do
        presVal <- getPresVal
@@ -92,10 +92,10 @@ showOneTable attrs =
         theTitle = wildeStyled . atTitle $ at
         presO = atPresentationO at
 
-    renderTitle :: (Wilde.ObjectModel.ObjectModelUtils.Title,AnySVALUE) -> AnySVALUE
+    renderTitle :: (OmUtils.Title,AnySVALUE) -> AnySVALUE
     renderTitle  = AnySVALUE . SVT.UnquotedStringValue . fst
 
-    renderValue :: (Wilde.ObjectModel.ObjectModelUtils.Title,AnySVALUE) -> AnySVALUE
+    renderValue :: (OmUtils.Title,AnySVALUE) -> AnySVALUE
     renderValue  = snd
 
 
@@ -114,24 +114,29 @@ showManyTable :: ATTRIBUTE_PRESENTATION atConf
               -> [Object otConf atConf dbTable otA idAtExisting idAtCreate]
               -> Presentation.Monad WildeTable
 showManyTable ot leftSideContentConstructor rightSideContentConstructor mbTitle os =
-  let footerDataZero       = 0 :: Int
+  tableWithFooterRowsM footerDataAcc footerDataZero footerColFun mkObjectRow mkTable os
+    where
+      footerDataZero       = 0 :: Int
+
       footerDataAcc n rec  = 1 + n
-      titles               :: [StyledTitle]
-      buttonColTitle       = neutralTitle ""
-      attrColsTitle        = map getAtTitle $ otAttributeTypes ot
-      titles               = buttonColTitle : attrColsTitle ++ [buttonColTitle]
+
       mkTable              = conStandardTable mbTitle titles
       mkObjectRow          = objectRow leftSideContentConstructor rightSideContentConstructor
-  in  tableWithFooterRowsM footerDataAcc footerDataZero footerColFun mkObjectRow mkTable os
-    where
+
+      attrColsTitle        = map getAtTitle $ otAttributeTypes ot
+
+      titles               :: [StyledTitle]
+      titles               = buttonColTitle : attrColsTitle ++ [buttonColTitle]
+
+      buttonColTitle       = neutralTitle ""
+
       footerColFun :: Int -> [[WildeStyledCell]]
-      footerColFun numRows =
-        let
-          numObjectsCell = cellStd $ IntValue numRows :: WildeStyledCell
-          otherCellsInfo = cellSpaned (2 + numNonIdAts,1) valueEmpty :: WildeStyledCell
+      footerColFun numRows = [[numObjectsCell,otherCellsInfo]]
+        where
+          footerColType  = DataCell :: CellType
+          numObjectsCell = cellStd    footerColType $ IntValue numRows :: WildeStyledCell
+          otherCellsInfo = cellSpaned footerColType (2 + numNonIdAts,1) valueEmpty :: WildeStyledCell
           numNonIdAts    = length $ otNonIdAttributeTypes ot
-        in
-         [[numObjectsCell,otherCellsInfo]]
 
 objectRow :: (idAtExisting -> AnySVALUE)
           -> (idAtExisting -> AnySVALUE)

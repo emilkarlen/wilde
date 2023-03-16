@@ -68,7 +68,7 @@ import qualified Data.Map as Map
 
 import Wilde.WildeUi.StdValueTypes
 
-import Wilde.WildeUi.TableUtils (cellStd,cellStdEmpty)
+import Wilde.WildeUi.TableUtils (dataCellStd, dataCellStdEmpty)
 
 import Wilde.ObjectModel.ObjectModel
 import Wilde.ObjectModel.ObjectModelUtils (castToAttributeType,anyValueApply,anyValueApply2)
@@ -201,7 +201,7 @@ attributeTypesFooterCellsGetter ot atCellConstructors =
              -> [[WildeStyledCell]]
     makeRows []      _           = []
     makeRows columns cellsForAts =
-      columnsToRows $ appendToSameLength cellStdEmpty columnsOfArbitraryLength
+      columnsToRows $ appendToSameLength dataCellStdEmpty columnsOfArbitraryLength
       where
         columnsOfArbitraryLength :: [[WildeStyledCell]]
         columnsOfArbitraryLength = map cellsForColumn columns
@@ -330,7 +330,7 @@ sumCell_show = sumCell_format show
 
 -- | Displays the sum of all 'Attribute's.
 sumCell_format :: Num a => (a -> String) -> AnyCellConstructor a
-sumCell_format formatter = sumCell (cellStd . UnquotedStringValue . formatter)
+sumCell_format formatter = sumCell (dataCellStd . UnquotedStringValue . formatter)
 
 -- | Displays the sum of all 'Attribute's.
 sumCell :: Num a => (a -> WildeStyledCell) -> AnyCellConstructor a
@@ -360,5 +360,5 @@ numObjectsCell' =
   {
     fccInitial     = ()
   , fccAccumulator = const ()
-  , fccMkCell      = \numObjects _ -> [cellStd $ IntValue numObjects]
+  , fccMkCell      = \numObjects _ -> [dataCellStd $ IntValue numObjects]
   }
