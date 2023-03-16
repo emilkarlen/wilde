@@ -28,8 +28,8 @@ import Wilde.Render.StyleForHtml ( STYLE_FOR_HTML(..) )
 -- | Renders a 'StyledTable' as HTML.
 --
 -- Styles of 'ColGroup's are applied to the cells.
-renderTable :: (HTML a,STYLE_FOR_HTML s) =>
-               StyledTable s a
+renderTable :: (HTML a,STYLE_FOR_HTML s)
+            => StyledTable s a
             -> Html
 renderTable = tableMapSimple applyStyleToHtml
               renderTableContents renderRowGroupContents
@@ -40,8 +40,9 @@ renderTableContents (mbHead,mbFoot,body) = HE.table $ HE.seq [mb mbHead,mb mbFoo
     where
       mb = Data.Maybe.fromMaybe HE.empty
 
-renderRowGroupContents :: STYLE_FOR_HTML style =>
-                          RowGroupType
+
+renderRowGroupContents :: STYLE_FOR_HTML style
+                       => RowGroupType
                        -> ([ColGroup style],[Html]) -- ^ Rows
                        -> Html
 renderRowGroupContents Head (_,htmls) = HE.thead $ HE.seq htmls
@@ -54,16 +55,22 @@ renderRowContents :: RowGroupType
                   -> Html
 renderRowContents _ = HE.tr . HE.seq
 
-renderCellContents :: HTML a => RowGroupType -> (Span,a) -> Html
-renderCellContents rgt (cellspan,c) =
-    let tablecell = if rgt == Head
-                    then HE.th
-                    else HE.td
-    in  tablecell (toHtml c) `HE.withAttrs` spans cellspan
-        where
-          spans :: (Int,Int) -> [HtmlAttr]
-          spans (x,y) = span HA.colspan x ++ span HA.rowspan y
 
-          span :: (Int -> HtmlAttr) -> Int -> [HtmlAttr]
-          span _      1 = []
-          span mkAttr n = [mkAttr n]
+renderCellContents :: HTML a => RowGroupType -> Cell a -> Html
+renderCellContents rgt (Cell celltype cellspan contents) =
+  tablecell celltype (toHtml contents) `HE.withAttrs` spans cellspan
+  where
+    spans :: (Int,Int) -> [HtmlAttr]
+    spans (x,y) = span HA.colspan x <> span HA.rowspan y
+
+    span :: (Int -> HtmlAttr) -> Int -> [HtmlAttr]
+    span _      1 = []
+    span mkAttr n = [mkAttr n]
+
+thdDir :: HeaderDirection -> HtmlAttr
+thdDir RowDirection    = HA.scopeRow
+thdDir ColumnDirection = HA.scopeCol
+
+tablecell :: CellType -> Html -> Html
+tablecell DataCell contents = HE.td contents
+tablecell (HeaderCell headerDir) contents = HE.th contents `HE.withAttrs` [thdDir headerDir]

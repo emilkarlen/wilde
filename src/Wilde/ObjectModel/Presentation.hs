@@ -3,6 +3,9 @@
 --
 -- TODO: decompose into smaller pieces.
 -------------------------------------------------------------------------------
+
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Wilde.ObjectModel.Presentation
        (
          module Wilde.ObjectModel.Presentation.FooterRowsConstructor,
@@ -25,17 +28,17 @@ module Wilde.ObjectModel.Presentation
 -------------------------------------------------------------------------------
 
 
-import Wilde.WildeUi.StdValueTypes as SVT
-import Wilde.WildeUi.TableUtils
-import qualified Wilde.Media.WildeStyle as WS
+import           Wilde.GenericUi.AbstractTable (CellType(..))
 
+import           Wilde.WildeUi.WildeComponent
+import           Wilde.WildeUi.StdValueTypes as SVT
+import           Wilde.WildeUi.TableUtils
+
+import qualified Wilde.Media.WildeStyle as WS
 import qualified Wilde.Media.Presentation as Presentation
 import qualified Wilde.ObjectModel.AttributeTypeListSetup.SansAnnotation as AttributeTypeListSetup
-import Wilde.ObjectModel.ObjectModelUtils
-
-import Wilde.WildeUi.WildeComponent
-
-import Wilde.ObjectModel.Presentation.FooterRowsConstructor
+import           Wilde.ObjectModel.ObjectModelUtils as OmUtils
+import           Wilde.ObjectModel.Presentation.FooterRowsConstructor
 
 
 -------------------------------------------------------------------------------
@@ -78,12 +81,12 @@ showOneTable attrs =
       WS.tableColumnStylesShowOne
       headerValueRowList
   where
-    getHeaderValueRowList :: Presentation.Monad [(Wilde.ObjectModel.ObjectModelUtils.Title,AnySVALUE)]
+    getHeaderValueRowList :: Presentation.Monad [(OmUtils.Title,AnySVALUE)]
     getHeaderValueRowList = sequence $ mapAttributeAnyValue headerValueRow attrs
 
     headerValueRow :: ATTRIBUTE_PRESENTATION atConf
                    => Attribute atConf dbTable typeForExisting typeForCreate
-                   -> Presentation.Monad (Wilde.ObjectModel.ObjectModelUtils.Title,AnySVALUE)
+                   -> Presentation.Monad (OmUtils.Title,AnySVALUE)
     headerValueRow (Attribute at val getPresVal) =
      do
        presVal <- getPresVal
@@ -92,10 +95,10 @@ showOneTable attrs =
         theTitle = wildeStyled . atTitle $ at
         presO = atPresentationO at
 
-    renderTitle :: (Wilde.ObjectModel.ObjectModelUtils.Title,AnySVALUE) -> AnySVALUE
+    renderTitle :: (OmUtils.Title,AnySVALUE) -> AnySVALUE
     renderTitle  = AnySVALUE . SVT.UnquotedStringValue . fst
 
-    renderValue :: (Wilde.ObjectModel.ObjectModelUtils.Title,AnySVALUE) -> AnySVALUE
+    renderValue :: (OmUtils.Title,AnySVALUE) -> AnySVALUE
     renderValue  = snd
 
 
@@ -106,7 +109,7 @@ showOneTable attrs =
 
 -- | Produces a table that shows a list of 'Object's.
 
-showManyTable :: ATTRIBUTE_PRESENTATION atConf
+showManyTable :: forall otConf atConf dbTable otA idAtExisting idAtCreate. ATTRIBUTE_PRESENTATION atConf
               => ObjectType otConf atConf dbTable otA idAtExisting idAtCreate
               -> (idAtExisting -> AnySVALUE)
               -> (idAtExisting -> AnySVALUE)
@@ -114,24 +117,33 @@ showManyTable :: ATTRIBUTE_PRESENTATION atConf
               -> [Object otConf atConf dbTable otA idAtExisting idAtCreate]
               -> Presentation.Monad WildeTable
 showManyTable ot leftSideContentConstructor rightSideContentConstructor mbTitle os =
-  let footerDataZero       = 0 :: Int
-      footerDataAcc n rec  = 1 + n
-      titles               :: [StyledTitle]
-      buttonColTitle       = neutralTitle ""
-      attrColsTitle        = map getAtTitle $ otAttributeTypes ot
-      titles               = buttonColTitle : attrColsTitle ++ [buttonColTitle]
+  tableWithFooterRowsM footerDataSetup mkObjectRow mkTable os
+    where
+      footerDataSetup :: FooterRowsSetup Int (Object otConf atConf dbTable otA idAtExisting idAtCreate)
+      footerDataSetup = FooterRowsSetup
+        {
+          frsAdd        = \n obj -> n + 1
+        , frsZero       = 0
+        , frsRenderRows = footerColFun
+        }
+
       mkTable              = conStandardTable mbTitle titles
       mkObjectRow          = objectRow leftSideContentConstructor rightSideContentConstructor
-  in  tableWithFooterRowsM footerDataAcc footerDataZero footerColFun mkObjectRow mkTable os
-    where
-      footerColFun :: Int -> [[WildeStyledCell]]
-      footerColFun numRows =
-        let
-          numObjectsCell = cellStd $ IntValue numRows :: WildeStyledCell
-          otherCellsInfo = cellSpaned (2 + numNonIdAts,1) valueEmpty :: WildeStyledCell
+
+      attrColsTitle        = map getAtTitle $ otAttributeTypes ot
+
+      titles               :: [StyledTitle]
+      titles               = buttonColTitle : attrColsTitle ++ [buttonColTitle]
+
+      buttonColTitle       = neutralTitle ""
+
+      footerColFun :: Int -> [[WildeCell]]
+      footerColFun numRows = [[numObjectsCell,otherCellsInfo]]
+        where
+          footerColType  = DataCell :: CellType
+          numObjectsCell = cellStd    footerColType $ IntValue numRows :: WildeCell
+          otherCellsInfo = cellSpaned footerColType (2 + numNonIdAts,1) valueEmpty :: WildeCell
           numNonIdAts    = length $ otNonIdAttributeTypes ot
-        in
-         [[numObjectsCell,otherCellsInfo]]
 
 objectRow :: (idAtExisting -> AnySVALUE)
           -> (idAtExisting -> AnySVALUE)
@@ -181,7 +193,7 @@ objectListTable atListSetup Nothing leftSideContentConstructor rightSideContentC
 
 objectListTable atListSetup
   (Just footerRowsConstructor) leftSideContentConstructor rightSideContentConstructor mbTitle os =
-    tableWithFooterRowsM footerDataAcc footerDataZero footerColFun mkObjectRow mkTable os
+    tableWithFooterRowsM (FooterRowsSetup footerDataAcc footerDataZero footerColFun) mkObjectRow mkTable os
   where
     footerDataZero       = zeroFooterState footerRowsConstructor
     footerDataAcc        = succFooterState

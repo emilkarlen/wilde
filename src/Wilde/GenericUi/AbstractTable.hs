@@ -22,6 +22,9 @@
 --
 --  * Many body row-groups (as HTML tables may have).
 -------------------------------------------------------------------------------
+
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Wilde.GenericUi.AbstractTable
        -- (
        --   Span,
@@ -46,9 +49,24 @@ module Wilde.GenericUi.AbstractTable
        -- )
        where
 
+
+-------------------------------------------------------------------------------
+-- - import -
+-------------------------------------------------------------------------------
+
+
 import Wilde.GenericUi.Style
 
+
+-------------------------------------------------------------------------------
+-- - implementation -
+-------------------------------------------------------------------------------
+
+
 type Span = (Int,Int)
+
+spanSingle :: Span
+spanSingle  = (1,1)
 
 -- | Identifies the types of row groups of a table.
 data RowGroupType = Head | Foot | Body
@@ -60,9 +78,9 @@ data RowGroupType = Head | Foot | Body
 
 data Table style contentType = Table
     {
-      tblHead :: Maybe (Styling style (RowGroup style contentType)),
-      tblFoot :: Maybe (Styling style (RowGroup style contentType)),
-      tblBody ::        Styling style (RowGroup style contentType)
+      tblHead :: Maybe (StyledRowGroup style contentType),
+      tblFoot :: Maybe (StyledRowGroup style contentType),
+      tblBody ::        StyledRowGroup style contentType
     }
 
 type StyledTable style contentType = Styling style (Table style contentType)
@@ -81,24 +99,30 @@ conTable style mbHead mbFoot body =
                  tblBody = body
                }
 
-type TableMapFun s rowGroup table
+type TableMapFun s rowGroup out
     =  s              -- ^ Style for the RowGroup.
     -> (Maybe rowGroup,Maybe rowGroup,rowGroup)  -- ^ Head, foot, body
-    -> table
+    -> out
 
-tableMap :: TableMapFun    s             rowGroup table
+tableMap :: forall s cc cell row rowGroup out.
+            TableMapFun    s             rowGroup out
          -> RowGroupMapFun s         row rowGroup
          -> RowMapFun      s    cell row
          -> CellMapFun     s cc cell
          -> StyledTable    s cc
-         -> table
+         -> out
 tableMap tableMapFun rowGroupMapFun rowMapFun cellMapFun (Styling s (Table mbHead mbFoot body)) =
-    let procRg rgt rowGroup = rowGroupMap rgt rowGroupMapFun rowMapFun cellMapFun rowGroup
-        procRgOrNothing rgt mbRowGroup = maybe Nothing (Just . procRg rgt) mbRowGroup
-        mbHead' = procRgOrNothing Head mbHead
-        mbFoot' = procRgOrNothing Foot mbFoot
-        body'   = procRg          Body body
-    in  tableMapFun s (mbHead',mbFoot',body')
+    tableMapFun s (mbHead',mbFoot',body')
+    where
+      procRg :: RowGroupType -> StyledRowGroup s cc -> rowGroup
+      procRg rgt rowGroup = rowGroupMap rgt rowGroupMapFun rowMapFun cellMapFun rowGroup
+
+      procMbRg :: RowGroupType -> Maybe (StyledRowGroup s cc) -> Maybe rowGroup
+      procMbRg rgt mbRowGroup = fmap (procRg rgt) mbRowGroup
+
+      mbHead' = procMbRg Head mbHead
+      mbFoot' = procMbRg Foot mbFoot
+      body'   = procRg   Body body
 
 -------------------------------------------------------------------------------
 -- | Simple mapping of a table.
@@ -112,21 +136,23 @@ tableMap tableMapFun rowGroupMapFun rowMapFun cellMapFun (Styling s (Table mbHea
 --   applied in the same way to all kinds of transformation results, i.e., the
 --   result of transforming cells, rows, ...
 -------------------------------------------------------------------------------
-tableMapSimple ::
-  (s -> a -> a)              -- ^ Applies style.
+tableMapSimple :: forall s a cc.
+     (s -> a -> a)              -- ^ Applies style.
   -> ((Maybe a,Maybe a,a) -> a) -- ^ Transforms transformed row-groups (table).
   -> (RowGroupType -> ([ColGroup s],[a]) -> a) -- ^ Transforms transformed rows (row-group).
   -> (RowGroupType -> [a] -> a) -- ^ Transforms transformed cells (row).
-  -> (RowGroupType -> (Span,cc) -> a) -- ^ Transforms an unstyled cell.
+  -> (RowGroupType -> Cell cc -> a) -- ^ Transforms an unstyled cell.
   -> StyledTable    s cc              -- ^ The table to transform.
   -> a
-tableMapSimple applyStyle tableMapFun rowGroupMapFun rowMapFun cellMapFun =
-    let tf s = applyStyle s . tableMapFun
-        rgf  = withWildeStyle rowGroupMapFun
-        rf   = withWildeStyle rowMapFun
-        cf   = withWildeStyle cellMapFun
-    in  tableMap tf rgf rf cf
+tableMapSimple applyStyle tableMapFun rowGroupMapFun rowMapFun cellMapFun table =
+    tableMap tf rgf rf cf table
     where
+      tf s = applyStyle s . tableMapFun
+      rgf  = withWildeStyle rowGroupMapFun
+      rf   = withWildeStyle rowMapFun
+      cf   = withWildeStyle cellMapFun
+
+      withWildeStyle :: (RowGroupType -> x -> a) -> RowGroupType -> s -> x -> a
       withWildeStyle transform rgt style x = applyStyle style $ transform rgt x
 
 -- | A "row group" is a list of rows of a table.
@@ -145,11 +171,11 @@ conRowGroup :: style               -- ^ The style of the row-group.
             -> StyledRowGroup style cc
 conRowGroup style cgs rows = Styling style (RowGroup cgs rows)
 
-type RowGroupMapFun s row rowGroup
+type RowGroupMapFun s row out
     =  RowGroupType
     -> s                      -- ^ Style for the RowGroup.
     -> ([ColGroup s],[row])
-    -> rowGroup
+    -> out
 
 rowGroupMap :: RowGroupType
             -> RowGroupMapFun    s         row rowGroup
@@ -161,10 +187,10 @@ rowGroupMap rgt rowGroupMapFun rowMapFun cellMapFun (Styling s (RowGroup cgs row
     let rows' = map (rowMap rgt rowMapFun cellMapFun) rows
     in  rowGroupMapFun rgt s (cgs,rows')
 
-data Row style contentType = Row
-    {
-      rowCells :: [Styling style (Cell contentType)] -- ^ The cells.
-    }
+newtype Row style contentType = Row
+  {
+    rowCells :: [StyledCell style contentType] -- ^ The cells.
+  }
 
 type StyledRow style contentType = Styling style (Row style contentType)
 
@@ -174,11 +200,11 @@ conRow :: style                 -- ^ The style of the row.
        -> StyledRow style cc
 conRow style cells = Styling style (Row cells)
 
-type RowMapFun s cell row
+type RowMapFun s cell out
     =  RowGroupType
     -> s
     -> [cell]
-    -> row
+    -> out
 
 rowMap :: RowGroupType
        -> RowMapFun    s    cell row
@@ -189,28 +215,50 @@ rowMap rgt rowMap' cellMap' (Styling style (Row cs)) =
     let cs' = map (cellMap rgt cellMap') cs
     in  rowMap' rgt style cs'
 
+data HeaderDirection = RowDirection | ColumnDirection
+
+data CellType
+  = DataCell
+  | HeaderCell HeaderDirection
+
+dataCellType  :: CellType
+rowHeaderType :: CellType -- ^ Header for a row
+colHeaderType :: CellType -- ^ Header for a column
+dataCellType  = DataCell
+rowHeaderType = HeaderCell RowDirection
+colHeaderType = HeaderCell ColumnDirection
+
 data Cell contentType = Cell
     {
-      cellSpan    :: Span,        -- ^ (colspan > 1,rowspan > 1)
-      cellContent :: contentType  -- ^ The content of the cell.
+      cellType    :: CellType
+    , cellSpan    :: Span        -- ^ (colspan > 1,rowspan > 1)
+    , cellContent :: contentType  -- ^ The content of the cell.
     }
 
 type StyledCell style contentType = Styling style (Cell contentType)
 
-type CellMapFun s cc cell = RowGroupType -> s -> (Span,cc) -> cell
+type CellMapFun s cc out = RowGroupType -> s -> Cell cc -> out
 
 cellMap :: RowGroupType
         -> CellMapFun s cc cell
         -> StyledCell s cc
         -> cell
-cellMap rgt cellMapF (Styling s (Cell span cc)) = cellMapF rgt s (span,cc)
+cellMap rgt cellMapF (Styling s cell) = cellMapF rgt s cell
 
 -- | Conucts a table cell.
 conCell :: style -- ^ The style of the cell.
+        -> CellType
         -> Span  -- ^ Column- and rowspan of the cell.
         -> cc    -- ^ The contents of the cell.
         -> StyledCell style cc
-conCell style span cc = Styling style (Cell {cellSpan = span, cellContent = cc})
+conCell style type_ span cc =
+  Styling style $
+  Cell
+    {
+      cellType    = type_
+    , cellSpan    = span
+    , cellContent = cc
+    }
 
 -- | Specification for a group of columns of a table.
 -- A table does not know about this kind of information, so these are just for
@@ -267,9 +315,10 @@ applyColGroupsToRowCells (ColGroup n s : cgs) (c : cs) =
 
 -- | Applies the style of the 'ColGroup's to the cells, and removes them from
 -- the RowGroup.
-applyColGroupsToRowGroupCells :: STYLE s =>
-                                 RowGroup s a
-                              -> RowGroup s a
+applyColGroupsToRowGroupCells
+  :: STYLE s
+  => RowGroup s a
+  -> RowGroup s a
 applyColGroupsToRowGroupCells (RowGroup cgs rows) = RowGroup [] $ map (applyCg cgs) rows
     where
       applyCg :: STYLE s =>
@@ -278,8 +327,8 @@ applyColGroupsToRowGroupCells (RowGroup cgs rows) = RowGroup [] $ map (applyCg c
               -> Styling s (Row s a)
       applyCg cgs (Styling s (Row cells)) = Styling s $ Row $ applyColGroupsToRowCells cgs cells
 
-applyColGroupsToCells :: STYLE s =>
-                         StyledTable s a
+applyColGroupsToCells :: STYLE s
+                      => StyledTable s a
                       -> StyledTable s a
 applyColGroupsToCells (Styling style (Table
                                       {

@@ -49,13 +49,6 @@ DIV._cPg._rT._error
 /*****************************************************************************/
 
 
-._rA
-{
-  background-color  : #A0A0A0;
-  border-color      : #A0A0A0;
-  text-align        : center;
-}
-
 TH._rA
 {
   font-style        : italic;
@@ -167,6 +160,14 @@ TABLE._weO._m1
   border-width      : medium;
 }
 
+TABLE > TBODY ._rA
+{
+  /* background-color  : #A0A0A0; */
+  background-color  : purple;
+  border-color      : #A0A0A0;
+  text-align        : center;
+}
+
 
 /******************************************************************************
 * - TR, TH , TD -
@@ -210,6 +211,48 @@ TABLE._form > TR > TD {
 
 ._rl_dependent_component TH._cC._rT {
   font-style        : italic;
+}
+
+
+/* object sequences : even/odd rows. */
+
+
+TBODY > TR._weO:nth-child(even)
+{
+  background-color  : #F3F3F3;
+}
+
+TBODY > TR._weO:nth-child(odd)
+{
+  background-color  : #EEEEEE;
+}
+
+/* object sequences : hover. */
+
+TBODY > TR._weO:hover
+{
+  /* background-color  : #404040; */
+  background-color     : black;
+  color                : white;
+}
+
+TFOOT._summary > TR
+{
+  background-color  : #C3C4C3;
+  border-color      : #C3C4C3;
+  font-weight       : bold;
+}
+
+/* ._summary TD
+{
+  border-color      : #B3B4B3;
+} */
+
+._summary ._comment
+{
+  font-weight       : normal;
+  font-style        : italic;
+  font-size         : 85%;
 }
 
 
@@ -284,15 +327,17 @@ PRE
 ._weA ._rT
 {
   color             : #000000;
-  background-color  : #ccccff;
+  /* background-color  : #ccccff; */
+  background-color  : yellowgreen;
   font-weight       : bold;
   font-style        : italic;
 }
 
-._weA._rT
+TABLE._weO._mN > THEAD
 {
   color             : #000000;
-  background-color  : #ccccff;
+  /* background-color  : #ccccff; */
+  background-color  : cyan;
   font-weight       : bold;
   font-style        : italic;
 }
@@ -317,28 +362,6 @@ PRE
   background-color  : #FCFCFC;
 }
 
-/* object sequences : even/odd rows. */
-
-
-TBODY > TR._weO:nth-child(even)
-{
-  background-color  : #F3F3F3;
-}
-
-TBODY > TR._weO:nth-child(odd)
-{
-  background-color  : #EEEEEE;
-}
-
-/* object sequences : hover. */
-
-TBODY > TR._weO:hover
-{
-  /* background-color  : #404040; */
-  background-color     : black;
-  color                : white;
-}
-
 /*
   Value Presentation (attribte) in an input form.
   Use same style as for Value Input.  Otherwise, the form background will switch
@@ -351,25 +374,6 @@ TBODY > TR._weO:hover
   color             : #000000;
   background-color  : #cccccc;
   border-style      : none;
-}
-
-._summary
-{
-  background-color  : #C3C4C3;
-  border-color      : #C3C4C3;
-  font-weight       : bold;
-}
-
-._summary TD
-{
-  border-color      : #B3B4B3;
-}
-
-._summary ._comment
-{
-  font-weight       : normal;
-  font-style        : italic;
-  font-size         : 85%;
 }
 
 IMG

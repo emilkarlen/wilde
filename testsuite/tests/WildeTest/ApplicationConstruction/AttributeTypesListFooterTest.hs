@@ -128,7 +128,7 @@ footerRowsAsStrings frc = cellsAsStrings footerRows
 cellsAsStrings :: FooterRows -> [[String]]
 cellsAsStrings (_,rows) = map (map getCellValueStringRepresentation) rows
 
-getCellValueStringRepresentation :: WildeStyledCell -> String
+getCellValueStringRepresentation :: WildeCell -> String
 getCellValueStringRepresentation (Styling { sStyled = Cell { cellContent = AnyVALUE value } } ) = valueString value
 
 

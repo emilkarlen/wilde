@@ -34,6 +34,8 @@ module Wilde.Render.Html.Attribute
     rowspan,
     cols,
     rows,
+    scopeCol,
+    scopeRow,
 
     type_,
     type_hidden,
@@ -94,6 +96,10 @@ rowspan = HA.rowspan . H.stringValue . show
 cols, rows :: Int -> HtmlAttr
 cols = HA.cols . H.stringValue . show
 rows = HA.rows . H.stringValue . show
+
+scopeRow, scopeCol :: HtmlAttr
+scopeRow = HA.scope $ H.stringValue "row"
+scopeCol = HA.scope $ H.stringValue "col"
 
 type_, value, method, action :: String -> HtmlAttr
 

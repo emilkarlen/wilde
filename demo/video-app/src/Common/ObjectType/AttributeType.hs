@@ -341,7 +341,7 @@ enum_optional values title column =
 --                                                      ]
 --   }
 --   where
---     cellIfNonZero :: Double -> [WildeStyledCell]
+--     cellIfNonZero :: Double -> [WildeCell]
 --     cellIfNonZero x = if x /= 0
 --                       then mkCell x
 --                       else []
@@ -350,7 +350,7 @@ enum_optional values title column =
 --                            then mkCell (x + y)
 --                            else []
 
---     mkCell :: Double -> [WildeStyledCell]
+--     mkCell :: Double -> [WildeCell]
 --     mkCell x = [cellStyled (valueStyle svalue) svalue]
 --       where
 --         svalue = presentMoney x
