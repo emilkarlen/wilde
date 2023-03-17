@@ -3,6 +3,8 @@
 -------------------------------------------------------------------------------
 
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE InstanceSigs #-}
 
 module Wilde.ApplicationConstruction.UserInteraction.Output.SpecialComponents
        (

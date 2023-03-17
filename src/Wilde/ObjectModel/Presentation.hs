@@ -3,6 +3,9 @@
 --
 -- TODO: decompose into smaller pieces.
 -------------------------------------------------------------------------------
+
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Wilde.ObjectModel.Presentation
        (
          module Wilde.ObjectModel.Presentation.FooterRowsConstructor,
@@ -106,7 +109,7 @@ showOneTable attrs =
 
 -- | Produces a table that shows a list of 'Object's.
 
-showManyTable :: ATTRIBUTE_PRESENTATION atConf
+showManyTable :: forall otConf atConf dbTable otA idAtExisting idAtCreate. ATTRIBUTE_PRESENTATION atConf
               => ObjectType otConf atConf dbTable otA idAtExisting idAtCreate
               -> (idAtExisting -> AnySVALUE)
               -> (idAtExisting -> AnySVALUE)
@@ -114,11 +117,15 @@ showManyTable :: ATTRIBUTE_PRESENTATION atConf
               -> [Object otConf atConf dbTable otA idAtExisting idAtCreate]
               -> Presentation.Monad WildeTable
 showManyTable ot leftSideContentConstructor rightSideContentConstructor mbTitle os =
-  tableWithFooterRowsM footerDataAcc footerDataZero footerColFun mkObjectRow mkTable os
+  tableWithFooterRowsM footerDataSetup mkObjectRow mkTable os
     where
-      footerDataZero       = 0 :: Int
-
-      footerDataAcc n rec  = 1 + n
+      footerDataSetup :: FooterRowsSetup Int (Object otConf atConf dbTable otA idAtExisting idAtCreate)
+      footerDataSetup = FooterRowsSetup
+        {
+          frsAdd        = \n obj -> n + 1
+        , frsZero       = 0
+        , frsRenderRows = footerColFun
+        }
 
       mkTable              = conStandardTable mbTitle titles
       mkObjectRow          = objectRow leftSideContentConstructor rightSideContentConstructor
@@ -186,7 +193,7 @@ objectListTable atListSetup Nothing leftSideContentConstructor rightSideContentC
 
 objectListTable atListSetup
   (Just footerRowsConstructor) leftSideContentConstructor rightSideContentConstructor mbTitle os =
-    tableWithFooterRowsM footerDataAcc footerDataZero footerColFun mkObjectRow mkTable os
+    tableWithFooterRowsM (FooterRowsSetup footerDataAcc footerDataZero footerColFun) mkObjectRow mkTable os
   where
     footerDataZero       = zeroFooterState footerRowsConstructor
     footerDataAcc        = succFooterState
