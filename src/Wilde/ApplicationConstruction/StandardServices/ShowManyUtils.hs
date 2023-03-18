@@ -24,8 +24,8 @@ import           Wilde.ObjectModel.ObjectModel
 import qualified Wilde.ObjectModel.AttributeTypeListSetup.SansAnnotation as AttributeTypeListSetup
 import           Wilde.ObjectModel.Presentation
 
-import Wilde.ApplicationConstruction.UserInteraction.Output.SpecialComponents
 import qualified Wilde.ApplicationConstruction.Presentation.DataAndButtonsComponent as TopComp
+import qualified Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectListComponent as OlComp
 import Wilde.Application.ObjectTypeService
 
 import Wilde.Application.Service.Service
@@ -65,7 +65,6 @@ showMany' ot (Config title
                    OLS.displaySetup = OLS.ObjectListDisplaySetup
                                      {
                                        OLS.displayAts  = theDisplayAts
-                                     , OLS.orderByInDb = theOrderByInDb
                                      , OLS.getFooterRowsConstructor = theGetFooterRowsConstructor
                                      }
                  , OLS.buttonsSetup = OLS.ObjectListButtonsSetup
@@ -80,10 +79,10 @@ showMany' ot (Config title
       atListSetup             <- Presentation.toPresentationMonad $
                                  AttributeTypeListSetup.mkGeneral ot theDisplayAts
       mbFooterRowsConstructor <- theGetFooterRowsConstructor
-      objectListComponent     <- objectListTableAccordingToSetup
+      objectListComponent     <- OlComp.objectList
                                  WS.presentationTableMulti
                                  atListSetup
-                                 mbFooterRowsConstructor
+                                 (asFrc2_mb mbFooterRowsConstructor)
                                  objBtnsLeft objBtnsRight
                                  Nothing
                                  os

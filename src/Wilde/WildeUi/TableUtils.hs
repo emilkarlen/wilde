@@ -17,6 +17,7 @@ module Wilde.WildeUi.TableUtils
 
          wildeHeaderValueTable,
          conWildeHeaderRowTable,
+         conWildeHeaderRowTable2,
 
          tableWithFooterRows,
          tableWithFooterRowsM,
@@ -48,10 +49,10 @@ import Wilde.WildeUi.StdValueTypes
 -------------------------------------------------------------------------------
 
 
-cellSpaned :: VALUE a => CellType -> Span -> a -> WildeStyledCell
+cellSpaned :: VALUE a => CellType -> Span -> a -> WildeCell
 cellSpaned type_ span a = conCell neutral type_ span (AnyVALUE a)
 
-dataCellSpaned :: VALUE a => Span -> a -> WildeStyledCell
+dataCellSpaned :: VALUE a => Span -> a -> WildeCell
 dataCellSpaned = cellSpaned DataCell
 
 -- | Creates a styled cell.
@@ -60,28 +61,28 @@ cellStyled :: SVALUE a
            => CellType
            -> WildeStyle -- ^ Mandatory style.
            -> a          -- ^ Value.
-           -> WildeStyledCell
+           -> WildeCell
 cellStyled type_ mandatoryStyle a =
     let style = addStyle mandatoryStyle (valueStyle a)
-    in  conCell style type_ (1,1) (AnyVALUE a)
+    in  conCell style type_ spanSingle (AnyVALUE a)
 
 dataCellStyled
   :: SVALUE a
   => WildeStyle -- ^ Mandatory style.
   -> a          -- ^ Value.
-  -> WildeStyledCell
+  -> WildeCell
 dataCellStyled = cellStyled DataCell
 
-cellStd :: VALUE a => CellType -> a -> WildeStyledCell
-cellStd type_ x = conCell neutral type_ (1,1) $ AnyVALUE x
+cellStd :: VALUE a => CellType -> a -> WildeCell
+cellStd type_ x = conCell neutral type_ spanSingle $ AnyVALUE x
 
-dataCellStd :: VALUE a => a -> WildeStyledCell
+dataCellStd :: VALUE a => a -> WildeCell
 dataCellStd = cellStd DataCell
 
-cellStdEmpty :: CellType -> WildeStyledCell
-cellStdEmpty type_ = conCell neutral type_ (1,1) $ empty
+cellStdEmpty :: CellType -> WildeCell
+cellStdEmpty type_ = conCell neutral type_ spanSingle empty
 
-dataCellStdEmpty :: WildeStyledCell
+dataCellStdEmpty :: WildeCell
 dataCellStdEmpty = cellStdEmpty DataCell
 
 
@@ -124,10 +125,10 @@ conWildeHeaderRowTable :: WildeStyle                  -- ^ Row Style for body-ro
                                                       -- length is equal to num columns
                                                       -- = length of each body row.
                        -> Maybe ([ColGroup WildeStyle],
-                                 [[WildeStyledCell]]) -- ^ Footer
+                                 [[WildeCell]]) -- ^ Footer
                        -> [[ElementWithStyle]]        -- ^ Body rows.
                                                       -- length is equal to num columns.
-                                                      -- Each cell spans (1,1).
+                                                      -- Each cell spans spanSingle.
                        -> WildeTable
 conWildeHeaderRowTable bodyRowStyle mbTitle columnTitles mbFoot bodyData =
   conTable neutral
@@ -141,7 +142,26 @@ conWildeHeaderRowTable bodyRowStyle mbTitle columnTitles mbFoot bodyData =
     setDataCellType :: ElementWithStyle -> (CellType,ElementWithStyle)
     setDataCellType x = (DataCell, x)
 
-conFoot :: Maybe ([ColGroup WildeStyle],[[WildeStyledCell]]) -> Maybe WildeRowGroup
+-- | A table where each row is an element in a list, and the first row
+-- is headers for the columns.
+conWildeHeaderRowTable2
+  :: WildeStyle               -- ^ Row Style for body-rows.
+  -> Maybe StyledTitle        -- ^ Title.
+  -> [StyledTitle]            -- ^ Column titles.
+                              -- length is equal to num columns
+                              -- = length of each body row.
+  -> Maybe ([ColGroup WildeStyle],[[WildeCell]])
+  -- ^ footer rows
+  -> [[WildeCell]]
+  -- ^ body rows
+  -> WildeTable
+conWildeHeaderRowTable2 bodyRowStyle mbTitle columnTitles mbFoot bodyRows =
+  conTable neutral
+           (conHead mbTitle columnTitles)
+           (conFoot mbFoot)
+           (conBodyRowGroup2 bodyRowStyle bodyRows)
+
+conFoot :: Maybe ([ColGroup WildeStyle],[[WildeCell]]) -> Maybe WildeRowGroup
 conFoot Nothing = Nothing
 conFoot (Just (colGroups,cells)) = Just $
                                    conRowGroup WS.sumStyle [] $
@@ -156,8 +176,8 @@ conHead mbTitle columnTitles =
            ++
            [conRow neutral $ map mkColTitle columnTitles]
 
-    mkColTitle :: StyledTitle -> WildeStyledCell
-    mkColTitle styledTitle = conCell theStyle colHeaderType (1,1) stringValue
+    mkColTitle :: StyledTitle -> WildeCell
+    mkColTitle styledTitle = conCell theStyle colHeaderType spanSingle stringValue
       where
         theStyle    = addStyle WS.attributeTitle $ wildeStyle styledTitle
         stringValue = AnyVALUE (UnquotedStringValue titleString)
@@ -180,21 +200,47 @@ conBodyRowGroup :: WildeStyle           -- ^ The style of each row.
 conBodyRowGroup rowStyle columnStyles rows =
   conRowGroup neutral (map (ColGroup 1) columnStyles) $ map conRow' rows
     where
-      conRow' :: [(CellType, ElementWithStyle)] -> StyledRow WildeStyle AnyVALUE
+      conRow' :: [(CellType, ElementWithStyle)] -> WildeRow
       conRow' cols = conRow rowStyle $ map (uncurry elementWithStyleToCell) cols
 
--- | Transforms to a cell of span (1,1).
-elementWithStyleToCell :: CellType -> ElementWithStyle -> WildeStyledCell
-elementWithStyleToCell type_ ews@(SeHtml _) = conCell neutral        type_ (1,1) $ AnyVALUE ews
-elementWithStyleToCell type_ (SeValue x   ) = conCell (valueStyle x) type_ (1,1) $ anySvalue2Value x
+conBodyRowGroup2
+  :: WildeStyle           -- ^ The style of each row.
+  -> [[WildeCell]]        -- ^ Cells
+  -> WildeRowGroup
+conBodyRowGroup2 rowStyle rows =
+  -- conRowGroup neutral (map (ColGroup 1) columnStyles) $ map conRow' rows
+  conRowGroup neutral [] $ map conRow' rows
+    where
+      conRow' :: [WildeCell] -> WildeRow
+      conRow' cols = conRow rowStyle cols
+
+-- | Transforms to a cell of span spanSingle.
+elementWithStyleToCell :: CellType -> ElementWithStyle -> WildeCell
+elementWithStyleToCell type_ ews@(SeHtml _) = conCell neutral        type_ spanSingle $ AnyVALUE ews
+elementWithStyleToCell type_ (SeValue x   ) = conCell (valueStyle x) type_ spanSingle $ anySvalue2Value x
 
 -- | Utility method when using 'tableWithFooterRows'.
 conStandardTable :: Maybe StyledTitle
                  -> [StyledTitle]
-                 -> ([[WildeStyledCell]],[[ElementWithStyle]])
+                 -> ([[WildeCell]],[[ElementWithStyle]])
+                 -- ^ (footer rows, body rows)
                  -> WildeTable
-conStandardTable mbTitle titles (footRows,bodyRows) =
-  conWildeHeaderRowTable WS.multiRow mbTitle titles mbFoot bodyRows
+conStandardTable mbTitle columnTitles (footRows,bodyRows) =
+  conWildeHeaderRowTable WS.multiRow mbTitle columnTitles mbFoot bodyRows
+  where
+    mbFoot = if null footRows
+             then Nothing
+             else Just ([],footRows)
+
+-- | Utility method when using 'tableWithFooterRows'.
+conStandardTable2
+  :: Maybe StyledTitle
+  -> [StyledTitle]
+  -> ([[WildeCell]],[[WildeCell]])
+  -- ^ (footer rows, body rows)
+  -> WildeTable
+conStandardTable2 mbTitle columnTitles (footRows,bodyRows) =
+  conWildeHeaderRowTable2 WS.multiRow mbTitle columnTitles mbFoot bodyRows
   where
     mbFoot = if null footRows
              then Nothing
@@ -206,7 +252,7 @@ data FooterRowsSetup acc record =
   {
     frsAdd        :: acc -> record -> acc
   , frsZero       :: acc
-  , frsRenderRows :: acc -> [[WildeStyledCell]]
+  , frsRenderRows :: acc -> [[WildeCell]]
   }
 
 -- | s is the
@@ -216,7 +262,7 @@ tableWithFooterRows
   :: FooterRowsSetup s record
   -> (record -> [ElementWithStyle])
   -- ^ Gets a row of table list body data.
-  -> (([[WildeStyledCell]],[[ElementWithStyle]]) -> WildeTable)
+  -> (([[WildeCell]],[[ElementWithStyle]]) -> WildeTable)
   -> [record]
   -> WildeTable
 tableWithFooterRows (FooterRowsSetup footerDataAccumulator s0 footerDataConstructor)
@@ -241,7 +287,7 @@ tableWithFooterRowsM
   -> (record -> m [ElementWithStyle])  -- ^ Gets a row of
                                   -- table list body
                                   -- data.
-  -> (([[WildeStyledCell]],[[ElementWithStyle]]) -> WildeTable)
+  -> (([[WildeCell]],[[ElementWithStyle]]) -> WildeTable)
   -> [record]
   -> m WildeTable
 tableWithFooterRowsM (FooterRowsSetup footerDataAccumulator s0 footerDataConstructor)

@@ -30,6 +30,7 @@ module Wilde.Media.WildeValue
     anySvalue2Value,
     ValueWithHiddenStyle (..),
     hideStyle,
+    hideStyleAny,
     defaultHtmlStyled,
   )
 where
@@ -42,9 +43,9 @@ import           Wilde.Render.Html.Types ( Html )
 import qualified Wilde.Render.Html.Element as HE
 import qualified Wilde.Render.Html.Utils as HU
 
-import Wilde.GenericUi.Value
-import Wilde.Media.WildeStyleType
-import Wilde.Render.StyleForHtml
+import           Wilde.GenericUi.Value
+import           Wilde.Media.WildeStyleType
+import           Wilde.Render.StyleForHtml
 
 -------------------------------------------------------------------------------
 -- - SVALUE -
@@ -137,6 +138,9 @@ instance VALUE ValueWithHiddenStyle where
 -- and cannot be changed.
 hideStyle :: SVALUE a => a -> ValueWithHiddenStyle
 hideStyle = ValueWithHiddenStyle
+
+hideStyleAny :: SVALUE a => a -> AnyVALUE
+hideStyleAny = AnyVALUE . hideStyle
 
 -- BEGIN experiment (används inte, men känns vettig) (stötte på
 -- typproblem, som dock inte verkar betyda att lösningen är kass).

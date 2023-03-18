@@ -137,12 +137,12 @@ showManyTable ot leftSideContentConstructor rightSideContentConstructor mbTitle 
 
       buttonColTitle       = neutralTitle ""
 
-      footerColFun :: Int -> [[WildeStyledCell]]
+      footerColFun :: Int -> [[WildeCell]]
       footerColFun numRows = [[numObjectsCell,otherCellsInfo]]
         where
           footerColType  = DataCell :: CellType
-          numObjectsCell = cellStd    footerColType $ IntValue numRows :: WildeStyledCell
-          otherCellsInfo = cellSpaned footerColType (2 + numNonIdAts,1) valueEmpty :: WildeStyledCell
+          numObjectsCell = cellStd    footerColType $ IntValue numRows :: WildeCell
+          otherCellsInfo = cellSpaned footerColType (2 + numNonIdAts,1) valueEmpty :: WildeCell
           numNonIdAts    = length $ otNonIdAttributeTypes ot
 
 objectRow :: (idAtExisting -> AnySVALUE)

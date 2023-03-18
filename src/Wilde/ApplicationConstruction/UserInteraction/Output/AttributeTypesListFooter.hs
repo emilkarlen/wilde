@@ -181,31 +181,31 @@ attributeTypesFooterCellsGetter ot atCellConstructors =
 
     makeCells :: Int
               -> AttributeTypesFooterSpecification atConf dbTable
-              -> Map.Map CrossRefIdentifier [WildeStyledCell]
+              -> Map.Map CrossRefIdentifier [WildeCell]
     makeCells numObjects acc = Map.fromListWith appendCellsOfSameAt crossRefKeysAndCells
       where
         appendCellsOfSameAt  = (++)
         crossRefKeysAndCells = map (anyValueApply crossRefKeyAndCells) acc
 
         crossRefKeyAndCells :: AttributeTypeFooterSpecification atConf t e c
-                               -> (CrossRefIdentifier,[WildeStyledCell])
+                               -> (CrossRefIdentifier,[WildeCell])
         crossRefKeyAndCells (AttributeTypeFooterSpecification at cellConstructors) =
           (atCrossRefKey at,concatMap getCells cellConstructors)
 
-        getCells :: AnyCellConstructor e -> [WildeStyledCell]
+        getCells :: AnyCellConstructor e -> [WildeCell]
         getCells (AnyCellConstructor cc) =
           (fccMkCell cc) numObjects (fccInitial cc)
 
     makeRows :: [Maybe (Any (AttributeType atConf dbTable))]
-             -> Map.Map CrossRefIdentifier [WildeStyledCell]
-             -> [[WildeStyledCell]]
+             -> Map.Map CrossRefIdentifier [WildeCell]
+             -> [[WildeCell]]
     makeRows []      _           = []
     makeRows columns cellsForAts =
       columnsToRows $ appendToSameLength dataCellStdEmpty columnsOfArbitraryLength
       where
-        columnsOfArbitraryLength :: [[WildeStyledCell]]
+        columnsOfArbitraryLength :: [[WildeCell]]
         columnsOfArbitraryLength = map cellsForColumn columns
-        cellsForColumn :: Maybe (Any (AttributeType atConf dbTable)) -> [WildeStyledCell]
+        cellsForColumn :: Maybe (Any (AttributeType atConf dbTable)) -> [WildeCell]
         cellsForColumn Nothing                = []
         cellsForColumn (Just (Any at)) = maybe [] id $
                                                 Map.lookup (atCrossRefKey at) cellsForAts
@@ -218,8 +218,8 @@ attributeTypesFooterCellsGetter ot atCellConstructors =
             appendToLength e n (x:xs) = x : appendToLength e (n-1) xs
             appendToLength e n []     = replicate n e
 
-    columnsToRows :: [[WildeStyledCell]]
-                  -> [[WildeStyledCell]]
+    columnsToRows :: [[WildeCell]]
+                  -> [[WildeCell]]
     columnsToRows columnsOfEqualLength = transpose columnsOfEqualLength
 
 
@@ -284,7 +284,7 @@ data CellConstructor acc typeForExisting =
   , fccAccumulator :: (typeForExisting,acc) -> acc
     -- | Constructs the cells, given the number of 'Object's in the list
     -- and the accumulation of all 'Attribute's in the list.
-  , fccMkCell      :: Int -> acc -> [WildeStyledCell]
+  , fccMkCell      :: Int -> acc -> [WildeCell]
   }
 
 
@@ -333,10 +333,10 @@ sumCell_format :: Num a => (a -> String) -> AnyCellConstructor a
 sumCell_format formatter = sumCell (dataCellStd . UnquotedStringValue . formatter)
 
 -- | Displays the sum of all 'Attribute's.
-sumCell :: Num a => (a -> WildeStyledCell) -> AnyCellConstructor a
+sumCell :: Num a => (a -> WildeCell) -> AnyCellConstructor a
 sumCell mkCell = AnyCellConstructor $ sumCell' mkCell
 
-sumCell' :: Num a => (a -> WildeStyledCell) -> CellConstructor a a
+sumCell' :: Num a => (a -> WildeCell) -> CellConstructor a a
 sumCell' mkCell =
   CellConstructor
   {

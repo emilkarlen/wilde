@@ -15,6 +15,9 @@ module Wilde.ObjectModel.Presentation.FooterRowsConstructor
          FooterRowAccumulator,
          FooterRows,
 
+         asFrc2,
+         asFrc2_mb,
+
          FooterAccumulationState,
          zeroFooterState,
          succFooterState,
@@ -29,10 +32,14 @@ module Wilde.ObjectModel.Presentation.FooterRowsConstructor
 -------------------------------------------------------------------------------
 
 
+import qualified Wilde.Utils.Accumulator as Acc
+
 import Wilde.WildeUi.StdValueTypes as SVT
 
 import Wilde.GenericUi.AbstractTable
 import Wilde.ObjectModel.ObjectModelUtils
+
+import qualified Wilde.ObjectModel.Presentation.FooterRowsConstructor2 as Frc2
 
 
 -------------------------------------------------------------------------------
@@ -61,6 +68,21 @@ data FooterRowsConstructor acc otConf atConf dbTable otNative idAtE idAtC =
                    -> FooterRows
   }
 
+asFrc2 :: FooterRowsConstructor acc otConf atConf dbTable otNative idAtE idAtC
+       -> [Maybe (Any (AttributeType atConf dbTable))]
+       -> Frc2.FooterConstructor otConf atConf dbTable otNative idAtE idAtC
+asFrc2 (FooterRowsConstructor init acc mkRows) colsSetup =
+  Acc.accumulatorWithCount init add getResult
+  where
+    add s x = acc (x, s)
+
+    getResult (numObjects,s) = mkRows colsSetup numObjects s
+
+asFrc2_mb :: Maybe (FooterRowsConstructor acc otConf atConf dbTable otNative idAtE idAtC)
+          -> [Maybe (Any (AttributeType atConf dbTable))]
+          -> Frc2.FooterConstructor otConf atConf dbTable otNative idAtE idAtC
+asFrc2_mb mbFrc = maybe Frc2.mkNoFooterRows asFrc2 mbFrc
+
 -- | Information enough to display the footer rows.
 --
 -- The first list is styling of columns.  The length of this list may range from
@@ -69,7 +91,7 @@ data FooterRowsConstructor acc otConf atConf dbTable otNative idAtE idAtC =
 -- The second list is a list of rows.  The length of each row-list must be equal
 -- to the number of columns in the table.
 type FooterRows = ([ColGroup WildeStyle]
-                  ,[[WildeStyledCell]])
+                  ,[[WildeCell]])
 
 -- | Accumulates an 'Object' into the accumulated value that is finally used
 -- for constructing the footer rows.

@@ -68,6 +68,8 @@ Library
     Wilde.ApplicationConstruction.Presentation.Presentation
     Wilde.ApplicationConstruction.Presentation.DataAndButtonsComponent
     Wilde.ApplicationConstruction.Presentation.ButtonSequenceValue
+    Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectList
+    Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectListComponent
 
     Wilde.ApplicationConstruction.Database.DatabaseUtils
     Wilde.ApplicationConstruction.Database.AttributeTypeDatabaseInfo
@@ -240,6 +242,7 @@ Library
 
     Wilde.ObjectModel.Presentation
     Wilde.ObjectModel.Presentation.FooterRowsConstructor
+    Wilde.ObjectModel.Presentation.FooterRowsConstructor2
     Wilde.ObjectModel.ObjectModelUtils
     Wilde.ObjectModel.GenericStringRep
     Wilde.ObjectModel.ObjectModel
@@ -295,6 +298,7 @@ Library
     Wilde.Utils.Logging.SimpleLogger
     Wilde.Utils.Logging.NoLogging
     Wilde.Utils.Text
+    Wilde.Utils.Accumulator
 
 Test-Suite unit-tests
   Type:              exitcode-stdio-1.0

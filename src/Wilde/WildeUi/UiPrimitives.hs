@@ -17,7 +17,9 @@ module Wilde.WildeUi.UiPrimitives
          WildeTable,
          WildeRowGroup,
          WildeRow,
-         WildeStyledCell,
+         WildeCell,
+
+         wildeCellFromSVALUE,
 
        )
        where
@@ -73,4 +75,8 @@ instance EMPTY ElementWithStyle where
 type WildeTable      = StyledTable    WildeStyle AnyVALUE
 type WildeRowGroup   = StyledRowGroup WildeStyle AnyVALUE
 type WildeRow        = StyledRow      WildeStyle AnyVALUE
-type WildeStyledCell = StyledCell     WildeStyle AnyVALUE
+type WildeCell       = StyledCell     WildeStyle AnyVALUE
+
+wildeCellFromSVALUE :: SVALUE a => CellType -> Span -> a -> WildeCell
+wildeCellFromSVALUE cellType span svalue =
+    conCell (valueStyle svalue) cellType span (AnyVALUE svalue)

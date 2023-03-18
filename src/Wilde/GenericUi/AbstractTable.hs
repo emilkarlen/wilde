@@ -65,6 +65,9 @@ import Wilde.GenericUi.Style
 
 type Span = (Int,Int)
 
+spanSingle :: Span
+spanSingle  = (1,1)
+
 -- | Identifies the types of row groups of a table.
 data RowGroupType = Head | Foot | Body
                   deriving Eq
