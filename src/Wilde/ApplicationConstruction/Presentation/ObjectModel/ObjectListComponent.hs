@@ -13,8 +13,9 @@ where
 -------------------------------------------------------------------------------
 
 
-import           Wilde.Render.Html.Types
+import           Data.Maybe (isJust, catMaybes)
 
+import           Wilde.Render.Html.Types
 
 import qualified Wilde.GenericUi.AbstractTable as AbstrTbl
 
@@ -54,16 +55,25 @@ objectList
   -> Presentation.Monad AnyCOMPONENT
 objectList tableStyle atListSetup mkFooterConstructor getMkActionsLeft getMkActionsRight mbTitle os =
   do
-    mkActionsLeft <- getMkSideContent getMkActionsLeft
-    mkActionRight <- getMkSideContent getMkActionsRight
-    theObjectList <- OL.objectList atListSetup footerConstructor mkActionsLeft mkActionRight mbTitle os
-    pure $ AnyCOMPONENT $ ObjectListComponent tableStyle theObjectList
+    (hasLRSideActionColumn, listOfMkObjectAction) <- getSideActionColsSetup
+    theObjectList <- OL.objectList atListSetup footerConstructor listOfMkObjectAction mbTitle os
+    pure $ AnyCOMPONENT $ ObjectListComponent tableStyle hasLRSideActionColumn theObjectList
   where
+
+    getSideActionColsSetup :: Presentation.Monad (HasLRSideActionColumn, [idAtExisting -> AnySVALUE])
+    getSideActionColsSetup = do
+      mbMkActionsLeft <- getMkSideContent getMkActionsLeft
+      mbMkActionRight <- getMkSideContent getMkActionsRight
+      let listOfMkObjectAction = catMaybes [mbMkActionsLeft, mbMkActionRight] :: [idAtExisting -> AnySVALUE]
+      let hasLRSideActionColumn = (isJust mbMkActionsLeft, isJust mbMkActionRight)
+      pure $ (hasLRSideActionColumn, listOfMkObjectAction)
+
     getMkSideContent :: [Presentation.Monad (idAtExisting -> AnySVALUE)]
-                     -> Presentation.Monad (idAtExisting -> AnySVALUE)
+                     -> Presentation.Monad (Maybe (idAtExisting -> AnySVALUE))
+    getMkSideContent [] = pure Nothing
     getMkSideContent getMkButtons = do
       mkButtons <- sequence getMkButtons
-      pure $ mkSideContent mkButtons
+      pure $ Just $ mkSideContent mkButtons
 
     mkSideContent :: [idAtExisting -> AnySVALUE] -> idAtExisting -> AnySVALUE
     mkSideContent mkButtons pk = BtnSeq.new $ map (\mkButton -> mkButton pk) mkButtons
@@ -76,11 +86,13 @@ objectList tableStyle atListSetup mkFooterConstructor getMkActionsLeft getMkActi
         attributeTypes = AttributeTypeListSetup.getAts atListSetup
 
 
-data ObjectListComponent = ObjectListComponent WildeStyle OL.ObjectList
+type HasLRSideActionColumn = (Bool, Bool)
+
+data ObjectListComponent = ObjectListComponent WildeStyle HasLRSideActionColumn OL.ObjectList
 
 instance COMPONENT ObjectListComponent where
   componentHtml :: ObjectListComponent -> Html
-  componentHtml (ObjectListComponent tableStyle ol@(OL.ObjectList config dataRows)) =
+  componentHtml (ObjectListComponent tableStyle hasLRSideRow ol@(OL.ObjectList config dataRows)) =
     AbstractTableToHtml.renderTable styledTable
     where
       styledTable :: WildeTable
@@ -92,7 +104,7 @@ instance COMPONENT ObjectListComponent where
       mkTable :: TableLayouter -> [StyledTitle] -> OL.DataRows -> WildeTable
       mkTable = if OL.bodyIsEmpty ol
                 then emptyTable
-                else nonEmptyTable
+                else nonEmptyTable hasLRSideRow
 
       tableLayouter :: TableLayouter
       tableLayouter = TU.conWildeHeaderRowTable2 WS.multiRow (OL.listTitle config)
@@ -102,15 +114,22 @@ type TableLayouter = [StyledTitle] -> Maybe OL.FooterRows -> [[WildeCell]] -> Wi
 emptyTable :: TableLayouter -> [StyledTitle] -> OL.DataRows -> WildeTable
 emptyTable tableLayouter attrTitles dataRows = tableLayouter attrTitles Nothing []
 
-nonEmptyTable :: TableLayouter -> [StyledTitle] -> OL.DataRows -> WildeTable
-nonEmptyTable tableLayouter attrTitles dataRows = tableLayouter colTitles mbFooter body
+nonEmptyTable :: HasLRSideActionColumn -> TableLayouter -> [StyledTitle] -> OL.DataRows -> WildeTable
+nonEmptyTable hasLRActionsCols@(hasLeftActionsCol, hasRightActionsCol)
+              tableLayouter attrTitles dataRows =
+  tableLayouter colTitles mbFooter body
   where
     colTitles      :: [StyledTitle]
-    colTitles       = buttonColTitle : attrTitles ++ [buttonColTitle]
+    colTitles       = mbActionsColTitle hasLeftActionsCol <>
+                      attrTitles <>
+                      mbActionsColTitle hasRightActionsCol
+
+    mbActionsColTitle :: Bool -> [StyledTitle]
+    mbActionsColTitle False = []
+    mbActionsColTitle _     = [buttonColTitle]
 
     buttonColTitle :: StyledTitle
     buttonColTitle  = wildeStyling WS.objectButtonStyle ""
-    -- buttonColTitle  = neutralTitle ""
 
     mbFooter      :: Maybe OL.FooterRows
     mbFooter       = if footerIsEmpty
@@ -126,20 +145,28 @@ nonEmptyTable tableLayouter attrTitles dataRows = tableLayouter colTitles mbFoot
     body          :: [[WildeCell]]
     body           = map mkBodyRow $ OL.listObjects dataRows
 
-mkBodyRow :: OL.ObjectRow -> [WildeCell]
-mkBodyRow (OL.ObjectRow actionsLeft actionsRight attributes) =
-  mkActionCell actionsLeft : attributeCells <> [mkActionCell actionsRight]
+    actionCells   :: [AnySVALUE] -> ([WildeCell], [WildeCell])
+    actionCells    = getActionCells hasLRActionsCols
 
-  where
-    cellActionsLeft, cellActionsRight :: AnyVALUE
-    cellActionsLeft  = hideStyleAny actionsLeft
-    cellActionsRight = hideStyleAny actionsRight
+    mkBodyRow :: OL.ObjectRow -> [WildeCell]
+    mkBodyRow (OL.ObjectRow attributes actions) =
+      actionsLeft <> attributeCells <> actionsRight
 
-    mkActionCell    :: AnySVALUE -> WildeCell
-    mkActionCell     = AbstrTbl.conCell WS.objectButtonStyle AbstrTbl.rowHeaderType AbstrTbl.spanSingle . hideStyleAny
+      where
+        actionsLeft, actionsRight :: [WildeCell]
+        (actionsLeft, actionsRight) = actionCells actions
 
-    attributeCells  :: [WildeCell]
-    attributeCells   = map mkAttributeCell attributes
+        attributeCells  :: [WildeCell]
+        attributeCells   = map mkAttributeCell attributes
 
-    mkAttributeCell :: AnySVALUE -> WildeCell
-    mkAttributeCell attr = wildeCellFromSVALUE AbstrTbl.dataCellType AbstrTbl.spanSingle attr
+mkAttributeCell :: AnySVALUE -> WildeCell
+mkAttributeCell attr = wildeCellFromSVALUE AbstrTbl.dataCellType AbstrTbl.spanSingle attr
+
+getActionCells :: HasLRSideActionColumn -> [AnySVALUE] -> ([WildeCell], [WildeCell])
+getActionCells (True, True)  [l,r] = ([mkActionCell l], [mkActionCell r])
+getActionCells (True, False) [l]   = ([mkActionCell l], [])
+getActionCells (False, True) [r]   = ([], [mkActionCell r])
+getActionCells _             []    = ([], [])
+
+mkActionCell :: AnySVALUE -> WildeCell
+mkActionCell  = AbstrTbl.conCell WS.objectButtonStyle AbstrTbl.rowHeaderType AbstrTbl.spanSingle . hideStyleAny

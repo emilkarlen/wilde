@@ -53,13 +53,12 @@ objectList
      ATTRIBUTE_PRESENTATION atConf
   => AttributeTypeListSetup.Setup     otConf atConf dbTable otNative idAtExisting idAtCreate
   -> FooterConstructor                otConf atConf dbTable otNative idAtExisting idAtCreate
-  -> (idAtExisting -> AnySVALUE)
-  -> (idAtExisting -> AnySVALUE)
+  -> [idAtExisting -> AnySVALUE]
   -> Maybe StyledTitle
   -> [Object                          otConf atConf dbTable otNative idAtExisting idAtCreate]
   -> Presentation.Monad ObjectList
 objectList atListSetup
-  footerConstructor mkActionsLeft mkActionsRight mbTitle os = do
+  footerConstructor listOfMkObjectAction mbTitle os = do
     dataRows <- getDataRows
     pure $ ObjectList config dataRows
   where
@@ -76,6 +75,9 @@ objectList atListSetup
       let footerRows = Acc.resultOfSum footerConstructor os
       pure $ DataRows objectRows footerRows
 
+    mkObjectActions    :: idAtExisting -> [AnySVALUE]
+    mkObjectActions id  = map (\f -> f id) listOfMkObjectAction
+
     objectRow :: (Object otConf atConf dbTable otNative idAtExisting idAtCreate
                   -> [Any (Attribute atConf dbTable)])
               -> Object otConf atConf dbTable otNative idAtExisting idAtCreate
@@ -83,13 +85,13 @@ objectList atListSetup
     objectRow getDisplayAttrs o =
       do
         attributeValues <- sequence getAttributeValues
-        pure $ ObjectRow leftContent rightContent attributeValues
+        pure $ ObjectRow attributeValues rowActions
       where
         idAttrValue       :: idAtExisting
         idAttrValue        = attrValue $ oIdAttribute o
 
-        leftContent        = mkActionsLeft idAttrValue
-        rightContent       = mkActionsRight idAttrValue
+        rowActions        :: [AnySVALUE]
+        rowActions         = mkObjectActions idAttrValue
 
         getAttributeValues :: [Presentation.Monad AnySVALUE]
         getAttributeValues  = mapAttributeAnyValue attrPresentation $ getDisplayAttrs o
@@ -120,9 +122,11 @@ data DataRows = DataRows
 
 data ObjectRow = ObjectRow
   {
-    rowActionsLeft  :: AnySVALUE
-  , rowActionsRight :: AnySVALUE
-  , rowAttributes   :: [AnySVALUE]
+    rowAttributes :: [AnySVALUE]
+  , rowActions    :: [AnySVALUE]
+  -- ^ Length of this list equals the length of the list of
+  -- row action constructors given.
+  -- Also, the order of the elements corresponds to the order of that list.
   }
 
 
