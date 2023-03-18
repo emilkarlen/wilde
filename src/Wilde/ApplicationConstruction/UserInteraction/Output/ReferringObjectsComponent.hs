@@ -46,10 +46,11 @@ import           Wilde.ObjectModel.UserInteraction
 
 import qualified Wilde.ApplicationConstruction.StandardServices as StandardServices
 import           Wilde.ApplicationConstruction.UserInteraction.Output.ObjectDependentComponent
-import qualified Wilde.ApplicationConstruction.UserInteraction.Output.SpecialComponents as SpecialComponents
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ObjectListSetup as OLS
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.StandardFilterExpression as StdFilterExpr
 import qualified Wilde.ApplicationConstruction.Presentation.DataAndButtonsComponent as DabComp
+import qualified Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectListComponent as OLC
+import qualified Wilde.ObjectModel.Presentation.FooterRowsConstructor as FRC
 
 
 -------------------------------------------------------------------------------
@@ -161,10 +162,10 @@ mkComponent ot
     getWhereExpr          <- getWhereExprGetter ot getSubObjWhereExpr
     os                    <- Presentation.toPresentationMonad_wDefaultDbConn $
                              inputObjects getWhereExpr
-    dataComponent         <- SpecialComponents.objectListTableAccordingToSetup
+    dataComponent         <- OLC.objectList
                              (tableStyle os)
                              atListSetup
-                             footerRowsConstructor
+                             (FRC.asFrc2_mb footerRowsConstructor)
                              (OLS.objectButtonsLeft  buttonsSetup)
                              (OLS.objectButtonsRight buttonsSetup)
                              mbTitle
