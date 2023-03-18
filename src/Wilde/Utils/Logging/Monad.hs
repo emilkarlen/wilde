@@ -33,6 +33,12 @@ class MonadIO m => MonadWithLogging m where
     logg :: Level -> Text -> m ()
     logg level header = logg_ level header Nothing
 
+    loggDebug :: Text -> m ()
+    loggDebug header = logg_ DEBUG header Nothing
+
+    loggDebug_ :: Text -> Text -> m ()
+    loggDebug_ header body = logg_ DEBUG header (Just body)
+
     loggBeginEnd :: Level -> Text -> m a -> m a
     loggBeginEnd level entity action =
         do
