@@ -68,6 +68,9 @@ Library
     Wilde.ApplicationConstruction.Presentation.Presentation
     Wilde.ApplicationConstruction.Presentation.DataAndButtonsComponent
     Wilde.ApplicationConstruction.Presentation.ButtonSequenceValue
+    Wilde.ApplicationConstruction.Presentation.ObjectList
+    Wilde.ApplicationConstruction.Presentation.ObjectListComponent
+    Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectSetup
     Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectList
     Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectListComponent
 

@@ -164,12 +164,12 @@ mkComponent ot
                              inputObjects getWhereExpr
     dataComponent         <- OLC.objectList
                              (tableStyle os)
+                             mbTitle
                              atListSetup
                              (FRC.asFrc2_mb footerRowsConstructor)
                              (OLS.objectButtonsLeft  buttonsSetup)
                              (OLS.objectButtonsRight buttonsSetup)
-                             mbTitle
-                             os
+                             (pure os)
     buttonsBelow          <- sequence $ OLS.objectTypeButtonsBelow buttonsSetup
     pure $ Just $ DabComp.new dataComponent buttonsBelow
   where

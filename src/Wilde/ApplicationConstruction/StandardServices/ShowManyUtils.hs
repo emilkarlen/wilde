@@ -81,10 +81,10 @@ showMany' ot (Config title
       mbFooterRowsConstructor <- theGetFooterRowsConstructor
       objectListComponent     <- OlComp.objectList
                                  WS.presentationTableMulti
+                                 Nothing
                                  atListSetup
                                  (asFrc2_mb mbFooterRowsConstructor)
                                  objBtnsLeft objBtnsRight
-                                 Nothing
-                                 os
+                                 (pure os)
       buttonsBelow            <- sequence getObjTypeBtnsBelow
       pure (title, [TopComp.new objectListComponent buttonsBelow])

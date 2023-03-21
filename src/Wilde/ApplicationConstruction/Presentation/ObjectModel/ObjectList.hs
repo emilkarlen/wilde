@@ -2,20 +2,9 @@
 
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE ExistentialQuantification #-}
-{-# OPTIONS_GHC -Wno-unused-imports #-}
 
 module Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectList
 (
-  Config(..),
-  ObjectList(..),
-  DataRows(..),
-  ObjectRow(..),
-  FooterRows,
-
-  bodyIsEmpty,
-
-  FooterConstructor,
-
   objectList,
 )
 where
@@ -25,21 +14,19 @@ where
 -- - import -
 -------------------------------------------------------------------------------
 
-import qualified Wilde.Utils.Accumulator as Acc
-
-import           Wilde.GenericUi.AbstractTable (CellType(..), ColGroup)
 
 import           Wilde.WildeUi.StdValueTypes as SVT
-import           Wilde.WildeUi.TableUtils
 
 import qualified Wilde.Media.Presentation as Presentation
 
 import qualified Wilde.ObjectModel.AttributeTypeListSetup.SansAnnotation as AttributeTypeListSetup
 import           Wilde.ObjectModel.ObjectModelUtils as OmUtils
-import           Wilde.ObjectModel.Presentation (ATTRIBUTE_PRESENTATION(..), atTitle)
+import           Wilde.ObjectModel.Presentation (ATTRIBUTE_PRESENTATION(..))
 import           Wilde.ObjectModel.Presentation.FooterRowsConstructor2
                    ( FooterConstructor )
-import qualified Wilde.Application.ObjectTypeService as Presentation
+
+import qualified Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectSetup as OS
+import qualified Wilde.ApplicationConstruction.Presentation.ObjectList as OL
 
 
 -------------------------------------------------------------------------------
@@ -51,90 +38,13 @@ import qualified Wilde.Application.ObjectTypeService as Presentation
 objectList
   :: forall otConf atConf dbTable otNative idAtExisting idAtCreate.
      ATTRIBUTE_PRESENTATION atConf
-  => AttributeTypeListSetup.Setup     otConf atConf dbTable otNative idAtExisting idAtCreate
+  => Maybe StyledTitle
+  -> AttributeTypeListSetup.Setup     otConf atConf dbTable otNative idAtExisting idAtCreate
   -> FooterConstructor                otConf atConf dbTable otNative idAtExisting idAtCreate
   -> [idAtExisting -> AnySVALUE]
-  -> Maybe StyledTitle
-  -> [Object                          otConf atConf dbTable otNative idAtExisting idAtCreate]
-  -> Presentation.Monad ObjectList
-objectList atListSetup
-  footerConstructor listOfMkObjectAction mbTitle os = do
-    dataRows <- getDataRows
-    pure $ ObjectList config dataRows
+  -> Presentation.Monad [Object       otConf atConf dbTable otNative idAtExisting idAtCreate]
+  -> Presentation.Monad OL.ObjectList
+objectList mbTitle atListSetup footerConstructor listOfMkObjectAction getObjects =
+  OL.objectList mbTitle otSetup footerConstructor listOfMkObjectAction getObjects
   where
-    config              :: Config
-    config               = Config mbTitle attrTitles
-
-    newObjectRow         = objectRow (AttributeTypeListSetup.apply atListSetup)
-    attrTitles           = map getAtTitle attributeTypes
-    attributeTypes       = AttributeTypeListSetup.getAts atListSetup
-
-    getDataRows         :: Presentation.Monad DataRows
-    getDataRows = do
-      objectRows <- mapM newObjectRow os
-      let footerRows = Acc.resultOfSum footerConstructor os
-      pure $ DataRows objectRows footerRows
-
-    mkObjectActions    :: idAtExisting -> [AnySVALUE]
-    mkObjectActions id  = map (\f -> f id) listOfMkObjectAction
-
-    objectRow :: (Object otConf atConf dbTable otNative idAtExisting idAtCreate
-                  -> [Any (Attribute atConf dbTable)])
-              -> Object otConf atConf dbTable otNative idAtExisting idAtCreate
-              -> Presentation.Monad ObjectRow
-    objectRow getDisplayAttrs o =
-      do
-        attributeValues <- sequence getAttributeValues
-        pure $ ObjectRow attributeValues rowActions
-      where
-        idAttrValue       :: idAtExisting
-        idAttrValue        = attrValue $ oIdAttribute o
-
-        rowActions        :: [AnySVALUE]
-        rowActions         = mkObjectActions idAttrValue
-
-        getAttributeValues :: [Presentation.Monad AnySVALUE]
-        getAttributeValues  = mapAttributeAnyValue attrPresentation $ getDisplayAttrs o
-
-
-data ObjectList = ObjectList
-  {
-    listConfig   :: Config
-  , listDataRows :: DataRows
-  }
-
-bodyIsEmpty :: ObjectList -> Bool
-bodyIsEmpty = null . listObjects . listDataRows
-
-data Config = Config
-  {
-    listTitle       :: Maybe StyledTitle
-  , attributeTitles :: [StyledTitle]
-  }
-
-type FooterRows = ([ColGroup WildeStyle],[[WildeCell]])
-
-data DataRows = DataRows
-  {
-    listObjects    :: [ObjectRow]
-  , listFooterRows :: FooterRows
-  }
-
-data ObjectRow = ObjectRow
-  {
-    rowAttributes :: [AnySVALUE]
-  , rowActions    :: [AnySVALUE]
-  -- ^ Length of this list equals the length of the list of
-  -- row action constructors given.
-  -- Also, the order of the elements corresponds to the order of that list.
-  }
-
-
--------------------------------------------------------------------------------
--- - utils -
--------------------------------------------------------------------------------
-
-
-getAtTitle :: ATTRIBUTE_PRESENTATION atConf
-           => Any (AttributeType atConf dbTable) -> StyledTitle
-getAtTitle (Any at) = atTitle at
+    otSetup = OS.mkObjectSetup atListSetup
