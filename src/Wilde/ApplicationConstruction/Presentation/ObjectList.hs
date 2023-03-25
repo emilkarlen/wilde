@@ -8,6 +8,7 @@ module Wilde.ApplicationConstruction.Presentation.ObjectList
   ObjectTypeSetup(..),
 
   FooterRows,
+  footerRows_rowsOnly,
   FooterRowsConstructor,
 
   Config(..),
@@ -74,6 +75,9 @@ data ObjectRow = ObjectRow
   }
 
 type FooterRows = ([ColGroup WildeStyle],[[WildeCell]])
+
+footerRows_rowsOnly :: [[WildeCell]] -> FooterRows
+footerRows_rowsOnly rows = ([], rows)
 
 type FooterRowsConstructor object = Acc.Accumulator object FooterRows
 
