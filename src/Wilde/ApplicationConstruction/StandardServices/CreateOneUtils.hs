@@ -57,7 +57,7 @@ inputFromUi_store_show :: (Database.OBJECT_TYPE_INSERT otConf
                           ,DatabaseAndPresentation.ATTRIBUTE_TYPE_INFO atConf
                           )
                        => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
-                       -> StyledTitle
+                       -> WildeTitle
                        -> [Any (AttributeType atConf dbTable)]
                        -> ObjectName
                        -> Service

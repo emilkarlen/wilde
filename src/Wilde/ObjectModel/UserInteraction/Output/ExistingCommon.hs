@@ -29,7 +29,7 @@ module Wilde.ObjectModel.UserInteraction.Output.ExistingCommon
 
          -- * Re-exporting types used here
 
-         StyledTitle,
+         WildeTitle,
          PresentationOutputer(..),
          AttributeName,
          WidgetConstructorGetter(..),
@@ -63,7 +63,7 @@ data AttributeTypeInfo typeForExisting =
   AttributeTypeInfo
   {
     atiCrossRefKey              :: AttributeName
-  , atiTitle                    :: StyledTitle
+  , atiTitle                    :: WildeTitle
   , atiPresentationO            :: PresentationOutputer typeForExisting
   , atiOutputerForAttributeName :: UserInteractionOutputerForExisting typeForExisting
   }
@@ -114,11 +114,15 @@ attr2attri (Attribute
 getMkAttributeOutputFun :: (AttributeTypeRole,AttributeTypeInfo a)
                         -> UserInteractionOutputMonad
                            (Maybe a -> ObjectName -> FormBlockRow)
-getMkAttributeOutputFun (UserInteraction,(AttributeTypeInfo {
-                                             atiCrossRefKey              = theCrossRefKey,
-                                             atiOutputerForAttributeName = theOutputerGetter,
-                                             atiTitle                    = theTitle
-                                  }))
+getMkAttributeOutputFun
+  ( UserInteraction,
+    AttributeTypeInfo
+    {
+      atiCrossRefKey              = theCrossRefKey
+    , atiOutputerForAttributeName = theOutputerGetter
+    , atiTitle                    = theTitle
+    }
+  )
   =
   do
     getWidget <- theOutputerGetter theCrossRefKey
@@ -131,10 +135,12 @@ getMkAttributeOutputFun (UserInteraction,(AttributeTypeInfo {
       in
        Left (label,widget)
 
-getMkAttributeOutputFun (_,(AttributeTypeInfo {
-                               atiPresentationO = presOutputer,
-                               atiTitle         = titleWithStyle
-                               }))
+getMkAttributeOutputFun (_,
+  AttributeTypeInfo
+  {
+    atiPresentationO = presOutputer
+  , atiTitle         = titleWithStyle
+  })
   =
     pure $
       \mbValue objectName -> Right (wildeStyled titleWithStyle,

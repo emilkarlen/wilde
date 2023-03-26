@@ -40,8 +40,8 @@ import Wilde.Application.Service.Service
 data Config otConf atConf dbTable otNative idAtExisting idAtCreate =
   Config
   {
-    title           :: StyledTitle
-  , objectListSetup :: (OLS.ObjectListSetup otConf atConf dbTable otNative idAtExisting idAtCreate)
+    title           :: WildeTitle
+  , objectListSetup :: OLS.ObjectListSetup otConf atConf dbTable otNative idAtExisting idAtCreate
   }
 
 showMany :: ATTRIBUTE_PRESENTATION atConf
@@ -58,7 +58,7 @@ showMany' :: ATTRIBUTE_PRESENTATION atConf
           => ObjectType   otConf atConf dbTable otNative idAtExisting idAtCreate
           -> Config       otConf atConf dbTable otNative idAtExisting idAtCreate
           -> [Object      otConf atConf dbTable otNative idAtExisting idAtCreate]
-          -> Presentation.Monad (StyledTitle,[AnyCOMPONENT])
+          -> Presentation.Monad (WildeTitle,[AnyCOMPONENT])
 showMany' ot (Config title
                 (OLS.ObjectListSetup
                  {

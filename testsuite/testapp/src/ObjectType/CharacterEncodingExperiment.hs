@@ -43,7 +43,7 @@ databaseTable = DatabaseTable "character_encoding_experiment"
 
 type NativeType = (PrimaryKeyType,Maybe String)
 
-title :: StyledTitle
+title :: WildeTitle
 title = wildeStyling
         (WildeStyle ["character_encoding_experiment"])
         "Character Encoding Experiment"

@@ -117,7 +117,7 @@ data AttributeTypePresentation a =
   AttributeTypePresentation
   {
     atpoOutput :: PresentationOutputer a
-  , atpoTitle  :: StyledTitle
+  , atpoTitle  :: WildeTitle
   }
 
 

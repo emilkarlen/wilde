@@ -38,7 +38,7 @@ import qualified Wilde.ApplicationConstruction.Presentation.ButtonSequenceValue 
 objectList
   :: forall object.
      WildeStyle
-  -> Maybe StyledTitle
+  -> Maybe WildeTitle
   -> OL.ObjectTypeSetup object
   -> OL.FooterRowsConstructor object
   -> [Presentation.Monad (object -> AnySVALUE)]
@@ -90,7 +90,7 @@ instance COMPONENT ObjectListComponent where
       unstyledTable :: WildeTable
       unstyledTable = mkTable tableLayouter (OL.attributeTitles config) dataRows
 
-      mkTable :: TableLayouter -> [StyledTitle] -> OL.DataRows -> WildeTable
+      mkTable :: TableLayouter -> [WildeTitle] -> OL.DataRows -> WildeTable
       mkTable = if OL.bodyIsEmpty ol
                 then emptyTable
                 else nonEmptyTable hasLRSideRow
@@ -98,26 +98,26 @@ instance COMPONENT ObjectListComponent where
       tableLayouter :: TableLayouter
       tableLayouter = TU.conWildeHeaderRowTable2 WS.multiRow (OL.listTitle config)
 
-type TableLayouter = [StyledTitle] -> Maybe OL.FooterRows -> [[WildeCell]] -> WildeTable
+type TableLayouter = [WildeTitle] -> Maybe OL.FooterRows -> [[WildeCell]] -> WildeTable
 
-emptyTable :: TableLayouter -> [StyledTitle] -> OL.DataRows -> WildeTable
+emptyTable :: TableLayouter -> [WildeTitle] -> OL.DataRows -> WildeTable
 emptyTable tableLayouter attrTitles dataRows = tableLayouter attrTitles Nothing []
 
-nonEmptyTable :: HasLRSideActionColumn -> TableLayouter -> [StyledTitle] -> OL.DataRows -> WildeTable
+nonEmptyTable :: HasLRSideActionColumn -> TableLayouter -> [WildeTitle] -> OL.DataRows -> WildeTable
 nonEmptyTable hasLRActionsCols@(hasLeftActionsCol, hasRightActionsCol)
               tableLayouter attrTitles dataRows =
   tableLayouter colTitles mbFooter body
   where
-    colTitles      :: [StyledTitle]
+    colTitles      :: [WildeTitle]
     colTitles       = mbActionsColTitle hasLeftActionsCol <>
                       attrTitles <>
                       mbActionsColTitle hasRightActionsCol
 
-    mbActionsColTitle :: Bool -> [StyledTitle]
+    mbActionsColTitle :: Bool -> [WildeTitle]
     mbActionsColTitle False = []
     mbActionsColTitle _     = [buttonColTitle]
 
-    buttonColTitle :: StyledTitle
+    buttonColTitle :: WildeTitle
     buttonColTitle  = wildeStyling WS.objectButtonStyle ""
 
     mbFooter      :: Maybe OL.FooterRows

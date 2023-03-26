@@ -41,7 +41,7 @@ import Wilde.Render.AbstractTableToHtml
 
 
 -- | Renders a page title.
-renderPageTitle :: StyledTitle
+renderPageTitle :: WildeTitle
                    -> Html
 renderPageTitle title =
     withclasses classes $
@@ -56,7 +56,7 @@ renderPageTitle title =
 
 -- | Renders a page.
 renderPage :: [URL] -- ^ CSS files
-           -> StyledTitle
+           -> WildeTitle
            -> [AnyCOMPONENT] -- ^ body
            -> HD.Document
 renderPage cssFiles title components =
@@ -78,7 +78,7 @@ renderPage cssFiles title components =
 
 -- | Renders a page given simple Html.
 renderPageHtml :: [URL] -- ^ CSS files
-               -> StyledTitle -- ^ Page and service title
+               -> WildeTitle -- ^ Page and service title
                -> Html -- ^ body
                -> HD.Document
 renderPageHtml cssFiles title body =

@@ -177,7 +177,7 @@ mkComponent ot
     atsIncludeBeforeExclusion = theDisplayAts
     tableStyle                :: [a] -> WildeStyle
     tableStyle os             = tableStyleForObjectTypeSubObjects (null os)
-    mbTitle                   :: Maybe StyledTitle
+    mbTitle                   :: Maybe WildeTitle
     mbTitle                   = Just $
                                   theTitle
                                   `withAdjustedStyle`
@@ -243,7 +243,7 @@ data ShowAllReferingConfig otConf atConf atRef dbTable otNative idAtExisting idA
   (Database.COLUMNS_AND_IO_FOR_EXISTING atConf)
   => ShowAllReferingConfig
   {
-    title          :: StyledTitle
+    title          :: WildeTitle
   , displaySetup   :: OLS.ObjectListDisplaySetup otConf atConf dbTable otNative idAtExisting idAtCreate
   , mkButtonsSetup :: atRef -> OLS.ObjectListButtonsSetup otConf atConf dbTable otNative idAtExisting idAtCreate
   }

@@ -50,7 +50,7 @@ data AttributeTypeInfo typeForExisting typeForCreate =
   AttributeTypeInfo
   {
     atiCrossRefKey       :: AttributeName
-  , atiTitle             :: StyledTitle
+  , atiTitle             :: WildeTitle
   , atiPresentationO     :: PresentationOutputer           typeForExisting
   , atiOutputerForCreate :: AttributeName ->
                             AttributeTypeOutputerForCreate typeForExisting typeForCreate
@@ -84,9 +84,9 @@ type UserInteractionOutputerForAnyObjectForCreate typeForExisting typeForCreate 
   (AttributeWidgetDefaultValueForCreate typeForExisting typeForCreate)
 
 mkFormBlockRowInfoForWidget :: AttributeName
-                            -> StyledTitle
-                            -> (UiO.WidgetConstructorForObjectWithDefault
-                                (AttributeWidgetDefaultValueForCreate typeForExisting typeForCreate))
+                            -> WildeTitle
+                            -> UiO.WidgetConstructorForObjectWithDefault
+                               (AttributeWidgetDefaultValueForCreate typeForExisting typeForCreate)
                             -> Maybe (AttributeWidgetDefaultValueForCreate typeForExisting typeForCreate)
                             -> UiO.ObjectName
                             -> UiO.FormBlockRowInfo

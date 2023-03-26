@@ -43,5 +43,5 @@ mkObjectSetup atListSetup =
     attributeTypes      :: [Any (AttributeType atConf dbTable)]
     attributeTypes       = AttributeTypeListSetup.getAts atListSetup
 
-    getAtTitle :: Any (AttributeType atConf dbTable) -> StyledTitle
+    getAtTitle :: Any (AttributeType atConf dbTable) -> WildeTitle
     getAtTitle (Any at) = OmPres.atTitle at

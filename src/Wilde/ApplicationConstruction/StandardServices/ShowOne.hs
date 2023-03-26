@@ -47,7 +47,7 @@ import qualified Wilde.ApplicationConstruction.Presentation.DataAndButtonsCompon
 data Config otConf atConf dbTable otNative idAtExisting idAtCreate =
   Config
   {
-    title               :: StyledTitle
+    title               :: WildeTitle
   , attributeTypesOrder :: [Any (AttributeType  atConf dbTable)]
   , dependentComponents :: [ObjectDependentComponent   otConf atConf dbTable otNative idAtExisting idAtCreate]
   , buttons             :: [Presentation.Monad (idAtExisting -> AnySVALUE)]
@@ -79,7 +79,7 @@ mainForObj' :: forall otConf atConf dbTable otNative idAtExisting idAtCreate.
                Presentation.ATTRIBUTE_PRESENTATION atConf
             => Object otConf atConf dbTable otNative idAtExisting idAtCreate
             -> Config otConf atConf dbTable otNative idAtExisting idAtCreate
-            -> Presentation.Monad (StyledTitle,[AnyCOMPONENT])
+            -> Presentation.Monad (WildeTitle,[AnyCOMPONENT])
 mainForObj' o (Config
                {
                  title               = theTitle

@@ -35,7 +35,7 @@ objectList
   :: forall otConf atConf dbTable otNative idAtExisting idAtCreate.
      OmPres.ATTRIBUTE_PRESENTATION atConf
   => WildeStyle
-  -> Maybe StyledTitle
+  -> Maybe WildeTitle
   -> AttributeTypeListSetup.Setup  otConf atConf dbTable otNative idAtExisting idAtCreate
   -> MkFooterConstructor           otConf atConf dbTable otNative idAtExisting idAtCreate
   -> [Presentation.Monad (Object   otConf atConf dbTable otNative idAtExisting idAtCreate -> AnySVALUE)]

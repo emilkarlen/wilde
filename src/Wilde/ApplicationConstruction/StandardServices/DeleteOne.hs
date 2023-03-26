@@ -45,7 +45,7 @@ import Wilde.ApplicationConstruction.Service.ObjectTypeServiceUtils
 data Config (otConf :: * -> * -> * -> * -> *) (atConf :: * -> * -> * -> *) dbTable otNative idAtExisting idAtCreate =
   Config
   {
-    title :: StyledTitle
+    title :: WildeTitle
   , steps :: Steps idAtExisting
   }
 

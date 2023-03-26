@@ -57,7 +57,7 @@ import Wilde.Application.Service.Service
 -- displayed to the user.
 data StepService = StepService
                    {
-                     mainTitle    :: WM.StyledTitle,
+                     mainTitle    :: WM.WildeTitle,
                      nonLastSteps :: [NonLastStep],
                      lastStep     :: Service
                    }
@@ -171,7 +171,7 @@ stepService (StepService {
        throwInvalidStep :: String -> ServiceMonad a
        throwInvalidStep msg = throwErr $ ValueValue "step" msg
 
-continueWithFormBlocks :: WM.StyledTitle -> ContinueInfo -> Int -> Service
+continueWithFormBlocks :: WM.WildeTitle -> ContinueInfo -> Int -> Service
 continueWithFormBlocks presSpec formBlocksAndMetas nextStepIdx =
   do
     let formBlocksAndMetas' = setNextStep formBlocksAndMetas
@@ -184,7 +184,7 @@ continueWithFormBlocks presSpec formBlocksAndMetas nextStepIdx =
 
 -- TODO Improve impl, just copying from continueWithFormBlocks.
 -- (guess should not need to use forms, a link would as well)
-askIfContinueWithMsg :: WM.StyledTitle -> PopUp.Message -> Int -> Service
+askIfContinueWithMsg :: WM.WildeTitle -> PopUp.Message -> Int -> Service
 askIfContinueWithMsg presSpec msg nextStepIdx =
   do
     current <- currentServiceLink

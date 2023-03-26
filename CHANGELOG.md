@@ -19,6 +19,8 @@
 
   - DEL autotools support
 
+  - RENAME StyledTitle -> WildeTitle
+
 # 0.7.0.1 -- 2023-02-11
 
   - BUMP ghc v9.0.2 -> v9.2.5

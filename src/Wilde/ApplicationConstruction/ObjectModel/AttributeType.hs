@@ -351,7 +351,7 @@ at_ref :: (Database.DATABASE_TABLE otConf
        => dbTableSrc
        -> ObjectTypeSetup           otConf DdlAtAnnotation.Configuration dbTableDst otNativeDst e c
        -> ReferencePresentationSpec otConf DdlAtAnnotation.Configuration dbTableDst otNativeDst e c
-       -> Maybe StyledTitle
+       -> Maybe WildeTitle
        -> PlainAttributeType_ddl dbTableSrc e
 at_ref = at_ref' False
 
@@ -364,7 +364,7 @@ at_ref' :: (Database.DATABASE_TABLE otConf
         -> dbTableSrc
         -> ObjectTypeSetup           otConf DdlAtAnnotation.Configuration dbTableDst otNativeDst e c
         -> ReferencePresentationSpec otConf DdlAtAnnotation.Configuration dbTableDst otNativeDst e c
-        -> Maybe StyledTitle
+        -> Maybe WildeTitle
         -> PlainAttributeType_ddl    dbTableSrc e
 at_ref' bOptional field otSetupDst refPresSpec mbTitle =
   reference_mandatory rati setDdlInfoOnDdlAnnotation field title
@@ -402,7 +402,7 @@ at_ref_optional :: (Database.DATABASE_TABLE otConf
                 => dbTableSrc
                 -> ObjectTypeSetup              otConf DdlAtAnnotation.Configuration dbTableDst otNativeDst typeForExisting typeForCreate
                 -> ReferencePresentationSpec    otConf DdlAtAnnotation.Configuration dbTableDst otNativeDst typeForExisting typeForCreate
-                -> Maybe StyledTitle
+                -> Maybe WildeTitle
                 -> PlainAttributeType_optional_ddl dbTableSrc typeForExisting
 at_ref_optional field otSetupDst refPresSpec mbTitle =
   reference_optional rati setDdlInfoOnDdlAnnotation field title
@@ -436,7 +436,7 @@ at_ref_std :: (Database.DATABASE_TABLE otConf
            => dbTableSrc
            -> ObjectTypeSetup           otConf DdlAtAnnotation.Configuration dbTableDst otNativeDst PrimaryKeyType typeForCreate
            -> ReferencePresentationSpec otConf DdlAtAnnotation.Configuration dbTableDst otNativeDst PrimaryKeyType typeForCreate
-           -> Maybe StyledTitle
+           -> Maybe WildeTitle
            -> StdRefAttributeType_ddl dbTableSrc
 at_ref_std field otSetupDst refPresSpec mbTitle =
   at_ref' False field otSetupDst refPresSpec mbTitle
@@ -447,7 +447,7 @@ at_ref_std_optional :: (Database.DATABASE_TABLE otConf
                     => dbTableSrc
                     -> ObjectTypeSetup              otConf DdlAtAnnotation.Configuration dbTableDst otNativeDst PrimaryKeyType typeForCreate
                     -> ReferencePresentationSpec    otConf DdlAtAnnotation.Configuration dbTableDst otNativeDst PrimaryKeyType typeForCreate
-                    -> Maybe StyledTitle
+                    -> Maybe WildeTitle
                     -> StdRefAttributeType_optional_ddl dbTableSrc
 at_ref_std_optional field otSetupDst refPresSpec mbTitle =
   at_ref_optional field otSetupDst refPresSpec mbTitle
@@ -1123,7 +1123,7 @@ at_EnumAsDropDown_Word32 :: SQL_IDENTIFIER dbTable
                          => [(Word32,AnyVALUE)]
                          -> dbTable
                          -> Maybe (UserInteraction.AttributeTypeCreateOption Word32)
-                         -> StyledTitle
+                         -> WildeTitle
                          -> PlainAttributeType_ddl dbTable Word32
 at_EnumAsDropDown_Word32 = at_EnumAsDropDown_mandatory AtDbInfo.word32 (uiIo_Word32 inputWidth)
   where
@@ -1133,7 +1133,7 @@ at_EnumAsDropDown_Word32_optional :: SQL_IDENTIFIER dbTable
                                   => [(Word32,AnyVALUE)]
                                   -> dbTable
                                   -> Maybe (UserInteraction.AttributeTypeCreateOption (Maybe Word32))
-                                  -> StyledTitle
+                                  -> WildeTitle
                                   -> PlainAttributeType_optional_ddl dbTable Word32
 at_EnumAsDropDown_Word32_optional values =
   at_EnumAsDropDown_optional
@@ -1147,7 +1147,7 @@ at_EnumAsDropDown_mandatory :: (Eq a,Typeable a,Show a,Read a,SQL_IDENTIFIER dbT
                             -> [(a,AnyVALUE)]
                             -> dbTable
                             -> Maybe (UserInteraction.AttributeTypeCreateOption a)
-                            -> StyledTitle
+                            -> WildeTitle
                             -> PlainAttributeType_ddl dbTable a
 at_EnumAsDropDown_mandatory mkAtDbInfoForColumn atUiIo values
   field createOption presSpec
@@ -1188,7 +1188,7 @@ at_EnumAsDropDown_optional :: (Eq a,Typeable a,Show a,Read a,SQL_IDENTIFIER dbTa
                            -> [(a,AnyVALUE)]
                            -> dbTable
                            -> Maybe (UserInteraction.AttributeTypeCreateOption (Maybe a))
-                           -> StyledTitle
+                           -> WildeTitle
                            -> PlainAttributeType_ddl dbTable (Maybe a)
 at_EnumAsDropDown_optional mkAtDbInfoForColumn atUiIo values
   field createOption presSpec

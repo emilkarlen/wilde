@@ -74,7 +74,7 @@ objectTypeSetup
      ,OmGsr.ATTRIBUTE_OUTPUT_FOR_EXISTING atConf
       )
   => ObjectType                       otConf atConf dbTable otNative idAtExisting idAtCreate
-  -> StyledTitle
+  -> WildeTitle
   -> StandardServices.ObjectTypeSetup otConf atConf dbTable otNative idAtExisting idAtCreate
 objectTypeSetup ot titleWithStyle =
   StandardServices.ObjectTypeSetup
