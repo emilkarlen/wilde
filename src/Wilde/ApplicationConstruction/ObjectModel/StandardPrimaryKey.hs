@@ -65,6 +65,7 @@ import qualified Wilde.ApplicationConstruction.Database.AttributeTypeDatabaseInf
 import Wilde.ApplicationConstruction.Presentation.Presentation
 import Wilde.ApplicationConstruction.GenericStringRepIo
 import Wilde.ApplicationConstruction.UserInteraction.Io
+import           Wilde.WildeUi.UiPrimitives
 
 
 -------------------------------------------------------------------------------

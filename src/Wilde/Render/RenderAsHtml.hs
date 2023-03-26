@@ -24,15 +24,14 @@ import qualified Wilde.Render.Html.Attribute as HA
 import qualified Wilde.Render.Html.Element as HE
 import qualified Wilde.Render.Html.Document as HD
 
-import Wilde.Utils.TextHtmlUtils
+import           Wilde.Utils.TextHtmlUtils
 
-import Wilde.Media.WildeStyle
-import Wilde.Media.WildeStyleType
-import Wilde.Media.WildeMedia
+import           Wilde.WildeUi.WildeStyle
+import           Wilde.WildeUi.WildeStyleType
+import           Wilde.WildeUi.UiPrimitives
 
-import Wilde.Render.StyleForHtml
-
-import Wilde.Render.AbstractTableToHtml
+import           Wilde.Render.StyleForHtml
+import           Wilde.Render.AbstractTableToHtml
 
 
 -------------------------------------------------------------------------------
@@ -48,7 +47,7 @@ renderPageTitle title =
     HE.div (HE.str titleString)
   where
     classes       = titleClasses ++ systemClasses
-    systemClasses = Wilde.Media.WildeStyle.pageTitleClasses :: [ClassName]
+    systemClasses = Wilde.WildeUi.WildeStyle.pageTitleClasses :: [ClassName]
     titleString   = wildeStyled title :: Title
     titleStyle    = wildeStyle  title :: WildeStyle
     titleClasses  = getClasses titleStyle :: [ClassName]

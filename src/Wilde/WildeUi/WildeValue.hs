@@ -1,27 +1,11 @@
-{-
-Copyright 2013 Emil Karlén.
+-- | Classes and datatypes for encapsulating data
+-- that is presented in the user interface.
 
-This file is part of Wilde.
-
-Wilde is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Wilde is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Wilde.  If not, see <http://www.gnu.org/licenses/>.
--}
 {-# LANGUAGE ExistentialQuantification #-}
 
--- | Classes and datatypes for encapsulating data.
-module Wilde.Media.WildeValue
+module Wilde.WildeUi.WildeValue
   ( module Wilde.GenericUi.Value,
-    module Wilde.Media.WildeStyleType,
+    module Wilde.WildeUi.WildeStyleType,
     AnyVALUE (..),
     SVALUE (..),
     AnySVALUE (..),
@@ -42,10 +26,10 @@ where
 import           Wilde.Render.Html.Types ( Html )
 import qualified Wilde.Render.Html.Element as HE
 import qualified Wilde.Render.Html.Utils as HU
+import           Wilde.Render.StyleForHtml
 
 import           Wilde.GenericUi.Value
-import           Wilde.Media.WildeStyleType
-import           Wilde.Render.StyleForHtml
+import           Wilde.WildeUi.WildeStyleType
 
 -------------------------------------------------------------------------------
 -- - SVALUE -

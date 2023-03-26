@@ -81,16 +81,17 @@ module Wilde.ObjectModel.ObjectModel
 -------------------------------------------------------------------------------
 
 
-import Data.Convertible.Base
-import Data.Typeable
+import           Data.Convertible.Base
+import           Data.Typeable
 
 import qualified Data.Array.IArray as Array
 
 import qualified Wilde.Database.Sql as Sql
 
-import Wilde.Media.WildeMedia
-import Wilde.Media.UserInteraction.Io
+import           Wilde.Media.WildeMedia
+import           Wilde.Media.UserInteraction.Io
 import qualified Wilde.Media.Presentation as Presentation
+import           Wilde.WildeUi.UiPrimitives
 
 
 -------------------------------------------------------------------------------

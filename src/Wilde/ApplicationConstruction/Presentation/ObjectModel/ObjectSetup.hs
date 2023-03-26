@@ -17,6 +17,7 @@ import           Wilde.ObjectModel.ObjectModelUtils as OmUtils
 import qualified Wilde.ObjectModel.Presentation as OmPres
 
 import qualified Wilde.ApplicationConstruction.Presentation.ObjectList as OL
+import           Wilde.WildeUi.UiPrimitives
 
 
 -------------------------------------------------------------------------------

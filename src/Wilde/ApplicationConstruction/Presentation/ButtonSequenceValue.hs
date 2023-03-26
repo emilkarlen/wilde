@@ -15,7 +15,7 @@ where
 
 import qualified Wilde.Render.Html.Element as HE
 
-import           Wilde.Media.WildeValue (AnySVALUE, SVALUE(..), VALUE(..), withNeutralStyleAny, AnyVALUE)
+import           Wilde.WildeUi.WildeValue (AnySVALUE, SVALUE(..), VALUE(..), withNeutralStyleAny, AnyVALUE)
 
 
 -------------------------------------------------------------------------------

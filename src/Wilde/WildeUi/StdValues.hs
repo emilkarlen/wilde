@@ -1,7 +1,7 @@
 -- | Usefull values of types defined in Values and StdValueTypes.
 module Wilde.WildeUi.StdValues where
 
-import Wilde.Media.WildeValue
+import Wilde.WildeUi.WildeValue
 import Wilde.WildeUi.StdValueTypes
 
 vSpace :: AnyVALUE

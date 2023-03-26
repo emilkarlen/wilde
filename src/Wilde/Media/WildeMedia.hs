@@ -3,15 +3,9 @@
 module Wilde.Media.WildeMedia
        (
          -- Presentation
-         Title(..),
-
-         WildeTitle,
-         neutralTitle,
 
          PresentationOutput,
          PresentationOutputer,
-
-         module Wilde.WildeUi.UiPrimitives,
 
          -- User Interaction
 
@@ -45,16 +39,13 @@ module Wilde.Media.WildeMedia
 -------------------------------------------------------------------------------
 
 
-import Data.Typeable
-
+import           Data.Typeable
 import qualified Data.List.NonEmpty as NonEmpty
-import Wilde.Utils.Utils
 
-import Wilde.Media.ElementSet
-
-import Wilde.Media.WildeValue
-
-import Wilde.WildeUi.UiPrimitives
+import           Wilde.Media.ElementSet
+import           Wilde.WildeUi.WildeValue
+import           Wilde.Utils.Utils
+-- import           Wilde.WildeUi.UiPrimitives
 
 
 -------------------------------------------------------------------------------
@@ -80,13 +71,6 @@ import Wilde.WildeUi.UiPrimitives
 -------------------------------------------------------------------------------
 
 
-type Title = String
-
-type WildeTitle = WildeStyling Title
-
-neutralTitle :: Title -> WildeTitle
-neutralTitle = withNeutralWildeStyle
-
 type PresentationOutput = AnySVALUE
 
 type PresentationOutputer a = a -> PresentationOutput
@@ -108,7 +92,7 @@ data ObjectInputErrorInfo =
   ObjectInputErrorInfo
   {
     otKey      :: CrossRefIdentifier
-  , oName      :: Title
+  , oName      :: String
   , attrErrors :: NonEmpty.NonEmpty ElementLookupError
   }
   deriving Show

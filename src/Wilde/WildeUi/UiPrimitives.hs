@@ -3,26 +3,23 @@
 -- "Primitive" means that dependencies should be few.
 --
 module Wilde.WildeUi.UiPrimitives
-       (
-         module Wilde.Utils.Empty,
-         module Wilde.GenericUi.Style,
-         module Wilde.Media.WildeStyleType,
-         module Wilde.GenericUi.Component,
+(
+  module Wilde.Utils.Empty,
+  module Wilde.GenericUi.Style,
+  module Wilde.GenericUi.Component,
+  module Wilde.WildeUi.WildeStyleType,
 
-         -- * Styled elements
+  -- * Titles
 
-         ElementWithStyle(..),
+  Title,
+  WildeTitle,
+  neutralTitle,
 
-         -- * Wilde tables
-         WildeTable,
-         WildeRowGroup,
-         WildeRow,
-         WildeCell,
+  -- * Styled elements
 
-         wildeCellFromSVALUE,
-
-       )
-       where
+  ElementWithStyle(..),
+)
+where
 
 
 -------------------------------------------------------------------------------
@@ -30,18 +27,34 @@ module Wilde.WildeUi.UiPrimitives
 -------------------------------------------------------------------------------
 
 
-import Wilde.Utils.Empty
+import           Wilde.Utils.Empty
 
 import           Wilde.Render.Html.Types
 import qualified Wilde.Render.Html.Element as HE
 
-import Wilde.GenericUi.AbstractTable
+import           Wilde.GenericUi.Component
+import           Wilde.GenericUi.Style
 
-import Wilde.GenericUi.Component
-import Wilde.Media.WildeValue
+import           Wilde.WildeUi.WildeValue
+import           Wilde.WildeUi.WildeStyleType
 
-import Wilde.GenericUi.Style
-import Wilde.Media.WildeStyleType
+
+-------------------------------------------------------------------------------
+-- - implementation -
+-------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------
+-- - titles -
+-------------------------------------------------------------------------------
+
+
+type Title      = String
+
+type WildeTitle = WildeStyling Title
+
+neutralTitle :: Title -> WildeTitle
+neutralTitle = withNeutralWildeStyle
 
 
 -------------------------------------------------------------------------------
@@ -65,18 +78,3 @@ instance SVALUE ElementWithStyle where
 
 instance EMPTY ElementWithStyle where
     empty = SeHtml HE.empty
-
-
--------------------------------------------------------------------------------
--- - WildeTable -
--------------------------------------------------------------------------------
-
-
-type WildeTable      = StyledTable    WildeStyle AnyVALUE
-type WildeRowGroup   = StyledRowGroup WildeStyle AnyVALUE
-type WildeRow        = StyledRow      WildeStyle AnyVALUE
-type WildeCell       = StyledCell     WildeStyle AnyVALUE
-
-wildeCellFromSVALUE :: SVALUE a => CellType -> Span -> a -> WildeCell
-wildeCellFromSVALUE cellType span svalue =
-    conCell (valueStyle svalue) cellType span (AnyVALUE svalue)

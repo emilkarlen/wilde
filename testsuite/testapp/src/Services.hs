@@ -8,19 +8,20 @@ module Services where
 
 import qualified Data.Map as Map
 
-import Wilde.ObjectModel.ObjectModel
 
-import Wilde.Service.Monad
+import           Wilde.WildeUi.UiPrimitives (withNeutralWildeStyle)
 
-import Wilde.ApplicationConstruction.StandardServices
+import           Wilde.ObjectModel.ObjectModel
 
-import Wilde.ApplicationConstruction.Service.StepService
+import           Wilde.Application.Service.Service
 
-import Wilde.ApplicationConstruction.Database.DatabaseUtils
+import           Wilde.Service.Monad
+
+import           Wilde.ApplicationConstruction.StandardServices
+import           Wilde.ApplicationConstruction.Service.StepService
+import           Wilde.ApplicationConstruction.Database.DatabaseUtils
 
 import qualified ObjectModel
-
-import Wilde.Application.Service.Service
 
 
 -------------------------------------------------------------------------------

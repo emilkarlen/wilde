@@ -14,18 +14,18 @@ where
 
 import qualified Wilde.Render.Html.Element as HE
 
-import           Wilde.Media.WildeValue (AnySVALUE, SVALUE(..))
-import qualified Wilde.Media.WildeStyle as WS
+import           Wilde.WildeUi.WildeValue (AnySVALUE, SVALUE(..))
+import qualified Wilde.WildeUi.WildeStyle as WS
 
 import qualified Wilde.GenericUi.Component as Comp
 
 import qualified Wilde.Media.Presentation as Presentation
 
-import           Wilde.ObjectModel.ObjectModel
 
 import qualified Wilde.Utils.TextHtmlUtils as HU
 
 import qualified Wilde.ApplicationConstruction.Presentation.ButtonSequenceValue as BtnSeq
+import           Wilde.WildeUi.UiPrimitives
 
 
 -------------------------------------------------------------------------------

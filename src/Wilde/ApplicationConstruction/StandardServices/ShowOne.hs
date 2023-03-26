@@ -21,7 +21,7 @@ module Wilde.ApplicationConstruction.StandardServices.ShowOne
 
 import Data.Maybe
 
-import           Wilde.Media.WildeValue (AnySVALUE)
+import           Wilde.WildeUi.WildeValue (AnySVALUE)
 import qualified Wilde.Media.Presentation as Presentation
 
 import           Wilde.ObjectModel.ObjectModel
@@ -37,6 +37,7 @@ import Wilde.ApplicationConstruction.UserInteraction.Output.ObjectDependentCompo
 import Wilde.ApplicationConstruction.Service.ObjectTypeServiceUtils
 import Wilde.ApplicationConstruction.Service.ServiceUtils
 import qualified Wilde.ApplicationConstruction.Presentation.DataAndButtonsComponent as TopComp
+import           Wilde.WildeUi.UiPrimitives
 
 
 -------------------------------------------------------------------------------

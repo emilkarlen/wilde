@@ -1,4 +1,4 @@
-module Wilde.Media.WildeStyleType
+module Wilde.WildeUi.WildeStyleType
        (
          module Wilde.GenericUi.Style,
 

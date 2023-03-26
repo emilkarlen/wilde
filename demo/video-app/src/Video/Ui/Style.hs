@@ -6,7 +6,7 @@ module Video.Ui.Style where
 -------------------------------------------------------------------------------
 
 
-import Wilde.Media.WildeMedia
+import           Wilde.WildeUi.UiPrimitives
 
 
 -------------------------------------------------------------------------------

@@ -43,9 +43,10 @@ import qualified Wilde.Utils.AnyValue2 as AnyValue2
 import qualified Wilde.Media.UserInteraction.Output as UiO
 import qualified Wilde.Media.GenericStringRep as Gsr
 
-import Wilde.ObjectModel.ObjectModel
+import           Wilde.ObjectModel.ObjectModel
 
 import qualified Wilde.ObjectModel.UserInteraction.Common as UiCommon
+import           Wilde.WildeUi.UiPrimitives
 
 
 -------------------------------------------------------------------------------

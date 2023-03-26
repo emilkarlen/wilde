@@ -24,28 +24,28 @@ module Wilde.Driver.Database.MySQL.ApplicationObjectModelTools
 -------------------------------------------------------------------------------
 
 
-import Control.Monad.IO.Class
+import           Control.Monad.IO.Class
 
-import Database.HDBC
+import           Database.HDBC
 import qualified Database.HDBC as HDBC
 
 import qualified Wilde.Utils.Logging.Monad as Logging
 
-import Wilde.Media.Database
-import qualified Wilde.Media.Database.Monad as DbConn
-
 import           Wilde.Database.Sql
 import           Wilde.Database.SqlDdlInfo
+
+import           Wilde.Media.Database
+import qualified Wilde.Media.Database.Monad as DbConn
+
+import           Wilde.WildeUi.UiPrimitives (Title, WildeTitle)
 
 import qualified Wilde.ObjectModel.ObjectModelUtils as OmUtils
 import qualified Wilde.ObjectModel.Database as Database
 
-import Wilde.ApplicationConstruction.ObjectModel.ObjectType
+import           Wilde.ApplicationConstruction.ObjectModel.ObjectType
 import qualified Wilde.ApplicationConstruction.ObjectModel.IdNameObjectType as IdNameOt
-import Wilde.ApplicationConstruction.StandardServices as StandardServices
-
-import Wilde.ApplicationConstruction.Database.DatabaseUtils
-
+import           Wilde.ApplicationConstruction.StandardServices as StandardServices
+import           Wilde.ApplicationConstruction.Database.DatabaseUtils
 import qualified Wilde.ApplicationConstruction.AttributeTypeConfiguration.DdlAtAnnotation as DdlAtAnnotation
 import qualified Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAndDbIo as UiIoAndDbIo
 import qualified Wilde.ApplicationConstruction.ObjectTypeConfiguration.Database as OtDbConfig

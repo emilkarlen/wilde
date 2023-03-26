@@ -20,7 +20,7 @@ module Wilde.ApplicationConstruction.UserInteraction.Output.ObjectListSetup
 -------------------------------------------------------------------------------
 
 
-import Wilde.Media.WildeValue (AnySVALUE)
+import Wilde.WildeUi.WildeValue (AnySVALUE)
 
 import Wilde.ObjectModel.ObjectModelUtils
 import qualified Wilde.Media.Presentation as Presentation

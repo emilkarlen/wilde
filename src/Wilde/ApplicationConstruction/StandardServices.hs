@@ -68,16 +68,18 @@ module Wilde.ApplicationConstruction.StandardServices
 -------------------------------------------------------------------------------
 
 
-import Data.Maybe
+import           Data.Maybe
 import qualified Data.Map as Map
 
 import           Wilde.Utils.ListUtils
 
+import           Wilde.WildeUi.WildeValue
+import           Wilde.WildeUi.UiPrimitives (Title, WildeTitle)
+
 import qualified Wilde.Media.Element as Element
-import           Wilde.Media.WildeValue
+import qualified Wilde.Media.Presentation as Presentation
 
 import           Wilde.ObjectModel.ObjectModelUtils
-import qualified Wilde.Media.Presentation as Presentation
 import qualified Wilde.ObjectModel.UserInteraction as OmUi
 
 import qualified Wilde.ObjectModel.UserInteraction                      as UserInteraction

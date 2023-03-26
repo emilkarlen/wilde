@@ -30,8 +30,10 @@ module Wilde.ApplicationConstruction.StandardServices.Tools
 -------------------------------------------------------------------------------
 
 
+import           Wilde.WildeUi.WildeValue (AnySVALUE)
+import           Wilde.WildeUi.UiPrimitives (WildeTitle)
+
 import qualified Wilde.Media.Presentation as Presentation
-import           Wilde.Media.WildeValue (AnySVALUE)
 
 import           Wilde.ObjectModel.ObjectModel as OM
 

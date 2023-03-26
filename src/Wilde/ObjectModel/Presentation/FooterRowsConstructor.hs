@@ -28,14 +28,15 @@ import           Wilde.WildeUi.StdValueTypes as SVT
 
 
 import           Wilde.ObjectModel.ObjectModelUtils as OmUtils
+import           Wilde.WildeUi.WildeTable
 
 
 -------------------------------------------------------------------------------
 -- - implementation -
 -------------------------------------------------------------------------------
 
-type Footer = ([ColGroup WildeStyle]
-                  ,[[WildeCell]])
+
+type Footer = ([ColGroup WildeStyle] ,[[WildeCell]])
 
 rowsOnlyFooter :: [[WildeCell]] -> Footer
 rowsOnlyFooter rows = ([], rows)

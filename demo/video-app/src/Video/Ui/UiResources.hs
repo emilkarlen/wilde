@@ -10,7 +10,7 @@ module Video.Ui.UiResources where
 import qualified Wilde.Render.Html.Attribute as HA
 import qualified Wilde.Render.Html.Element as HE
 
-import           Wilde.Media.WildeValue
+import           Wilde.WildeUi.WildeValue
 
 import           Wilde.WildeUi.UiPrimitives
 
