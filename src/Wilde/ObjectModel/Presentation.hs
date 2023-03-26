@@ -26,8 +26,6 @@ module Wilde.ObjectModel.Presentation
 -------------------------------------------------------------------------------
 
 
-import           Wilde.GenericUi.AbstractTable (CellType(..))
-
 import           Wilde.WildeUi.WildeComponent
 import           Wilde.WildeUi.StdValueTypes as SVT
 import           Wilde.WildeUi.TableUtils
