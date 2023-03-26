@@ -68,16 +68,17 @@ module Wilde.ApplicationConstruction.Presentation.Presentation
 -------------------------------------------------------------------------------
 
 
-import Data.Word
-import Data.Int
-import Data.Time.Calendar (Day)
+import           Data.Word
+import           Data.Int
+import           Data.Time.Calendar (Day)
 
 import qualified Wilde.Render.Html.Element as HE
 
-import Wilde.Media.WildeValue
-import Wilde.WildeUi.StdValueTypes
+import           Wilde.WildeUi.WildeValue
+import           Wilde.WildeUi.StdValueTypes
+import           Wilde.WildeUi.UiPrimitives
 
-import Wilde.ObjectModel.ObjectModel
+import           Wilde.ObjectModel.ObjectModel
 
 
 -------------------------------------------------------------------------------

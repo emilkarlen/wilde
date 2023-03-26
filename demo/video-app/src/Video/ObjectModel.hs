@@ -12,10 +12,9 @@ import           Wilde.ApplicationConstruction.StandardServices.Tools as SS
 import           Wilde.ApplicationConstruction.StandardServices as StandardServices
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ObjectListSetup as OLS
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ReferringObjectsComponent as ReferringObjectsComponent
-
 import           Wilde.ApplicationConstruction.ObjectModel.ObjectType
-
 import qualified Wilde.ApplicationConstruction.ObjectTypeConfiguration.ObjectTypeWithAtDdlInformation as ObjectTypeWithAtDdlInformation
+import qualified Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectListFooters as Footers
 
 import           Video.Ui.Style
 
@@ -87,9 +86,9 @@ otsDirector = (SS.objectTypeSetup otDirector
               `SS.withObjectListDisplaySetup`
               (OLS.ObjectListDisplaySetup
                {
-                 OLS.displayAts               = otNonIdAttributeTypes otDirector
-               , OLS.orderByInDb              = [Any Director.name]
-               , OLS.getMkFooterRowsConstructor = numberOfObjectsFooterRow
+                 OLS.displayAts                 = otNonIdAttributeTypes otDirector
+               , OLS.orderByInDb                = [Any Director.name]
+               , OLS.getMkFooterRowsConstructor = Footers.numberOfObjects
                }
               )
               `SS.withDependentComponents`
@@ -125,9 +124,9 @@ otsTitle = (SS.objectTypeSetup otTitle
            `SS.withObjectListDisplaySetup`
            (OLS.ObjectListDisplaySetup
             {
-              OLS.displayAts               = otNonIdAttributeTypes otTitle
-            , OLS.orderByInDb              = [Any Title.name]
-            , OLS.getMkFooterRowsConstructor = numberOfObjectsFooterRow
+              OLS.displayAts                 = otNonIdAttributeTypes otTitle
+            , OLS.orderByInDb                = [Any Title.name]
+            , OLS.getMkFooterRowsConstructor = Footers.numberOfObjects
             }
            )
            `SS.withDependentComponents`
@@ -186,9 +185,9 @@ otsSeason = (SS.objectTypeSetup otSeason
             `SS.withObjectListDisplaySetup`
             (OLS.ObjectListDisplaySetup
              {
-               OLS.displayAts               = otNonIdAttributeTypes otSeason
-             , OLS.orderByInDb              = [Any Season.name]
-             , OLS.getMkFooterRowsConstructor = numberOfObjectsFooterRow
+               OLS.displayAts                 = otNonIdAttributeTypes otSeason
+             , OLS.orderByInDb                = [Any Season.name]
+             , OLS.getMkFooterRowsConstructor = Footers.numberOfObjects
              }
             )
             `SS.withDependentComponents`
@@ -234,9 +233,9 @@ otsEpisode = (SS.objectTypeSetup otEpisode
             `SS.withObjectListDisplaySetup`
             (OLS.ObjectListDisplaySetup
              {
-               OLS.displayAts               = otNonIdAttributeTypes otEpisode
-             , OLS.orderByInDb              = [Any Episode.name]
-             , OLS.getMkFooterRowsConstructor = numberOfObjectsFooterRow
+               OLS.displayAts                 = otNonIdAttributeTypes otEpisode
+             , OLS.orderByInDb                = [Any Episode.name]
+             , OLS.getMkFooterRowsConstructor = Footers.numberOfObjects
              }
             )
             `SS.withDependentComponents`
@@ -292,9 +291,9 @@ otsRecording = (SS.objectTypeSetup otRecording
                `SS.withObjectListDisplaySetup`
                (OLS.ObjectListDisplaySetup
                 {
-                  OLS.displayAts               = otNonIdAttributeTypes otRecording
-                , OLS.orderByInDb              = [Any recording_title]
-                , OLS.getMkFooterRowsConstructor = numberOfObjectsFooterRow
+                  OLS.displayAts                 = otNonIdAttributeTypes otRecording
+                , OLS.orderByInDb                = [Any recording_title]
+                , OLS.getMkFooterRowsConstructor = Footers.numberOfObjects
                 }
                )
 

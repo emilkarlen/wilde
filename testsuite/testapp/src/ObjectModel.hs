@@ -8,24 +8,23 @@ module ObjectModel where
 -------------------------------------------------------------------------------
 
 
-import Wilde.Database.Sql
+import           Wilde.Database.Sql
 
-import Wilde.Media.Database
+import           Wilde.WildeUi.UiPrimitives (WildeTitle)
 
-import Wilde.ObjectModel.ObjectModelUtils
+import           Wilde.Media.Database
+
+import           Wilde.ObjectModel.ObjectModelUtils
 import qualified Wilde.ObjectModel.UserInteraction as UserInteraction
 
-import Wilde.Driver.Database.MySQL.ApplicationObjectModelTools as ToolsMySql
+import           Wilde.Driver.Database.MySQL.ApplicationObjectModelTools as ToolsMySql
 
-import Wilde.ApplicationConstruction.ObjectModel.ObjectType
-import Wilde.ApplicationConstruction.StandardServices.Tools
-import Wilde.ApplicationConstruction.StandardServices as StandardServices
-
+import           Wilde.ApplicationConstruction.ObjectModel.ObjectType
+import           Wilde.ApplicationConstruction.StandardServices.Tools
+import           Wilde.ApplicationConstruction.StandardServices as StandardServices
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ReferringObjectsComponent as SOC
 import           Wilde.ApplicationConstruction.ObjectModel.ReferenceAttributeType
-
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.AttributeTypesListFooter as AtFooter
-
 import qualified Wilde.ApplicationConstruction.AttributeTypeConfiguration.DdlAtAnnotation as DdlAtAnnotation
 import qualified Wilde.ApplicationConstruction.ObjectTypeConfiguration.Database as OtDbConfig
 import qualified Wilde.ApplicationConstruction.ObjectTypeConfiguration.ObjectTypeWithAtDdlInformation as ObjectTypeWithAtDdlInformation

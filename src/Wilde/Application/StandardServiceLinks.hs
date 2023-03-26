@@ -33,10 +33,10 @@ module Wilde.Application.StandardServiceLinks
 
 import Wilde.Application.StandardServices
 import Wilde.Service.ServiceLink (GenericParameter)
-import Wilde.Media.WildeValue (AnySVALUE)
+import Wilde.WildeUi.WildeValue (AnySVALUE)
 import Wilde.Media.GenericStringRep (GenericStringRep)
 import Wilde.Media.WildeMedia (CrossRefIdentifier)
-import Wilde.Media.WildeStyleType (WildeStyling)
+import Wilde.WildeUi.WildeStyleType (WildeStyling)
 import Wilde.WildeUi.StdValueTypes (LinkLabel)
 
 

@@ -1,7 +1,7 @@
 -- | Some common value types.
 module Wilde.WildeUi.StdValueTypes
        (
-         module Wilde.Media.WildeValue,
+         module Wilde.WildeUi.WildeValue,
 
          unquotedStringSvalue,
          unquotedStringValue,
@@ -44,21 +44,20 @@ module Wilde.WildeUi.StdValueTypes
 -------------------------------------------------------------------------------
 
 
-import Data.Word
+import           Data.Word
+import           Data.List (intersperse)
+
+import           Network.HTTP.Base (urlEncodeVars)
+
+import           Wilde.WildeUi.WildeValue
 
 import           Wilde.Render.Html.Types
 import qualified Wilde.Render.Html.Attribute as HA
 import qualified Wilde.Render.Html.Element as HE
 
-import Network.HTTP.Base (urlEncodeVars)
-
-import Wilde.Media.WildeValue
-
-import Wilde.Render.Cgi.ServerVariables
-import Wilde.Render.Cgi.HRef
-
-import Wilde.Render.StyleForHtml (STYLE_FOR_HTML(..))
-import Data.List (intersperse)
+import           Wilde.Render.Cgi.ServerVariables
+import           Wilde.Render.Cgi.HRef
+import           Wilde.Render.StyleForHtml (STYLE_FOR_HTML(..))
 
 -------------------------------------------------------------------------------
 -- - ...Value -

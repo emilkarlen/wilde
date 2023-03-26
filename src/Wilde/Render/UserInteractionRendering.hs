@@ -23,19 +23,19 @@ import qualified Wilde.Render.Html.Attribute as HA
 
 import qualified Wilde.Media.UserInteraction.Output as UiOm
 import           Wilde.Media.UserInteraction as UI
-import qualified Wilde.Media.WildeStyle as WS
+import           Wilde.Media.UserInteraction.Output (PopUpButtonTexter)
 
-import           Wilde.WildeUi.TableUtils
+import qualified Wilde.WildeUi.WildeStyle as WS
+import           Wilde.WildeUi.WildeTables
 import           Wilde.WildeUi.WildeComponent as WC
 import qualified Wilde.WildeUi.StdValueTypes
-
+import           Wilde.WildeUi.WildeTable
 import           Wilde.WildeUi.LayoutComponents as LayoutComponents
 
 import qualified Wilde.Render.Cgi.ElementSetIo as ElementSetIo
 import qualified Wilde.ApplicationConstruction.Presentation.DataAndButtonsComponent as DataAndButtons
 
 import qualified Wilde.Application.Service.PopUp as PopUp
-import Wilde.Media.UserInteraction.Output (PopUpButtonTexter)
 
 
 -------------------------------------------------------------------------------

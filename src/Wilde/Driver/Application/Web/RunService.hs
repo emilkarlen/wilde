@@ -21,25 +21,26 @@ import Control.Monad.Trans
 import           Wilde.Render.Html.Types
 import qualified Wilde.Render.Html.Render as HR
 
-import Wilde.GenericUi.Components
+import           Wilde.GenericUi.Components
 
-import           Wilde.Media.WildeMedia
-import           Wilde.Media.WildeStyle (errorStyle)
+import           Wilde.WildeUi.WildeStyle (errorStyle)
+import           Wilde.WildeUi.StdValueTypes
+import           Wilde.WildeUi.UiPrimitives (WildeTitle)
+
 import qualified Wilde.Media.UserInteraction.Output as UiOm
-
-import Wilde.WildeUi.StdValueTypes
 
 import           Wilde.Service.Monad
 
 import           Wilde.Render.ServiceLink
 import           Wilde.Render.RenderAsHtml
+
 import qualified Wilde.Driver.Application.Cgi.VariableNames as VariableNames
+import           Wilde.Driver.Application.Web.Types (HtmlAsString)
 
 import qualified Wilde.Application.Service.PopUp as PopUp
 
 import           Wilde.Application.ApplicationConfiguration
 import           Wilde.Application.Service.Service
-import           Wilde.Driver.Application.Web.Types (HtmlAsString)
 
 
 -------------------------------------------------------------------------------

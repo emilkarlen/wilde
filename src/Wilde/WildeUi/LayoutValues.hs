@@ -13,7 +13,7 @@ module Wilde.WildeUi.LayoutValues
 
 import qualified Wilde.Render.Html.Element as HE
 
-import           Wilde.Media.WildeValue
+import           Wilde.WildeUi.WildeValue
 
 
 -------------------------------------------------------------------------------

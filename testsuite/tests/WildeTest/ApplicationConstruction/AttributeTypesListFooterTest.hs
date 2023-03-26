@@ -18,7 +18,7 @@ import TestResources.PresentationMonadUtils
 import Wilde.GenericUi.Value (AnyVALUE(..), valueString)
 
 import Wilde.GenericUi.AbstractTable (Cell(..))
-import Wilde.WildeUi.TableUtils (cellStd)
+import Wilde.WildeUi.WildeTables (cellStd)
 
 import Wilde.WildeUi.StdValueTypes (BoolValueAsCheckBox(..))
 

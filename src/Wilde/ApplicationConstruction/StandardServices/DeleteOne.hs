@@ -35,6 +35,7 @@ import Wilde.ApplicationConstruction.Service.ServiceTools
 import Wilde.ApplicationConstruction.Service.StepService
 import Wilde.Application.ObjectTypeService
 import Wilde.ApplicationConstruction.Service.ObjectTypeServiceUtils
+import           Wilde.WildeUi.UiPrimitives (WildeTitle)
 
 
 -------------------------------------------------------------------------------

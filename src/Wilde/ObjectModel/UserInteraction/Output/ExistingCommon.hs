@@ -49,6 +49,7 @@ import Wilde.ObjectModel.ObjectModelUtils as OmUtils
 import Wilde.ObjectModel.UserInteraction
 
 import Wilde.ObjectModel.Presentation (ATTRIBUTE_PRESENTATION(..))
+import           Wilde.WildeUi.UiPrimitives
 
 
 -------------------------------------------------------------------------------

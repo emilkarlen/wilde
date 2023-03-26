@@ -69,6 +69,7 @@ import qualified Wilde.ObjectModel.Presentation as OmPres
 
 import Wilde.Service.Monad as Service
 import Wilde.Application.Service.Result
+import           Wilde.WildeUi.UiPrimitives
 
 
 -------------------------------------------------------------------------------

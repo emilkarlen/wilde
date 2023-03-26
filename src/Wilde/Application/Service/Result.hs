@@ -7,10 +7,8 @@ module Wilde.Application.Service.Result where
 
 
 import qualified Wilde.Application.Service.PopUp as PopUp
-import Wilde.Service.ServiceLink
-import Wilde.Media.WildeMedia
-    ( Title, WildeTitle, WildeStyle(..), wildeStyled, wildeStyle )
-import Wilde.GenericUi.Component (AnyCOMPONENT(..))
+import          Wilde.Service.ServiceLink
+import           Wilde.WildeUi.UiPrimitives
 
 
 -------------------------------------------------------------------------------

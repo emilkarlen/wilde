@@ -45,18 +45,19 @@ where
 -------------------------------------------------------------------------------
 
 
-import Data.Word
-
+import           Data.Word
 import qualified Data.ByteString.Char8 as Char8
+import           Text.Printf (printf)
 
-import Text.Printf (printf)
+import           Wilde.Database.Sql
 
-import Wilde.Database.Sql
-import Wilde.Media.Database
+import           Wilde.WildeUi.UiPrimitives (Title)
 
-import Wilde.ApplicationConstruction.ObjectModel.AttributeType hiding (description_optional)
-import Wilde.ApplicationConstruction.Presentation.Presentation (asUnquotedString, asUnquotedString_optional)
-import Wilde.ApplicationConstruction.Database.DatabaseColumnTypes (dbIo_mkOptional, numberOfSqlValuesError, invalidSqlValuesError)
+import           Wilde.Media.Database
+
+import           Wilde.ApplicationConstruction.ObjectModel.AttributeType hiding (description_optional)
+import           Wilde.ApplicationConstruction.Presentation.Presentation (asUnquotedString, asUnquotedString_optional)
+import           Wilde.ApplicationConstruction.Database.DatabaseColumnTypes (dbIo_mkOptional, numberOfSqlValuesError, invalidSqlValuesError)
 
 
 -------------------------------------------------------------------------------

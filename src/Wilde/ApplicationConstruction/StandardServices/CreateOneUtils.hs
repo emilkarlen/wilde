@@ -31,6 +31,7 @@ import Wilde.Application.Service.Service
 import qualified Wilde.ApplicationConstruction.Service.ServiceUtils as ServiceUtils
 
 import qualified Wilde.ApplicationConstruction.Service.ServiceTools as ServiceTools
+import           Wilde.WildeUi.UiPrimitives
 
 
 -------------------------------------------------------------------------------

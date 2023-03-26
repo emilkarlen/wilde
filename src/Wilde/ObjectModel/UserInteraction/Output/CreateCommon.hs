@@ -37,6 +37,7 @@ import Wilde.ObjectModel.UserInteraction
 import qualified Wilde.ObjectModel.UserInteraction.Common as UiCommon
 import qualified Wilde.ObjectModel.UserInteraction.Output.Common as OutputCommon
 import qualified Wilde.ObjectModel.GenericStringRep as OmGsr
+import           Wilde.WildeUi.UiPrimitives
 
 
 -------------------------------------------------------------------------------

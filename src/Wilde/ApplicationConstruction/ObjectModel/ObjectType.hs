@@ -70,7 +70,7 @@ import Database.HDBC.ColTypes
 
 import           Wilde.Utils.Empty
 
-import           Wilde.Media.WildeValue
+import           Wilde.WildeUi.WildeValue
 import           Wilde.Media.Database
 
 import Wilde.ObjectModel.ObjectModel

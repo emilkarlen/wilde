@@ -147,14 +147,16 @@ Library
     Wilde.WildeUi.WildeComponent
     Wilde.WildeUi.LayoutValues
     Wilde.WildeUi.LayoutComponents
-    Wilde.WildeUi.TableUtils
+    Wilde.WildeUi.WildeTables
     Wilde.WildeUi.UiPrimitives
     Wilde.WildeUi.StdValueTypes
     Wilde.WildeUi.StdValues
+    Wilde.WildeUi.WildeStyleType
+    Wilde.WildeUi.WildeValue
+    Wilde.WildeUi.WildeStyle
+    Wilde.WildeUi.WildeTable
 
     Wilde.Media.Translations
-    Wilde.Media.WildeStyleType
-    Wilde.Media.WildeValue
     Wilde.Media.Database
     Wilde.Media.Database.Configuration
     Wilde.Media.Database.Error
@@ -164,7 +166,6 @@ Library
     Wilde.Media.CustomEnvironment
     Wilde.Media.ElementSet
     Wilde.Media.Presentation
-    Wilde.Media.WildeStyle
     Wilde.Media.GenericStringRep
     Wilde.Media.WildeMedia
     Wilde.Media.UserInteraction

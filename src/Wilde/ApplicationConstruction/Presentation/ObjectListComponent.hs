@@ -17,17 +17,18 @@ import           Data.Maybe (isJust, catMaybes)
 import qualified Wilde.GenericUi.AbstractTable as AbstrTbl
 
 import           Wilde.WildeUi.StdValueTypes as SVT
-import qualified Wilde.WildeUi.TableUtils as TU
+import qualified Wilde.WildeUi.WildeTables as TU
 
-import qualified Wilde.Media.WildeStyle as WS
+import qualified Wilde.WildeUi.WildeStyle as WS
 import qualified Wilde.Media.Presentation as Presentation
 
-import           Wilde.ObjectModel.ObjectModelUtils as OmUtils
 
 import qualified Wilde.Render.AbstractTableToHtml as AbstractTableToHtml
 
 import qualified Wilde.ApplicationConstruction.Presentation.ObjectList as OL
 import qualified Wilde.ApplicationConstruction.Presentation.ButtonSequenceValue as BtnSeq
+import           Wilde.WildeUi.UiPrimitives
+import           Wilde.WildeUi.WildeTable
 
 
 -------------------------------------------------------------------------------

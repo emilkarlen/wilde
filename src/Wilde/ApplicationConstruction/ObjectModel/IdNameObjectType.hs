@@ -47,28 +47,26 @@ module Wilde.ApplicationConstruction.ObjectModel.IdNameObjectType
 -------------------------------------------------------------------------------
 
 
-import Wilde.Database.Sql
+import           Wilde.Database.Sql
+
+import           Wilde.WildeUi.UiPrimitives (Title, WildeTitle)
 
 import           Wilde.Media.Database
 
-import Wilde.ObjectModel.ObjectModel
+import           Wilde.ObjectModel.ObjectModel
 import qualified Wilde.ObjectModel.Database as Database
-import Wilde.ObjectModel.ObjectModelUtils
+import           Wilde.ObjectModel.ObjectModelUtils
 
-import Wilde.ApplicationConstruction.StandardServices as StandardServices
-
-import Wilde.ApplicationConstruction.StandardServices.Tools
+import           Wilde.ApplicationConstruction.StandardServices as StandardServices
+import           Wilde.ApplicationConstruction.StandardServices.Tools
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ObjectListSetup as OLS
 import           Wilde.ApplicationConstruction.ObjectModel.StandardPrimaryKey
 import           Wilde.ApplicationConstruction.ObjectModel.ReferenceAttributeType
-
-import Wilde.ApplicationConstruction.ObjectModel.AttributeType
-
+import           Wilde.ApplicationConstruction.ObjectModel.AttributeType
 import qualified Wilde.ApplicationConstruction.AttributeTypeConfiguration.DdlAtAnnotation as DdlAtAnnotation
 import qualified Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAndDbIo as UiIoAndDbIo
 import qualified Wilde.ApplicationConstruction.ObjectTypeConfiguration.Database as OtDbConfig
-
-import Wilde.ApplicationConstruction.ObjectModel.ObjectType
+import           Wilde.ApplicationConstruction.ObjectModel.ObjectType
 import qualified Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectListFooters as Footers
 
 

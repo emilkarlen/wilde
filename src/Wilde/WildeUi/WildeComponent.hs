@@ -27,9 +27,11 @@ import qualified Wilde.Render.Html.Attribute as HA
 
 import           Wilde.Render.AbstractTableToHtml
 
-import           Wilde.Media.WildeMedia
 import           Wilde.GenericUi.Value (VALUE(..))
-import           Wilde.Media.WildeValue (AnySVALUE(..), withNeutralStyleAny)
+
+import           Wilde.WildeUi.WildeValue (AnySVALUE(..), withNeutralStyleAny)
+import           Wilde.WildeUi.UiPrimitives
+import           Wilde.WildeUi.WildeTable
 
 
 -------------------------------------------------------------------------------

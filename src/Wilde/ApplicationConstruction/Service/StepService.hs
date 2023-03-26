@@ -29,23 +29,24 @@ module Wilde.ApplicationConstruction.Service.StepService
 -------------------------------------------------------------------------------
 
 
-import Control.Monad
+import           Control.Monad
 
-import Wilde.Utils.Utils
+import           Wilde.Utils.Utils
 
 import qualified Wilde.Media.MonadWithInputMedia as MIIA
 import qualified Wilde.Media.ElementSet as ElementSet
-import Wilde.Media.WildeMedia as WM
-import Wilde.Media.UserInteraction
+import           Wilde.Media.UserInteraction
 
-import Wilde.Render.UserInteractionRendering
+import           Wilde.Render.UserInteractionRendering
 
 import           Wilde.Service.ServiceLink
 import qualified Wilde.Application.Service.PopUp as PopUp
+import           Wilde.Application.Service.Service
 
-import Wilde.ApplicationConstruction.Service.ServiceTools
+import           Wilde.ApplicationConstruction.Service.ServiceTools
 import qualified Wilde.Application.Service.Result as Result
-import Wilde.Application.Service.Service
+
+import           Wilde.WildeUi.UiPrimitives (WildeTitle)
 
 
 -------------------------------------------------------------------------------
@@ -57,7 +58,7 @@ import Wilde.Application.Service.Service
 -- displayed to the user.
 data StepService = StepService
                    {
-                     mainTitle    :: WM.WildeTitle,
+                     mainTitle    :: WildeTitle,
                      nonLastSteps :: [NonLastStep],
                      lastStep     :: Service
                    }
@@ -171,7 +172,7 @@ stepService (StepService {
        throwInvalidStep :: String -> ServiceMonad a
        throwInvalidStep msg = throwErr $ ValueValue "step" msg
 
-continueWithFormBlocks :: WM.WildeTitle -> ContinueInfo -> Int -> Service
+continueWithFormBlocks :: WildeTitle -> ContinueInfo -> Int -> Service
 continueWithFormBlocks presSpec formBlocksAndMetas nextStepIdx =
   do
     let formBlocksAndMetas' = setNextStep formBlocksAndMetas
@@ -184,7 +185,7 @@ continueWithFormBlocks presSpec formBlocksAndMetas nextStepIdx =
 
 -- TODO Improve impl, just copying from continueWithFormBlocks.
 -- (guess should not need to use forms, a link would as well)
-askIfContinueWithMsg :: WM.WildeTitle -> PopUp.Message -> Int -> Service
+askIfContinueWithMsg :: WildeTitle -> PopUp.Message -> Int -> Service
 askIfContinueWithMsg presSpec msg nextStepIdx =
   do
     current <- currentServiceLink

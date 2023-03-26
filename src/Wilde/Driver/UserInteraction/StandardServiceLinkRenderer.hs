@@ -22,7 +22,7 @@ module Wilde.Driver.UserInteraction.StandardServiceLinkRenderer
 -------------------------------------------------------------------------------
 
 
-import           Wilde.Media.WildeStyle as WS
+import           Wilde.WildeUi.WildeStyle as WS
 import           Wilde.Render.ServiceLink
 
 import           Wilde.ApplicationConstruction.StandardServices

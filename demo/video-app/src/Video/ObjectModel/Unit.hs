@@ -14,6 +14,7 @@ import           Wilde.ApplicationConstruction.StandardServices.Tools as SS
 import           Wilde.ApplicationConstruction.ObjectModel.ReferenceAttributeType
 import           Wilde.ApplicationConstruction.ObjectModel.ObjectType
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ObjectListSetup as OLS
+import qualified Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectListFooters as Footers
 
 import           Video.Ui.Style
 import qualified Common.ObjectType.ObjectType as CommonOT
@@ -56,9 +57,9 @@ ots' = (SS.objectTypeSetup ot
        `SS.withObjectListDisplaySetup`
        (OLS.ObjectListDisplaySetup
         {
-          OLS.displayAts               = otNonIdAttributeTypes ot
-        , OLS.orderByInDb              = [Any identity]
-        , OLS.getMkFooterRowsConstructor = numberOfObjectsFooterRow
+          OLS.displayAts                 = otNonIdAttributeTypes ot
+        , OLS.orderByInDb                = [Any identity]
+        , OLS.getMkFooterRowsConstructor = Footers.numberOfObjects
         }
        )
 

@@ -17,7 +17,7 @@ where
 
 import qualified Wilde.Utils.Accumulator as Acc
 
-import           Wilde.WildeUi.TableUtils (dataCellSpaned)
+import           Wilde.WildeUi.WildeTables (dataCellSpaned)
 import           Wilde.WildeUi.StdValueTypes (IntValue(..))
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ObjectListSetup as OLS
 import qualified Wilde.ObjectModel.Presentation.FooterRowsConstructor as F

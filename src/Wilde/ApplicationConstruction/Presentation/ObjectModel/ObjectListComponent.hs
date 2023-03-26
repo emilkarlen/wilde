@@ -24,6 +24,7 @@ import           Wilde.ObjectModel.Presentation.FooterRowsConstructor
 
 import qualified Wilde.ApplicationConstruction.Presentation.ObjectListComponent as OLC
 import qualified Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectSetup as OS
+import           Wilde.WildeUi.UiPrimitives
 
 
 -------------------------------------------------------------------------------

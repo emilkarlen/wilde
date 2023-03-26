@@ -6,25 +6,25 @@ module ObjectType.CharacterEncodingExperiment where
 -------------------------------------------------------------------------------
 
 
-import Wilde.Database.Sql
+import           Wilde.Database.Sql
 
-import Wilde.Media.Database
+import           Wilde.WildeUi.UiPrimitives (WildeTitle)
 
-import Wilde.ObjectModel.ObjectModelUtils
+import           Wilde.Media.Database
 
-import Wilde.Driver.Database.MySQL.ApplicationObjectModelTools as ToolsMySql
+import           Wilde.ObjectModel.ObjectModelUtils
 
-import Wilde.ApplicationConstruction.ObjectModel.ObjectType
-import Wilde.ApplicationConstruction.StandardServices.Tools
-import Wilde.ApplicationConstruction.StandardServices as StandardServices
+import           Wilde.Driver.Database.MySQL.ApplicationObjectModelTools as ToolsMySql
 
+import           Wilde.ApplicationConstruction.ObjectModel.ObjectType
+import           Wilde.ApplicationConstruction.StandardServices.Tools
+import           Wilde.ApplicationConstruction.StandardServices as StandardServices
 import           Wilde.ApplicationConstruction.ObjectModel.ReferenceAttributeType
-
 import qualified Wilde.ApplicationConstruction.AttributeTypeConfiguration.DdlAtAnnotation as DdlAtAnnotation
 import qualified Wilde.ApplicationConstruction.ObjectTypeConfiguration.Database as OtDbConfig
 import qualified Wilde.ApplicationConstruction.ObjectTypeConfiguration.ObjectTypeWithAtDdlInformation as ObjectTypeWithAtDdlInformation
 
-import AttributeType
+import           AttributeType
 
 
 -------------------------------------------------------------------------------

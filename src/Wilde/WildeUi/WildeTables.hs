@@ -1,7 +1,7 @@
 -- | Experimenting with convenience functions for constructing tables.
 
 -- stilarna funkar inget vidare. får kolla det sen.
-module Wilde.WildeUi.TableUtils
+module Wilde.WildeUi.WildeTables
        (
         CellType(..),
         dataCellType,
@@ -43,15 +43,15 @@ module Wilde.WildeUi.TableUtils
 -------------------------------------------------------------------------------
 
 
-import Wilde.GenericUi.AbstractTable
-import Wilde.GenericUi.Style
+import           Wilde.GenericUi.AbstractTable
+import           Wilde.GenericUi.Style
 
-import Wilde.Media.WildeValue
+import           Wilde.WildeUi.WildeValue
+import qualified Wilde.WildeUi.WildeStyle as WS
 
-import qualified Wilde.Media.WildeStyle as WS
-import Wilde.Media.WildeMedia
-
-import Wilde.WildeUi.StdValueTypes
+import           Wilde.WildeUi.StdValueTypes
+import           Wilde.WildeUi.UiPrimitives
+import           Wilde.WildeUi.WildeTable
 
 
 -------------------------------------------------------------------------------

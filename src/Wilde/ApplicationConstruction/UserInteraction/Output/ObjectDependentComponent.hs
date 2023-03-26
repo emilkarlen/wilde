@@ -20,7 +20,8 @@ module Wilde.ApplicationConstruction.UserInteraction.Output.ObjectDependentCompo
 
 import qualified Wilde.Media.Presentation as Presentation
 
-import Wilde.ObjectModel.ObjectModel
+import           Wilde.ObjectModel.ObjectModel
+import           Wilde.WildeUi.UiPrimitives (AnyCOMPONENT)
 
 
 -------------------------------------------------------------------------------

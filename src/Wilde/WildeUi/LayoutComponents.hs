@@ -2,7 +2,7 @@
 module Wilde.WildeUi.LayoutComponents
        (
          module Wilde.WildeUi.UiPrimitives,
-         module Wilde.Media.WildeValue,
+         module Wilde.WildeUi.WildeValue,
 
          verticalComponents,
          horizontalComponents,
@@ -22,7 +22,7 @@ import Data.List
 import qualified Wilde.Render.Html.Element as HE
 
 import Wilde.WildeUi.UiPrimitives
-import Wilde.Media.WildeValue
+import Wilde.WildeUi.WildeValue
 
 
 -------------------------------------------------------------------------------

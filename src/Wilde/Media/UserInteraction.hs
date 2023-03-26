@@ -88,15 +88,17 @@ module Wilde.Media.UserInteraction
 -------------------------------------------------------------------------------
 
 
-import Data.Maybe (maybeToList)
+import           Data.Maybe (maybeToList)
 
-import Wilde.Utils.Empty
+import           Wilde.Utils.Empty
 
-import Wilde.GenericUi.Widget
+import           Wilde.GenericUi.Widget
 
-import Wilde.Media.WildeMedia
-import Wilde.Media.Element
-import Wilde.Media.GenericStringRep
+import           Wilde.WildeUi.UiPrimitives
+
+import           Wilde.Media.WildeMedia
+import           Wilde.Media.Element
+import           Wilde.Media.GenericStringRep
 
 
 -------------------------------------------------------------------------------

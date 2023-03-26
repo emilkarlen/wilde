@@ -14,9 +14,9 @@ where
 -------------------------------------------------------------------------------
 
 
-import Wilde.Database.Sql
+import           Wilde.Database.Sql
 
-import           Wilde.ObjectModel.ObjectModelUtils
+import           Wilde.WildeUi.UiPrimitives
 
 import qualified Wilde.ApplicationConstruction.ObjectModel.IdNameObjectType as IdNameObjectType
 

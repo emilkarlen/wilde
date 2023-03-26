@@ -31,6 +31,8 @@ module Wilde.ApplicationConstruction.StandardServices.UpdateOne
 
 import qualified Data.List.NonEmpty as NonEmpty
 
+import           Wilde.WildeUi.UiPrimitives (WildeTitle)
+
 import qualified Wilde.Media.MonadWithInputMedia as MIIA
 import           Wilde.Media.UserInteraction.Io
 import           Wilde.Media.UserInteraction.Output as UIO

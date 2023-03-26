@@ -8,10 +8,10 @@ module Wilde.ApplicationConstruction.ObjectModel.AttributeType
          module Database.HDBC.Types,
          module Database.HDBC.ColTypes,
 
-         module Wilde.Media.WildeStyleType,
+         module Wilde.WildeUi.WildeStyleType,
          module Wilde.ObjectModel.ObjectModel,
 
-         module Wilde.Media.WildeValue,
+         module Wilde.WildeUi.WildeValue,
          module Wilde.WildeUi.StdValueTypes,
 
          -- * Types from other modules
@@ -130,43 +130,42 @@ module Wilde.ApplicationConstruction.ObjectModel.AttributeType
 -------------------------------------------------------------------------------
 
 
-import Data.Convertible.Base
+import           Data.Convertible.Base
 
-import Data.Word
-import Data.Int
+import           Data.Word
+import           Data.Int
 
-import Data.Time.Calendar (Day)
+import           Data.Time.Calendar (Day)
 
-import Database.HDBC.Types
-import Database.HDBC.ColTypes
+import           Database.HDBC.Types
+import           Database.HDBC.ColTypes
 
 import qualified Data.List.NonEmpty as NonEmpty
 import           Wilde.Utils.Empty
 
-import Wilde.Database.Sql
-import Wilde.Database.SqlDdlInfo
+import           Wilde.Database.Sql
+import           Wilde.Database.SqlDdlInfo
 
-import           Wilde.Media.WildeValue
+import           Wilde.WildeUi.WildeValue
+import           Wilde.WildeUi.UiPrimitives (Title, WildeTitle)
+import           Wilde.WildeUi.WildeStyleType
+import           Wilde.WildeUi.StdValueTypes
+
 import           Wilde.Media.GenericStringRep
-import           Wilde.Media.WildeStyleType
 import qualified Wilde.Media.UserInteraction.Input as UiI
 import qualified Wilde.Media.UserInteraction.Output as UiO
 import qualified Wilde.Media.UserInteraction.Io as UiIo
-import Wilde.Media.ElementSet
+import           Wilde.Media.ElementSet
+import           Wilde.Media.Database
 
-import Wilde.ObjectModel.ObjectModel
-import Wilde.Media.Database
-
-import Wilde.WildeUi.StdValueTypes
-
+import           Wilde.ObjectModel.ObjectModel
 import qualified Wilde.ObjectModel.Database as Database
 import qualified Wilde.ObjectModel.UserInteraction as UserInteraction
-import Wilde.ObjectModel.DatabaseAndPresentation (AttributeWithPresentationInfoDbInputerInfo(..))
-import Wilde.ObjectModel.UserInteraction.Output.CreateCommon
-import Wilde.ApplicationConstruction.Database.DatabaseColumnTypes (dbIo_string_default, dbIo_string_optional_default)
-import Wilde.ApplicationConstruction.StandardServices as StandardServices
+import           Wilde.ObjectModel.DatabaseAndPresentation (AttributeWithPresentationInfoDbInputerInfo(..))
+import           Wilde.ObjectModel.UserInteraction.Output.CreateCommon
 
-import           Wilde.ApplicationConstruction.ObjectModel.StandardPrimaryKey
+import           Wilde.ApplicationConstruction.Database.DatabaseColumnTypes (dbIo_string_default, dbIo_string_optional_default)
+import           Wilde.ApplicationConstruction.StandardServices as StandardServices
 import           Wilde.ApplicationConstruction.ObjectModel.ReferenceAttributeType
 import           Wilde.ApplicationConstruction.GenericStringRepIo
 import qualified Wilde.ApplicationConstruction.Database.AttributeTypeDatabaseInfo as AtDbInfo
@@ -175,12 +174,10 @@ import qualified Wilde.ApplicationConstruction.UserInteraction.Input.UserInterac
 import           Wilde.ApplicationConstruction.UserInteraction.Output.LabelAndWidget as LabelAndWidget
 import           Wilde.ApplicationConstruction.Presentation.Presentation
 import           Wilde.ApplicationConstruction.ObjectModel.StandardPrimaryKey as StandardPrimaryKey
-
 import           Wilde.ApplicationConstruction.UserInteraction.Io
 import qualified Wilde.ApplicationConstruction.UserInteraction.Widgets as Widgets
-
 import qualified Wilde.ApplicationConstruction.AttributeTypeConfiguration.DdlAtAnnotation as DdlAtAnnotation
-import Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAndDbIo as UiIoAndDbIo
+import           Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAndDbIo as UiIoAndDbIo
 
 
 -------------------------------------------------------------------------------

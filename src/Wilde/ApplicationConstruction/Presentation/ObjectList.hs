@@ -36,7 +36,8 @@ import           Wilde.WildeUi.StdValueTypes as SVT
 
 import qualified Wilde.Media.Presentation as Presentation
 
-import           Wilde.ObjectModel.ObjectModelUtils as OmUtils
+import           Wilde.WildeUi.UiPrimitives
+import           Wilde.WildeUi.WildeTable
 
 
 -------------------------------------------------------------------------------

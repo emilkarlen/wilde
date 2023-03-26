@@ -1,5 +1,5 @@
 -- | The \"standard\" styles used by Wilde.
-module Wilde.Media.WildeStyle where
+module Wilde.WildeUi.WildeStyle where
 
 
 -------------------------------------------------------------------------------
@@ -8,7 +8,7 @@ module Wilde.Media.WildeStyle where
 
 
 import Wilde.GenericUi.Style
-import Wilde.Media.WildeStyleType
+import Wilde.WildeUi.WildeStyleType
 
 
 -------------------------------------------------------------------------------

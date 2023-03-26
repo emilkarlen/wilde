@@ -85,7 +85,7 @@ import qualified Wilde.Media.Database.Monad as DbConn
 import qualified Wilde.Media.ElementSet as ES
 import           Wilde.Media.Translations
 import           Wilde.Media.WildeMedia
-import qualified Wilde.Media.WildeValue as WildeValue
+import qualified Wilde.WildeUi.WildeValue as WildeValue
 import           Wilde.WildeUi.StdValueTypes
 import           Prelude hiding (Monad)
 

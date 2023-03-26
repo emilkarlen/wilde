@@ -16,7 +16,7 @@ module Wilde.ApplicationConstruction.StandardServices.ShowManyUtils
 
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ObjectListSetup as OLS
 
-import qualified Wilde.Media.WildeStyle as WS
+import qualified Wilde.WildeUi.WildeStyle as WS
 
 import qualified Wilde.Media.Presentation as Presentation
 
@@ -29,6 +29,7 @@ import qualified Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectLi
 import Wilde.Application.ObjectTypeService
 
 import Wilde.Application.Service.Service
+import           Wilde.WildeUi.UiPrimitives
 
 
 -------------------------------------------------------------------------------

@@ -28,9 +28,12 @@ module Wilde.ObjectModel.Presentation
 
 import           Wilde.WildeUi.WildeComponent
 import           Wilde.WildeUi.StdValueTypes as SVT
-import           Wilde.WildeUi.TableUtils
+import           Wilde.WildeUi.WildeTables
 
-import qualified Wilde.Media.WildeStyle as WS
+import           Wilde.WildeUi.UiPrimitives
+import qualified Wilde.WildeUi.WildeStyle as WS
+import           Wilde.WildeUi.WildeTable
+
 import qualified Wilde.Media.Presentation as Presentation
 import qualified Wilde.ObjectModel.AttributeTypeListSetup.SansAnnotation as AttributeTypeListSetup
 import           Wilde.ObjectModel.ObjectModelUtils as OmUtils
@@ -77,12 +80,12 @@ showOneTable attrs =
       WS.tableColumnStylesShowOne
       headerValueRowList
   where
-    getHeaderValueRowList :: Presentation.Monad [(OmUtils.Title,AnySVALUE)]
+    getHeaderValueRowList :: Presentation.Monad [(Title,AnySVALUE)]
     getHeaderValueRowList = sequence $ mapAttributeAnyValue headerValueRow attrs
 
     headerValueRow :: ATTRIBUTE_PRESENTATION atConf
                    => Attribute atConf dbTable typeForExisting typeForCreate
-                   -> Presentation.Monad (OmUtils.Title,AnySVALUE)
+                   -> Presentation.Monad (Title,AnySVALUE)
     headerValueRow (Attribute at val getPresVal) =
      do
        presVal <- getPresVal
@@ -91,10 +94,10 @@ showOneTable attrs =
         theTitle = wildeStyled . atTitle $ at
         presO = atPresentationO at
 
-    renderTitle :: (OmUtils.Title,AnySVALUE) -> AnySVALUE
+    renderTitle :: (Title,AnySVALUE) -> AnySVALUE
     renderTitle  = AnySVALUE . SVT.UnquotedStringValue . fst
 
-    renderValue :: (OmUtils.Title,AnySVALUE) -> AnySVALUE
+    renderValue :: (Title,AnySVALUE) -> AnySVALUE
     renderValue  = snd
 
 

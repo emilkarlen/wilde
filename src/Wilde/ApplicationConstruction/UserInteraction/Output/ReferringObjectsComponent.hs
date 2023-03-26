@@ -24,9 +24,11 @@ module Wilde.ApplicationConstruction.UserInteraction.Output.ReferringObjectsComp
 
 import qualified Wilde.Database.SqlJoin as Sql
 
+import           Wilde.WildeUi.WildeValue
+import qualified Wilde.WildeUi.WildeStyle as WS
+import           Wilde.WildeUi.UiPrimitives (WildeTitle, AnyCOMPONENT)
+
 import qualified Wilde.Media.Presentation as Presentation
-import           Wilde.Media.WildeValue
-import qualified Wilde.Media.WildeStyle as WS
 import qualified Wilde.Media.Database.Monad as DbConn
 
 

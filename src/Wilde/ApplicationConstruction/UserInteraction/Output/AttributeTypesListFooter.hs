@@ -70,13 +70,14 @@ import qualified Data.Map as Map
 import qualified Wilde.Utils.Accumulator as Acc
 
 import           Wilde.WildeUi.StdValueTypes
-import           Wilde.WildeUi.TableUtils (dataCellStd, dataCellStdEmpty)
+import           Wilde.WildeUi.WildeTables (dataCellStd, dataCellStdEmpty)
 
 import           Wilde.ObjectModel.ObjectModel
 import           Wilde.ObjectModel.ObjectModelUtils (castToAttributeType,anyValueApply,anyValueApply2)
 import qualified Wilde.ObjectModel.AttributeTypeListSetup.SansAnnotation as AttributeTypeListSetup
 import qualified Wilde.ObjectModel.Presentation.FooterRowsConstructor as F
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ObjectListSetup as ObjListSetup (GetMkFooterRowsConstructor)
+import           Wilde.WildeUi.WildeTable
 
 
 -------------------------------------------------------------------------------
