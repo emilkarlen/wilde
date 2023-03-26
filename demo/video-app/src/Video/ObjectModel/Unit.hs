@@ -58,7 +58,7 @@ ots' = (SS.objectTypeSetup ot
         {
           OLS.displayAts               = otNonIdAttributeTypes ot
         , OLS.orderByInDb              = [Any identity]
-        , OLS.getFooterRowsConstructor = numberOfObjectsFooterRow
+        , OLS.getMkFooterRowsConstructor = numberOfObjectsFooterRow
         }
        )
 

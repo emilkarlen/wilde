@@ -21,11 +21,6 @@ module Wilde.ApplicationConstruction.StandardServices.Tools
          setOrderByInDb,
          withDeleteSteps,
          withPresentationOutputer,
-
-         -- * 'GetFooterRowsConstructor's
-
-         noFooterRows,
-         numberOfObjectsFooterRow,
        )
        where
 
@@ -35,15 +30,11 @@ module Wilde.ApplicationConstruction.StandardServices.Tools
 -------------------------------------------------------------------------------
 
 
-import           Wilde.WildeUi.TableUtils (dataCellSpaned)
-import           Wilde.WildeUi.StdValueTypes (IntValue(..))
-
 import qualified Wilde.Media.Presentation as Presentation
 import           Wilde.Media.WildeValue (AnySVALUE)
 
 import           Wilde.ObjectModel.ObjectModel as OM
 
-import qualified Wilde.ObjectModel.Presentation as OmPres
 import qualified Wilde.ObjectModel.Database as Database
 import qualified Wilde.ObjectModel.GenericStringRep as OmGsr
 
@@ -53,6 +44,7 @@ import qualified Wilde.ApplicationConstruction.StandardServices.DeleteOne as Del
 import           Wilde.ApplicationConstruction.UserInteraction.Output.ObjectDependentComponent
 import qualified Wilde.ApplicationConstruction.StandardServices.UpdateOne as UpdateOne
 import           Wilde.Application.StandardServices (StandardObjectServiceEnum)
+import qualified Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectListFooters as Footers
 
 
 -------------------------------------------------------------------------------
@@ -100,7 +92,7 @@ objectTypeSetup ot titleWithStyle =
                    {
                      OLS.displayAts               = otAttributeTypes ot
                    , OLS.orderByInDb              = []
-                   , OLS.getFooterRowsConstructor = numberOfObjectsFooterRow
+                   , OLS.getMkFooterRowsConstructor = Footers.numberOfObjects
                    }
 
 objectListButtonsSetup
@@ -175,7 +167,7 @@ withObjectListDisplaySetup ots newDisplaySetup =
     oldObjectListSetup = StandardServices.objectListSetup ots
 
 
-type ObjectListDisplaySetupModifier otConf atConf dbTable otNative idAtExisting idAtCreate =
+type ObjectListDisplaySetupModifier   otConf atConf dbTable otNative idAtExisting idAtCreate =
      OLS.ObjectListDisplaySetup       otConf atConf dbTable otNative idAtExisting idAtCreate
   -> OLS.ObjectListDisplaySetup       otConf atConf dbTable otNative idAtExisting idAtCreate
 
@@ -192,14 +184,14 @@ withModifiedObjectListDisplaySetup ots modifier =
     newDisplaySetup    = modifier $ OLS.displaySetup oldObjectListSetup
 
 -- | Modifier of 'OLS.ObjectListDisplaySetup'.
-setFooterRowsConstructor :: OLS.GetFooterRowsConstructor acc otConf atConf dbTable otNative idAtExisting idAtCreate
-                         -> ObjectListDisplaySetupModifier   otConf atConf dbTable otNative idAtExisting idAtCreate
+setFooterRowsConstructor :: OLS.GetMkFooterRowsConstructor otConf atConf dbTable otNative idAtExisting idAtCreate
+                         -> ObjectListDisplaySetupModifier otConf atConf dbTable otNative idAtExisting idAtCreate
 setFooterRowsConstructor x olds =
   OLS.ObjectListDisplaySetup
   {
     OLS.displayAts               = OLS.displayAts olds
   , OLS.orderByInDb              = OLS.orderByInDb olds
-  , OLS.getFooterRowsConstructor = x
+  , OLS.getMkFooterRowsConstructor = x
   }
 
 -- | Modifier of 'OLS.ObjectListDisplaySetup'.
@@ -212,34 +204,3 @@ withPresentationOutputer :: AttributeType atConf dbTable e c
                          -> PresentationOutputer e
                          -> AttributeType atConf dbTable e c
 withPresentationOutputer at newOutputer = at { atPresentationO = newOutputer }
-
-
--------------------------------------------------------------------------------
--- - GetFooterRowsConstructor:s -
--------------------------------------------------------------------------------
-
-
--- | A 'GetFooterRowsConstructor' that generates no footer rows.
-noFooterRows :: OLS.GetFooterRowsConstructor () otConf atConf dbTable otNative idAtExisting idAtCreate
-noFooterRows = pure Nothing
-
--- | A 'GetFooterRowsConstructor' that outputs one line with the
--- number of objects in the list.
-numberOfObjectsFooterRow :: OLS.GetFooterRowsConstructor () otConf atConf dbTable otNative idAtExisting idAtCreate
-numberOfObjectsFooterRow = pure $ Just frc
-  where
-    frc =
-      OmPres.FooterRowsConstructor
-      {
-        OmPres.frcInitial     = ()
-      , OmPres.frcAccumulator = const ()
-      , OmPres.frcMkRows      = \ colInfos numObjects () ->
-         if numObjects <= 1
-         then ([],[])
-         else
-           let
-             numObjectsCell = dataCellSpaned (numCols,1) (IntValue numObjects)
-             numCols        = length colInfos
-           in
-            ([],[[numObjectsCell]])
-      }

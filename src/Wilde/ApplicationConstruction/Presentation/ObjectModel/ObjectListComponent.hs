@@ -19,7 +19,7 @@ import qualified Wilde.Media.Presentation as Presentation
 import qualified Wilde.ObjectModel.AttributeTypeListSetup.SansAnnotation as AttributeTypeListSetup
 import           Wilde.ObjectModel.ObjectModelUtils as OmUtils
 import qualified Wilde.ObjectModel.Presentation as OmPres
-import           Wilde.ObjectModel.Presentation.FooterRowsConstructor2
+import           Wilde.ObjectModel.Presentation.FooterRowsConstructor
                    ( FooterConstructor, MkFooterConstructor )
 
 import qualified Wilde.ApplicationConstruction.Presentation.ObjectListComponent as OLC

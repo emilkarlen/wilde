@@ -22,7 +22,7 @@ import qualified Wilde.Media.Presentation as Presentation
 import qualified Wilde.ObjectModel.AttributeTypeListSetup.SansAnnotation as AttributeTypeListSetup
 import           Wilde.ObjectModel.ObjectModelUtils as OmUtils
 import           Wilde.ObjectModel.Presentation (ATTRIBUTE_PRESENTATION(..))
-import           Wilde.ObjectModel.Presentation.FooterRowsConstructor2
+import           Wilde.ObjectModel.Presentation.FooterRowsConstructor
                    ( FooterConstructor )
 
 import qualified Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectSetup as OS

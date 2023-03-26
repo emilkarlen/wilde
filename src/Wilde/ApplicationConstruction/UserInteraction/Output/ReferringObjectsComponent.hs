@@ -50,7 +50,6 @@ import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ObjectList
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.StandardFilterExpression as StdFilterExpr
 import qualified Wilde.ApplicationConstruction.Presentation.DataAndButtonsComponent as DabComp
 import qualified Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectListComponent as OLC
-import qualified Wilde.ObjectModel.Presentation.FooterRowsConstructor as FRC
 
 
 -------------------------------------------------------------------------------
@@ -145,7 +144,7 @@ mkComponent ot
                      {
                        OLS.displayAts               = theDisplayAts
                      , OLS.orderByInDb              = theOrderByInDb
-                     , OLS.getFooterRowsConstructor = theGetFooterRowsConstructor
+                     , OLS.getMkFooterRowsConstructor = theGetFooterRowsConstructor
                      })
    , mkButtonsSetup = theMkButtonsSetup
    }
@@ -166,7 +165,7 @@ mkComponent ot
                              (tableStyle os)
                              mbTitle
                              atListSetup
-                             (FRC.asFrc2_mb footerRowsConstructor)
+                             footerRowsConstructor
                              (OLS.objectButtonsLeft  buttonsSetup)
                              (OLS.objectButtonsRight buttonsSetup)
                              (pure os)

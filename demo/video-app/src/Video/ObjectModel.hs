@@ -89,7 +89,7 @@ otsDirector = (SS.objectTypeSetup otDirector
                {
                  OLS.displayAts               = otNonIdAttributeTypes otDirector
                , OLS.orderByInDb              = [Any Director.name]
-               , OLS.getFooterRowsConstructor = numberOfObjectsFooterRow
+               , OLS.getMkFooterRowsConstructor = numberOfObjectsFooterRow
                }
               )
               `SS.withDependentComponents`
@@ -127,7 +127,7 @@ otsTitle = (SS.objectTypeSetup otTitle
             {
               OLS.displayAts               = otNonIdAttributeTypes otTitle
             , OLS.orderByInDb              = [Any Title.name]
-            , OLS.getFooterRowsConstructor = numberOfObjectsFooterRow
+            , OLS.getMkFooterRowsConstructor = numberOfObjectsFooterRow
             }
            )
            `SS.withDependentComponents`
@@ -188,7 +188,7 @@ otsSeason = (SS.objectTypeSetup otSeason
              {
                OLS.displayAts               = otNonIdAttributeTypes otSeason
              , OLS.orderByInDb              = [Any Season.name]
-             , OLS.getFooterRowsConstructor = numberOfObjectsFooterRow
+             , OLS.getMkFooterRowsConstructor = numberOfObjectsFooterRow
              }
             )
             `SS.withDependentComponents`
@@ -236,7 +236,7 @@ otsEpisode = (SS.objectTypeSetup otEpisode
              {
                OLS.displayAts               = otNonIdAttributeTypes otEpisode
              , OLS.orderByInDb              = [Any Episode.name]
-             , OLS.getFooterRowsConstructor = numberOfObjectsFooterRow
+             , OLS.getMkFooterRowsConstructor = numberOfObjectsFooterRow
              }
             )
             `SS.withDependentComponents`
@@ -294,7 +294,7 @@ otsRecording = (SS.objectTypeSetup otRecording
                 {
                   OLS.displayAts               = otNonIdAttributeTypes otRecording
                 , OLS.orderByInDb              = [Any recording_title]
-                , OLS.getFooterRowsConstructor = numberOfObjectsFooterRow
+                , OLS.getMkFooterRowsConstructor = numberOfObjectsFooterRow
                 }
                )
 

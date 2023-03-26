@@ -65,7 +65,7 @@ showMany' ot (Config title
                    OLS.displaySetup = OLS.ObjectListDisplaySetup
                                      {
                                        OLS.displayAts  = theDisplayAts
-                                     , OLS.getFooterRowsConstructor = theGetFooterRowsConstructor
+                                     , OLS.getMkFooterRowsConstructor = theGetFooterRowsConstructor
                                      }
                  , OLS.buttonsSetup = OLS.ObjectListButtonsSetup
                                       {
@@ -78,12 +78,12 @@ showMany' ot (Config title
     do
       atListSetup             <- Presentation.toPresentationMonad $
                                  AttributeTypeListSetup.mkGeneral ot theDisplayAts
-      mbFooterRowsConstructor <- theGetFooterRowsConstructor
+      mkFooterRowsConstructor <- theGetFooterRowsConstructor
       objectListComponent     <- OlComp.objectList
                                  WS.presentationTableMulti
                                  Nothing
                                  atListSetup
-                                 (asFrc2_mb mbFooterRowsConstructor)
+                                 mkFooterRowsConstructor
                                  objBtnsLeft objBtnsRight
                                  (pure os)
       buttonsBelow            <- sequence getObjTypeBtnsBelow

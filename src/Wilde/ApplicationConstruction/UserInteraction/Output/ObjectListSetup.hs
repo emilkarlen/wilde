@@ -9,7 +9,7 @@ module Wilde.ApplicationConstruction.UserInteraction.Output.ObjectListSetup
          ObjectListSetup(..),
          ObjectListDisplaySetup(..),
 
-         GetFooterRowsConstructor,
+         GetMkFooterRowsConstructor,
          ObjectListButtonsSetup(..),
        )
        where
@@ -25,7 +25,7 @@ import Wilde.Media.WildeValue (AnySVALUE)
 import Wilde.ObjectModel.ObjectModelUtils
 import qualified Wilde.Media.Presentation as Presentation
 
-import qualified Wilde.ObjectModel.Presentation as OmPres
+import qualified Wilde.ObjectModel.Presentation.FooterRowsConstructor as F
 
 
 -------------------------------------------------------------------------------
@@ -43,22 +43,17 @@ data ObjectListSetup otConf atConf dbTable otNative idAtExisting idAtCreate =
 
 -- | Specifies the information to include in a list of 'Object's.
 data ObjectListDisplaySetup otConf atConf dbTable otNative idAtExisting idAtCreate =
-  forall acc .
   ObjectListDisplaySetup
   {
     -- | The 'AttributeType's, and their order, to display in the list.
     displayAts  :: [Any (AttributeType atConf dbTable)]
     -- | Orders the selection from the database (in ascending order) .
   , orderByInDb :: [Any (AttributeType atConf dbTable)]
-  , getFooterRowsConstructor :: GetFooterRowsConstructor acc otConf atConf dbTable otNative idAtExisting idAtCreate
+  , getMkFooterRowsConstructor :: GetMkFooterRowsConstructor otConf atConf dbTable otNative idAtExisting idAtCreate
   }
 
--- | Gives an "constructor" of footer rows, if there should be any.
--- (There are two ways to say that there should be no footer rows: One is
--- to let this method give Nothing; the other is to give
--- an empty list of footer rows.)
-type GetFooterRowsConstructor acc otConf atConf dbTable otNative idAtExisting idAtCreate =
-  Presentation.Monad (Maybe (OmPres.FooterRowsConstructor acc otConf atConf dbTable otNative idAtExisting idAtCreate))
+type GetMkFooterRowsConstructor otConf atConf dbTable otNative idAtExisting idAtCreate =
+  Presentation.Monad (F.MkFooterConstructor otConf atConf dbTable otNative idAtExisting idAtCreate)
 
 -- | Specifies the buttons to services for each 'Object', and
 -- common buttons for the 'ObjectType' to include in a list of 'Object's.

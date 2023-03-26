@@ -1,4 +1,5 @@
 {-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 -------------------------------------------------------------------------------
 -- | Tools for constructing the footer rows of an 'Object' list, that can be used
@@ -14,9 +15,9 @@
 --
 -- In a \"top-down\" approach:
 --
--- 1. Construct a 'ObjListSetup.GetFooterRowsConstructor' using
+-- 1. Construct a 'ObjListSetup.GetMkFooterRowsConstructor' using
 --    'attributeTypesFooterCells'.
---   ('ObjListSetup.GetFooterRowsConstructor' is what is used by
+--   ('ObjListSetup.GetMkFooterRowsConstructor' is what is used by
 --   'ObjListSetup.ObjectListDisplaySetup'.)
 --
 -- 1. Construct the 'AttributeTypesFooterSpecification' to give to
@@ -63,21 +64,19 @@ module Wilde.ApplicationConstruction.UserInteraction.Output.AttributeTypesListFo
 -------------------------------------------------------------------------------
 
 
-import Data.List (transpose)
+import           Data.List (transpose)
 import qualified Data.Map as Map
 
-import Wilde.WildeUi.StdValueTypes
+import qualified Wilde.Utils.Accumulator as Acc
 
-import Wilde.WildeUi.TableUtils (dataCellStd, dataCellStdEmpty)
+import           Wilde.WildeUi.StdValueTypes
+import           Wilde.WildeUi.TableUtils (dataCellStd, dataCellStdEmpty)
 
-import Wilde.ObjectModel.ObjectModel
-import Wilde.ObjectModel.ObjectModelUtils (castToAttributeType,anyValueApply,anyValueApply2)
-
+import           Wilde.ObjectModel.ObjectModel
+import           Wilde.ObjectModel.ObjectModelUtils (castToAttributeType,anyValueApply,anyValueApply2)
 import qualified Wilde.ObjectModel.AttributeTypeListSetup.SansAnnotation as AttributeTypeListSetup
-
-import qualified Wilde.ObjectModel.Presentation as OmPres
-
-import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ObjectListSetup as ObjListSetup (GetFooterRowsConstructor)
+import qualified Wilde.ObjectModel.Presentation.FooterRowsConstructor as F
+import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ObjectListSetup as ObjListSetup (GetMkFooterRowsConstructor)
 
 
 -------------------------------------------------------------------------------
@@ -90,27 +89,28 @@ import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ObjectList
 -------------------------------------------------------------------------------
 
 
--- | Constructs a 'ObjListSetup.GetFooterRowsConstructor' that can be used
+-- | Constructs a 'ObjListSetup.GetMkFooterRowsConstructor' that can be used
 -- by 'ObjListSetup.ObjectListDisplaySetup'.
 --
 -- Rows are constructed from specifications of individual 'AttributeType's.
 -- For each 'AttributeType' that is included in the specification, a list of
 -- cells is constructed, that is displayed in the same column as the
 -- 'AttributeType'.
-attributeTypesFooterCellsGetter :: ObjectType otConf atConf dbTable otNative idAtE idAtC
-                                -> AttributeTypesFooterSpecification atConf dbTable
-                                -> ObjListSetup.GetFooterRowsConstructor (AttributeTypesFooterSpecification atConf dbTable) otConf atConf dbTable otNative idAtE idAtC
-attributeTypesFooterCellsGetter _ [] = pure Nothing
-attributeTypesFooterCellsGetter ot atCellConstructors =
-  pure $
-  Just $
-  OmPres.FooterRowsConstructor
-  {
-    OmPres.frcInitial     = atCellConstructors
-  , OmPres.frcAccumulator = accumulateAllAts (getAttrsForConstructors ot atCellConstructors)
-  , OmPres.frcMkRows      = makeFooter
-  }
+attributeTypesFooterCellsGetter
+  :: forall otConf atConf dbTable otNative idAtE idAtC.
+     ObjectType otConf atConf dbTable otNative idAtE idAtC
+  -> AttributeTypesFooterSpecification atConf dbTable
+  -> ObjListSetup.GetMkFooterRowsConstructor otConf atConf dbTable otNative idAtE idAtC
+attributeTypesFooterCellsGetter _ [] = pure F.mkNoFooterRows
+attributeTypesFooterCellsGetter ot atCellConstructors = pure retVal
   where
+    retVal :: F.MkFooterConstructor otConf atConf dbTable otNative idAtE idAtC
+    retVal atsInList =
+      Acc.accumulatorWithCount
+        atCellConstructors
+        (accumulateAllAts (getAttrsForConstructors ot atCellConstructors))
+        (makeFooter atsInList)
+
     getAttrsForConstructors :: ObjectType otConf atConf dbTable otNative idAtE idAtC
                             -> AttributeTypesFooterSpecification atConf dbTable
                             -> Object otConf atConf dbTable otNative idAtE idAtC
@@ -129,10 +129,10 @@ attributeTypesFooterCellsGetter ot atCellConstructors =
 
     accumulateAllAts :: (Object otConf atConf dbTable otNative idAtE idAtC
                          -> [Any (Attribute atConf dbTable)])
-                     -> (Object otConf atConf dbTable otNative idAtE idAtC,
-                         AttributeTypesFooterSpecification atConf dbTable)
                      -> AttributeTypesFooterSpecification atConf dbTable
-    accumulateAllAts getAttrsForAtsFooterSpec (o,atSpecs) =
+                     -> Object otConf atConf dbTable otNative idAtE idAtC
+                     -> AttributeTypesFooterSpecification atConf dbTable
+    accumulateAllAts getAttrsForAtsFooterSpec atSpecs o =
       map accumulateAt $ zip atSpecs (getAttrsForAtsFooterSpec o)
 
     accumulateAt :: (Any (AttributeTypeFooterSpecification atConf dbTable),
@@ -174,7 +174,7 @@ attributeTypesFooterCellsGetter ot atCellConstructors =
                                          }) =
       x { fccInitial = accumulator (value,current) }
 
-    makeFooter atsInList numObjects acc = ([],rows)
+    makeFooter atsInList (numObjects, acc) = ([],rows)
       where
         rows           = makeRows atsInList cellsForAtsMap
         cellsForAtsMap = makeCells numObjects acc

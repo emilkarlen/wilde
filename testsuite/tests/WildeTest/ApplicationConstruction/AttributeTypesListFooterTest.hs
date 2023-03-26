@@ -25,7 +25,7 @@ import Wilde.WildeUi.StdValueTypes (BoolValueAsCheckBox(..))
 import Wilde.ObjectModel.ObjectModel
 import Wilde.ObjectModel.Presentation
 
-import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ObjectListSetup as ObjListSetup (GetFooterRowsConstructor(..))
+import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ObjectListSetup as ObjListSetup (GetMkFooterRowsConstructor(..))
 
 import Wilde.ApplicationConstruction.UserInteraction.Output.AttributeTypesListFooter
 
@@ -70,7 +70,7 @@ theTest =
 
   ]
 
-frcGetter :: ObjListSetup.GetFooterRowsConstructor
+frcGetter :: ObjListSetup.GetMkFooterRowsConstructor
              (AttributeTypesFooterSpecification DdlAtAnnotation.Configuration PkNameTable)
              OtDbConfig.Configuration
              DdlAtAnnotation.Configuration
