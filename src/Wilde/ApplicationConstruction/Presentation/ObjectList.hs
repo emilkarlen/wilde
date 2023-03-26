@@ -81,20 +81,19 @@ footerRows_rowsOnly rows = ([], rows)
 
 type FooterRowsConstructor object = Acc.Accumulator object FooterRows
 
-data ObjectTypeSetup object idAt = ObjectTypeSetup
+data ObjectTypeSetup object = ObjectTypeSetup
   {
-    otsGetId      :: object -> idAt
-  , otsAttrTitles :: [StyledTitle]
+    otsAttrTitles :: [StyledTitle]
   , otsGettAttrs  :: object -> Presentation.Monad [AnySVALUE]
   }
 
 -- | Produces a table that shows a list of 'Object's.
 objectList
-  :: forall object idAt.
+  :: forall object.
      Maybe StyledTitle
-  -> ObjectTypeSetup object idAt
+  -> ObjectTypeSetup object
   -> FooterRowsConstructor object
-  -> [idAt -> AnySVALUE]
+  -> [object -> AnySVALUE]
   -- ^ List of "action columns" corresponding to a given object.
   -- These are columns that can contain buttons e.g. (but really anything,
   -- of course).
@@ -116,8 +115,8 @@ objectList mbTitle  otSetup
       let footerRows = Acc.resultOfSum footerConstructor os
       pure $ DataRows objectRows footerRows
 
-    mkObjectActions    :: idAt -> [AnySVALUE]
-    mkObjectActions id  = map (\f -> f id) listOfMkObjectAction
+    mkObjectActions     :: object -> [AnySVALUE]
+    mkObjectActions o    = map (\mkAction -> mkAction o) listOfMkObjectAction
 
     newObjectRow         = objectRow (otsGettAttrs otSetup)
 
@@ -129,8 +128,5 @@ objectList mbTitle  otSetup
         attributeValues <- getDisplayAttrs o
         pure $ ObjectRow attributeValues rowActions
       where
-        idAttrValue       :: idAt
-        idAttrValue        = otsGetId otSetup o
-
         rowActions        :: [AnySVALUE]
-        rowActions         = mkObjectActions idAttrValue
+        rowActions         = mkObjectActions o

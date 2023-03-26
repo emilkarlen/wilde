@@ -245,7 +245,7 @@ data ShowAllReferingConfig otConf atConf atRef dbTable otNative idAtExisting idA
   {
     title          :: StyledTitle
   , displaySetup   :: OLS.ObjectListDisplaySetup otConf atConf dbTable otNative idAtExisting idAtCreate
-  , mkButtonsSetup :: atRef -> OLS.ObjectListButtonsSetup idAtExisting
+  , mkButtonsSetup :: atRef -> OLS.ObjectListButtonsSetup otConf atConf dbTable otNative idAtExisting idAtCreate
   }
 
 mkShowAllReferringObjsSetup :: (Database.COLUMNS_AND_IO_FOR_EXISTING atConf

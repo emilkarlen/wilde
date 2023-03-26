@@ -27,13 +27,12 @@ import qualified Wilde.ApplicationConstruction.Presentation.ObjectList as OL
 mkObjectSetup
   :: forall otConf atConf dbTable otNative idAtExisting idAtCreate.
      OmPres.ATTRIBUTE_PRESENTATION atConf
-  => AttributeTypeListSetup.Setup        otConf atConf dbTable otNative idAtExisting idAtCreate
-  -> OL.ObjectTypeSetup (Object          otConf atConf dbTable otNative idAtExisting idAtCreate) idAtExisting
+  => AttributeTypeListSetup.Setup otConf atConf dbTable otNative idAtExisting idAtCreate
+  -> OL.ObjectTypeSetup (Object   otConf atConf dbTable otNative idAtExisting idAtCreate)
 mkObjectSetup atListSetup =
   OL.ObjectTypeSetup
   {
-    OL.otsGetId      = attrValue . oIdAttribute
-  , OL.otsAttrTitles = map getAtTitle attributeTypes
+    OL.otsAttrTitles = map getAtTitle attributeTypes
   , OL.otsGettAttrs  = sequence . mapAttributeAnyValue attrPresentation . objToAttrs
   }
   where

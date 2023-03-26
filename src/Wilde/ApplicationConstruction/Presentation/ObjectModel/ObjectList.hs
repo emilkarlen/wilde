@@ -41,7 +41,7 @@ objectList
   => Maybe StyledTitle
   -> AttributeTypeListSetup.Setup     otConf atConf dbTable otNative idAtExisting idAtCreate
   -> FooterConstructor                otConf atConf dbTable otNative idAtExisting idAtCreate
-  -> [idAtExisting -> AnySVALUE]
+  -> [Object                          otConf atConf dbTable otNative idAtExisting idAtCreate -> AnySVALUE]
   -> Presentation.Monad [Object       otConf atConf dbTable otNative idAtExisting idAtCreate]
   -> Presentation.Monad OL.ObjectList
 objectList mbTitle atListSetup footerConstructor listOfMkObjectAction getObjects =
