@@ -69,6 +69,7 @@ import qualified Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAn
 import qualified Wilde.ApplicationConstruction.ObjectTypeConfiguration.Database as OtDbConfig
 
 import Wilde.ApplicationConstruction.ObjectModel.ObjectType
+import qualified Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectListFooters as Footers
 
 
 -------------------------------------------------------------------------------
@@ -161,7 +162,7 @@ ots_and_rps_IdName config =
     refPresSpec_4_stringAt atName,
     objectTypeSetup ot (objectTypeTitle config)
     `withObjectListDisplaySetup`
-    OLS.ObjectListDisplaySetup [anyAtName] [anyAtName] (pure Nothing)
+    OLS.ObjectListDisplaySetup [anyAtName] [anyAtName] Footers.numberOfObjects
    )
   where
     anyAtName   = Any atName

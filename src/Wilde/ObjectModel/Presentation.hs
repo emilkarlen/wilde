@@ -8,13 +8,11 @@
 
 module Wilde.ObjectModel.Presentation
        (
-         module Wilde.ObjectModel.Presentation.FooterRowsConstructor,
+         module F,
 
          ATTRIBUTE_PRESENTATION(..),
 
          showOneComponent,
-
-         objectListTable,
 
          -- * Get attributes from objects
 
@@ -38,7 +36,7 @@ import qualified Wilde.Media.WildeStyle as WS
 import qualified Wilde.Media.Presentation as Presentation
 import qualified Wilde.ObjectModel.AttributeTypeListSetup.SansAnnotation as AttributeTypeListSetup
 import           Wilde.ObjectModel.ObjectModelUtils as OmUtils
-import           Wilde.ObjectModel.Presentation.FooterRowsConstructor
+import           Wilde.ObjectModel.Presentation.FooterRowsConstructor as F
 
 
 -------------------------------------------------------------------------------
@@ -163,74 +161,7 @@ objectRow leftSideContentConstructor rightSideContentConstructor o =
 
 atElementWithStyle :: Attribute atConf dbTable typeForExisting typeForCreate
                    -> Presentation.Monad ElementWithStyle
-atElementWithStyle attr = fmap SeValue $ attrPresentation attr
-
-
--------------------------------------------------------------------------------
--- - object list -
--------------------------------------------------------------------------------
-
-
--- | Produces a table that shows a list of 'Object's.
-objectListTable :: ATTRIBUTE_PRESENTATION atConf
-                => AttributeTypeListSetup.Setup     otConf atConf dbTable otNative idAtExisting idAtCreate
-                -> Maybe (FooterRowsConstructor acc otConf atConf dbTable otNative idAtExisting idAtCreate)
-                -> (idAtExisting -> AnySVALUE)
-                -> (idAtExisting -> AnySVALUE)
-                -> Maybe WildeTitle
-                -> [Object                          otConf atConf dbTable otNative idAtExisting idAtCreate]
-                -> Presentation.Monad WildeTable
-objectListTable atListSetup Nothing leftSideContentConstructor rightSideContentConstructor mbTitle os =
-  objectListTable atListSetup (Just footerRowsConstructor) leftSideContentConstructor rightSideContentConstructor mbTitle os
-    where
-      footerRowsConstructor =
-        FooterRowsConstructor
-        {
-          frcInitial     = ()
-        , frcAccumulator = const ()
-        , frcMkRows      = \colInfos numObjs acc -> ([],[])
-        }
-
-objectListTable atListSetup
-  (Just footerRowsConstructor) leftSideContentConstructor rightSideContentConstructor mbTitle os =
-    tableWithFooterRowsM (FooterRowsSetup footerDataAcc footerDataZero footerColFun) mkObjectRow mkTable os
-  where
-    footerDataZero       = zeroFooterState footerRowsConstructor
-    footerDataAcc        = succFooterState
-    footerColFun         = \state -> snd $ footerRowsForFooterState colInfos state
-    mkTable              = conStandardTable mbTitle titles
-    titles               :: [WildeTitle]
-    titles               = if tableIsEmpty
-                           then attrColsTitle
-                           else buttonColTitle : attrColsTitle ++ [buttonColTitle]
-    colInfos             = if tableIsEmpty
-                           then atColInfos
-                           else Nothing : atColInfos ++ [Nothing]
-    mkObjectRow          = objectRow' leftSideContentConstructor rightSideContentConstructor
-                           (AttributeTypeListSetup.apply atListSetup)
-    atColInfos           = map Just attributeTypes
-    attrColsTitle        = map getAtTitle attributeTypes
-    attributeTypes       = AttributeTypeListSetup.getAts atListSetup
-    buttonColTitle      :: WildeTitle
-    buttonColTitle       = wildeStyling WS.objectButtonStyle ""
-    tableIsEmpty         = null os
-
-objectRow' :: (idAtExisting -> AnySVALUE)
-           -> (idAtExisting -> AnySVALUE)
-           -> (Object otConf atConf dbTable otNative idAtExisting idAtCreate
-               -> [Any (Attribute atConf dbTable)])
-           -> Object otConf atConf dbTable otNative idAtExisting idAtCreate
-           -> Presentation.Monad [ElementWithStyle]
-objectRow' leftSideContentConstructor rightSideContentConstructor getDisplayAttrs o =
-  do
-    attributeValues <- sequence getAttributeValues
-    pure $ leftContentElem : attributeValues ++ [rightContentElem]
-  where
-    leftContent        = leftSideContentConstructor $ attrValue $ oIdAttribute o
-    leftContentElem    = SeValue leftContent
-    rightContent       = rightSideContentConstructor $ attrValue $ oIdAttribute o
-    rightContentElem   = SeValue rightContent
-    getAttributeValues = mapAttributeAnyValue atElementWithStyle $ getDisplayAttrs o
+atElementWithStyle attr = SeValue <$> attrPresentation attr
 
 
 -------------------------------------------------------------------------------

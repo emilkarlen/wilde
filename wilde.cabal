@@ -73,6 +73,7 @@ Library
     Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectSetup
     Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectList
     Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectListComponent
+    Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectListFooters
 
     Wilde.ApplicationConstruction.Database.DatabaseUtils
     Wilde.ApplicationConstruction.Database.AttributeTypeDatabaseInfo
@@ -244,7 +245,6 @@ Library
 
     Wilde.ObjectModel.Presentation
     Wilde.ObjectModel.Presentation.FooterRowsConstructor
-    Wilde.ObjectModel.Presentation.FooterRowsConstructor2
     Wilde.ObjectModel.ObjectModelUtils
     Wilde.ObjectModel.GenericStringRep
     Wilde.ObjectModel.ObjectModel
