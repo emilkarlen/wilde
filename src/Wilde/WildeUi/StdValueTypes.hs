@@ -15,6 +15,7 @@ module Wilde.WildeUi.StdValueTypes
          QuotedStringValue(..),
          UnquotedMultiLineTextValue(..),
          HrefValue(..),
+         ImageValue(..),
 
          JavaScriptProgram,
 
@@ -50,11 +51,11 @@ import           Data.List (intersperse)
 import           Network.HTTP.Base (urlEncodeVars)
 
 import           Wilde.WildeUi.WildeValue
+import           Wilde.WildeUi.UiPrimitives (Title)
 
 import           Wilde.Render.Html.Types
 import qualified Wilde.Render.Html.Attribute as HA
 import qualified Wilde.Render.Html.Element as HE
-
 import           Wilde.Render.Cgi.ServerVariables
 import           Wilde.Render.Cgi.HRef
 import           Wilde.Render.StyleForHtml (STYLE_FOR_HTML(..))
@@ -214,7 +215,7 @@ paraAndLineBreakSplit s = splitParas [] (dropWhileNewline s)
 
 
 -- | A Hypertext reference, with a text to display and the target URL.
-newtype HrefValue = HrefValue (String,URL) -- ^ link text, URL.
+newtype HrefValue = HrefValue (Title,URL) -- ^ link text, URL.
 
 instance VALUE HrefValue where
   valueString (HrefValue (linkText,url)) = url
@@ -336,3 +337,17 @@ instance VALUE Button where
     valueHtml (Button label) = HE.submit label
 
 instance SVALUE Button
+
+
+-------------------------------------------------------------------------------
+-- - ImageValue -
+-------------------------------------------------------------------------------
+
+
+newtype ImageValue = ImageValue URL
+
+instance VALUE ImageValue where
+    valueHtml   (ImageValue url) = HE.image `HE.withAttrs` [HA.src url]
+    valueString (ImageValue url) = url
+
+instance SVALUE ImageValue
