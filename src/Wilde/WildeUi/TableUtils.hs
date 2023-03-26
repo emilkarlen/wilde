@@ -3,6 +3,11 @@
 -- stilarna funkar inget vidare. får kolla det sen.
 module Wilde.WildeUi.TableUtils
        (
+        CellType(..),
+        dataCellType,
+        colHeaderType,
+        rowHeaderType,
+
          cellStdEmpty,
          dataCellStdEmpty,
 
