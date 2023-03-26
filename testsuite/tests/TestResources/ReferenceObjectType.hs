@@ -58,7 +58,7 @@ mkPkAndRefOts :: SqlIdentifier
 mkPkAndRefOts theTableName referenceTarget =
   objectTypeSetup ot title
   where
-    title :: StyledTitle
+    title :: WildeTitle
     title = withNeutralWildeStyle theTableName
 
     databaseTable :: DatabaseTable

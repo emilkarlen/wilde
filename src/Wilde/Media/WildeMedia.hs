@@ -5,7 +5,7 @@ module Wilde.Media.WildeMedia
          -- Presentation
          Title(..),
 
-         StyledTitle,
+         WildeTitle,
          neutralTitle,
 
          PresentationOutput,
@@ -82,9 +82,9 @@ import Wilde.WildeUi.UiPrimitives
 
 type Title = String
 
-type StyledTitle = WildeStyling Title
+type WildeTitle = WildeStyling Title
 
-neutralTitle :: Title -> StyledTitle
+neutralTitle :: Title -> WildeTitle
 neutralTitle = withNeutralWildeStyle
 
 type PresentationOutput = AnySVALUE

@@ -69,8 +69,7 @@ data AttributeTypeInfo defaultValue attrValue =
   AttributeTypeInfo
   {
     atiCrossRefKey    :: AttributeName
-  , atiTitle          :: StyledTitle
-  -- , atiPresOutputer   :: PresentationOutputer attrValue
+  , atiTitle          :: WildeTitle
   , atiWidgetOutputer :: AttributeName -> UiO.WidgetConstructorGetter defaultValue
   , atiGsrOutputer    :: Gsr.GenericStringRepOutputer attrValue
   }

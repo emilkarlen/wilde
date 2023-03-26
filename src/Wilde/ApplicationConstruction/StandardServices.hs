@@ -189,7 +189,7 @@ data ObjectTypeSetup otConf atConf dbTable otNative idAtExisting idAtCreate =
   ObjectTypeSetup
   {
     objectType          :: ObjectType          otConf atConf dbTable otNative idAtExisting idAtCreate
-  , titleWithStyle      :: StyledTitle
+  , titleWithStyle      :: WildeTitle
   , objectListSetup     :: OLS.ObjectListSetup otConf atConf dbTable otNative idAtExisting idAtCreate
     -- | The order of the attributes used for single-object presentation/ui.
     -- If null (empty), the order of the attributes in 'ObjectType' is used.
@@ -537,8 +537,8 @@ linkRendererFor serviceSpec =
 -- standard service and 'ObjectType'.
 serviceTitleAndStyle :: HAS_SERVICE_TITLE a
                      => a
-                     -> StyledTitle
-                     -> StyledTitle
+                     -> WildeTitle
+                     -> WildeTitle
 serviceTitleAndStyle service title =
   wildeStyling
   style
@@ -554,7 +554,7 @@ serviceTitleAndStyle service title =
 -- Given title is supposed to be the "name" of the object type.
 twoTitles :: HAS_SERVICE_TITLE a
           => a
-          -> StyledTitle
+          -> WildeTitle
           -> SU.TwoStepServiceTitles
 twoTitles serviceEnum objectTitle =
   SU.TwoStepServiceTitles

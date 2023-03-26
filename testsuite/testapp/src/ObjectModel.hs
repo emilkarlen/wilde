@@ -88,7 +88,7 @@ instance SQL_IDENTIFIER SdTable where
 
 type SimpleDatatypes = (Word32,Maybe String,String)
 
-titleSimpleDatatypes :: StyledTitle
+titleSimpleDatatypes :: WildeTitle
 titleSimpleDatatypes = wildeStyling (WildeStyle ["simple_datatypes"]) "Simple Datatypes"
 
 aotsSimpleDatatypes :: ObjectTypeWithAtDdlInformation.AnyO StandardServices.ObjectTypeSetup
@@ -217,7 +217,7 @@ instance SQL_IDENTIFIER AutoincTable where
 
 type AutoincPK = (PrimaryKeyType,Maybe String)
 
-titleAutoincPK :: StyledTitle
+titleAutoincPK :: WildeTitle
 titleAutoincPK = wildeStyling
                  (WildeStyle ["auto_inc"])
                  "Autoinc PK"
@@ -283,7 +283,7 @@ instance SQL_IDENTIFIER RefTable where
 
 type ReferenceNative = (Word32,Int32,Int32)
 
-titleReference :: StyledTitle
+titleReference :: WildeTitle
 titleReference = wildeStyling
                  (WildeStyle ["reference"])
                  "Reference"

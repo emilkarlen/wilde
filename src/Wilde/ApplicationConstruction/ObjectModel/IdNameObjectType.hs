@@ -119,7 +119,7 @@ instance SQL_IDENTIFIER Table where
 data Configuration dbTable =
   Configuration
   {
-    objectTypeTitle :: StyledTitle
+    objectTypeTitle :: WildeTitle
   , nameTitle       :: Title
   , maxSize         :: Int
   , inputWidth      :: Int

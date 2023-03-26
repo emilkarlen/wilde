@@ -142,16 +142,16 @@ wildeHeaderValueTable renderHeader renderValue rowStyle (headerStyle,valueStyle)
 
 -- | A table where each row is an element in a list, and the first row
 -- is headers for the columns.
-conWildeHeaderRowTable :: WildeStyle                  -- ^ Row Style for body-rows.
-                       -> Maybe StyledTitle        -- ^ Title.
-                       -> [StyledTitle]            -- ^ Column titles.
-                                                      -- length is equal to num columns
-                                                      -- = length of each body row.
+conWildeHeaderRowTable :: WildeStyle              -- ^ Row Style for body-rows.
+                       -> Maybe WildeTitle        -- ^ Title.
+                       -> [WildeTitle]            -- ^ Column titles.
+                                                  -- length is equal to num columns
+                                                  -- = length of each body row.
                        -> Maybe ([ColGroup WildeStyle],
-                                 [[WildeCell]]) -- ^ Footer
-                       -> [[ElementWithStyle]]        -- ^ Body rows.
-                                                      -- length is equal to num columns.
-                                                      -- Each cell spans spanSingle.
+                                 [[WildeCell]])   -- ^ Footer
+                       -> [[ElementWithStyle]]    -- ^ Body rows.
+                                                  -- length is equal to num columns.
+                                                  -- Each cell spans spanSingle.
                        -> WildeTable
 conWildeHeaderRowTable bodyRowStyle mbTitle columnTitles mbFoot bodyData =
   conTable neutral
@@ -169,8 +169,8 @@ conWildeHeaderRowTable bodyRowStyle mbTitle columnTitles mbFoot bodyData =
 -- is headers for the columns.
 conWildeHeaderRowTable2
   :: WildeStyle               -- ^ Row Style for body-rows.
-  -> Maybe StyledTitle        -- ^ Title.
-  -> [StyledTitle]            -- ^ Column titles.
+  -> Maybe WildeTitle         -- ^ Title.
+  -> [WildeTitle]             -- ^ Column titles.
                               -- length is equal to num columns
                               -- = length of each body row.
   -> Maybe ([ColGroup WildeStyle],[[WildeCell]])
@@ -190,7 +190,7 @@ conFoot (Just (colGroups,cells)) = Just $
                                    conRowGroup WS.sumStyle [] $
                                    map (conRow neutral) cells
 
-conHead :: Maybe StyledTitle -> [StyledTitle] -> Maybe WildeRowGroup
+conHead :: Maybe WildeTitle -> [WildeTitle] -> Maybe WildeRowGroup
 conHead mbTitle columnTitles =
   Just $ conRowGroup neutral [] rows
   -- Just $ conRowGroup neutral (repeat (ColGroup 1 WS.multiColumnTitle)) rows
@@ -199,7 +199,7 @@ conHead mbTitle columnTitles =
            ++
            [conRow neutral $ map mkColTitle columnTitles]
 
-    mkColTitle :: StyledTitle -> WildeCell
+    mkColTitle :: WildeTitle -> WildeCell
     mkColTitle styledTitle = conCell theStyle colHeaderType spanSingle stringValue
       where
         theStyle    = addStyle WS.attributeTitle $ wildeStyle styledTitle
@@ -243,8 +243,8 @@ elementWithStyleToCell type_ ews@(SeHtml _) = conCell neutral        type_ spanS
 elementWithStyleToCell type_ (SeValue x   ) = conCell (valueStyle x) type_ spanSingle $ anySvalue2Value x
 
 -- | Utility method when using 'tableWithFooterRows'.
-conStandardTable :: Maybe StyledTitle
-                 -> [StyledTitle]
+conStandardTable :: Maybe WildeTitle
+                 -> [WildeTitle]
                  -> ([[WildeCell]],[[ElementWithStyle]])
                  -- ^ (footer rows, body rows)
                  -> WildeTable
@@ -257,8 +257,8 @@ conStandardTable mbTitle columnTitles (footRows,bodyRows) =
 
 -- | Utility method when using 'tableWithFooterRows'.
 conStandardTable2
-  :: Maybe StyledTitle
-  -> [StyledTitle]
+  :: Maybe WildeTitle
+  -> [WildeTitle]
   -> ([[WildeCell]],[[WildeCell]])
   -- ^ (footer rows, body rows)
   -> WildeTable

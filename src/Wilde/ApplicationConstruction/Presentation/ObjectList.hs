@@ -55,8 +55,8 @@ bodyIsEmpty = null . listObjects . listDataRows
 
 data Config = Config
   {
-    listTitle       :: Maybe StyledTitle
-  , attributeTitles :: [StyledTitle]
+    listTitle       :: Maybe WildeTitle
+  , attributeTitles :: [WildeTitle]
   }
 
 data DataRows = DataRows
@@ -83,14 +83,14 @@ type FooterRowsConstructor object = Acc.Accumulator object FooterRows
 
 data ObjectTypeSetup object = ObjectTypeSetup
   {
-    otsAttrTitles :: [StyledTitle]
+    otsAttrTitles :: [WildeTitle]
   , otsGettAttrs  :: object -> Presentation.Monad [AnySVALUE]
   }
 
 -- | Produces a table that shows a list of 'Object's.
 objectList
   :: forall object.
-     Maybe StyledTitle
+     Maybe WildeTitle
   -> ObjectTypeSetup object
   -> FooterRowsConstructor object
   -> [object -> AnySVALUE]

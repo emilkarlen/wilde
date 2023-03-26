@@ -58,7 +58,7 @@ runService_html cssFiles tr env service =
     let wildePage = renderServiceResult tr env serviceResult
     pure $ renderPageAsHtml wildePage
   where
-    renderPageAsHtml :: (StyledTitle,[AnyCOMPONENT]) -> Html
+    renderPageAsHtml :: (WildeTitle,[AnyCOMPONENT]) -> Html
     renderPageAsHtml (title,components) = renderPage cssFiles title components
 
 -- | A variant of 'runService_html' that also renders the HTML as a string.
@@ -82,21 +82,21 @@ runService_htmlString cssFiles tr env service =
 renderServiceResult :: Translations
                     -> ServiceEnvironment
                     -> Either ServiceError ServiceOkResult
-                    -> (StyledTitle,[AnyCOMPONENT])
+                    -> (WildeTitle,[AnyCOMPONENT])
 renderServiceResult tr env serviceResult =
     either outputError (processOkResult outputPage outputPopUp) serviceResult
   where
-    outputError :: ServiceError -> (StyledTitle,[AnyCOMPONENT])
+    outputError :: ServiceError -> (WildeTitle,[AnyCOMPONENT])
     outputError err = (withWildeStyle errorStyle (trErorPageTitle tr),
                        [anyValueComponent (UnquotedStringValue (show err))])
 
-    outputPage :: ServicePage -> (StyledTitle,[AnyCOMPONENT])
+    outputPage :: ServicePage -> (WildeTitle,[AnyCOMPONENT])
     outputPage (pageTitle,anyComponents) = (pageTitle, anyComponents)
 
-    outputPopUp :: ServicePopUp -> (StyledTitle,[AnyCOMPONENT])
+    outputPopUp :: ServicePopUp -> (WildeTitle,[AnyCOMPONENT])
     outputPopUp = processPopUpOkResult outputAskIfContinue outputInformation
 
-    outputAskIfContinue :: AskIfContinuePopUp -> (StyledTitle,[AnyCOMPONENT])
+    outputAskIfContinue :: AskIfContinuePopUp -> (WildeTitle,[AnyCOMPONENT])
     outputAskIfContinue popup = (withNeutralWildeStyle (trContinueQuestion tr),
                                  components)
         where
@@ -106,7 +106,7 @@ renderServiceResult tr env serviceResult =
           target       = askIfContinueContinuation popup
           msg          = askIfContinueMessage popup
 
-    outputInformation :: InformationPopUp -> (StyledTitle,[AnyCOMPONENT])
+    outputInformation :: InformationPopUp -> (WildeTitle,[AnyCOMPONENT])
     outputInformation popup = (withNeutralWildeStyle (trIformationDialogTitle tr),
                                components)
         where

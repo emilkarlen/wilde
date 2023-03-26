@@ -135,7 +135,7 @@ reference_mandatory :: Database.DATABASE_TABLE otConf
       -> dbTableSrc
       -> atConf dbTableSrc idAtExistingDst idAtExistingDst)
   -> dbTableSrc
-  -> StyledTitle
+  -> WildeTitle
   -> AttributeType           (UiIoAndDbIo.Configuration atConf) dbTableSrc idAtExistingDst idAtExistingDst
 reference_mandatory rati@(ReferenceAttributeTypeInfo {
                              ratiRefDst = otSetupRefTarget@(StandardServices.ObjectTypeSetup {
@@ -192,7 +192,7 @@ reference_optional :: Database.DATABASE_TABLE otConf
       -> dbTableSrc
       -> atConf dbTableSrc (Maybe idAtExistingDst) (Maybe idAtExistingDst))
   -> dbTableSrc
-  -> StyledTitle
+  -> WildeTitle
   -> AttributeType (UiIoAndDbIo.Configuration atConf) dbTableSrc (Maybe idAtExistingDst) (Maybe idAtExistingDst)
 reference_optional rati@(ReferenceAttributeTypeInfo {
                             ratiRefDst = otSetupRefTarget@(StandardServices.ObjectTypeSetup {

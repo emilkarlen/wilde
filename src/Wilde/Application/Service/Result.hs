@@ -9,7 +9,7 @@ module Wilde.Application.Service.Result where
 import qualified Wilde.Application.Service.PopUp as PopUp
 import Wilde.Service.ServiceLink
 import Wilde.Media.WildeMedia
-    ( Title, StyledTitle, WildeStyle(..), wildeStyled, wildeStyle )
+    ( Title, WildeTitle, WildeStyle(..), wildeStyled, wildeStyle )
 import Wilde.GenericUi.Component (AnyCOMPONENT(..))
 
 
@@ -75,7 +75,7 @@ informationPopup msg continuation =
 
 -- | A "page" that is the "result" of the execution of a service.
 -- (title,style,contents)
-type ServicePage = (StyledTitle
+type ServicePage = (WildeTitle
                    ,[AnyCOMPONENT]
                    )
 
@@ -87,5 +87,3 @@ servicePageStyle (styledTitle,_) = wildeStyle styledTitle
 
 servicePageContents :: ServicePage -> [AnyCOMPONENT]
 servicePageContents (_,c) = c
-
-

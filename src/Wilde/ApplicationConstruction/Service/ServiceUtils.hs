@@ -85,8 +85,8 @@ import Wilde.Application.Service.Result
 data TwoStepServiceTitles =
   TwoStepServiceTitles
   {
-    page1Title :: StyledTitle
-  , page2Title :: StyledTitle
+    page1Title :: WildeTitle
+  , page2Title :: WildeTitle
   }
 
 twoStepServiceTitlesWithSameStyle :: WildeStyle
@@ -116,7 +116,7 @@ showOneComponent attributeTypesOrder o =
 
 showOnePage :: Presentation.ATTRIBUTE_PRESENTATION atConf
             => [Any (AttributeType atConf dbTable)]
-            -> StyledTitle
+            -> WildeTitle
             -> Object otConf atConf dbTable otNative idAtExisting idAtCreate
             -> Presentation.Monad ServicePage
 showOnePage attributeTypesOrder title o =
@@ -128,7 +128,7 @@ showOnePageService :: Presentation.ATTRIBUTE_PRESENTATION atConf
                    => [Any (AttributeType atConf dbTable)]
                    -- ^ Specifies the order in which
                    -- the 'Attribute's inputers are listed.
-                   -> StyledTitle
+                   -> WildeTitle
                    -> Object otConf atConf dbTable otNative idAtExisting idAtCreate
                    -> ServiceMonad ServicePage
 showOnePageService attributeTypesOrder title o =
@@ -140,7 +140,7 @@ showOnePageService attributeTypesOrder title o =
 -------------------------------------------------------------------------------
 
 
-deleteOnePage :: ObjectType otConf atConf dbTable otN idAE idAC -> StyledTitle
+deleteOnePage :: ObjectType otConf atConf dbTable otN idAE idAC -> WildeTitle
               -> ServicePage
 deleteOnePage ot title = (title, [])
 

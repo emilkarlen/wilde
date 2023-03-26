@@ -48,7 +48,7 @@ import           Wilde.ObjectModel.Presentation.FooterRowsConstructor
 
 class ATTRIBUTE_PRESENTATION atConf where
   atTitle :: AttributeType atConf dbTable typeForExisting typeForCreate
-          -> StyledTitle
+          -> WildeTitle
 
 
 -------------------------------------------------------------------------------
@@ -113,7 +113,7 @@ showManyTable :: forall otConf atConf dbTable otA idAtExisting idAtCreate. ATTRI
               => ObjectType otConf atConf dbTable otA idAtExisting idAtCreate
               -> (idAtExisting -> AnySVALUE)
               -> (idAtExisting -> AnySVALUE)
-              -> Maybe StyledTitle
+              -> Maybe WildeTitle
               -> [Object otConf atConf dbTable otA idAtExisting idAtCreate]
               -> Presentation.Monad WildeTable
 showManyTable ot leftSideContentConstructor rightSideContentConstructor mbTitle os =
@@ -132,7 +132,7 @@ showManyTable ot leftSideContentConstructor rightSideContentConstructor mbTitle 
 
       attrColsTitle        = map getAtTitle $ otAttributeTypes ot
 
-      titles               :: [StyledTitle]
+      titles               :: [WildeTitle]
       titles               = buttonColTitle : attrColsTitle ++ [buttonColTitle]
 
       buttonColTitle       = neutralTitle ""
@@ -177,7 +177,7 @@ objectListTable :: ATTRIBUTE_PRESENTATION atConf
                 -> Maybe (FooterRowsConstructor acc otConf atConf dbTable otNative idAtExisting idAtCreate)
                 -> (idAtExisting -> AnySVALUE)
                 -> (idAtExisting -> AnySVALUE)
-                -> Maybe StyledTitle
+                -> Maybe WildeTitle
                 -> [Object                          otConf atConf dbTable otNative idAtExisting idAtCreate]
                 -> Presentation.Monad WildeTable
 objectListTable atListSetup Nothing leftSideContentConstructor rightSideContentConstructor mbTitle os =
@@ -199,7 +199,7 @@ objectListTable atListSetup
     footerDataAcc        = succFooterState
     footerColFun         = \state -> snd $ footerRowsForFooterState colInfos state
     mkTable              = conStandardTable mbTitle titles
-    titles               :: [StyledTitle]
+    titles               :: [WildeTitle]
     titles               = if tableIsEmpty
                            then attrColsTitle
                            else buttonColTitle : attrColsTitle ++ [buttonColTitle]
@@ -211,7 +211,7 @@ objectListTable atListSetup
     atColInfos           = map Just attributeTypes
     attrColsTitle        = map getAtTitle attributeTypes
     attributeTypes       = AttributeTypeListSetup.getAts atListSetup
-    buttonColTitle      :: StyledTitle
+    buttonColTitle      :: WildeTitle
     buttonColTitle       = wildeStyling WS.objectButtonStyle ""
     tableIsEmpty         = null os
 
@@ -239,7 +239,7 @@ objectRow' leftSideContentConstructor rightSideContentConstructor getDisplayAttr
 
 
 getAtTitle :: ATTRIBUTE_PRESENTATION atConf
-           => Any (AttributeType atConf dbTable) -> StyledTitle
+           => Any (AttributeType atConf dbTable) -> WildeTitle
 getAtTitle (Any at) = atTitle at
 
 

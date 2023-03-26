@@ -38,7 +38,7 @@ import qualified Wilde.ApplicationConstruction.Presentation.ObjectList as OL
 objectList
   :: forall otConf atConf dbTable otNative idAtExisting idAtCreate.
      ATTRIBUTE_PRESENTATION atConf
-  => Maybe StyledTitle
+  => Maybe WildeTitle
   -> AttributeTypeListSetup.Setup     otConf atConf dbTable otNative idAtExisting idAtCreate
   -> FooterConstructor                otConf atConf dbTable otNative idAtExisting idAtCreate
   -> [Object                          otConf atConf dbTable otNative idAtExisting idAtCreate -> AnySVALUE]

@@ -141,10 +141,10 @@ updateOneMain ot (Config titles displayUpdatedObjectConfig inputFormConfig updat
         page <- ServiceUtils.showOnePageService displayUpdatedObjectConfig resultPageTitle o
         pageOkResult page
 
-    firstPageTitle :: StyledTitle
+    firstPageTitle :: WildeTitle
     firstPageTitle = ServiceUtils.page1Title titles
 
-    resultPageTitle :: StyledTitle
+    resultPageTitle :: WildeTitle
     resultPageTitle = ServiceUtils.page2Title titles
 
 -- | Gives the updatable 'AttributeType's of a configuration.

@@ -88,7 +88,7 @@ ot_PrimaryKey_dbAutogen_MySql databaseTable toNative atPk@(AttributeType {}) non
 data IdNameOtConfiguration dbTable =
   IdNameOtConfiguration
   {
-    objectTypeTitle :: StyledTitle
+    objectTypeTitle :: WildeTitle
   , nameTitle       :: Title
   , maxSize         :: Int
   , inputWidth      :: Int
