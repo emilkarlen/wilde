@@ -21,6 +21,8 @@
 
   - RENAME StyledTitle -> WildeTitle
 
+  - REORG Some modules in Wilde.{WildeUi, Media}
+
 # 0.7.0.1 -- 2023-02-11
 
   - BUMP ghc v9.0.2 -> v9.2.5

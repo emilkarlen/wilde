@@ -12,26 +12,13 @@ import qualified Wilde.Render.Html.Element as HE
 
 import           Wilde.WildeUi.WildeValue
 
-import           Wilde.WildeUi.UiPrimitives
-
 import qualified Video.Ui.UiResourcesRaw as UiResourcesRaw
+import           Wilde.WildeUi.StdValueTypes (ImageValue(..))
 
 
 -------------------------------------------------------------------------------
 -- - implementation -
 -------------------------------------------------------------------------------
-
-
--------------------------------------------------------------------------------
--- - utilities -
--------------------------------------------------------------------------------
-
-
-image :: HE.URL -> ElementWithStyle
-image url = SeHtml $ HE.image `HE.withAttrs` [HA.src url]
-
-imageAnySV :: HE.URL -> AnySVALUE
-imageAnySV = AnySVALUE . image
 
 
 -------------------------------------------------------------------------------
@@ -54,3 +41,12 @@ imageCreateASV     = imageAnySV UiResourcesRaw.create
 imageCreateFromASV = imageAnySV UiResourcesRaw.create_from
 imageUpdateASV     = imageAnySV UiResourcesRaw.update
 imageDeleteASV     = imageAnySV UiResourcesRaw.delete
+
+
+-------------------------------------------------------------------------------
+-- - utilities -
+-------------------------------------------------------------------------------
+
+
+imageAnySV :: HE.URL -> AnySVALUE
+imageAnySV = AnySVALUE . ImageValue
