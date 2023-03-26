@@ -36,14 +36,14 @@ import qualified Wilde.ApplicationConstruction.Presentation.ButtonSequenceValue 
 
 
 objectList
-  :: forall object idAt.
+  :: forall object.
      WildeStyle
   -> Maybe StyledTitle
-  -> OL.ObjectTypeSetup object idAt
+  -> OL.ObjectTypeSetup object
   -> OL.FooterRowsConstructor object
-  -> [Presentation.Monad (idAt -> AnySVALUE)]
+  -> [Presentation.Monad (object -> AnySVALUE)]
   -- ^ Elements shown in the  left-most column, if non-empty
-  -> [Presentation.Monad (idAt -> AnySVALUE)]
+  -> [Presentation.Monad (object -> AnySVALUE)]
   -- ^ Elements shown in the right-most column, if non-empty
   -> Presentation.Monad [object]
   -> Presentation.Monad AnyCOMPONENT
@@ -57,23 +57,23 @@ objectList tableStyle mbTitle
     pure $ AnyCOMPONENT $ ObjectListComponent tableStyle hasLRSideActionColumn theObjectList
   where
 
-    getSideActionColsSetup :: Presentation.Monad (HasLRSideActionColumn, [idAt -> AnySVALUE])
+    getSideActionColsSetup :: Presentation.Monad (HasLRSideActionColumn, [object -> AnySVALUE])
     getSideActionColsSetup = do
       mbMkActionsLeft <- getMkSideContent getMkActionsLeft
       mbMkActionRight <- getMkSideContent getMkActionsRight
-      let listOfMkObjectAction = catMaybes [mbMkActionsLeft, mbMkActionRight] :: [idAt -> AnySVALUE]
+      let listOfMkObjectAction = catMaybes [mbMkActionsLeft, mbMkActionRight] :: [object -> AnySVALUE]
       let hasLRSideActionColumn = (isJust mbMkActionsLeft, isJust mbMkActionRight)
       pure $ (hasLRSideActionColumn, listOfMkObjectAction)
 
-    getMkSideContent :: [Presentation.Monad (idAt -> AnySVALUE)]
-                     -> Presentation.Monad (Maybe (idAt -> AnySVALUE))
+    getMkSideContent :: [Presentation.Monad (object -> AnySVALUE)]
+                     -> Presentation.Monad (Maybe (object -> AnySVALUE))
     getMkSideContent [] = pure Nothing
     getMkSideContent getMkButtons = do
       mkButtons <- sequence getMkButtons
       pure $ Just $ mkSideContent mkButtons
 
-    mkSideContent :: [idAt -> AnySVALUE] -> idAt -> AnySVALUE
-    mkSideContent mkButtons pk = BtnSeq.new $ map (\mkButton -> mkButton pk) mkButtons
+    mkSideContent :: [object -> AnySVALUE] -> object -> AnySVALUE
+    mkSideContent mkButtons o = BtnSeq.new $ map (\mkButton -> mkButton o) mkButtons
 
 
 type HasLRSideActionColumn = (Bool, Bool)

@@ -36,11 +36,11 @@ objectList
      OmPres.ATTRIBUTE_PRESENTATION atConf
   => WildeStyle
   -> Maybe StyledTitle
-  -> AttributeTypeListSetup.Setup         otConf atConf dbTable otNative idAtExisting idAtCreate
-  -> MkFooterConstructor                  otConf atConf dbTable otNative idAtExisting idAtCreate
-  -> [Presentation.Monad (idAtExisting -> AnySVALUE)]
-  -> [Presentation.Monad (idAtExisting -> AnySVALUE)]
-  -> Presentation.Monad [Object           otConf atConf dbTable otNative idAtExisting idAtCreate]
+  -> AttributeTypeListSetup.Setup  otConf atConf dbTable otNative idAtExisting idAtCreate
+  -> MkFooterConstructor           otConf atConf dbTable otNative idAtExisting idAtCreate
+  -> [Presentation.Monad (Object   otConf atConf dbTable otNative idAtExisting idAtCreate -> AnySVALUE)]
+  -> [Presentation.Monad (Object   otConf atConf dbTable otNative idAtExisting idAtCreate -> AnySVALUE)]
+  -> Presentation.Monad [Object    otConf atConf dbTable otNative idAtExisting idAtCreate]
   -> Presentation.Monad AnyCOMPONENT
 objectList
   tableStyle mbTitle atListSetup mkFooterConstructor

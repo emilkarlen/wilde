@@ -3,6 +3,9 @@
 --
 -- Functionallity for customizing an 'ObjectTypeSetup'.
 -------------------------------------------------------------------------------
+
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Wilde.ApplicationConstruction.StandardServices.Tools
        (
 
@@ -32,10 +35,13 @@ module Wilde.ApplicationConstruction.StandardServices.Tools
 -------------------------------------------------------------------------------
 
 
-import Wilde.WildeUi.TableUtils (dataCellSpaned)
-import Wilde.WildeUi.StdValueTypes (IntValue(..))
+import           Wilde.WildeUi.TableUtils (dataCellSpaned)
+import           Wilde.WildeUi.StdValueTypes (IntValue(..))
 
-import Wilde.ObjectModel.ObjectModel
+import qualified Wilde.Media.Presentation as Presentation
+import           Wilde.Media.WildeValue (AnySVALUE)
+
+import           Wilde.ObjectModel.ObjectModel as OM
 
 import qualified Wilde.ObjectModel.Presentation as OmPres
 import qualified Wilde.ObjectModel.Database as Database
@@ -46,6 +52,7 @@ import qualified Wilde.ApplicationConstruction.StandardServices as StandardServi
 import qualified Wilde.ApplicationConstruction.StandardServices.DeleteOne as DeleteOne
 import           Wilde.ApplicationConstruction.UserInteraction.Output.ObjectDependentComponent
 import qualified Wilde.ApplicationConstruction.StandardServices.UpdateOne as UpdateOne
+import           Wilde.Application.StandardServices (StandardObjectServiceEnum)
 
 
 -------------------------------------------------------------------------------
@@ -59,14 +66,16 @@ import qualified Wilde.ApplicationConstruction.StandardServices.UpdateOne as Upd
 --
 -- All but the ID attribute are updatable.
 -------------------------------------------------------------------------------
-objectTypeSetup :: (Database.DATABASE_TABLE otConf
-                   ,Database.IO_FOR_EXISTING atConf
-                   ,Database.COLUMN_NAMES atConf
-                   ,OmGsr.ATTRIBUTE_OUTPUT_FOR_EXISTING atConf
-                   )
-                => ObjectType                       otConf atConf dbTable otNative idAtExisting idAtCreate
-                -> StyledTitle
-                -> StandardServices.ObjectTypeSetup otConf atConf dbTable otNative idAtExisting idAtCreate
+objectTypeSetup
+  :: forall otConf atConf dbTable otNative idAtExisting idAtCreate.
+     (Database.DATABASE_TABLE  otConf
+     ,Database.IO_FOR_EXISTING atConf
+     ,Database.COLUMN_NAMES    atConf
+     ,OmGsr.ATTRIBUTE_OUTPUT_FOR_EXISTING atConf
+      )
+  => ObjectType                       otConf atConf dbTable otNative idAtExisting idAtCreate
+  -> StyledTitle
+  -> StandardServices.ObjectTypeSetup otConf atConf dbTable otNative idAtExisting idAtCreate
 objectTypeSetup ot titleWithStyle =
   StandardServices.ObjectTypeSetup
   {
@@ -94,9 +103,11 @@ objectTypeSetup ot titleWithStyle =
                    , OLS.getFooterRowsConstructor = numberOfObjectsFooterRow
                    }
 
-objectListButtonsSetup :: OmGsr.ATTRIBUTE_OUTPUT_FOR_EXISTING atConf
-                       => ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
-                       -> OLS.ObjectListButtonsSetup idAtExisting
+objectListButtonsSetup
+  :: forall otConf atConf dbTable otNative idAtExisting idAtCreate.
+     OmGsr.ATTRIBUTE_OUTPUT_FOR_EXISTING atConf
+  => ObjectType                 otConf atConf dbTable otNative idAtExisting idAtCreate
+  -> OLS.ObjectListButtonsSetup otConf atConf dbTable otNative idAtExisting idAtCreate
 objectListButtonsSetup ot =
   OLS.ObjectListButtonsSetup
   {
@@ -110,13 +121,22 @@ objectListButtonsSetup ot =
   , OLS.objectTypeButtonsBelow = [StandardServices.createOneLinkButton ot]
   }
   where
-    mkObjectServiceLinkButtonCons = map mkObjectServiceLinkButtonCon
+    mkObjectServiceLinkButtonCons :: [StandardObjectServiceEnum]
+                                  -> [Presentation.Monad (Object otConf atConf dbTable otNative idAtExisting idAtCreate -> AnySVALUE)]
+    mkObjectServiceLinkButtonCons = map (buttonFromIdToO . mkObjectServiceLinkButtonCon)
 
+    mkObjectServiceLinkButtonCon :: StandardObjectServiceEnum
+                                 -> Presentation.Monad (idAtExisting -> AnySVALUE)
     mkObjectServiceLinkButtonCon oServiceEnum =
       StandardServices.newObjectServiceLinkButtonConstructor
       ot
       oServiceEnum
 
+    buttonFromIdToO :: Presentation.Monad (idAtExisting  -> AnySVALUE)
+                    -> Presentation.Monad (Object otConf atConf dbTable otNative idAtExisting idAtCreate -> AnySVALUE)
+    buttonFromIdToO getMkFromId = do
+      mkFromId <- getMkFromId
+      pure $ \o -> mkFromId (OM.attrValue $ OM.oIdAttribute o)
 
 
 -------------------------------------------------------------------------------

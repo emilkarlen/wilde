@@ -12,6 +12,9 @@
 -- * Update One Object
 -- * Delete One Object
 -------------------------------------------------------------------------------
+
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Wilde.ApplicationConstruction.StandardServices
        (
          mkSetupUpdateOne, -- DEBUG
@@ -253,9 +256,11 @@ standardServices otss =
 objectTypes :: [AnyO (ObjectTypeSetup otConf atConf)] -> [AnyO (ObjectType otConf atConf)]
 objectTypes = map (anyOApply2 objectType)
 
-mkSetupShowOne :: OmGsr.ATTRIBUTE_OUTPUT_FOR_EXISTING atConf
-               => ObjectTypeSetup                 otConf atConf dbTable otNative idAtExisting idAtCreate
-               -> OtServiceOtSetup ShowOne.Config otConf atConf dbTable otNative idAtExisting idAtCreate
+mkSetupShowOne
+  :: forall otConf atConf dbTable otNative idAtExisting idAtCreate.
+     OmGsr.ATTRIBUTE_OUTPUT_FOR_EXISTING atConf
+  => ObjectTypeSetup                 otConf atConf dbTable otNative idAtExisting idAtCreate
+  -> OtServiceOtSetup ShowOne.Config otConf atConf dbTable otNative idAtExisting idAtCreate
 mkSetupShowOne ots@(ObjectTypeSetup
                     {
                       objectType          = ot
@@ -273,8 +278,10 @@ mkSetupShowOne ots@(ObjectTypeSetup
              }
     attributeTypesOrder = singleObjectAttributeTypeOrder ots
 
+    buttonConstructors :: [Presentation.Monad (idAtExisting -> AnySVALUE)]
     buttonConstructors = map mkObjectServiceLinkButtonCon services
 
+    mkObjectServiceLinkButtonCon :: StandardObjectServiceEnum -> Presentation.Monad (idAtExisting -> AnySVALUE)
     mkObjectServiceLinkButtonCon oServiceEnum =
       newObjectServiceLinkButtonConstructor ot oServiceEnum
 

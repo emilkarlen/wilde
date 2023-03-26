@@ -8,12 +8,17 @@ module Wilde.WildeUi.TableUtils
 
          cellStd,
          dataCellStd,
+         headerForColCellStd,
+         headerForRowCellStd,
 
          cellSpaned,
          dataCellSpaned,
 
          cellStyled,
          dataCellStyled,
+
+         cellOfStyling,
+         dataCellOfStyling,
 
          wildeHeaderValueTable,
          conWildeHeaderRowTable,
@@ -66,6 +71,20 @@ cellStyled type_ mandatoryStyle a =
     let style = addStyle mandatoryStyle (valueStyle a)
     in  conCell style type_ spanSingle (AnyVALUE a)
 
+cellOfStyling :: SVALUE a
+              => CellType
+              -> a
+              -> WildeCell
+cellOfStyling type_ a =
+    let style = valueStyle a
+    in  conCell style type_ spanSingle (AnyVALUE a)
+
+dataCellOfStyling
+  :: SVALUE a
+  => a          -- ^ Value.
+  -> WildeCell
+dataCellOfStyling = cellOfStyling DataCell
+
 dataCellStyled
   :: SVALUE a
   => WildeStyle -- ^ Mandatory style.
@@ -78,6 +97,10 @@ cellStd type_ x = conCell neutral type_ spanSingle $ AnyVALUE x
 
 dataCellStd :: VALUE a => a -> WildeCell
 dataCellStd = cellStd DataCell
+
+headerForColCellStd, headerForRowCellStd :: VALUE a => a -> WildeCell
+headerForColCellStd = cellStd colHeaderType
+headerForRowCellStd = cellStd rowHeaderType
 
 cellStdEmpty :: CellType -> WildeCell
 cellStdEmpty type_ = conCell neutral type_ spanSingle empty

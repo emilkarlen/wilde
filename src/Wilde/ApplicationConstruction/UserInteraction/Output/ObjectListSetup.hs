@@ -38,7 +38,7 @@ data ObjectListSetup otConf atConf dbTable otNative idAtExisting idAtCreate =
   ObjectListSetup
   {
     displaySetup :: ObjectListDisplaySetup otConf atConf dbTable otNative idAtExisting idAtCreate
-  , buttonsSetup :: ObjectListButtonsSetup                             idAtExisting
+  , buttonsSetup :: ObjectListButtonsSetup otConf atConf dbTable otNative idAtExisting idAtCreate
    }
 
 -- | Specifies the information to include in a list of 'Object's.
@@ -65,17 +65,17 @@ type GetFooterRowsConstructor acc otConf atConf dbTable otNative idAtExisting id
 --
 -- 'dbTable' and  'idAtExisting' correspond to the information in the
 -- 'ObjectType' that the list displays.
-data ObjectListButtonsSetup idAtExisting =
+data ObjectListButtonsSetup otConf atConf dbTable otNative idAtExisting idAtCreate =
   ObjectListButtonsSetup
   {
     -- | Buttons to display to the left of each 'Object' in the list.
     -- These buttons are related to the 'Object' on the current row.
     -- May be empty.
-    objectButtonsLeft      :: [Presentation.Monad (idAtExisting -> AnySVALUE)]
+    objectButtonsLeft      :: [Presentation.Monad (Object otConf atConf dbTable otNative idAtExisting idAtCreate -> AnySVALUE)]
     -- | Buttons to display to the right of each 'Object' in the list.
     -- These buttons are related to the 'Object' on the current row.
     -- May be empty.
-  , objectButtonsRight     :: [Presentation.Monad (idAtExisting -> AnySVALUE)]
+  , objectButtonsRight     :: [Presentation.Monad (Object otConf atConf dbTable otNative idAtExisting idAtCreate -> AnySVALUE)]
     -- | Buttons to display below the list.
     -- These buttons are related to the 'ObjectType' in the list.
   , objectTypeButtonsBelow :: [Presentation.Monad AnySVALUE]
