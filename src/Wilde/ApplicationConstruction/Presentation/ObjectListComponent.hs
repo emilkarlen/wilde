@@ -158,4 +158,4 @@ getActionCells (False, True) [r]   = ([], [mkActionCell r])
 getActionCells _             []    = ([], [])
 
 mkActionCell :: AnySVALUE -> WildeCell
-mkActionCell  = AbstrTbl.conCell WS.objectButtonStyle AbstrTbl.rowHeaderType AbstrTbl.spanSingle . hideStyleAny
+mkActionCell  = AbstrTbl.conCell WS.objectButtonStyle AbstrTbl.dataCellType AbstrTbl.spanSingle . hideStyleAny
