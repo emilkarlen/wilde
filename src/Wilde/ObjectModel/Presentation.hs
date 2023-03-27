@@ -73,7 +73,7 @@ showOneTable attrs =
   do
     headerValueRowList <- getHeaderValueRowList
     pure $
-      wildeHeaderValueTable
+      headerValueTable
       renderTitle
       renderValue
       WS.weAttribute
