@@ -29,11 +29,7 @@ module Wilde.WildeUi.WildeTables
          conWildeHeaderRowTable,
          conWildeHeaderRowTable2,
 
-         tableWithFooterRows,
-         tableWithFooterRowsM,
          conStandardTable,
-
-         FooterRowsSetup(..),
        )
        where
 
@@ -273,57 +269,3 @@ conStandardTable2 mbTitle columnTitles (footRows,bodyRows) =
     mbFoot = if null footRows
              then Nothing
              else Just ([],footRows)
-
-
-data FooterRowsSetup acc record =
-  FooterRowsSetup
-  {
-    frsAdd        :: acc -> record -> acc
-  , frsZero       :: acc
-  , frsRenderRows :: acc -> [[WildeCell]]
-  }
-
--- | s is the
--- type of the state that accumulates the data from which the footer data is
--- generated.  s is the accumulation of body data rows.
-tableWithFooterRows
-  :: FooterRowsSetup s record
-  -> (record -> [ElementWithStyle])
-  -- ^ Gets a row of table list body data.
-  -> (([[WildeCell]],[[ElementWithStyle]]) -> WildeTable)
-  -> [record]
-  -> WildeTable
-tableWithFooterRows (FooterRowsSetup footerDataAccumulator s0 footerDataConstructor)
-                  bodyDataRowGetter
-                  conTable
-                  records =
-  conTable (footerDataConstructor sn,reverse b)
-  where
-      conRows (bodyRows,footerState) record =
-            let nextBodyRow     = bodyDataRowGetter record
-                nextFooterState = footerDataAccumulator footerState record
-            in  (nextBodyRow : bodyRows,nextFooterState)
-      (b,sn) = foldl conRows ([],s0) records
-
--- | s is the
--- type of the state that accumulates the data from which the footer data is
--- generated.  s is the accumulation of body data rows.
-tableWithFooterRowsM
-  :: Monad m
-  => FooterRowsSetup s record
-                                  -- list rows.
-  -> (record -> m [ElementWithStyle])  -- ^ Gets a row of
-                                  -- table list body
-                                  -- data.
-  -> (([[WildeCell]],[[ElementWithStyle]]) -> WildeTable)
-  -> [record]
-  -> m WildeTable
-tableWithFooterRowsM (FooterRowsSetup footerDataAccumulator s0 footerDataConstructor)
-                  bodyDataRowGetter
-                  conTable
-                  records =
-  do
-    recordsElementWithStyleList <- mapM bodyDataRowGetter records
-    pure $ conTable (footerDataConstructor sN,recordsElementWithStyleList)
-  where
-    sN = foldl footerDataAccumulator s0 records
