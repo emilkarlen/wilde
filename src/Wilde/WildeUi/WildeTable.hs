@@ -6,8 +6,6 @@ module Wilde.WildeUi.WildeTable
   WildeRowGroup,
   WildeRow,
   WildeCell,
-
-  wildeCellFromSVALUE,
 )
 where
 
@@ -30,7 +28,3 @@ type WildeTable      = StyledTable    WildeStyle AnyVALUE
 type WildeRowGroup   = StyledRowGroup WildeStyle AnyVALUE
 type WildeRow        = StyledRow      WildeStyle AnyVALUE
 type WildeCell       = StyledCell     WildeStyle AnyVALUE
-
-wildeCellFromSVALUE :: SVALUE a => CellType -> Span -> a -> WildeCell
-wildeCellFromSVALUE cellType span svalue =
-  conCell (valueStyle svalue) cellType span (AnyVALUE svalue)

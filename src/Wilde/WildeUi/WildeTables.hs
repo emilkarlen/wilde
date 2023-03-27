@@ -1,37 +1,41 @@
--- | Experimenting with convenience functions for constructing tables.
+-- | Construction of Wilde Tables
 
--- stilarna funkar inget vidare. får kolla det sen.
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Wilde.WildeUi.WildeTables
-       (
-        CellType(..),
-        dataCellType,
-        colHeaderType,
-        rowHeaderType,
+(
+  CellType(..),
+  dataCellType,
+  colHeaderType,
+  rowHeaderType,
 
-         cellStdEmpty,
-         dataCellStdEmpty,
+  wildeCellFromSVALUE,
 
-         cellStd,
-         dataCellStd,
-         headerForColCellStd,
-         headerForRowCellStd,
+  cellStdEmpty,
+  dataCellStdEmpty,
 
-         cellSpaned,
-         dataCellSpaned,
+  cellStd,
+  dataCellStd,
+  headerForColCellStd,
+  headerForRowCellStd,
 
-         cellStyled,
-         dataCellStyled,
+  cellSpaned,
+  dataCellSpaned,
 
-         cellOfStyling,
-         dataCellOfStyling,
+  cellStyled,
+  dataCellStyled,
 
-         wildeHeaderValueTable,
-         conWildeHeaderRowTable,
-         conWildeHeaderRowTable2,
+  cellOfStyling,
+  dataCellOfStyling,
 
-         conStandardTable,
-       )
-       where
+  wildeHeaderValueTable,
+  headerValueTable,
+  conWildeHeaderRowTable,
+  conWildeHeaderRowTable2,
+
+  conStandardTable,
+)
+where
 
 
 -------------------------------------------------------------------------------
@@ -39,7 +43,7 @@ module Wilde.WildeUi.WildeTables
 -------------------------------------------------------------------------------
 
 
-import           Wilde.GenericUi.AbstractTable
+import           Wilde.GenericUi.AbstractTable as AT
 import           Wilde.GenericUi.Style
 
 import           Wilde.WildeUi.WildeValue
@@ -54,6 +58,10 @@ import           Wilde.WildeUi.WildeTable
 -- - cell -
 -------------------------------------------------------------------------------
 
+
+wildeCellFromSVALUE :: SVALUE a => CellType -> Span -> a -> WildeCell
+wildeCellFromSVALUE cellType span svalue =
+  conCell (valueStyle svalue) cellType span (AnyVALUE svalue)
 
 cellSpaned :: VALUE a => CellType -> Span -> a -> WildeCell
 cellSpaned type_ span a = conCell neutral type_ span (AnyVALUE a)
@@ -116,7 +124,6 @@ dataCellStdEmpty = cellStdEmpty DataCell
 
 
 -- | Produces a 'WildeTable' where each row is (Header,Value).
-
 wildeHeaderValueTable :: (a -> AnySVALUE)
                       -> (a -> AnySVALUE)
                       -> WildeStyle              -- ^ Row style
@@ -134,6 +141,36 @@ wildeHeaderValueTable renderHeader renderValue rowStyle (headerStyle,valueStyle)
     row r     = [ (rowHeaderType, SeValue $ renderHeader r)
                 , (dataCellType, SeValue $ renderValue r)
                 ]
+
+
+-- | Produces a 'WildeTable' where each row is (Header,Value).
+headerValueTable
+  :: forall a.
+     (a -> AnySVALUE)        -- ^ get header
+  -> (a -> AnySVALUE)        -- ^ get value
+  -> WildeStyle              -- ^ row style
+  -> (WildeStyle,WildeStyle) -- ^ (header style, value style)
+  -> [a]
+  -> WildeTable
+headerValueTable renderHeader renderValue rowStyle (headerStyle,valueStyle) rows =
+  conTable neutral Nothing Nothing $
+    conBodyRowGroup2 rowStyle tableRows
+  where
+    tableRows  :: [[WildeCell]]
+    tableRows   = map row rows
+
+    row        :: a -> [WildeCell]
+    row r       = [headerCell r, valueCell r]
+
+    headerCell :: a -> WildeCell
+    headerCell  = addStyleToSTYLING headerStyle . cellWContents
+      where
+        cellWContents = wildeCellFromSVALUE AT.rowHeaderType AT.spanSingle . renderHeader
+
+    valueCell  :: a -> WildeCell
+    valueCell   = addStyleToSTYLING valueStyle . cellWContents
+      where
+        cellWContents = wildeCellFromSVALUE AT.dataCellType  AT.spanSingle . renderValue
 
 
 -------------------------------------------------------------------------------
@@ -229,7 +266,7 @@ conBodyRowGroup rowStyle columnStyles rows =
 
 conBodyRowGroup2
   :: WildeStyle           -- ^ The style of each row.
-  -> [[WildeCell]]        -- ^ Cells
+  -> [[WildeCell]]        -- ^ Rows
   -> WildeRowGroup
 conBodyRowGroup2 rowStyle rows =
   -- conRowGroup neutral (map (ColGroup 1) columnStyles) $ map conRow' rows
