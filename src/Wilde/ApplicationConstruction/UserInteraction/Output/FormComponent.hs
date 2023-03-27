@@ -51,7 +51,7 @@ instance COMPONENT FormBlockComponent where
       styledTable     = addStyleToSTYLING WS.userInteractionTable wildeTable
       metaValuesHtml  = HE.seq $ map UIR.metaValueInput metaValues
       wildeTable     :: WT.WildeTable
-      wildeTable      = WTs.wildeHeaderValueTable
+      wildeTable      = WTs.headerValueTable
                         renderHeader
                         renderValue
                         WS.weAttribute WS.tableColumnStylesInputOne

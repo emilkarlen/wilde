@@ -17,11 +17,10 @@ import           Data.Maybe (isJust, catMaybes)
 import qualified Wilde.GenericUi.AbstractTable as AbstrTbl
 
 import           Wilde.WildeUi.StdValueTypes as SVT
-import qualified Wilde.WildeUi.WildeTables as TU
+import qualified Wilde.WildeUi.WildeTables as WTs
 
 import qualified Wilde.WildeUi.WildeStyle as WS
 import qualified Wilde.Media.Presentation as Presentation
-
 
 import qualified Wilde.Render.AbstractTableToHtml as AbstractTableToHtml
 
@@ -97,7 +96,7 @@ instance COMPONENT ObjectListComponent where
                 else nonEmptyTable hasLRSideRow
 
       tableLayouter :: TableLayouter
-      tableLayouter = TU.conWildeHeaderRowTable2 WS.multiRow (OL.listTitle config)
+      tableLayouter = WTs.conWildeHeaderRowTable2 WS.multiRow (OL.listTitle config)
 
 type TableLayouter = [WildeTitle] -> Maybe OL.FooterRows -> [[WildeCell]] -> WildeTable
 
@@ -150,7 +149,7 @@ nonEmptyTable hasLRActionsCols@(hasLeftActionsCol, hasRightActionsCol)
         attributeCells   = map mkAttributeCell attributes
 
 mkAttributeCell :: AnySVALUE -> WildeCell
-mkAttributeCell attr = wildeCellFromSVALUE AbstrTbl.dataCellType AbstrTbl.spanSingle attr
+mkAttributeCell attr = WTs.wildeCellFromSVALUE AbstrTbl.dataCellType AbstrTbl.spanSingle attr
 
 getActionCells :: HasLRSideActionColumn -> [AnySVALUE] -> ([WildeCell], [WildeCell])
 getActionCells (True, True)  [l,r] = ([mkActionCell l], [mkActionCell r])
