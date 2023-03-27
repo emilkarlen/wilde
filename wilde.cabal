@@ -101,6 +101,7 @@ Library
     Wilde.ApplicationConstruction.UserInteraction.Output.ObjectDependentComponent
     Wilde.ApplicationConstruction.UserInteraction.Output.AttributeTypesListFooter
     Wilde.ApplicationConstruction.UserInteraction.Output.StandardFilterExpression
+    Wilde.ApplicationConstruction.UserInteraction.Output.FormComponent
     Wilde.ApplicationConstruction.UserInteraction.Widgets
     Wilde.ApplicationConstruction.Service.ObjectTypeServiceUtils
     Wilde.ApplicationConstruction.Service.ServiceTools

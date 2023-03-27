@@ -37,8 +37,6 @@ import qualified Wilde.Media.MonadWithInputMedia as MIIA
 import qualified Wilde.Media.ElementSet as ElementSet
 import           Wilde.Media.UserInteraction
 
-import           Wilde.Render.UserInteractionRendering
-
 import           Wilde.Service.ServiceLink
 import qualified Wilde.Application.Service.PopUp as PopUp
 import           Wilde.Application.Service.Service
@@ -47,6 +45,8 @@ import           Wilde.ApplicationConstruction.Service.ServiceTools
 import qualified Wilde.Application.Service.Result as Result
 
 import           Wilde.WildeUi.UiPrimitives (WildeTitle)
+
+import qualified Wilde.ApplicationConstruction.UserInteraction.Output.FormComponent as FormComponent
 
 
 -------------------------------------------------------------------------------
@@ -138,46 +138,49 @@ stepService (StepService {
   do
     stepIdx <- getStepIdx
     when (stepIdx > lastStepIdx) (throwInvalidStep "step too large")
-    if (stepIdx == lastStepIdx)
+    if stepIdx == lastStepIdx
       then lastStep'
-      else
-        do
-          let step = nonLastSteps' !! stepIdx
-          result <- step
-          case result of
-            Halt     (Left page) -> pageOkResult page
-            Halt     (Right msg) -> popupOkResult (Result.informationPopup msg Nothing)
-            Continue nextStep content -> do
-              nextStepIdx <- getNextStepIdx stepIdx nextStep
-              serviceForNextStep content nextStepIdx
-     where
+      else nonLastStep stepIdx
 
-       lastStepIdx :: Int
-       lastStepIdx = length nonLastSteps'
+  where
 
-       serviceForNextStep :: PageContent -> Int -> Service
-       serviceForNextStep (Left  x) nextStepIdx = continueWithFormBlocks mainTitle' x nextStepIdx
-       serviceForNextStep (Right x) nextStepIdx = askIfContinueWithMsg   mainTitle' x nextStepIdx
+    nonLastStep :: Int -> Service
+    nonLastStep stepIdx = do
+      let step = nonLastSteps' !! stepIdx
+      result <- step
+      case result of
+        Halt     (Left page) -> pageOkResult page
+        Halt     (Right msg) -> popupOkResult (Result.informationPopup msg Nothing)
+        Continue nextStep content -> do
+          nextStepIdx <- getNextStepIdx stepIdx nextStep
+          serviceForNextStep content nextStepIdx
 
-       getNextStepIdx :: Int -> StepReference -> ServiceMonad Int
-       getNextStepIdx currentStepIdx LastStep    = pure lastStepIdx
-       getNextStepIdx currentStepIdx Following   = pureOrThrowIfInvalid (currentStepIdx + 1)
-       getNextStepIdx currentStepIdx (Indexed n) = pureOrThrowIfInvalid (n + 1)
+    lastStepIdx :: Int
+    lastStepIdx = length nonLastSteps'
 
-       pureOrThrowIfInvalid :: Int -> ServiceMonad Int
-       pureOrThrowIfInvalid n = do
-         when (n > lastStepIdx) (throwInvalidStep $ "step too large: " ++ show n)
-         pure n
+    serviceForNextStep :: PageContent -> Int -> Service
+    serviceForNextStep (Left  x) nextStepIdx = continueWithFormBlocks mainTitle' x nextStepIdx
+    serviceForNextStep (Right x) nextStepIdx = askIfContinueWithMsg   mainTitle' x nextStepIdx
 
-       throwInvalidStep :: String -> ServiceMonad a
-       throwInvalidStep msg = throwErr $ ValueValue "step" msg
+    getNextStepIdx :: Int -> StepReference -> ServiceMonad Int
+    getNextStepIdx currentStepIdx LastStep    = pure lastStepIdx
+    getNextStepIdx currentStepIdx Following   = pureOrThrowIfInvalid (currentStepIdx + 1)
+    getNextStepIdx currentStepIdx (Indexed n) = pureOrThrowIfInvalid (n + 1)
+
+    pureOrThrowIfInvalid :: Int -> ServiceMonad Int
+    pureOrThrowIfInvalid n = do
+      when (n > lastStepIdx) (throwInvalidStep $ "step too large: " ++ show n)
+      pure n
+
+    throwInvalidStep :: String -> ServiceMonad a
+    throwInvalidStep msg = throwErr $ ValueValue "step" msg
 
 continueWithFormBlocks :: WildeTitle -> ContinueInfo -> Int -> Service
 continueWithFormBlocks presSpec formBlocksAndMetas nextStepIdx =
   do
     let formBlocksAndMetas' = setNextStep formBlocksAndMetas
     form      <- formForCurrentService formBlocksAndMetas' []
-    component <- toServiceMonad $ formComponent form
+    component <- toServiceMonad $ FormComponent.getFormComponent form
     pageOkResult (presSpec,[component])
     where
       setNextStep formBlocksAndMetas = fbamAppendMetas formBlocksAndMetas [nextStepMeta]

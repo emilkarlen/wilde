@@ -12,17 +12,16 @@ module Wilde.Utils.Debug
 -------------------------------------------------------------------------------
 
 
-import Wilde.WildeUi.WildeStyleType
+import           Wilde.WildeUi.WildeStyleType
 
-import Wilde.Media.UserInteraction
+import           Wilde.Media.UserInteraction
 
-import Wilde.Render.UserInteractionRendering ( formComponent )
-
-import Wilde.ApplicationConstruction.Service.ServiceTools
+import           Wilde.ApplicationConstruction.Service.ServiceTools
+import qualified Wilde.ApplicationConstruction.UserInteraction.Output.FormComponent as FormComponent
 
 import qualified Wilde.WildeUi.StdValueTypes as StdValueTypes
 
-import Wilde.Application.Service.Service
+import           Wilde.Application.Service.Service
 
 
 -------------------------------------------------------------------------------
@@ -35,14 +34,14 @@ debugFormBlock :: [(String,String)] -> FormBlock
 debugFormBlock debugInfos = FormBlock (map mkDisplay debugInfos) []
   where
     ek = globalElementKey "ek"
-    mkDisplay = \(title,info) -> presentationOutputFormBlockRow (title,
-                                                                 StdValueTypes.unquotedStringSvalue info)
+    mkDisplay (title,info) =
+      presentationOutputFormBlockRow (title, StdValueTypes.unquotedStringSvalue info)
 
 -- | A 'Service' that displays a given string.
 debugService :: [(String,String)] -> Service
 debugService debugInfos =
    do
-    component <- toServiceMonad $ formComponent form
+    component <- toServiceMonad $ FormComponent.getFormComponent form
     pageOkResult (withNeutralWildeStyle "Debug",
                   [component])
   where
