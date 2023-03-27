@@ -14,10 +14,6 @@ module Wilde.WildeUi.UiPrimitives
   Title,
   WildeTitle,
   neutralTitle,
-
-  -- * Styled elements
-
-  ElementWithStyle(..),
 )
 where
 
@@ -28,9 +24,6 @@ where
 
 
 import           Wilde.Utils.Empty
-
-import           Wilde.Render.Html.Types
-import qualified Wilde.Render.Html.Element as HE
 
 import           Wilde.GenericUi.Component
 import           Wilde.GenericUi.Style
@@ -55,26 +48,3 @@ type WildeTitle = WildeStyling Title
 
 neutralTitle :: Title -> WildeTitle
 neutralTitle = withNeutralWildeStyle
-
-
--------------------------------------------------------------------------------
--- - ElementWithStyle -
--------------------------------------------------------------------------------
-
-
--- | An UI element with style - primarily for table cells.
---
--- TODO: Replace SeHtml with something representation independent.
-data ElementWithStyle = SeValue AnySVALUE
-                      | SeHtml  Html
-
-instance VALUE ElementWithStyle where
-    valueHtml (SeValue (AnySVALUE x)) = valueHtml x
-    valueHtml (SeHtml  html)          = html
-
-instance SVALUE ElementWithStyle where
-    valueStyle (SeValue (AnySVALUE x)) = valueStyle x
-    valueStyle (SeHtml _)              = neutral
-
-instance EMPTY ElementWithStyle where
-    empty = SeHtml HE.empty
