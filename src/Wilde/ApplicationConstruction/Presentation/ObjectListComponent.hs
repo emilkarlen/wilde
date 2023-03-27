@@ -96,7 +96,7 @@ instance COMPONENT ObjectListComponent where
                 else nonEmptyTable hasLRSideRow
 
       tableLayouter :: TableLayouter
-      tableLayouter = WTs.conWildeHeaderRowTable2 WS.multiRow (OL.listTitle config)
+      tableLayouter = WTs.headerRowTable WS.multiRow (OL.listTitle config)
 
 type TableLayouter = [WildeTitle] -> Maybe OL.FooterRows -> [[WildeCell]] -> WildeTable
 
