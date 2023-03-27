@@ -17,8 +17,6 @@ module Wilde.WildeUi.LayoutComponents
 -------------------------------------------------------------------------------
 
 
-import Data.List
-
 import qualified Wilde.Render.Html.Element as HE
 
 import Wilde.WildeUi.UiPrimitives
@@ -42,7 +40,7 @@ verticalComponents xs = AnyCOMPONENT $ Vertical xs
 newtype Vertical a = Vertical [a]
 
 instance COMPONENT a => COMPONENT (Vertical a) where
-    componentHtml (Vertical xs) = HE.seq $ intersperse HE.br $ map componentHtml xs
+    componentHtml (Vertical xs) = HE.seq $ map componentHtml xs
 
 
 -------------------------------------------------------------------------------
