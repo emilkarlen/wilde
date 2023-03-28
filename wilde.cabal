@@ -74,6 +74,7 @@ Library
     Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectList
     Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectListComponent
     Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectListFooters
+    Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectComponent
 
     Wilde.ApplicationConstruction.Database.DatabaseUtils
     Wilde.ApplicationConstruction.Database.AttributeTypeDatabaseInfo
@@ -145,7 +146,6 @@ Library
     Wilde.Database.SqlMisc
     Wilde.Database.DmlRenderer
 
-    Wilde.WildeUi.WildeComponent
     Wilde.WildeUi.LayoutValues
     Wilde.WildeUi.LayoutComponents
     Wilde.WildeUi.WildeTables
