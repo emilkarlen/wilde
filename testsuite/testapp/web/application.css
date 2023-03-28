@@ -1,16 +1,14 @@
-/*****************************************************************************/
-/* - application styles -*/
-/*****************************************************************************/
-
-
-.simple_datatypes {
+._rT.simple_datatypes
+{
   background-color : blue;
 }
 
-/* .reference {
+._rT.reference
+{
   background-color : red;
-} */
+}
 
-.auto_inc {
+._rT.auto_inc
+{
   background-color : green;
 }
