@@ -37,7 +37,7 @@ module Wilde.ApplicationConstruction.Service.ServiceUtils
 -------------------------------------------------------------------------------
 
 
-import Data.Either
+import           Data.Either
 
 import qualified Data.List.NonEmpty as NonEmpty
 
@@ -49,10 +49,9 @@ import qualified Wilde.Media.Presentation as Presentation
 import           Wilde.Media.UserInteraction.Io as UiIo
 import qualified Wilde.Media.UserInteraction.Input as UiI
 
-import Wilde.ObjectModel.ObjectModelUtils
+import           Wilde.ObjectModel.ObjectModelUtils
 import qualified Wilde.ObjectModel.AttributeTypeListSetup.SansAnnotation as AttributeTypeListSetup
-
-import Wilde.ObjectModel.UserInteraction
+import           Wilde.ObjectModel.UserInteraction
 
 import qualified Wilde.ObjectModel.Database.Execution.SelectWithPresentationInfo as InputWithPresentation
 import qualified Wilde.ObjectModel.Database.Execution.Delete as DbExDelete
@@ -65,11 +64,11 @@ import qualified Wilde.ObjectModel.UserInteraction.Input.ForCreate   as InputFor
 import qualified Wilde.ObjectModel.UserInteraction.Input.ForExisting as InputForExisting
 import qualified Wilde.ObjectModel.Presentation as Presentation
 
-import qualified Wilde.ObjectModel.Presentation as OmPres
-
-import Wilde.Service.Monad as Service
-import Wilde.Application.Service.Result
+import           Wilde.Service.Monad as Service
+import           Wilde.Application.Service.Result
 import           Wilde.WildeUi.UiPrimitives
+
+import qualified Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectComponent as ObjComp
 
 
 -------------------------------------------------------------------------------
@@ -113,7 +112,7 @@ showOneComponent attributeTypesOrder o =
     atListSetup <- Presentation.toPresentationMonad $
                    AttributeTypeListSetup.mkGeneral (oType o) attributeTypesOrder
     let getAttrs = AttributeTypeListSetup.apply atListSetup
-    OmPres.showOneComponent getAttrs o
+    ObjComp.getShowOneComponent getAttrs o
 
 showOnePage :: Presentation.ATTRIBUTE_PRESENTATION atConf
             => [Any (AttributeType atConf dbTable)]
