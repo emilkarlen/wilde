@@ -12,16 +12,6 @@ BODY
 * - messages -
 ******************************************************************************/
 
-DIV._cPg._rT._error
-{
-  background-color  : gray;
-  border-width      : thick;
-  border-style      : solid;
-  border-color      : 600000;
-  text-align        : left;
-  font-style        : italic;
-}
-
 /* .error_explanation */
 /* { */
 /*   color             : red; */
@@ -66,10 +56,9 @@ DIV._cPg._rT._error
   text-decoration   : none;
 }
 
-TABLE > TBODY TD._rA
+TD._rA
 {
-  background-color  : #A0A0A0;
-  /* background-color  : purple; */
+  background-color  : #A0A0A0; /* purple; */
   border-color      : #A0A0A0;
   text-align        : center;
 }
@@ -137,27 +126,78 @@ A._btn._img
 
 
 /******************************************************************************
+* - titles -
+******************************************************************************/
+
+
+._cPg._rT
+{
+  background-color  : #7D89AC; /* DEBUG yellow */
+  margin-bottom     : 20px;
+  border-radius     : 0.2em;
+  border-style      : none;
+  padding           : 10px;
+  text-align        : center;
+  font-size         : 200%;
+  font-weight       : bold;
+  font-variant      : small-caps;
+}
+
+._cPg._rT._error
+{
+  background-color  : gray;
+  border-width      : thick;
+  border-style      : solid;
+  border-color      : 600000;
+  text-align        : left;
+  font-style        : italic;
+}
+
+._cPg._error._rT
+{
+  background-color  : gray;
+  border-width      : thick;
+  border-style      : solid;
+  border-color      : red;
+  text-align        : left;
+  font-style        : italic;
+}
+
+._weA._rT,
+._weA > ._rT
+{
+  background-color  : #ccccff; /* DEBUG cyan; */
+  text-align        : left;
+  font-weight       : bold;
+  font-style        : italic;
+}
+
+
+._rl_dependent_component TH._cC._rT {
+  text-align        : center;
+  font-style        : italic;
+}
+
+
+/******************************************************************************
 * - TABLE -
 ******************************************************************************/
 
 
-TABLE
+TABLE._cC
 {
   border-collapse   : collapse;
-  border-color      : #202020;
-  border-width      : 2pt;
+  border-color      : black; /* DEBUG orange; */
+  border-width      : 2px;
   border-style      : solid;
 }
 
-TABLE._form
+TABLE._cC._uI TD
 {
-  padding           : 10pt;
-  border-color      : #000000;
-  border-width      : thin;
-  border-style      : none; /* groove; */
+  padding           : 0.1em;
 }
 
-TABLE._weO._m1
+TABLE._cC._weO._m1
 {
   border-width      : medium;
 }
@@ -171,8 +211,7 @@ TABLE._weO._m1
 TABLE._weO._mN._uP > THEAD
 {
   color             : #000000;
-  background-color  : #ccccff;
-  /* background-color  : cyan; */
+  background-color  : #ccccff; /* DEBUG green; */
   font-weight       : bold;
   font-style        : italic;
 }
@@ -180,7 +219,6 @@ TABLE._weO._mN._uP > THEAD
 TABLE._weO._mN._uP > TFOOT._summary
 {
   background-color  : #C3C4C3;
-  border-color      : #C3C4C3;
   font-weight       : bold;
 }
 
@@ -208,37 +246,26 @@ TABLE._form > TR > TD {
   border-style      : none;
 }
 
-._rl_dependent_component TH._cC._rT {
-  font-style        : italic;
-}
-
 
 /* object sequences : even/odd rows. */
 
 
 TBODY > TR._weO:nth-child(even)
 {
-  background-color  : #F3F3F3;
+  background-color  : white;
 }
 
 TBODY > TR._weO:nth-child(odd)
 {
-  background-color  : #EEEEEE;
+  background-color  : #F0F0F0;
 }
 
 /* object sequences : hover. */
 
 TBODY > TR._weO:hover
 {
-  /* background-color  : #404040; */
-  background-color     : black;
-  color                : white;
+  background-color     : #e0e0e0;
 }
-
-/* ._summary TD
-{
-  border-color      : #B3B4B3;
-} */
 
 ._summary ._comment
 {
@@ -253,31 +280,6 @@ TBODY > TR._weO:hover
 ******************************************************************************/
 
 
-DIV._cPg._rT
-{
-  /* color             : #000000; */
-  /* background-color  : #7D89AC; */
-  margin-bottom     : 20px;
-  border-radius     : 0.2em;
-  border-style      : none;
-  padding           : 10px;
-  text-align        : center;
-  font-size         : 200%;
-  font-weight       : bold;
-  font-variant      : small-caps;
-}
-
-._cPg._error DIV._cPg._rT
-{
-  border-radius     : 0;
-  background-color  : gray;
-  border-width      : medium;
-  border-style      : solid;
-  border-color      : red;
-  text-align        : left;
-  font-style        : italic;
-}
-
 DIV._cC._cPg
 {
   margin        : auto;
@@ -287,7 +289,7 @@ DIV._cC._cPg
 
 DIV._cC._rA
 {
-  background-color: inherit;
+  background-color: inherit; /* DEBUG blue; */
   margin-top    : 0.3em;
   font-weight   : bold;
   text-align    : center;
@@ -311,23 +313,15 @@ PRE
 ******************************************************************************/
 
 
-._uP
+/* ._uP
 {
   text-align        : left;
 }
-
-._mN TH._rT
-{
-  /* color             : #000000; */
-  /* background-color  : #ccccff; */
-  font-weight       : bold;
-  font-style        : italic;
-}
+ */
 
 ._rV._uI
 {
-  color             : #000000;
-  background-color  : #cccccc;
+  background-color  : #cccccc; /* DEBUG black; */
 }
 
 ._rV._uP
@@ -343,23 +337,8 @@ PRE
   Note: If the Value becomes difficult to read, the text style may need to be
   adjusted.
 */
-._cC._uI ._rV._uP
-{
-  color             : #000000;
-  background-color  : #cccccc;
-  border-style      : none;
-}
 
-IMG
+ IMG
 {
   border: 0px;
-}
-
-HR
-{
-  color             : #000000;
-  background-color  : #cccccc;
-  width             : 600px;
-  border            : 0px;
-  height            : 1px;
 }
