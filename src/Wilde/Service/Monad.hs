@@ -1,8 +1,3 @@
-{-# LANGUAGE Rank2Types #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE OverloadedStrings #-}
-
 -------------------------------------------------------------------------------
 -- | Definition of \"service\".
 --
@@ -19,40 +14,45 @@
 --
 -- TODO This module is too big.
 -------------------------------------------------------------------------------
+
+{-# LANGUAGE Rank2Types #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE OverloadedStrings #-}
+
 module Wilde.Service.Monad
-       (
-         module MIIA,
+(
+  module MIIA,
 
-         -- * The service monad
+  -- * The service monad
 
-         ServiceMonad,
-         runService,
+  ServiceMonad,
+  runService,
 
-         withFinally,
+  withFinally,
 
-         ToServiceMonad(..),
-         toServiceMonad_wDefaultDbConn,
+  ToServiceMonad(..),
+  toServiceMonad_wDefaultDbConn,
 
-         -- ** Environment
+  -- ** Environment
 
-         ServiceEnvironment(envCurrentService, envCustomEnvironment, envMedia, envOutputing),
-         newEnvironment,
-         getEnv,
-         getEnvs,
+  ServiceEnvironment(envCurrentService, envCustomEnvironment, envMedia, envOutputing),
+  newEnvironment,
+  getEnv,
+  getEnvs,
 
-         -- ** Errors
+  -- ** Errors
 
-         ServiceError(..),
-         InvocationError(..),
-         ToServiceError(..),
-         throwErr,
-         catchErr,
+  ServiceError(..),
+  InvocationError(..),
+  ToServiceError(..),
+  throwErr,
+  catchErr,
 
-         -- * Logging
-         Logging.MonadWithLogging(..),
-
-       )
-       where
+  -- * Logging
+  Logging.MonadWithLogging(..),
+)
+where
 
 
 -------------------------------------------------------------------------------
@@ -60,16 +60,15 @@ module Wilde.Service.Monad
 -------------------------------------------------------------------------------
 
 
-import Control.Monad.Trans
-import Control.Monad.Trans.Except
-import Control.Monad.Trans.Reader
-    ( ReaderT(runReaderT), ask, asks )
-
+import           Control.Monad.Trans
+import           Control.Monad.Trans.Except
+import           Control.Monad.Trans.Reader ( ReaderT(runReaderT), ask, asks )
 
 import qualified Data.Map as Map
 import           Data.Text
 import qualified Data.String as String
-import Database.HDBC as HDBC
+
+import           Database.HDBC as HDBC
 
 import qualified Wilde.Utils.ExceptReaderT as ExceptReaderT
 import qualified Wilde.Utils.Logging.Class as Logger
@@ -83,11 +82,9 @@ import qualified Wilde.Media.UserInteraction.Input as UiI
 import qualified Wilde.Media.Database.Monad as DbConn
 import qualified Wilde.Media.Presentation as Presentation
 
-import Wilde.Service.ServiceLink
-
+import           Wilde.Service.ServiceLink
 import qualified Wilde.Service.SingleDbConnectionHandler as SingleDbConnectionHandler
-
-import Wilde.Service.Error
+import           Wilde.Service.Error
 
 
 -------------------------------------------------------------------------------
@@ -116,6 +113,7 @@ catchErr m handler =
 -------------------------------------------------------------------------------
 -- - Environment -
 -------------------------------------------------------------------------------
+
 
 -- | Media for inputing an attribute FROM the User Interaction.
 --
@@ -178,18 +176,28 @@ runService :: ServiceEnvironment
            -> IO (Either ServiceError a)
 runService envWMkNewDbConnOnEveryInvokation (ServiceMonad m) =
   do
-    let srvcHdrStr = toLogStr $ envCurrentService envWMkNewDbConnOnEveryInvokation
-    let logger = envLogger envWMkNewDbConnOnEveryInvokation
-    Logger.register logger (Logger.LIBRARY, srvcHdrStr <> " BEGIN", Nothing)
+    doLog $ srvcHdrStr <> " BEGIN"
+
     (envWDbConnHandling, doDbConnCleanup) <- dbEnvWithSingleDbConnHandling
-    res <- runReaderT (runExceptT m) envWDbConnHandling
+    res       <- runReaderT (runExceptT m) envWDbConnHandling
     reporting <- doDbConnCleanup
-    let dbConnHandlingMsg = "Db connection handling: " <> String.fromString reporting
-    Logger.register logger (Logger.LIBRARY, dbConnHandlingMsg, Nothing)
-    Logger.register logger (Logger.LIBRARY, srvcHdrStr <> " END", Nothing)
+
+    doLog $ dbConnHandlingMsg reporting
+    doLog $ srvcHdrStr <> " END"
+
     pure res
 
   where
+    doLog    :: Text -> IO ()
+    doLog msg = Logger.register logger (Logger.LIBRARY, msg, Nothing)
+
+    srvcHdrStr = toLogStr $ envCurrentService envWMkNewDbConnOnEveryInvokation
+
+    logger = envLogger envWMkNewDbConnOnEveryInvokation
+
+    dbConnHandlingMsg :: String -> Text
+    dbConnHandlingMsg reporting = "Db connection handling: " <> String.fromString reporting
+
     dbEnvWithSingleDbConnHandling :: IO (ServiceEnvironment, IO String)
     dbEnvWithSingleDbConnHandling = do
       let confWMkNewDbConnOnEveryInvokation = envDbConfiguration envWMkNewDbConnOnEveryInvokation
@@ -237,6 +245,7 @@ getEnvs = ServiceMonad . lift . asks
 withEnv :: (ServiceEnvironment -> ServiceEnvironment) -> ServiceMonad a -> ServiceMonad a
 withEnv modifyEnv (ServiceMonad m) = ServiceMonad $ ExceptReaderT.withEnv modifyEnv m
 
+
 -------------------------------------------------------------------------------
 -- - instances of "monad interfaces" -
 -------------------------------------------------------------------------------
@@ -281,6 +290,7 @@ throwElementLookupError err = throwErr $ UiMediaLookupError err
 -------------------------------------------------------------------------------
 -- - instances of ToServiceMonad -
 -------------------------------------------------------------------------------
+
 
 -- | Class for translating values to 'ServiceMonad' values.
 --
