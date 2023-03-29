@@ -8,7 +8,7 @@ module Wilde.ApplicationConstruction.ObjectModel.AttributeType
          module Database.HDBC.Types,
          module Database.HDBC.ColTypes,
 
-         module Wilde.WildeUi.WildeStyleType,
+         module Wilde.WildeUi.WildeStyle,
          module Wilde.ObjectModel.ObjectModel,
 
          module Wilde.WildeUi.WildeValue,
@@ -148,7 +148,7 @@ import           Wilde.Database.SqlDdlInfo
 
 import           Wilde.WildeUi.WildeValue
 import           Wilde.WildeUi.UiPrimitives (Title, WildeTitle)
-import           Wilde.WildeUi.WildeStyleType
+import           Wilde.WildeUi.WildeStyle
 import           Wilde.WildeUi.StdValueTypes
 
 import           Wilde.Media.GenericStringRep

@@ -152,9 +152,9 @@ Library
     Wilde.WildeUi.UiPrimitives
     Wilde.WildeUi.StdValueTypes
     Wilde.WildeUi.StdValues
-    Wilde.WildeUi.WildeStyleType
-    Wilde.WildeUi.WildeValue
     Wilde.WildeUi.WildeStyle
+    Wilde.WildeUi.WildeValue
+    Wilde.WildeUi.WildeStyles
     Wilde.WildeUi.WildeTable
 
     Wilde.Media.Translations

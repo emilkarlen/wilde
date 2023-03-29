@@ -35,7 +35,7 @@ import qualified Wilde.Database.SqlJoin as Sql
 
 import qualified Wilde.Render.ServiceLink as RenderServiceLink
 
-import           Wilde.WildeUi.WildeStyle as WS
+import           Wilde.WildeUi.WildeStyles as WS
 import           Wilde.WildeUi.UiPrimitives (WildeTitle)
 
 import qualified Wilde.Media.Presentation as Presentation

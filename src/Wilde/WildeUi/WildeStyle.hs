@@ -1,5 +1,28 @@
--- | The \"standard\" styles used by Wilde.
-module Wilde.WildeUi.WildeStyle where
+module Wilde.WildeUi.WildeStyle
+       (
+         module Wilde.GenericUi.Style,
+
+         WildeStyle (..),
+         ClassName,
+
+         WildeStyling(..),
+
+         singleClassStyle,
+
+         wildeStyling,
+
+         wildeStyle,
+         wildeStyled,
+
+         withWildeStyle,
+         withNeutralWildeStyle,
+
+         withAdjustedStyled,
+         withAdjustedStyle,
+
+         wildeClassStyle,
+       )
+       where
 
 
 -------------------------------------------------------------------------------
@@ -7,7 +30,9 @@ module Wilde.WildeUi.WildeStyle where
 -------------------------------------------------------------------------------
 
 
-import Wilde.WildeUi.WildeStyleType
+import Wilde.GenericUi.Style
+import Wilde.Render.StyleForHtml
+import Wilde.Utils.TextHtmlUtils
 
 
 -------------------------------------------------------------------------------
@@ -15,138 +40,63 @@ import Wilde.WildeUi.WildeStyleType
 -------------------------------------------------------------------------------
 
 
-helpClass,varnameClass,varFormatClass :: ClassName
-helpClass      = "_help"
-varnameClass   = "_varname"
-varFormatClass = "_varformat"
+-- | Type of individual "class" style values.
+-- For HTML, a "class" is a "CSS class".
+type ClassName = String
 
--- Wilde Elements
-weObjectClass,weAttributeClass :: ClassName
-weObjectClass    = "_weO"
-weAttributeClass = "_weA"
+-- | The style representation used by Wilde.
+newtype WildeStyle = WildeStyle
+  {
+    getClasses :: [ClassName]
+  }
+  deriving (Eq,Show)
 
-weObject,weAttribute :: WildeStyle
-weObject    = WildeStyle [weObjectClass]
-weAttribute = WildeStyle [weAttributeClass]
+singleClassStyle :: ClassName -> WildeStyle
+singleClassStyle x = WildeStyle [x]
 
--- | Component classes.
-pageClass,componentClass :: ClassName
-pageClass      = "_cPg" -- "Page" class.
-componentClass = "_cC"  -- "Component" class.
+-- | A 'Styling' with 'WildeStyle'.
+newtype WildeStyling a = WildeStyling (Styling WildeStyle a)
 
-subObjectListClass :: ClassName
-subObjectListClass = "_rl_dependent_component"
+wildeStyling :: WildeStyle -> a -> WildeStyling a
+wildeStyling style val = WildeStyling (Styling style val)
 
--- UI type of output
-presentationClass,inputClass :: ClassName
-presentationClass = "_uP"
-inputClass        = "_uI"
+wildeStyle  :: WildeStyling a -> WildeStyle
+wildeStyle (WildeStyling styling) = sStyle styling
 
--- | Multiplicity classes.
-singleClass,multiClass :: ClassName
-singleClass       = "_m1"
-multiClass        = "_mN"
-multiEmptyClass   = "_mN0"
+wildeStyled :: WildeStyling a -> a
+wildeStyled (WildeStyling styling) = sStyled styling
 
--- | Role classes.
-titleClass,labelClass,valueClass,actionsClass, sumClass :: ClassName
-titleClass        = "_rT" -- ^ title of page, component
-labelClass        = "_rL" -- ^ label of field
-valueClass        = "_rV"
-actionsClass      = "_rA"
-sumClass          = "_summary"
-commentClass      = "_comment"
+withWildeStyle :: WildeStyle -> a -> WildeStyling a
+withWildeStyle ws x = WildeStyling $ Styling ws x
 
-commentStyle :: WildeStyle
-commentStyle = WildeStyle [commentClass]
+withAdjustedStyled :: WildeStyling a
+                   -> (a -> a)
+                   -> WildeStyling a
+withAdjustedStyled (WildeStyling styling) f =
+  WildeStyling (setStyled adjustedStyled styling)
+  where
+    adjustedStyled = f $ getStyled styling
 
+withAdjustedStyle :: WildeStyling a
+                  -> (WildeStyle -> WildeStyle)
+                  -> WildeStyling a
+withAdjustedStyle (WildeStyling styling) f = WildeStyling $ mapStyle f styling
 
-buttonClass, imageClass,textClass :: ClassName
-buttonClass = "_btn"
-imageClass  = "_img"
-textClass   = "_txt"
+-- | Turns a 'VALUE' into a 'SVALUE' without style.
+withNeutralWildeStyle :: a -> WildeStyling a
+withNeutralWildeStyle = WildeStyling . Styling neutral
 
-referenceAttribute :: ClassName
-referenceAttribute = "_refattr"
+instance Semigroup WildeStyle where
+    (WildeStyle xs) <> (WildeStyle ys) = WildeStyle (xs <> ys)
 
-errorClass :: ClassName
-errorClass = "_error"
+instance Monoid WildeStyle where
+    mempty = WildeStyle []
 
-errorStyle :: WildeStyle
-errorStyle = WildeStyle [errorClass]
+instance STYLE WildeStyle where
 
-imageButtonStyle,textButtonStyle :: WildeStyle
-imageButtonStyle = wildeClassStyle [buttonClass, imageClass]
-textButtonStyle  = wildeClassStyle [buttonClass, textClass]
+instance STYLE_FOR_HTML WildeStyle where
+    applyStyleToHtml (WildeStyle classes) = withclasses classes
 
-referenceAttributeStyle :: WildeStyle
-referenceAttributeStyle = WildeStyle [referenceAttribute]
-
-objectButtonStyle :: WildeStyle
-objectButtonStyle = WildeStyle [actionsClass]
-
-tableListBodyRowGroup :: WildeStyle
-tableListBodyRowGroup = WildeStyle [valueClass]
-
-presentationTableMulti :: WildeStyle
-presentationTableMulti = WildeStyle (weObjectClass : componentClass : presMultiClasses)
-
-presentationTableSingle :: WildeStyle
-presentationTableSingle = WildeStyle (weObjectClass : componentClass : presSingleClasses)
-
-userInteractionTable :: WildeStyle
-userInteractionTable = WildeStyle (weObjectClass : componentClass : inputSingleClasses)
-
-multiColumnTitle :: WildeStyle
-multiColumnTitle = WildeStyle [titleClass]
-
-attributeTitle :: WildeStyle
-attributeTitle = WildeStyle [weAttributeClass,titleClass]
-
-multiRow :: WildeStyle
-multiRow = WildeStyle [weObjectClass]
-
-pageTitleClasses,componentTitleClasses :: [ClassName]
-pageTitleClasses      = [pageClass,titleClass]
-componentTitleClasses = [componentClass,titleClass]
-
-pageTopLevelComponentClasses :: [ClassName]
-pageTopLevelComponentClasses = [pageClass, componentClass]
--- pageTopLevelComponentClasses = ["_develop__top_level_component"]
-
-pageTitle,componentTitle :: WildeStyle
-pageTitle      = WildeStyle pageTitleClasses
-componentTitle = WildeStyle componentTitleClasses
-
-actionsComponentClasses :: [ClassName]
-actionsComponentClasses = [componentClass, actionsClass]
-
-presMultiClasses,presMultiValueClasses,presMultiLabelClasses :: [ClassName]
-presMultiClasses      = [presentationClass,multiClass]
-presMultiValueClasses = valueClass : presMultiClasses
-presMultiLabelClasses = titleClass : presMultiClasses
-
-presSingleClasses,presSingleValueClasses,presSingleLabelClasses :: [ClassName]
-presSingleClasses      = [presentationClass,singleClass]
-presSingleValueClasses = valueClass : presSingleClasses
-presSingleLabelClasses = titleClass : presSingleClasses
-
-presMultiValueStyle,presMultiLabelStyle :: WildeStyle
-presMultiValueStyle = WildeStyle presMultiValueClasses
-presMultiLabelStyle = WildeStyle presMultiLabelClasses
-
-inputSingleClasses,inputSingleValueClasses,inputSingleLabelClasses :: [ClassName]
-inputSingleClasses      = [inputClass,singleClass]
-inputSingleValueClasses = valueClass : inputSingleClasses
-inputSingleLabelClasses = titleClass : inputSingleClasses
-
-sumStyle :: WildeStyle
-sumStyle = WildeStyle [sumClass]
-
-tableColumnStylesShowOne :: (WildeStyle,WildeStyle)
-tableColumnStylesShowOne = (WildeStyle [presentationClass,titleClass],
-                            WildeStyle [presentationClass,valueClass])
-
-tableColumnStylesInputOne :: (WildeStyle,WildeStyle)
-tableColumnStylesInputOne = (WildeStyle [inputClass,titleClass],
-                             WildeStyle [inputClass,valueClass])
+-- | Constructs a 'WildeStyle' consisting of a list of classes.
+wildeClassStyle :: [ClassName] -> WildeStyle
+wildeClassStyle = WildeStyle

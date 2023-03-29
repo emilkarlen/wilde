@@ -7,7 +7,7 @@ module Wilde.WildeUi.UiPrimitives
   module Wilde.Utils.Empty,
   module Wilde.GenericUi.Style,
   module Wilde.GenericUi.Component,
-  module Wilde.WildeUi.WildeStyleType,
+  module Wilde.WildeUi.WildeStyle,
 
   -- * Titles
 
@@ -29,7 +29,7 @@ import           Wilde.GenericUi.Component
 import           Wilde.GenericUi.Style
 
 import           Wilde.WildeUi.WildeValue
-import           Wilde.WildeUi.WildeStyleType
+import           Wilde.WildeUi.WildeStyle
 
 
 -------------------------------------------------------------------------------

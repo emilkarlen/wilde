@@ -18,7 +18,7 @@ import qualified Wilde.Media.Presentation as Presentation
 import           Wilde.WildeUi.StdValueTypes as SVT
 import           Wilde.WildeUi.WildeTables
 import           Wilde.WildeUi.UiPrimitives
-import qualified Wilde.WildeUi.WildeStyle as WS
+import qualified Wilde.WildeUi.WildeStyles as WS
 import           Wilde.WildeUi.WildeTable
 
 import           Wilde.ObjectModel.ObjectModelUtils as OmUtils

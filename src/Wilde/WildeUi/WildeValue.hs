@@ -5,7 +5,7 @@
 
 module Wilde.WildeUi.WildeValue
   ( module Wilde.GenericUi.Value,
-    module Wilde.WildeUi.WildeStyleType,
+    module Wilde.WildeUi.WildeStyle,
     AnyVALUE (..),
     SVALUE (..),
     AnySVALUE (..),
@@ -29,7 +29,7 @@ import qualified Wilde.Render.Html.Utils as HU
 import           Wilde.Render.StyleForHtml
 
 import           Wilde.GenericUi.Value
-import           Wilde.WildeUi.WildeStyleType
+import           Wilde.WildeUi.WildeStyle
 
 -------------------------------------------------------------------------------
 -- - SVALUE -

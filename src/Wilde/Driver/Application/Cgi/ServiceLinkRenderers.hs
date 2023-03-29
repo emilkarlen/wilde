@@ -16,7 +16,7 @@ where
 import qualified Wilde.Media.Presentation as Presentation
 import qualified Wilde.WildeUi.WildeValue as WildeValue
 import qualified Wilde.Media.ElementSet as ES
-import Wilde.WildeUi.WildeStyleType (WildeStyling)
+import Wilde.WildeUi.WildeStyle (WildeStyling)
 import Wilde.WildeUi.StdValueTypes (LinkLabel, wwwLinkValue_dr)
 import Wilde.Driver.Application.Cgi.ServiceLink (href)
 import Wilde.Application.StandardServiceLinks

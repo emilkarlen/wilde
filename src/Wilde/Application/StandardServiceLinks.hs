@@ -36,7 +36,7 @@ import Wilde.Service.ServiceLink (GenericParameter)
 import Wilde.WildeUi.WildeValue (AnySVALUE)
 import Wilde.Media.GenericStringRep (GenericStringRep)
 import Wilde.Media.WildeMedia (CrossRefIdentifier)
-import Wilde.WildeUi.WildeStyleType (WildeStyling)
+import Wilde.WildeUi.WildeStyle (WildeStyling)
 import Wilde.WildeUi.StdValueTypes (LinkLabel)
 
 
