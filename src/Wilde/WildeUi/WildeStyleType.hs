@@ -3,6 +3,8 @@ module Wilde.WildeUi.WildeStyleType
          module Wilde.GenericUi.Style,
 
          WildeStyle (..),
+         ClassName,
+
          WildeStyling(..),
 
          singleClassStyle,
@@ -37,6 +39,10 @@ import Wilde.Utils.TextHtmlUtils
 -- - implementation -
 -------------------------------------------------------------------------------
 
+
+-- | Type of individual "class" style values.
+-- For HTML, a "class" is a "CSS class".
+type ClassName = String
 
 -- | The style representation used by Wilde.
 newtype WildeStyle = WildeStyle
@@ -74,17 +80,14 @@ withAdjustedStyled (WildeStyling styling) f =
 withAdjustedStyle :: WildeStyling a
                   -> (WildeStyle -> WildeStyle)
                   -> WildeStyling a
-withAdjustedStyle (WildeStyling styling) f =
-  WildeStyling (setStyle adjustedStyle styling)
-  where
-    adjustedStyle = f $ getStyle styling
+withAdjustedStyle (WildeStyling styling) f = WildeStyling $ mapStyle f styling
 
 -- | Turns a 'VALUE' into a 'SVALUE' without style.
 withNeutralWildeStyle :: a -> WildeStyling a
 withNeutralWildeStyle = WildeStyling . Styling neutral
 
 instance Semigroup WildeStyle where
-    (WildeStyle xs) <> (WildeStyle ys) = WildeStyle (xs ++ ys)
+    (WildeStyle xs) <> (WildeStyle ys) = WildeStyle (xs <> ys)
 
 instance Monoid WildeStyle where
     mempty = WildeStyle []

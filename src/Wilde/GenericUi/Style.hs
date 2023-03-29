@@ -8,8 +8,6 @@ module Wilde.GenericUi.Style where
 
 -- | Something that is a "style" (for example, CSS classes).
 class Monoid s => STYLE s where
-    -- neutral  :: s
-    -- addStyle :: s -> s -> s -- ^ Adds two styles.
 
 neutral :: STYLE s => s
 neutral = mempty
@@ -27,13 +25,15 @@ addStyle = mappend
 -------------------------------------------------------------------------------
 class STYLING c where
     getStyle  :: c s a -> s          -- ^ Get the style.
-    getStyled :: c s a -> a          -- ^ Get the styled value.
+    getStyled :: c s a -> a          -- ^ Get the thing that is styled.
     setStyle  :: s -> c s a -> c s a -- ^ Sets the style.
-    setStyled :: a -> c s a -> c s a -- ^ Sets the styled value.
+    setStyled :: a -> c s a -> c s a -- ^ Sets the thing that is styled.
+
+mapStyle :: (STYLE s,STYLING c) => (s -> s) -> c s a -> c s a
+mapStyle f styling = setStyle (f $ getStyle styling) styling
 
 addStyleToSTYLING :: (STYLE s,STYLING c) => s -> c s a -> c s a
-addStyleToSTYLING s styled = let newStyle = addStyle (getStyle styled) s
-                             in  setStyle newStyle styled
+addStyleToSTYLING s = mapStyle (<>s)
 
 -- | A value of type a that is "styled" by a value of type s.
 -- This is the "default" STYLING representation.
@@ -52,7 +52,3 @@ instance STYLING Styling where
     getStyled          = sStyled
     setStyle  s styled = styled { sStyle  = s }
     setStyled a styled = styled { sStyled = a }
-
--- | Type of individual "class" style values.
--- For HTML, a "class" is a "CSS class".
-type ClassName = String
