@@ -7,7 +7,6 @@ module Wilde.WildeUi.WildeStyle where
 -------------------------------------------------------------------------------
 
 
-import Wilde.GenericUi.Style
 import Wilde.WildeUi.WildeStyleType
 
 
