@@ -20,7 +20,7 @@ import qualified Wilde.Media.UserInteraction as UI
 import           Wilde.Media.UserInteraction.Output (PopUpButtonTexter)
 import           Wilde.Media.ElementSet (ElementSet)
 
-import qualified Wilde.WildeUi.WildeStyle as WS
+import qualified Wilde.WildeUi.WildeStyles as WS
 import qualified Wilde.WildeUi.StdValueTypes as StdVT
 import qualified Wilde.WildeUi.WildeTable as WT
 import qualified Wilde.WildeUi.WildeTables as WTs

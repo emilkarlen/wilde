@@ -19,7 +19,7 @@ import qualified Wilde.GenericUi.AbstractTable as AbstrTbl
 import           Wilde.WildeUi.StdValueTypes as SVT
 import qualified Wilde.WildeUi.WildeTables as WTs
 
-import qualified Wilde.WildeUi.WildeStyle as WS
+import qualified Wilde.WildeUi.WildeStyles as WS
 import qualified Wilde.Media.Presentation as Presentation
 
 import qualified Wilde.Render.AbstractTableToHtml as AbstractTableToHtml

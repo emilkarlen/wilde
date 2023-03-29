@@ -23,7 +23,7 @@ import qualified Wilde.Render.Html.Render as HR
 
 import           Wilde.GenericUi.Components
 
-import           Wilde.WildeUi.WildeStyle (errorStyle)
+import           Wilde.WildeUi.WildeStyles (errorStyle)
 import           Wilde.WildeUi.StdValueTypes
 import           Wilde.WildeUi.UiPrimitives (WildeTitle)
 

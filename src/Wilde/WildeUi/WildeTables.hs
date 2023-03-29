@@ -49,7 +49,7 @@ import           Wilde.GenericUi.AbstractTable as AT
 import           Wilde.GenericUi.Style
 
 import           Wilde.WildeUi.WildeValue
-import qualified Wilde.WildeUi.WildeStyle as WS
+import qualified Wilde.WildeUi.WildeStyles as WS
 
 import           Wilde.WildeUi.StdValueTypes
 import           Wilde.WildeUi.UiPrimitives

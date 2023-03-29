@@ -14,7 +14,7 @@ import Test.HUnit
 
 import Wilde.Utils.Empty
 
-import Wilde.WildeUi.WildeStyleType
+import Wilde.WildeUi.WildeStyle
 
 import qualified Wilde.Media.ElementSet as ES
 import qualified Wilde.ObjectModel.UserInteraction.Output.Common as Common

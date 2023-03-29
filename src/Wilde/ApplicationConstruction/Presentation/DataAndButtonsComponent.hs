@@ -15,7 +15,7 @@ where
 import qualified Wilde.Render.Html.Element as HE
 
 import           Wilde.WildeUi.WildeValue (AnySVALUE, SVALUE(..))
-import qualified Wilde.WildeUi.WildeStyle as WS
+import qualified Wilde.WildeUi.WildeStyles as WS
 
 import qualified Wilde.GenericUi.Component as Comp
 

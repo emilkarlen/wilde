@@ -12,7 +12,7 @@ module Wilde.Utils.Debug
 -------------------------------------------------------------------------------
 
 
-import           Wilde.WildeUi.WildeStyleType
+import           Wilde.WildeUi.WildeStyle
 
 import           Wilde.Media.UserInteraction
 
