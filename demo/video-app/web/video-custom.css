@@ -1,44 +1,45 @@
-.country
+._rT.country
 {
   background-color : silver;
 }
 
-.genre
+._rT.genre
 {
   background-color : purple;
 }
 
-.specific_subject
+._rT.specific_subject
 {
   background-color : purple;
 }
 
-.director
+._rT.director
 {
   background-color : navy;
+  color            : white;
 }
 
-.title
+._rT.title
 {
   background-color : maroon;
 }
 
-.season
+._rT.season
 {
   background-color : aqua;
 }
 
-.episode
+._rT.episode
 {
   background-color : blue;
 }
 
-.unit
+._rT.unit
 {
   background-color : green;
 }
 
-.recording
+._rT.recording
 {
   background-color : lime;
 }
