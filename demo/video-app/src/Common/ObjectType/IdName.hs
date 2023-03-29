@@ -46,8 +46,8 @@ mkIdNameConfig :: Title
 mkIdNameConfig objectTypeTitle dbTableName =
   ToolsMySql.IdNameOtConfiguration
   {
-    ToolsMySql.objectTypeTitle = withNeutralWildeStyle objectTypeTitle
-  , ToolsMySql.nameTitle       = "Namn"
+    ToolsMySql.objectTypeTitle = titleStyledWTableName
+  , ToolsMySql.nameTitle       = "Name"
   , ToolsMySql.maxSize         = maxSize_name
   , ToolsMySql.inputWidth      = inputWidth_name
   , ToolsMySql.dbTableName     = dbTableName
@@ -55,6 +55,9 @@ mkIdNameConfig objectTypeTitle dbTableName =
   , ToolsMySql.colName         = IdNameObjectType.Name
   , ToolsMySql.dbIo_string     = MyAT.my_dbIo_string
   }
+  where
+    titleStyledWTableName :: WildeTitle
+    titleStyledWTableName  = wildeStyling (WildeStyle [dbTableName]) objectTypeTitle
 
 maxSize_name :: Int
 maxSize_name = 50
