@@ -42,7 +42,7 @@ weObject    = WildeStyle [weObjectClass]
 weAttribute = WildeStyle [weAttributeClass]
 
 subObjectListClass :: ClassName
-subObjectListClass = "_rl_dependent_component"
+subObjectListClass = "_rel_dependent_component"
 
 -- UI type of output
 presentationClass,inputClass :: ClassName
