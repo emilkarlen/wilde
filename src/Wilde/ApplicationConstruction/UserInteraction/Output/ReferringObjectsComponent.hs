@@ -182,7 +182,7 @@ mkComponent ot
     mbTitle                   = Just $
                                   theTitle
                                   `withAdjustedStyle`
-                                   addStyle (WildeStyle [WS.componentClass])
+                                   addStyle (WildeStyle [WS.compComponentClass])
     (getSubObjWhereExpr,getSqlParamsForRef) = OmDbJ.atExprEq atSuperRef
 
     createOneSubObjButton :: Presentation.Monad AnySVALUE
@@ -234,7 +234,7 @@ tableStyleForObjectTypeSubObjects listIsEmpty = WildeStyle stdClasses
   where
     stdStyle   = WildeStyle stdClasses
     stdClasses = multiEmpty <> WS.presMultiClasses <>
-                 [WS.componentClass
+                 [WS.compComponentClass
                  ,WS.weObjectClass
                  ,WS.subObjectListClass]
     multiEmpty = [WS.multiEmptyClass | listIsEmpty]

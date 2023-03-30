@@ -1,39 +1,3 @@
-BODY
-{
-  color             : #000000;
-  /* background-color  : #D8D9D4; */
-  /* background-color  : #CCCDC8; */
-/*   background-color  : #DCDDDC; */
-/*   background-color  : #ECEDEC; */
-  font-family       : sans-serif;
-}
-
-/******************************************************************************
-* - messages -
-******************************************************************************/
-
-/* .error_explanation */
-/* { */
-/*   color             : red; */
-/* /\*   font-style        : italic; *\/ */
-/* } */
-
-/* .attention */
-/* { */
-/*   font-weight       : bold; */
-/* /\*   font-style        : italic; *\/ */
-/* } */
-
-/* .error_value */
-/* { */
-/*   margin            : 10pt; */
-/*   padding           : 5pt; */
-/*   border-width      : thin; */
-/*   border-style      : solid; */
-/*   background-color  : white; */
-/* } */
-
-
 /*****************************************************************************/
 /* - _rA -*/
 /*****************************************************************************/
