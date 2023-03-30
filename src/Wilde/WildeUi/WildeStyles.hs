@@ -20,6 +20,18 @@ helpClass      = "_help"
 varnameClass   = "_varname"
 varFormatClass = "_varformat"
 
+-- | Result of the "request"
+resSrvcOk, resSrvcError, resSrvcPopUp_askIfContinue, resSrvcPopUp_info :: ClassName
+resSrvcOk                  = "_resService_ok"
+resSrvcError               = "_resService_error"
+resSrvcPopUp_askIfContinue = "_resService_popup_askIfContinue"
+resSrvcPopUp_info          = "_resService_popup_info"
+
+-- | Components - different parts of the whole page/screen.
+compPageClass,compComponentClass :: ClassName
+compPageClass      = "_cPg" -- "Page" - the whole "screen".
+compComponentClass = "_cC"  -- "Component" a block with a special purpose
+
 -- Wilde Elements
 weObjectClass,weAttributeClass :: ClassName
 weObjectClass    = "_weO"
@@ -28,11 +40,6 @@ weAttributeClass = "_weA"
 weObject,weAttribute :: WildeStyle
 weObject    = WildeStyle [weObjectClass]
 weAttribute = WildeStyle [weAttributeClass]
-
--- | Component classes.
-pageClass,componentClass :: ClassName
-pageClass      = "_cPg" -- "Page" class.
-componentClass = "_cC"  -- "Component" class.
 
 subObjectListClass :: ClassName
 subObjectListClass = "_rl_dependent_component"
@@ -89,13 +96,13 @@ tableListBodyRowGroup :: WildeStyle
 tableListBodyRowGroup = WildeStyle [valueClass]
 
 presentationTableMulti :: WildeStyle
-presentationTableMulti = WildeStyle (weObjectClass : componentClass : presMultiClasses)
+presentationTableMulti = WildeStyle (weObjectClass : compComponentClass : presMultiClasses)
 
 presentationTableSingle :: WildeStyle
-presentationTableSingle = WildeStyle (weObjectClass : componentClass : presSingleClasses)
+presentationTableSingle = WildeStyle (weObjectClass : compComponentClass : presSingleClasses)
 
 userInteractionTable :: WildeStyle
-userInteractionTable = WildeStyle (weObjectClass : componentClass : inputSingleClasses)
+userInteractionTable = WildeStyle (weObjectClass : compComponentClass : inputSingleClasses)
 
 multiColumnTitle :: WildeStyle
 multiColumnTitle = WildeStyle [titleClass]
@@ -107,11 +114,11 @@ multiRow :: WildeStyle
 multiRow = WildeStyle [weObjectClass]
 
 pageTitleClasses,componentTitleClasses :: [ClassName]
-pageTitleClasses      = [pageClass,titleClass]
-componentTitleClasses = [componentClass,titleClass]
+pageTitleClasses      = [compPageClass,titleClass]
+componentTitleClasses = [compComponentClass,titleClass]
 
 pageTopLevelComponentClasses :: [ClassName]
-pageTopLevelComponentClasses = [pageClass, componentClass]
+pageTopLevelComponentClasses = [compPageClass, compComponentClass]
 -- pageTopLevelComponentClasses = ["_develop__top_level_component"]
 
 pageTitle,componentTitle :: WildeStyle
@@ -119,7 +126,7 @@ pageTitle      = WildeStyle pageTitleClasses
 componentTitle = WildeStyle componentTitleClasses
 
 actionsComponentClasses :: [ClassName]
-actionsComponentClasses = [componentClass, actionsClass]
+actionsComponentClasses = [compComponentClass, actionsClass]
 
 presMultiClasses,presMultiValueClasses,presMultiLabelClasses :: [ClassName]
 presMultiClasses      = [presentationClass,multiClass]

@@ -15,21 +15,23 @@ module Wilde.Driver.Application.Web.RunService
 
 
 import qualified Data.Map as Map
+import           Data.Maybe (maybeToList)
 
-import Control.Monad.Trans
+import           Control.Monad.Trans
 
 import           Wilde.Render.Html.Types
 import qualified Wilde.Render.Html.Render as HR
 
 import           Wilde.GenericUi.Components
 
-import           Wilde.WildeUi.WildeStyles (errorStyle)
+import           Wilde.WildeUi.WildeStyles as WSs
 import           Wilde.WildeUi.StdValueTypes
 import           Wilde.WildeUi.UiPrimitives (WildeTitle)
 
 import qualified Wilde.Media.UserInteraction.Output as UiOm
 
 import           Wilde.Service.Monad
+import           Wilde.Service.ServiceLink (ServiceId(..))
 
 import           Wilde.Render.ServiceLink
 import           Wilde.Render.RenderAsHtml
@@ -59,8 +61,10 @@ runService_html cssFiles tr env service =
     let wildePage = renderServiceResult tr env serviceResult
     pure $ renderPageAsHtml wildePage
   where
-    renderPageAsHtml :: (WildeTitle,[AnyCOMPONENT]) -> Html
-    renderPageAsHtml (title,components) = renderPage cssFiles title components
+    renderPageAsHtml :: (WildeStyle, WildeTitle,[AnyCOMPONENT]) -> Html
+    renderPageAsHtml (pageStyle, title,components) = renderPage cssFiles pageStyle title components
+
+    styleForPage = WildeStyle [compPageClass]
 
 -- | A variant of 'runService_html' that also renders the HTML as a string.
 --
@@ -76,30 +80,32 @@ runService_htmlString cssFiles tr env service =
       pure $ renderHtmlAsString html
   where
     renderHtmlAsString :: Html -> String
-    renderHtmlAsString = if VariableNames.pretty `Map.member` (envMedia env)
+    renderHtmlAsString = if VariableNames.pretty `Map.member` envMedia env
                          then HR.pretty
                          else HR.standard
 
 renderServiceResult :: Translations
                     -> ServiceEnvironment
                     -> Either ServiceError ServiceOkResult
-                    -> (WildeTitle,[AnyCOMPONENT])
+                    -> (WildeStyle, WildeTitle,[AnyCOMPONENT])
 renderServiceResult tr env serviceResult =
     either outputError (processOkResult outputPage outputPopUp) serviceResult
   where
-    outputError :: ServiceError -> (WildeTitle,[AnyCOMPONENT])
-    outputError err = (withWildeStyle errorStyle (trErorPageTitle tr),
-                       [anyValueComponent (UnquotedStringValue (show err))])
+    outputError :: ServiceError -> (WildeStyle, WildeTitle,[AnyCOMPONENT])
+    outputError err = ( style WSs.resSrvcError
+                      , withWildeStyle errorStyle (trErorPageTitle tr)
+                      , [anyValueComponent (UnquotedStringValue (show err))])
 
-    outputPage :: ServicePage -> (WildeTitle,[AnyCOMPONENT])
-    outputPage (pageTitle,anyComponents) = (pageTitle, anyComponents)
+    outputPage :: ServicePage -> (WildeStyle, WildeTitle,[AnyCOMPONENT])
+    outputPage (pageTitle,anyComponents) = (style WSs.resSrvcOk, pageTitle, anyComponents)
 
-    outputPopUp :: ServicePopUp -> (WildeTitle,[AnyCOMPONENT])
+    outputPopUp :: ServicePopUp -> (WildeStyle, WildeTitle,[AnyCOMPONENT])
     outputPopUp = processPopUpOkResult outputAskIfContinue outputInformation
 
-    outputAskIfContinue :: AskIfContinuePopUp -> (WildeTitle,[AnyCOMPONENT])
-    outputAskIfContinue popup = (withNeutralWildeStyle (trContinueQuestion tr),
-                                 components)
+    outputAskIfContinue :: AskIfContinuePopUp -> (WildeStyle, WildeTitle,[AnyCOMPONENT])
+    outputAskIfContinue popup = ( style WSs.resSrvcPopUp_askIfContinue
+                                , withNeutralWildeStyle (trContinueQuestion tr)
+                                , components)
         where
           components   = [msgComponent,btnComponent]
           msgComponent = anyValueComponent $ UnquotedStringValue msg
@@ -107,9 +113,10 @@ renderServiceResult tr env serviceResult =
           target       = askIfContinueContinuation popup
           msg          = askIfContinueMessage popup
 
-    outputInformation :: InformationPopUp -> (WildeTitle,[AnyCOMPONENT])
-    outputInformation popup = (withNeutralWildeStyle (trIformationDialogTitle tr),
-                               components)
+    outputInformation :: InformationPopUp -> (WildeStyle, WildeTitle,[AnyCOMPONENT])
+    outputInformation popup = ( style WSs.resSrvcPopUp_info
+                              , withNeutralWildeStyle (trIformationDialogTitle tr)
+                              , components)
         where
           components    = msgComponent : btnComponents
           msgComponent  = anyValueComponent $ UnquotedStringValue msg
@@ -119,6 +126,9 @@ renderServiceResult tr env serviceResult =
           mbTarget     = informationContinuation popup
           msg          = informationMessage popup
 
+    style :: ClassName -> WildeStyle
+    style resultClass = pageStyle resultClass env
+
     buttonLink :: ServiceLink -> PopUp.Button -> AnyCOMPONENT
     buttonLink target buttonType =
       anyValueComponent $
@@ -127,3 +137,11 @@ renderServiceResult tr env serviceResult =
         btn          = AnySVALUE $ button btnText
         btnText      = btnTexter buttonType
         btnTexter    = trButtonTexter . UiOm.outTranslations . envOutputing $ env
+
+pageStyle :: ClassName -> ServiceEnvironment -> WildeStyle
+pageStyle resultClass env = WildeStyle $ resultClass : styleFromServiceEnv env
+
+styleFromServiceEnv :: ServiceEnvironment -> [ClassName]
+styleFromServiceEnv env = [srvc] <> maybeToList mbOt
+  where
+    ServiceId srvc mbOt = envCurrentService env

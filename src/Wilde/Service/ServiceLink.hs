@@ -1,7 +1,3 @@
-{-# LANGUAGE MonoLocalBinds #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE UndecidableInstances #-}
-
 -------------------------------------------------------------------------------
 -- | Links to services of an application.
 --
@@ -15,6 +11,11 @@
 --
 -- 3. A complete link that can be rendered ('ServiceLink')
 -------------------------------------------------------------------------------
+
+{-# LANGUAGE MonoLocalBinds #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
+
 module Wilde.Service.ServiceLink
        (
          ServiceId(..),
@@ -75,11 +76,12 @@ import           Wilde.Media.WildeMedia (CrossRefIdentifier)
 
 
 -- | Identifies a service.
-data ServiceId = ServiceId
-                 {
-                   sidName       :: String,
-                   sidObjectType :: Maybe String
-                 }
+data ServiceId =
+  ServiceId
+  {
+    sidName       :: String,
+    sidObjectType :: Maybe String
+  }
 
 
 -------------------------------------------------------------------------------

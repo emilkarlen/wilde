@@ -54,34 +54,37 @@ renderPageTitle title =
 
 
 -- | Renders a page.
-renderPage :: [URL] -- ^ CSS files
+renderPage :: [URL]          -- ^ CSS files
+           -> WildeStyle     -- ^ page=body style
            -> WildeTitle
            -> [AnyCOMPONENT] -- ^ body
            -> HD.Document
-renderPage cssFiles title components =
-    let headContents = HE.seq [HD.title titleString, hdrCssLink]
-        hdrCssLink   = HE.seq $ map cssRefElem cssFiles
-        compsHtml    = map renderTopLevelComponent components :: [Html]
-        srvcTitle    = renderPageTitle title :: Html
-        bodyContents = HE.seq $ srvcTitle : compsHtml :: Html
-    in  HD.document headContents bodyContents (applyStyleToHtml styleForPage)
+renderPage cssFiles styleForPage title components =
+  renderPageHtml cssFiles styleForPage title bodyContents
   where
-    cssRefElem   :: URL -> Html
+    bodyContents = HE.seq $ srvcTitle : compsHtml :: Html
+    srvcTitle    = renderPageTitle title :: Html
+    compsHtml    = map renderTopLevelComponent components :: [Html]
+
+-- | Renders a page given simple Html.
+renderPageHtml :: [URL]          -- ^ CSS files
+               -> WildeStyle     -- ^ page=body style
+               -> WildeTitle     -- ^ Page and service title
+               -> Html           -- ^ body
+               -> HD.Document
+renderPageHtml cssFiles styleForPage title body =
+  HD.document headContents body (applyStyleToHtml styleForPage)
+  where
+    headContents = HE.seq [HD.title titleString, hdrCssLink]
+    hdrCssLink   = HE.seq $ map cssRefElem cssFiles
+    srvcTitle    = renderPageTitle title :: Html
+    titleString  = wildeStyled title :: Title
+
+    cssRefElem  :: URL -> Html
     cssRefElem cssFile = HE.link `HE.withAttrs`
                          [HA.rel "stylesheet"
                          ,HA.href cssFile
                          ,HA.type_ "text/css"]
-
-    styleForPage  = WildeStyle [pageClass]
-    titleString   = wildeStyled title :: Title
-
--- | Renders a page given simple Html.
-renderPageHtml :: [URL] -- ^ CSS files
-               -> WildeTitle -- ^ Page and service title
-               -> Html -- ^ body
-               -> HD.Document
-renderPageHtml cssFiles title body =
-  renderPage cssFiles title [AnyCOMPONENT (HtmlOnly body)]
 
 -- | Renders a component with a given title and content.
 renderTopLevelComponent :: AnyCOMPONENT -> Html
