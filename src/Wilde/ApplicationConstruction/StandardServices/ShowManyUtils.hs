@@ -22,13 +22,14 @@ import qualified Wilde.Media.Presentation as Presentation
 
 import           Wilde.ObjectModel.ObjectModel
 import qualified Wilde.ObjectModel.AttributeTypeListSetup.SansAnnotation as AttributeTypeListSetup
-import           Wilde.ObjectModel.Presentation
+import           Wilde.ObjectModel.Presentation as OmPres
 
 import qualified Wilde.ApplicationConstruction.Presentation.DataAndButtonsComponent as TopComp
 import qualified Wilde.ApplicationConstruction.Presentation.ObjectModel.ObjectListComponent as OlComp
-import Wilde.Application.ObjectTypeService
 
-import Wilde.Application.Service.Service
+import           Wilde.Application.ObjectTypeService
+import           Wilde.Application.Service.Service
+
 import           Wilde.WildeUi.UiPrimitives
 
 
@@ -81,7 +82,7 @@ showMany' ot (Config title
                                  AttributeTypeListSetup.mkGeneral ot theDisplayAts
       mkFooterRowsConstructor <- theGetFooterRowsConstructor
       objectListComponent     <- OlComp.objectList
-                                 WS.presentationTableMulti
+                                 componentStyle
                                  Nothing
                                  atListSetup
                                  mkFooterRowsConstructor
@@ -89,3 +90,7 @@ showMany' ot (Config title
                                  (pure os)
       buttonsBelow            <- sequence getObjTypeBtnsBelow
       pure (title, [TopComp.new objectListComponent buttonsBelow])
+
+    where
+      componentStyle :: WildeStyle
+      componentStyle  = WS.presentationTableMulti <> OmPres.objectTypeStyle ot
