@@ -7,6 +7,8 @@ module Wilde.ObjectModel.Presentation
   module F,
   ATTRIBUTE_PRESENTATION(..),
   getAttributesInGivenOrder,
+
+  objectTypeStyle,
 )
 where
 
@@ -49,3 +51,12 @@ getAttributesInGivenOrder attributeTypesOrder o =
     pure $ AttributeTypeListSetup.apply atListSetup o
   where
     ot = oType o
+
+
+-- | Utility to get a WildeStyle of the OT's cross-ref-id.
+--
+-- Is this the right place
+objectTypeStyle
+  :: ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
+  -> WildeStyle
+objectTypeStyle = WildeStyle . (:[]) . otCrossRefKey

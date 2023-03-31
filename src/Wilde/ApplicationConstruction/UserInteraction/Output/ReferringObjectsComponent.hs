@@ -33,11 +33,9 @@ import qualified Wilde.Media.Database.Monad as DbConn
 
 
 import           Wilde.ObjectModel.ObjectModel
-
 import qualified Wilde.ObjectModel.AttributeTypeListSetup.SansAnnotation as AttributeTypeListSetup
-
 import qualified Wilde.ObjectModel.GenericStringRep as OmGsr
-
+import           Wilde.ObjectModel.Presentation as OmPres
 import qualified Wilde.ObjectModel.Database.Sql.WithPresentationInfo as SqlWithPres
 import qualified Wilde.ObjectModel.Database.Execution.SelectWithPresentationInfo as InputPres
 import qualified Wilde.ObjectModel.Database.JoinUtils as OmDbJ
@@ -178,6 +176,7 @@ mkComponent ot
     atsIncludeBeforeExclusion = theDisplayAts
     tableStyle                :: [a] -> WildeStyle
     tableStyle os             = tableStyleForObjectTypeSubObjects (null os)
+                                <> OmPres.objectTypeStyle ot
     mbTitle                   :: Maybe WildeTitle
     mbTitle                   = Just $
                                   theTitle
