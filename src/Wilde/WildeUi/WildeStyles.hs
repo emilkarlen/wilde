@@ -119,7 +119,6 @@ componentTitleClasses = [compComponentClass,titleClass]
 
 pageTopLevelComponentClasses :: [ClassName]
 pageTopLevelComponentClasses = [compPageClass, compComponentClass]
--- pageTopLevelComponentClasses = ["_develop__top_level_component"]
 
 pageTitle,componentTitle :: WildeStyle
 pageTitle      = WildeStyle pageTitleClasses

@@ -48,12 +48,13 @@ module Wilde.ObjectModel.UserInteraction.Output.ForExisting
 import           Wilde.Utils.Utils
 import qualified Wilde.Utils.AnyValue as AnyValue
 
-import Wilde.Media.WildeMedia hiding (otKey)
-import Wilde.Media.UserInteraction
-import Wilde.Media.UserInteraction.Output
+import           Wilde.Media.WildeMedia hiding (otKey)
+import           Wilde.Media.UserInteraction
+import           Wilde.Media.UserInteraction.Output
 
-import Wilde.ObjectModel.ObjectModelUtils as OmUtils
+import           Wilde.ObjectModel.ObjectModelUtils as OmUtils
 import qualified Wilde.ObjectModel.AttributeTypeListSetup.WithAnnotation as ListSetupWithAnnotation
+import qualified Wilde.ObjectModel.Presentation as OmPres
 
 import           Wilde.ObjectModel.UserInteraction.Output.ExistingCommon
 
@@ -152,7 +153,7 @@ attrOutputsForSetup :: ListSetupWithAnnotation.Setup
 attrOutputsForSetup setup (objectName,o) =
   do
     formBlockRows <- mapM (attrOutputAny objectName) mkaoAndattriList
-    pure $ FormBlock formBlockRows []
+    pure $ FormBlock formBlockRows [] (OmPres.objectTypeStyle_o o)
   where
     mkaoAndattriList = map
                        (\(Any attr,anyMkAo) ->

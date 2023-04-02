@@ -19,16 +19,15 @@ module Wilde.ApplicationConstruction.StandardServices.ShowSelection
 -------------------------------------------------------------------------------
 
 
-import Control.Monad
+import           Control.Monad
 
 import qualified Wilde.Database.SqlJoin as Sql
 
 import qualified Wilde.Media.ElementSet as ES
+import           Wilde.Media.UserInteraction
+import qualified Wilde.Media.MonadWithInputMedia as MIIA
 
-import Wilde.Media.UserInteraction
-import qualified Wilde.Service.Monad as Service
-
-import Wilde.Driver.Application.Cgi.VariableNames as VariableNames (selectExpression)
+import           Wilde.Driver.Application.Cgi.VariableNames as VariableNames (selectExpression)
 
 import           Wilde.ObjectModel.ObjectModel
 import qualified Wilde.ObjectModel.Database as Database
@@ -36,11 +35,11 @@ import qualified Wilde.ObjectModel.Database.Execution.SelectWithPresentationInfo
 import qualified Wilde.ObjectModel.Presentation as Presentation
 import qualified Wilde.ObjectModel.DatabaseAndPresentation as DatabaseAndPresentation
 
-import qualified Wilde.Media.MonadWithInputMedia as MIIA
+import qualified Wilde.Service.Monad as Service
+import           Wilde.Service.Monad
 
-import Wilde.Service.Monad
-import Wilde.Application.ObjectTypeService
-import Wilde.Application.Service.Service
+import           Wilde.Application.ObjectTypeService
+import           Wilde.Application.Service.Service
 
 import           Wilde.ApplicationConstruction.Service.StepService
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.ObjectListSetup as OLS
@@ -93,11 +92,13 @@ serviceMain ot@(ObjectType {}) config@(Utils.Config title _) = stepService def
         fbamMetas  = []
       , fbamBlocks = [inputExpressionBlock]
       }
+    inputExpressionBlock :: FormBlock
     inputExpressionBlock =
       FormBlock
       {
         formBlockInteraction = [attributeOutputFormBlockRow attrOutput_whereInput]
       , formBlockMetaValues  = []
+      , formBlockStyle       = Presentation.objectTypeStyle ot
       }
 
     attrOutput_whereInput :: LabelAndWidget

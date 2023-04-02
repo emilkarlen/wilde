@@ -13,13 +13,13 @@ where
 import qualified Wilde.Render.Html.Types as HT
 import qualified Wilde.Render.Html.Attribute as HA
 import qualified Wilde.Render.Html.Element as HE
-import qualified Wilde.Render.UserInteractionRendering as UIR
 
 import qualified Wilde.Media.UserInteraction.Output as UiOm
 import qualified Wilde.Media.UserInteraction as UI
 import           Wilde.Media.UserInteraction.Output (PopUpButtonTexter)
-import           Wilde.Media.ElementSet (ElementSet)
+import           Wilde.Media.ElementSet (ElementSet, ElementKey, Element, elementKeyRender)
 
+import qualified Wilde.GenericUi.Widget as Widget
 import qualified Wilde.WildeUi.WildeStyles as WS
 import qualified Wilde.WildeUi.StdValueTypes as StdVT
 import qualified Wilde.WildeUi.WildeTable as WT
@@ -42,14 +42,14 @@ import qualified Wilde.ApplicationConstruction.Presentation.DataAndButtonsCompon
 newtype FormBlockComponent = FormBlockComponent UI.FormBlock
 
 instance COMPONENT FormBlockComponent where
-  componentHtml (FormBlockComponent (UI.FormBlock interaction metaValues)) =
+  componentHtml (FormBlockComponent (UI.FormBlock interaction metaValues style)) =
     HE.seq verticalBlocks
     where
       verticalBlocks :: [HE.Html]
       verticalBlocks  = [metaValuesHtml
                         ,Wilde.Render.AbstractTableToHtml.renderTable styledTable]
-      styledTable     = addStyleToSTYLING WS.userInteractionTable wildeTable
-      metaValuesHtml  = HE.seq $ map UIR.metaValueInput metaValues
+      styledTable     = addStyleToSTYLING (WS.userInteractionTable <> style) wildeTable
+      metaValuesHtml  = HE.seq $ map metaValueInput metaValues
       wildeTable     :: WT.WildeTable
       wildeTable      = WTs.headerValueTable
                         renderHeader
@@ -87,8 +87,8 @@ instance COMPONENT FormComponent where
       action            = UI.formAction form
 
       custEnvCgiVals    = ElementSetIo.customEnvironmentSetToCgiValues custEnv
-      custEnvHtml       = HE.seq $ map UIR.cgiValueInput custEnvCgiVals
-      formMetasHtml     = HE.seq $ map UIR.metaValueInput (UI.formMetaValues form)
+      custEnvHtml       = HE.seq $ map cgiValueInput custEnvCgiVals
+      formMetasHtml     = HE.seq $ map metaValueInput (UI.formMetaValues form)
       allMetasHtml      = HE.seq [formMetasHtml,custEnvHtml]
 
       htmlFormContents :: [AnyCOMPONENT]
@@ -140,3 +140,53 @@ data FormButton = FormButton FormButtonType String
 instance VALUE FormButton where
   valueHtml (FormButton Submit label) = HE.submit label
   valueHtml (FormButton Reset  label) = HE.reset  label
+
+
+-------------------------------------------------------------------------------
+-- - Widget -
+-------------------------------------------------------------------------------
+
+
+-- | Constructs a Html "input" tag with type and key.
+inputWithTypeAndKey :: String -- ^ input type (text, checkbox, ...)
+                    -> ElementKey
+                    -> HT.Html
+inputWithTypeAndKey inputType key = withKey key $ HE.input `HE.withAttrs` [HA.type_ inputType]
+
+-- | Adds a key to the given Html.
+withKey :: ElementKey -> HT.Html -> HT.Html
+withKey key html = html `HE.withAttrs` [HA.name (elementKeyRender key)]
+
+
+-------------------------------------------------------------------------------
+-- - utilities -
+-------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------
+-- - Label -
+-------------------------------------------------------------------------------
+
+
+instance VALUE Widget.Label where
+    valueHtml label = HE.str $ Widget.labelString label
+
+
+-------------------------------------------------------------------------------
+-- - Label -
+-------------------------------------------------------------------------------
+
+-- | A HTML "input" element for a Meta Element.
+metaValueInput :: Element -> HT.Html
+metaValueInput (elementKey,value) =
+  HE.input `HE.withAttrs` [HA.type_hidden,
+                           HA.name (elementKeyRender elementKey),
+                           HA.value value]
+
+-- | A HTML "input" element for a CGI value.
+cgiValueInput :: (String,Maybe String) -> HT.Html
+cgiValueInput (key,Just value) = HE.input `HE.withAttrs` [HA.type_hidden,
+                                                          HA.name key,
+                                                          HA.value value]
+cgiValueInput (key,Nothing) = HE.input `HE.withAttrs` [HA.type_hidden,
+                                                       HA.name key]
