@@ -29,14 +29,13 @@ import qualified Wilde.ObjectModel.UserInteraction.Input.ForCreate as InputForCr
 import qualified Wilde.ObjectModel.Presentation as Presentation
 import qualified Wilde.ObjectModel.GenericStringRep as OmGsr
 
-import Wilde.Application.ObjectTypeService
+import           Wilde.Application.ObjectTypeService
 
 import qualified Wilde.ApplicationConstruction.Service.ServiceUtils as ServiceUtils
 import           Wilde.ApplicationConstruction.Service.StepService
 import qualified Wilde.ApplicationConstruction.Service.ServiceTools as ServiceTools
-
-import Wilde.ApplicationConstruction.StandardServices.CreateOneUtils
-import Wilde.ApplicationConstruction.StandardServices.SingleObjectServiceCommon
+import           Wilde.ApplicationConstruction.StandardServices.CreateOneUtils
+import           Wilde.ApplicationConstruction.StandardServices.SingleObjectServiceCommon
 
 -------------------------------------------------------------------------------
 -- - implementation -

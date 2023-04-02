@@ -185,7 +185,6 @@ Library
 
     Wilde.Render.AbstractTableToHtml
     Wilde.Render.RenderAsHtml
-    Wilde.Render.UserInteractionRendering
     Wilde.Render.ServiceLink
     Wilde.Render.StyleForHtml
 

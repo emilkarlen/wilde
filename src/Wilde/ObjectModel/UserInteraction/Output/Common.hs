@@ -40,12 +40,14 @@ module Wilde.ObjectModel.UserInteraction.Output.Common
 
 import qualified Wilde.Utils.AnyValue2 as AnyValue2
 
+import qualified Wilde.Media.UserInteraction as UI
 import qualified Wilde.Media.UserInteraction.Output as UiO
 import qualified Wilde.Media.GenericStringRep as Gsr
 
 import           Wilde.ObjectModel.ObjectModel
 
 import qualified Wilde.ObjectModel.UserInteraction.Common as UiCommon
+
 import           Wilde.WildeUi.UiPrimitives
 
 
@@ -312,6 +314,8 @@ outputerForSetupConstructor :: (Any (AttributeType atConf dbTable)
                             -> [Any (AttributeType atConf dbTable)]
                             -- ^ The attributes that should be input via the form,
                             -- and the order they should be displayed in it.
+                            -> WildeStyle
+                            -- ^ Style of the FormBlock
                             -> UiO.ObjectName
                             -> UiO.UserInteractionOutputMonad UiO.FormBlock
 outputerForSetupConstructor setupConstructor attributeTypesOrder =
@@ -323,12 +327,14 @@ outputerForSetupConstructor setupConstructor attributeTypesOrder =
 -- | Outputs a list of attributes as part of an object.
 -------------------------------------------------------------------------------
 objectOutputer :: [AnyValue2.Container AttributeTypeSetup]
+               -> WildeStyle
+               -- ^ Style of the FormBlock
                -> UiO.ObjectName
                -> UiO.UserInteractionOutputMonad UiO.FormBlock
-objectOutputer setups objectName =
+objectOutputer setups formBlockStyle objectName =
   do
     formBlockRowInfos <- mapM
                          (\(AnyValue2.Container atSetup)
                           -> attributeOutputer atSetup objectName)
                          setups
-    pure $ UiO.concatAtFormBlockInfos formBlockRowInfos
+    pure $ UI.formBlock_appendStyle formBlockStyle $ UiO.concatAtFormBlockInfos formBlockRowInfos

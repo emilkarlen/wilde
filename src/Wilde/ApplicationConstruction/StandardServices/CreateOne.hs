@@ -17,8 +17,7 @@ module Wilde.ApplicationConstruction.StandardServices.CreateOne
 -------------------------------------------------------------------------------
 
 
-import Wilde.ObjectModel.ObjectModel
-
+import           Wilde.ObjectModel.ObjectModel
 import qualified Wilde.ObjectModel.Database as Database
 import qualified Wilde.ObjectModel.DatabaseAndPresentation as DatabaseAndPresentation
 import qualified Wilde.ObjectModel.UserInteraction.Output.ForCreateFrom as OutputForCreateFrom
@@ -31,7 +30,10 @@ import           Wilde.ApplicationConstruction.Service.StepService
 import           Wilde.Application.ObjectTypeService
 
 import Wilde.ApplicationConstruction.StandardServices.CreateOneUtils
-import Wilde.ApplicationConstruction.StandardServices.SingleObjectServiceCommon
+    ( UserInteractionOutputMonad, inputFromUi_store_show )
+import           Wilde.ApplicationConstruction.StandardServices.SingleObjectServiceCommon
+
+import           Wilde.WildeUi.WildeStyle (WildeStyle)
 
 
 -------------------------------------------------------------------------------
@@ -85,11 +87,14 @@ createOneMain ot (Config titles attributeTypesOrder) = stepService def
                            attributeTypesOrder theObjectName
           }
 
+    style      :: WildeStyle
+    style       = Presentation.objectTypeStyle ot
+
     outputForm :: NonLastStep
     outputForm = toServiceMonad outputForm' >>= continue
 
     outputForm' :: UserInteractionOutputMonad FormBlocksAndMetas
     outputForm' =
       do
-        formBlock <- OutputForCreate.outputerForStdSetup attributeTypesOrder theObjectName
+        formBlock <- OutputForCreate.outputerForStdSetup attributeTypesOrder style theObjectName
         pure $ FormBlocksAndMetas [] [formBlock]

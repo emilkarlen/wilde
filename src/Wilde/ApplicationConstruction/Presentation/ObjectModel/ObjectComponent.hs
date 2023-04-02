@@ -23,6 +23,7 @@ import           Wilde.WildeUi.WildeTable
 
 import           Wilde.ObjectModel.ObjectModelUtils as OmUtils
 import           Wilde.ObjectModel.Presentation (ATTRIBUTE_PRESENTATION(..))
+import qualified Wilde.ObjectModel.Presentation as OmPres
 
 import qualified Wilde.Render.AbstractTableToHtml
 
@@ -34,15 +35,17 @@ import qualified Wilde.Render.AbstractTableToHtml
 
 getShowOneComponent :: ATTRIBUTE_PRESENTATION atConf
                     => (Object otConf atConf dbTable otNative idAtExisting idAtCreate
-                    -> [Any (Attribute atConf dbTable)])
+                      -> [Any (Attribute atConf dbTable)])
                     -> Object  otConf atConf dbTable otNative idAtExisting idAtCreate
                     -> Presentation.Monad AnyCOMPONENT
 getShowOneComponent getAttrs o =
   do
     let attrs = getAttrs o
     headerAndValueList <- sequence $ mapAttributeAnyValue headerAndValueOf attrs
-    pure $ showOneComponent headerAndValueList
+    pure $ showOneComponent style headerAndValueList
   where
+    style            :: WildeStyle
+    style             = OmPres.objectTypeStyle_o o
     headerAndValueOf :: ATTRIBUTE_PRESENTATION atConf
                      => Attribute atConf dbTable typeForExisting typeForCreate
                      -> Presentation.Monad (Title,AnySVALUE)
@@ -54,17 +57,18 @@ getShowOneComponent getAttrs o =
         theTitle = wildeStyled . atTitle $ at
         presO = atPresentationO at
 
-showOneComponent :: [(Title,AnySVALUE)] -> AnyCOMPONENT
-showOneComponent  = AnyCOMPONENT . ShowOneComponent
+showOneComponent :: WildeStyle -> [(Title,AnySVALUE)] -> AnyCOMPONENT
+showOneComponent componentStyle headerAndValueList =
+  AnyCOMPONENT $ ShowOneComponent componentStyle headerAndValueList
 
-newtype ShowOneComponent = ShowOneComponent [(Title,AnySVALUE)]
+data ShowOneComponent = ShowOneComponent WildeStyle [(Title,AnySVALUE)]
 
 instance COMPONENT ShowOneComponent where
-  componentHtml (ShowOneComponent headerAndValueList) =
+  componentHtml (ShowOneComponent componentStyle headerAndValueList) =
     Wilde.Render.AbstractTableToHtml.renderTable styledTable
     where
       styledTable   :: WildeTable
-      styledTable   = addStyleToSTYLING WS.presentationTableSingle unstyledTable
+      styledTable   = addStyleToSTYLING (WS.presentationTableSingle <> componentStyle) unstyledTable
       unstyledTable :: WildeTable
       unstyledTable  = headerValueTable
         renderTitle

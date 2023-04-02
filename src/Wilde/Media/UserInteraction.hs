@@ -40,6 +40,8 @@ module Wilde.Media.UserInteraction
          -- ** Form Block
 
          FormBlock(..),
+         formBlock_neutral,
+         formBlock_appendStyle,
 
          formBlockAppendMetaValues,
 
@@ -179,20 +181,39 @@ type FormAction = String
 -- A container of interaction and meta values, so that these can be pureed
 -- as a unit.
 --
-data FormBlock = FormBlock
-                 {
-                   formBlockInteraction :: [FormBlockRow],
-                   formBlockMetaValues  :: [Element]
-                 }
+data FormBlock
+  = FormBlock
+  {
+    formBlockInteraction :: [FormBlockRow]
+  , formBlockMetaValues  :: [Element]
+  , formBlockStyle       :: WildeStyle
+  }
+
+formBlock_neutral :: [FormBlockRow] -> [Element] -> FormBlock
+formBlock_neutral bls es = FormBlock bls es neutral
+
+formBlock_appendStyle :: WildeStyle -> FormBlock -> FormBlock
+formBlock_appendStyle style fb = fb { formBlockStyle = newStyle }
+  where
+    newStyle :: WildeStyle
+    newStyle  = formBlockStyle fb <> style
+
 instance Semigroup FormBlock where
   fp1 <> fp2 = FormBlock
-               { formBlockInteraction = concatMap formBlockInteraction [fp1,fp2]
-               , formBlockMetaValues  = concatMap formBlockMetaValues  [fp1,fp2]
+               { formBlockInteraction = concatMap formBlockInteraction blocks
+               , formBlockMetaValues  = concatMap formBlockMetaValues  blocks
+               , formBlockStyle       = appendMap formBlockStyle       blocks
                }
+               where
+                blocks :: [FormBlock]
+                blocks  = [fp1, fp2]
+
+                appendMap f l= foldl1 (<>) $ map f l
+
 
 
 instance Monoid FormBlock where
-  mempty = FormBlock [] []
+  mempty = FormBlock [] [] neutral
 
 
 -- | One row of a 'FormBlock'.
@@ -208,7 +229,7 @@ presentationOutputFormBlockRow = Right
 
 -- | Append 'Element's to the Meta Element's of a given 'FormBlock'.
 formBlockAppendMetaValues :: FormBlock -> [Element] -> FormBlock
-formBlockAppendMetaValues f@(FormBlock _ currentMetas) newMetas =
+formBlockAppendMetaValues f@(FormBlock _ currentMetas _) newMetas =
   f { formBlockMetaValues = currentMetas ++ newMetas }
 
 
@@ -237,7 +258,7 @@ formBlockInfoAsFormBlock atFbInfo@(FormBlockRowInfo {
                                       atFormBlockRow        = mbFormBlockRow
                                       })
   =
-  FormBlock formBlockRows theMetaValues
+  FormBlock formBlockRows theMetaValues neutral
   where
     formBlockRows = maybeToList mbFormBlockRow
 

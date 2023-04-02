@@ -31,7 +31,7 @@ import           Wilde.Application.Service.Service
 
 -- | A 'FormBlock' that displays a given string.
 debugFormBlock :: [(String,String)] -> FormBlock
-debugFormBlock debugInfos = FormBlock (map mkDisplay debugInfos) []
+debugFormBlock debugInfos = formBlock_neutral (map mkDisplay debugInfos) []
   where
     ek = globalElementKey "ek"
     mkDisplay (title,info) =

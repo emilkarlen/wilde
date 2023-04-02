@@ -1,9 +1,10 @@
-{-# LANGUAGE Rank2Types #-}
-
 -- | Construction of outputers for User Interaction.
 --
 -- Outputer of a form for entering an 'Object', with defaults
 -- from an existing 'Object'.
+
+{-# LANGUAGE Rank2Types #-}
+
 module Wilde.ObjectModel.UserInteraction.Output.ForCreateFrom
        (
          AttributeTypeInfo(..),
@@ -24,8 +25,10 @@ module Wilde.ObjectModel.UserInteraction.Output.ForCreateFrom
 -------------------------------------------------------------------------------
 
 
-import Wilde.Media.UserInteraction
-import Wilde.Media.UserInteraction.Output
+import           Wilde.Media.UserInteraction
+import           Wilde.Media.UserInteraction.Output
+
+import           Wilde.WildeUi.WildeStyle (WildeStyle)
 
 import           Wilde.ObjectModel.ObjectModel
 import qualified Wilde.ObjectModel.Presentation as OmPres
@@ -86,11 +89,21 @@ outputerNoClass at2ati attributeTypesOrder o@(Object {}) =
     getObjectTypeOutput :: [ObjectName -> FormBlockRowInfo]
                         -> ObjectName
                         -> FormBlock
-    -- TODO Improve handling of empty list of attributes to input.
-    getObjectTypeOutput [] objectName = FormBlock [] []
-
     getObjectTypeOutput attrOutputerList objectName =
-      let
-        rowInfos = [attrOutputer objectName | attrOutputer <- attrOutputerList]
-      in
+      addStyle $ getObjectTypeOutput_unstyled attrOutputerList objectName
+
+    getObjectTypeOutput_unstyled :: [ObjectName -> FormBlockRowInfo]
+                                 -> ObjectName
+                                 -> FormBlock
+    -- TODO Improve handling of empty list of attributes to input.
+    getObjectTypeOutput_unstyled [] objectName = formBlock_neutral [] []
+    getObjectTypeOutput_unstyled attrOutputerList objectName =
        concatAtFormBlockInfos rowInfos
+      where
+        rowInfos = [attrOutputer objectName | attrOutputer <- attrOutputerList]
+
+    addStyle :: FormBlock -> FormBlock
+    addStyle  = formBlock_appendStyle style
+
+    style :: WildeStyle
+    style  = OmPres.objectTypeStyle_o o

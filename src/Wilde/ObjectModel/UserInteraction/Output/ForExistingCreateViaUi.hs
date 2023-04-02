@@ -22,12 +22,12 @@ module Wilde.ObjectModel.UserInteraction.Output.ForExistingCreateViaUi
 
 import qualified Wilde.Utils.AnyValue as AnyValue
 
-import Wilde.Media.UserInteraction
-import Wilde.Media.UserInteraction.Output
+import           Wilde.Media.UserInteraction
+import           Wilde.Media.UserInteraction.Output
 
-import Wilde.ObjectModel.ObjectModelUtils as OmUtils
-
-import Wilde.ObjectModel.UserInteraction.Output.ExistingCommon
+import           Wilde.ObjectModel.ObjectModelUtils as OmUtils
+import qualified Wilde.ObjectModel.Presentation as OmPres
+import           Wilde.ObjectModel.UserInteraction.Output.ExistingCommon
 
 
 -------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ outputer ot attributeTypesOrder =
 
     getObjectTypeOutput :: [ObjectName -> FormBlockRow] -> ObjectName -> FormBlock
     getObjectTypeOutput mkAttrOutputFunList objectName =
-      FormBlock attributeOutputList []
+      FormBlock attributeOutputList [] (OmPres.objectTypeStyle ot)
       where
         attributeOutputList = map
                               (\mkAttrOutputForObj -> mkAttrOutputForObj objectName)
