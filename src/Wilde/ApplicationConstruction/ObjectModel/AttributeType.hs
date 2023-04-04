@@ -614,7 +614,7 @@ at_Bool_checkBox = at_Bool uiOutputerC uiInputer presOutputer neutral
     uiOutputerC = nonMonadicSimpleUiOutputer parseBoolDefault simpeUiOutputerC
 
     simpeUiOutputerC :: UiIo.ElementKey -> Maybe Bool -> UiIo.AnyWIDGET
-    simpeUiOutputerC ek mbDefault = Widgets.newAnyWidgetWithKey ek $
+    simpeUiOutputerC ek mbDefault = Widgets.newWidgetWithKeyAny ek $
                                     Widgets.CheckBoxInfo
                                     {
                                       Widgets.checkBoxValue   = "_"
@@ -645,7 +645,7 @@ at_Bool_optional_dropDown = at_Bool_optional uiOutputerC uiInputer presOutputer 
     uiOutputerC = nonMonadicSimpleUiOutputer parseBoolDefault simpeUiOutputerC
 
     simpeUiOutputerC :: UiIo.ElementKey -> Maybe (Maybe Bool) -> UiIo.AnyWIDGET
-    simpeUiOutputerC ek mbDefault = Widgets.newAnyWidgetWithKey ek $
+    simpeUiOutputerC ek mbDefault = Widgets.newWidgetWithKeyAny ek $
                                     Widgets.DropDownListInfo
                                     {
                                       Widgets.dropDownOptions = dropDownOptions

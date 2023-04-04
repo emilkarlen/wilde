@@ -52,14 +52,14 @@ data Configuration ann dbTable typeForExisting typeForCreate =
   (Sql.SQL_IDENTIFIER dbTable
   ,Typeable typeForExisting,Show typeForExisting) => Configuration
   {
-    presentationO            :: AttributeTypePresentation typeForExisting
-  , genericStringRepIo       :: AttributeGenericStringRepIo typeForExisting typeForCreate
-  , uiIoForAttributeName     :: UiIo.AttributeTypeUiIoForExisting typeForExisting
-  , uiCreateOption           :: Maybe (AttributeTypeCreateOption typeForCreate)
-  , mediaIoForCreate         :: AttributeTypeMediaIoForCreate typeForExisting typeForCreate
+    presentationO            :: AttributeTypePresentation                          typeForExisting
+  , genericStringRepIo       :: AttributeGenericStringRepIo                        typeForExisting typeForCreate
+  , uiIoForAttributeName     :: UiIo.AttributeTypeUiIoForExisting                  typeForExisting
+  , uiCreateOption           :: Maybe (AttributeTypeCreateOption                                   typeForCreate)
+  , mediaIoForCreate         :: AttributeTypeMediaIoForCreate                      typeForExisting typeForCreate
   , databaseConfForExisting  :: AttributeTypeDatabaseConfigForExisting     dbTable typeForExisting
   , dbPresentationInfoGetter :: AttributeWithPresentationInfoDbInputerInfo dbTable typeForExisting
-  , annotation               :: ann dbTable typeForExisting typeForCreate
+  , annotation               :: ann                                        dbTable typeForExisting typeForCreate
   }
 
 

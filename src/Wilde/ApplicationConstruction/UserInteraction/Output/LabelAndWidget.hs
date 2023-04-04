@@ -1,3 +1,5 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Wilde.ApplicationConstruction.UserInteraction.Output.LabelAndWidget
        (
          AttrOutputAsString,
@@ -40,6 +42,7 @@ import Wilde.ObjectModel.ObjectModel
 import Wilde.ApplicationConstruction.UserInteraction.Widgets
 import Wilde.ObjectModel.UserInteraction.Output.CreateCommon
 import qualified Wilde.ObjectModel.UserInteraction.Output.ExistingCommon as UiOExisting
+import qualified Wilde.Media.UserInteraction.Output as UiO
 
 
 -------------------------------------------------------------------------------
@@ -53,7 +56,7 @@ import qualified Wilde.ObjectModel.UserInteraction.Output.ExistingCommon as UiOE
 
 
 -------------------------------------------------------------------------------
--- | Short cut for method that construct 'LabelAndWidget' from strings,
+-- | Short cut for method that constructs a 'WIDGET' from strings,
 -- given a custom type of default value.
 -- (The custom type of default value is needed since it can be
 -- both 'AttributeWidgetDefaultValueForCreate' (for create), and
@@ -118,7 +121,7 @@ attrOutput_dropDown optional values renderDefault attributeName defaultValue obj
 
 widget_dropDownList :: Bool -> MultiWidgetConstructor
 widget_dropDownList optional mbKey attributeName values objectName =
-  AnyWIDGET $ newWidgetWithKey (objectName,attributeName) widgetInfo
+  newWidgetWithKeyAny (objectName,attributeName) widgetInfo
   where
     widgetInfo = DropDownListInfo
                  {
@@ -152,19 +155,19 @@ attrOutput_oneOfManyAttribute widgetConstructor attributeName values mbKey objec
 -- * uses a simpler representation of the default value for-create, that uses the
 -- fact that the type-for-existing and type-for-create are identical.
 -------------------------------------------------------------------------------
-nonMonadicSimpleUiOutputer :: (GenericWidgetDefaultValue -> Maybe a)
+nonMonadicSimpleUiOutputer :: forall a. (GenericWidgetDefaultValue -> Maybe a)
                            -> (ElementKey -> Maybe a -> AnyWIDGET)
                            -> AttributeName
                            -> UiOExisting.WidgetConstructorGetter (AttributeWidgetDefaultValueForCreate a a)
 nonMonadicSimpleUiOutputer parseStringDefault mkWidget attributeName =
-  pure $ \mbDefaultC objectName ->
-    let
-      mbEC   = simplifyECDefault parseStringDefault mbDefaultC
-      ek     = elementKey objectName attributeName       :: ElementKey
-      widget = mkWidget ek mbEC                          :: AnyWIDGET
-    in
-     widget
+  pure retVal
   where
+    retVal :: UiO.WidgetConstructorForObjectWithDefault (AttributeWidgetDefaultValueForCreate a a)
+    retVal mbDefaultC objectName = mkWidget ek mbEC
+      where
+        mbEC   = simplifyECDefault parseStringDefault mbDefaultC
+        ek     = elementKey objectName attributeName :: ElementKey
+
     simplifyECDefault :: (GenericWidgetDefaultValue -> Maybe a)
                       -> Maybe (AttributeWidgetDefaultValueForCreate a a) -> Maybe a
     simplifyECDefault _ Nothing = Nothing
@@ -185,10 +188,4 @@ newAttributeOutput :: WIDGET widgetInfo
                    -> widgetInfo
                    -> AnyWIDGET
 newAttributeOutput key theWidgetInfo =
-  AnyWIDGET withWidgetKey
-  where
-   withWidgetKey = WithWidgetKey
-                   {
-                     widgetKey  = key
-                   , widgetInfo = theWidgetInfo
-                   }
+  newWidgetWithKeyAny key theWidgetInfo

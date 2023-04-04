@@ -22,13 +22,13 @@ import qualified Wilde.Media.ElementSet as ES
 import qualified Wilde.Media.UserInteraction.Input as UiI
 import qualified Wilde.Media.UserInteraction.Io as UiIo
 
-import Wilde.ObjectModel.ObjectModel
+import           Wilde.ObjectModel.ObjectModel
 import qualified Wilde.ObjectModel.UserInteraction as OmUi
 import qualified Wilde.ObjectModel.UserInteraction.Input.ForExisting as InputForExisting
 import qualified Wilde.ObjectModel.UserInteraction.Output.ForExisting as OutputForExisting
 import qualified Wilde.ObjectModel.UserInteraction.Output.CreateCommon as OutputCreateCommon
 
-import Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAndDbIo.Configuration
+import           Wilde.ApplicationConstruction.AttributeTypeConfiguration.UiIoAndDbIo.Configuration
 
 
 -------------------------------------------------------------------------------

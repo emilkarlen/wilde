@@ -164,7 +164,7 @@ type GenericWidgetDefaultValue = String
 type MultiWidgetConstructor = Maybe GenericStringRep -- ^ pre-selected
                               -> CrossRefIdentifier -- ^ Attribute name
                               -> [MultiItem]        -- ^ Values (key,presentation string)
-                              -> ElementKeyPrefix   -- ^ Object name
+                              -> ObjectName
                               -> AnyWIDGET
 
 -- | For web: the URL of a form.
@@ -342,29 +342,30 @@ fbamAppendBlocks x@(FormBlocksAndMetas _ currentBlocks) newBlocks =
 -- by an application per \"request\".  (Thus, if the page contains many forms,
 -- the user has to select which one to process.)
 data Form = Form
-            {
-              -- | Information in the form that is invisible to the user.
-              formMetaValues  :: [Element],
+  {
+    -- | Information in the form that is invisible to the user.
+    formMetaValues  :: [Element]
 
-              -- | The things in the form that is visible to the user.
-              formBlocks :: [FormBlock],
+    -- | The things in the form that is visible to the user.
+  , formBlocks :: [FormBlock]
 
-              -- | Defines \"who\" should process the form.
+    -- | Defines \"who\" should process the form.
 
-              -- Mer specifik typ här??
-              -- Skulle va tjusigt om en tjänst = hs-metod kunde anges här.
-              -- Ännu mer om det kunde typas!
-              formAction      :: Maybe FormAction
-            }
+    -- Mer specifik typ här??
+    -- Skulle va tjusigt om en tjänst = hs-metod kunde anges här.
+    -- Ännu mer om det kunde typas!
+  , formAction      :: Maybe FormAction
+  }
 
 -- | Constructs a 'Form' for a 'FormBlock' and a 'FormAction'.
 formForBlock :: FormBlock -> Maybe FormAction -> Form
-formForBlock formBlock formAction = Form
-                    {
-                      formMetaValues  = [],
-                      formAction      = formAction,
-                      formBlocks      = [formBlock]
-                     }
+formForBlock formBlock formAction =
+  Form
+  {
+    formMetaValues  = []
+  , formAction      = formAction
+  , formBlocks      = [formBlock]
+   }
 
 -- | Append 'Element's to the Meta Element's of a given 'Form'.
 formAppendMetaValues :: Form -> [Element] -> Form
@@ -372,17 +373,19 @@ formAppendMetaValues f@(Form currentMetas _ _) newMetas =
   f { formMetaValues = currentMetas ++ newMetas }
 
 -- | Constructs a 'Form' from a 'formBlocksAndMetas'.
-formForFormBlocksAndMetas :: FormBlocksAndMetas
-                             -> [Element] -- ^ Meta values (in addition to those
-                                          -- in the 'FormBlocksAndMetas's)
-                             -> Maybe FormAction
-                             -> Form
-formForFormBlocksAndMetas formBlocksAndMetas formMetas formAction = Form
-                    {
-                      formMetaValues  = formMetas ++ fbamMetas formBlocksAndMetas,
-                      formAction      = formAction,
-                      formBlocks      = fbamBlocks formBlocksAndMetas
-                     }
+formForFormBlocksAndMetas
+  :: FormBlocksAndMetas
+  -> [Element] -- ^ Meta values (in addition to those
+               -- in the 'FormBlocksAndMetas's)
+  -> Maybe FormAction
+  -> Form
+formForFormBlocksAndMetas formBlocksAndMetas formMetas formAction =
+  Form
+  {
+    formMetaValues  = formMetas ++ fbamMetas formBlocksAndMetas
+  , formAction      = formAction
+  , formBlocks      = fbamBlocks formBlocksAndMetas
+  }
 
 -- | Constructs a 'Form' from a 'formBlocksAndMetas' that invokes
 -- the same CGI program that is calling this method.

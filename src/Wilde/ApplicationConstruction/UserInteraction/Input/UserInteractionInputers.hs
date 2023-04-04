@@ -3,6 +3,8 @@
 -------------------------------------------------------------------------------
 module Wilde.ApplicationConstruction.UserInteraction.Input.UserInteractionInputers
        (
+         ElementValueParser,
+
          mkUiInputer,
          mkUiInputer_c,
 
@@ -20,11 +22,11 @@ module Wilde.ApplicationConstruction.UserInteraction.Input.UserInteractionInpute
 -------------------------------------------------------------------------------
 
 
-import Data.Char
+import           Data.Char
 
-import Wilde.Media.ElementSet
+import           Wilde.Media.ElementSet
 
-import Wilde.Media.MonadWithInputMedia
+import           Wilde.Media.MonadWithInputMedia
 
 import qualified Wilde.Media.ElementSet as ES
 
@@ -39,6 +41,9 @@ import qualified Wilde.ApplicationConstruction.UserInteraction.Input.EvaluateExp
 -------------------------------------------------------------------------------
 
 
+type ElementValueParser a = ElementKey -> ElementValue -> ElementInputResult a
+
+
 mkUiInputer :: (ElementKey -> Lookuper a)
             -> UiIo.AttributeName
             -> UiI.UserInteractionInputer (ElementInputResult a)
@@ -47,12 +52,12 @@ mkUiInputer lookuper attributeName objectName =
   where
     ek = UiIo.elementKey objectName attributeName :: ElementKey
 
-mkUiInputer_c :: (Parser (Maybe [ElementValue]) a)
+mkUiInputer_c :: Parser (Maybe [ElementValue]) a
             -> UiIo.AttributeName
             -> UiI.UserInteractionInputer (ElementInputResult a)
 mkUiInputer_c lookupConverter = mkUiInputer (mkLookuper lookupConverter)
 
-readDouble_expr :: ElementKey -> String -> ElementInputResult Double
+readDouble_expr :: ElementValueParser Double
 readDouble_expr elementKey input =
   case dropWhile isSpace input of
     "" -> Left (elementKey,ES.ValueMissing,Nothing)
@@ -60,7 +65,7 @@ readDouble_expr elementKey input =
             (Left err) -> Left (elementKey,ES.InvalidSyntax,Just (Eval.errorString err))
             (Right x)  -> Right x
 
-readInteger_expr :: ElementKey -> String -> ElementInputResult Integer
+readInteger_expr :: ElementValueParser Integer
 readInteger_expr elementKey input =
   case dropWhile isSpace input of
     "" -> Left (elementKey,ES.ValueMissing,Nothing)

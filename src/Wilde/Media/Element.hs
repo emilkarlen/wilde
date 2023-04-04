@@ -10,6 +10,7 @@ module Wilde.Media.Element
          ElementKey,
          ElementKeyPrefix,
          ElementKeyLeaf,
+         ElementKeyComponent,
          ElementValue,
          elementValueForFlags,
 
@@ -99,31 +100,41 @@ elementKey :: ElementKeyPrefix -> ElementKeyLeaf -> ElementKey
 elementKey prefix leaf = (prefix,leaf)
 
 -------------------------------------------------------------------------------
+-- | A component in an 'ElementKey'.
+--
+-- Must not contain dots.
+-------------------------------------------------------------------------------
+type ElementKeyComponent = String
+
+-------------------------------------------------------------------------------
 -- | The \"leaf\" part of an 'ElementKey'.
 -------------------------------------------------------------------------------
-type ElementKeyLeaf = String
+type ElementKeyLeaf = ElementKeyComponent
+
 
 -------------------------------------------------------------------------------
 -- | Prefix of an 'ElementKey'.
 -------------------------------------------------------------------------------
-type ElementKeyPrefix = [String]
+type ElementKeyPrefix = [ElementKeyComponent]
 
 -------------------------------------------------------------------------------
 -- | Makes an 'ElementKeyPrefix' that consists of a single part.
+--
+-- The argument must not contain any dots.
 -------------------------------------------------------------------------------
-elementKeyPrefixFromString :: String -> ElementKeyPrefix
+elementKeyPrefixFromString :: ElementKeyComponent -> ElementKeyPrefix
 elementKeyPrefixFromString = (:[])
 
 -------------------------------------------------------------------------------
 -- | Adds a part of a 'ElementKeyPrefix'.
 -------------------------------------------------------------------------------
-elementKeyPrefixAdd :: ElementKeyPrefix -> String -> ElementKeyPrefix
+elementKeyPrefixAdd :: ElementKeyPrefix -> ElementKeyComponent -> ElementKeyPrefix
 elementKeyPrefixAdd ekp s = ekp ++ [s]
 
 -------------------------------------------------------------------------------
 -- | An 'ElementKey' with an empty prefix.
 -------------------------------------------------------------------------------
-globalElementKey :: String -> ElementKey
+globalElementKey :: ElementKeyComponent -> ElementKey
 globalElementKey s = ([],s)
 
 -------------------------------------------------------------------------------

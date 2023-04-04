@@ -66,7 +66,6 @@ import qualified Data.List.NonEmpty as NonEmpty
 import qualified Wilde.Media.ElementSet as ES
 import Wilde.Media.WildeMedia hiding (otKey)
 import Wilde.Media.GenericStringRep
-import Wilde.Media.UserInteraction
 import Wilde.Media.UserInteraction.Input
 import Wilde.Media.UserInteraction as UI
 
