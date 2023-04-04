@@ -1,11 +1,13 @@
-{-# LANGUAGE Rank2Types #-}
-{-# LANGUAGE FlexibleContexts #-}
-
 -------------------------------------------------------------------------------
 -- | User Interaction Input/Output for common types.
 --
 -- Also utilities for creating Inputers and Outputers.
 -------------------------------------------------------------------------------
+
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE Rank2Types #-}
+{-# LANGUAGE FlexibleContexts #-}
+
 module Wilde.ApplicationConstruction.UserInteraction.Io
        (
          AttributeTypeUiIoForExisting(..),
@@ -68,35 +70,32 @@ module Wilde.ApplicationConstruction.UserInteraction.Io
 -------------------------------------------------------------------------------
 
 
-import Data.Convertible.Base
+import           Data.Convertible.Base
 
 import qualified Data.Char as Char
 
-import Data.Word
-import Data.Int
+import           Data.Word
+import           Data.Int
 
-import Data.Time
+import           Data.Time
 
-import Control.Monad.IO.Class
+import           Control.Monad.IO.Class
 
-import Wilde.Utils.Utils
+import           Wilde.Utils.Utils
 
-import Wilde.GenericUi.Value
+import           Wilde.GenericUi.Value
 
-import Wilde.Media.ElementSet as ES
-import qualified Wilde.ApplicationConstruction.ElementSetUtils as ESU
-
+import           Wilde.Media.ElementSet as ES
 import           Wilde.Media.UserInteraction.Output
 import qualified Wilde.Media.UserInteraction.Input as UiI
 import           Wilde.Media.UserInteraction.Io
 
-import Wilde.ObjectModel.UserInteraction.Output.CreateCommon
+import           Wilde.ObjectModel.UserInteraction.Output.CreateCommon
 import qualified Wilde.ObjectModel.UserInteraction.Output.ExistingCommon as UiOExisting
 
-import Wilde.ApplicationConstruction.UserInteraction.Input.UserInteractionInputers
-
+import qualified Wilde.ApplicationConstruction.ElementSetUtils as ESU
+import           Wilde.ApplicationConstruction.UserInteraction.Input.UserInteractionInputers
 import qualified Wilde.ApplicationConstruction.UserInteraction.Input.DateParser as DateParser
-
 import qualified Wilde.ApplicationConstruction.UserInteraction.Output.LabelAndWidget as LabelAndWidget
 import qualified Wilde.ApplicationConstruction.UserInteraction.Input.SyntaxCheck as SyntaxCheck
 
@@ -110,6 +109,11 @@ type AttributeTypeUiIoForExisting a =
   UserInteractionIo
   (UiOExisting.AttributeUiDefaultForExisting a)
   (ElementInputResult a)
+
+type AttributeTypeUiIoForCreate typeForExisting typeForCreate =
+  UserInteractionIo
+  (AttributeWidgetDefaultValueForCreate typeForExisting typeForCreate)
+  (ElementInputResult typeForCreate)
 
 
 -------------------------------------------------------------------------------
@@ -140,11 +144,6 @@ data AttributeTypeUserInteractionIo typeForExisting typeForCreate =
     -- (typeForExisting is an existing value)
     atuiioExistingIo :: AttributeTypeUiIoForExisting typeForExisting
   }
-
-type AttributeTypeUiIoForCreate typeForExisting typeForCreate =
-  UserInteractionIo
-  (AttributeWidgetDefaultValueForCreate typeForExisting typeForCreate)
-  (ElementInputResult typeForCreate)
 
 
 -------------------------------------------------------------------------------
@@ -198,7 +197,7 @@ readConvertibleFromInteger_expr elementKey input =
     case safeConvert x of
       Left _  -> Left (elementKey,
                        InvalidValue,
-                       Just $ "Out of range: " ++ (show x))
+                       Just $ "Out of range: " ++ show x)
       Right y -> Right y
 
 uiIo_Integer :: Int -- ^ Input Width
@@ -213,7 +212,7 @@ uiIo_Date  :: Int -- ^ Input width
            -> AttributeTypeUserInteractionIo Day Day
 uiIo_Date inputWidth = uiIo_asString inputWidth True show readUiiMonad_Date
 
-readUiiMonad_Date :: ElementKey -> ElementValue -> ElementInputResult Day
+readUiiMonad_Date :: ElementValueParser Day
 readUiiMonad_Date ek singletonValue =
   if SyntaxCheck.checkDate singletonValue
     then readUiiMonad ek singletonValue
@@ -234,7 +233,7 @@ uiIo_Date_withConvenienteUiInput inputWidth =
       tm <- liftIO getCurrentTime
       pure $ parse (utctDay tm)
 
-    parse :: Day -> ElementKey -> String -> ElementInputResult Day
+    parse :: Day -> ElementValueParser Day
     parse baseDate ek s = case DateParser.parseEmlFormat defaultTimeLocale Nothing baseDate s of
       Left _  -> Left (ek,InvalidSyntax,Just s)
       Right x -> pure x
@@ -278,102 +277,124 @@ uiIo_optional inputWidth = uiIo_asString_optional inputWidth True show readUiiMo
 -------------------------------------------------------------------------------
 
 
-uiIo_asStringInM :: Int  -- ^ Input field width
+uiIo_asStringInM :: forall a.
+                    Int  -- ^ Input field width
                  -> Bool -- ^ Trim input, and treat an empty string as if a value is missing.
                  -> UserInteractionOutputMonad (a -> String)
-                 -> UiI.Monad (ElementKey -> String -> ElementInputResult a)
+                 -> UiI.Monad (ElementValueParser a)
                  -> AttributeTypeUserInteractionIo a a
 uiIo_asStringInM inputWidth trimAndEmptyIsMissing getRenderValue getParseString =
-  let
-    output renderValue attributeName mbValue objectName = LabelAndWidget.attrOutput_string inputWidth renderValue attributeName mbValue objectName
-  in
-
    AttributeTypeUserInteractionIo
    {
-     atuiioCreateIo = UserInteractionIo
-                      { uiOutputer = \attributeName -> do
-                           renderValue <- getRenderValue
-                           pure $ output (renderAttributeUiDefaultForCreate renderValue) attributeName
-                      , uiInputer  = \attributeName -> attrInputInM trimAndEmptyIsMissing getParseString attributeName
-                      },
-     atuiioExistingIo = UserInteractionIo
-                        { uiOutputer = \attributeName -> do
-                             renderValue <- getRenderValue
-                             pure $ output renderValue attributeName
-                        , uiInputer  = \attributeName -> attrInputInM trimAndEmptyIsMissing getParseString attributeName
-                        }
+     atuiioCreateIo =
+      UserInteractionIo
+      {
+        uiOutputer = \attributeName -> do
+           renderValue <- getRenderValue
+           pure $ output (renderAttributeUiDefaultForCreate renderValue) attributeName
+      , uiInputer  = inputter
+      },
+     atuiioExistingIo =
+      UserInteractionIo
+      {
+        uiOutputer = \attributeName -> do
+           renderValue <- getRenderValue
+           pure $ output renderValue attributeName
+      , uiInputer  = inputter
+      }
    }
+   where
+    inputter :: AttributeName -> UiI.UserInteractionInputer (ElementInputResult a)
+    inputter attributeName = attrInputInM trimAndEmptyIsMissing getParseString attributeName
+
+    output :: (dflt -> String) -> AttributeName -> WidgetConstructorForObjectWithDefault dflt
+    output renderValue attributeName mbValue objectName = LabelAndWidget.attrOutput_string inputWidth renderValue attributeName mbValue objectName
 
 uiIo_asString_optionalOnCreate :: Int   -- ^ Input field width.
                                -> Bool  -- ^ Existing: Trim input, and treat an empty string as value-is-missing.
                                -> Bool  -- ^ Create: Trim input, and treat an empty string as a 'Nothing'.
                                -> (a -> String)
-                               -> (ElementKey -> String -> ElementInputResult a)
+                               -> ElementValueParser a
                                -> AttributeTypeUserInteractionIo a (Maybe a)
 uiIo_asString_optionalOnCreate inputWidth existingTrimAndEmptyIsMissing createTrimAndEmptyNothing
   renderValue parseString =
-  let
+   AttributeTypeUserInteractionIo
+   {
+     atuiioCreateIo =
+      UserInteractionIo
+      {
+        uiOutputer = \attributeName -> pure $
+                     output
+                     (renderAttributeUiDefaultForCreate_optionalOnCreate renderValue)
+                     attributeName
+      , uiInputer  = \attributeName -> attrInput_optional createTrimAndEmptyNothing parseString attributeName
+      },
+     atuiioExistingIo =
+      UserInteractionIo
+      {
+        uiOutputer = \attributeName -> pure $ output renderValue attributeName
+      , uiInputer  = \attributeName -> attrInput existingTrimAndEmptyIsMissing parseString attributeName
+      }
+   }
+   where
+    output :: (dflt -> String) -> AttributeName -> WidgetConstructorForObjectWithDefault dflt
     output renderValue attributeName mbValue objectName =
       LabelAndWidget.attrOutput_string inputWidth renderValue attributeName mbValue objectName
-  in
-   AttributeTypeUserInteractionIo
-   {
-     atuiioCreateIo = UserInteractionIo
-                      { uiOutputer = \attributeName ->  pure $
-                                     output
-                                     (renderAttributeUiDefaultForCreate_optionalOnCreate renderValue)
-                                     attributeName
-                      , uiInputer  = \attributeName -> attrInput_optional createTrimAndEmptyNothing parseString attributeName
-                      },
-     atuiioExistingIo = UserInteractionIo
-                        { uiOutputer = \attributeName -> pure $ output renderValue attributeName
-                        , uiInputer  = \attributeName -> attrInput existingTrimAndEmptyIsMissing parseString attributeName
-                        }
-   }
 
-uiIo_asString_optional :: Int   -- ^ Input field width.
+uiIo_asString_optional :: forall a. Int   -- ^ Input field width.
                        -> Bool  -- ^ Trim input, and treat an empty string as a 'Nothing'.
                        -> (a -> String)
-                       -> (ElementKey -> String -> ElementInputResult a)
+                       -> ElementValueParser a
                        -> AttributeTypeUserInteractionIo (Maybe a) (Maybe a)
 uiIo_asString_optional inputWidth trimAndEmptyNothing renderValue parseString =
-  let
-    output      renderValue attributeName mbValue objectName = LabelAndWidget.attrOutput_string inputWidth renderValue                    attributeName mbValue objectName
-    outputMaybe             attributeName mbValue objectName = LabelAndWidget.attrOutput_string inputWidth (renderMaybeValue renderValue) attributeName mbValue objectName
-  in
    AttributeTypeUserInteractionIo
    {
-     atuiioCreateIo = UserInteractionIo
-                      { uiOutputer = \attributeName ->  pure $
-                                     output
-                                     (renderAttributeUiDefaultForCreate_optional renderValue)
-                                     attributeName
-                      , uiInputer  = \attributeName -> attrInput_optional trimAndEmptyNothing parseString attributeName
-                      },
-     atuiioExistingIo = UserInteractionIo
-                        { uiOutputer = \attributeName -> pure $ outputMaybe attributeName
-                        , uiInputer  = \attributeName -> attrInput_optional trimAndEmptyNothing parseString attributeName
-                        }
+     atuiioCreateIo =
+      UserInteractionIo
+      {
+        uiOutputer = \attributeName ->  pure $
+                     output
+                     (renderAttributeUiDefaultForCreate_optional renderValue)
+                     attributeName
+      , uiInputer  = \attributeName -> attrInput_optional trimAndEmptyNothing parseString attributeName
+      },
+     atuiioExistingIo =
+      UserInteractionIo
+      {
+        uiOutputer = \attributeName -> pure $ outputMaybe attributeName
+      , uiInputer  = \attributeName -> attrInput_optional trimAndEmptyNothing parseString attributeName
+      }
    }
+  where
+    output :: (dflt -> String) -> AttributeName -> WidgetConstructorForObjectWithDefault dflt
+    output      renderValue attributeName mbValue objectName = LabelAndWidget.attrOutput_string inputWidth renderValue                    attributeName mbValue objectName
+
+    outputMaybe :: AttributeName -> WidgetConstructorForObjectWithDefault (Maybe a)
+    outputMaybe             attributeName mbValue objectName = LabelAndWidget.attrOutput_string inputWidth (renderMaybeValue renderValue) attributeName mbValue objectName
 
 uiIo_optional_from_mandatory :: AttributeTypeUserInteractionIo a a
                              -> AttributeTypeUserInteractionIo (Maybe a) (Maybe a)
-uiIo_optional_from_mandatory atUiIo@(AttributeTypeUserInteractionIo {
-                                        atuiioCreateIo    = UserInteractionIo mandatoryOutpCreate   mandatoryInpCreate,
-                                        atuiioExistingIo  = UserInteractionIo mandatoryOutpExisting mandatoryInpExisting
-                                        }) =
-
-
+uiIo_optional_from_mandatory
+  atUiIo@(AttributeTypeUserInteractionIo
+  {
+    atuiioCreateIo    = UserInteractionIo mandatoryOutpCreate   mandatoryInpCreate
+  , atuiioExistingIo  = UserInteractionIo mandatoryOutpExisting mandatoryInpExisting
+  })
+  =
   AttributeTypeUserInteractionIo
   {
-    atuiioCreateIo = UserInteractionIo
-                     { uiOutputer = outputerCreate
-                     , uiInputer  = \attributeName -> mkOptionalInp (mandatoryInpCreate attributeName)
-                     },
-    atuiioExistingIo = UserInteractionIo
-                       { uiOutputer = \attributeName -> mkOptionalOutp (mandatoryOutpExisting attributeName)
-                       , uiInputer  = \attributeName -> mkOptionalInp  (mandatoryInpExisting attributeName)
-                       }
+    atuiioCreateIo =
+      UserInteractionIo
+      {
+        uiOutputer = outputerCreate
+      , uiInputer  = \attributeName -> mkOptionalInp (mandatoryInpCreate attributeName)
+      },
+    atuiioExistingIo =
+      UserInteractionIo
+      {
+        uiOutputer = \attributeName -> mkOptionalOutp (mandatoryOutpExisting attributeName)
+      , uiInputer  = \attributeName -> mkOptionalInp  (mandatoryInpExisting attributeName)
+      }
   }
   where
     outputerCreate = \attributeName ->
@@ -389,12 +410,8 @@ uiIo_optional_from_mandatory atUiIo@(AttributeTypeUserInteractionIo {
     mkOptionalInp mandatoryInputer objectName =
       inputer_optional_from_mandatory $ mandatoryInputer objectName
 
-    mkOptionalOutp :: UserInteractionOutputMonad (Maybe a
-                                                  -> ObjectName
-                                                  -> AnyWIDGET)
-                   -> UserInteractionOutputMonad (Maybe (Maybe a)
-                                                  -> ObjectName
-                                                  -> AnyWIDGET)
+    mkOptionalOutp :: UserInteractionOutputMonad (WidgetConstructorForObjectWithDefault a)
+                   -> UserInteractionOutputMonad (WidgetConstructorForObjectWithDefault (Maybe a))
     mkOptionalOutp m =
       do
         mandatory <- m
@@ -406,13 +423,13 @@ uiIo_optional_from_mandatory atUiIo@(AttributeTypeUserInteractionIo {
     fromOptionalDefault :: AttributeWidgetDefaultValueForCreate (Maybe a) (Maybe a)
                         -> Maybe (AttributeWidgetDefaultValueForCreate a a)
     fromOptionalDefault (DefaultCreateFromUiPreFill x) = Just (DefaultCreateFromUiPreFill x)
-    fromOptionalDefault (DefaultCreateFromExisting  x) = maybe Nothing (Just . DefaultCreateFromExisting) x
-    fromOptionalDefault (DefaultCreateFromCreate    x) = maybe Nothing (Just . DefaultCreateFromCreate)   x
+    fromOptionalDefault (DefaultCreateFromExisting  x) = DefaultCreateFromExisting <$> x
+    fromOptionalDefault (DefaultCreateFromCreate    x) = DefaultCreateFromCreate   <$> x
 
 uiIo_asString :: Int  -- ^ Input width
               -> Bool -- ^ Trim input, and treat an empty string as if a value is missing.
               -> (a -> String)
-              -> (ElementKey -> String -> ElementInputResult a)
+              -> ElementValueParser a
               -> AttributeTypeUserInteractionIo a a
 uiIo_asString inputWidth = uiIo_forStringConvertible (LabelAndWidget.attrOutput_string inputWidth)
 
@@ -421,7 +438,7 @@ uiIo_asTextArea :: (Int,Int)
                 -> Bool
                    -- ^ Trim input, and treat an empty string as if a value is missing.
                 -> (a -> String)
-                -> (ElementKey -> String -> ElementInputResult a)
+                -> ElementValueParser a
                 -> AttributeTypeUserInteractionIo a a
 uiIo_asTextArea size = uiIo_forStringConvertible (LabelAndWidget.attrOutput_textBox size)
 
@@ -441,9 +458,7 @@ uiIo_asDropDown_optional values =
 parseEnum_optional :: (Eq a,Read a)
                    => [(a,AnyVALUE)]
                       -- ^ values
-                   -> ElementKey
-                   -> String
-                   -> ElementInputResult (Maybe a)
+                   -> ElementValueParser (Maybe a)
 parseEnum_optional values ek "" = Right Nothing
 parseEnum_optional values ek valueAsString =
   case readCompletelyAndUnambigously valueAsString of
@@ -462,7 +477,7 @@ trimAndEmptyIsMissing input =
 uiIo_forStringConvertible :: (forall defaultValue . LabelAndWidget.AttrOutputAsString defaultValue)
                           -> Bool -- ^ Trim input, and treat an empty string as if a value is missing.
                           -> (a -> String)
-                          -> (ElementKey -> String -> ElementInputResult a)
+                          -> ElementValueParser a
                           -> AttributeTypeUserInteractionIo a a
 uiIo_forStringConvertible attrOutputForDefault trimAndEmptyIsMissing
   renderValue parseString =
@@ -492,9 +507,7 @@ uiIo_forStringConvertible attrOutputForDefault trimAndEmptyIsMissing
     where
       output :: (defaultValue -> String)
              -> AttributeName
-             -> (Maybe defaultValue)
-             -> ObjectName
-             -> UiI.AnyWIDGET
+             -> WidgetConstructorForObjectWithDefault defaultValue
       output renderDefault attributeName mbDefault objectName =
         attrOutputForDefault renderDefault attributeName mbDefault objectName
 
@@ -542,7 +555,7 @@ renderMaybeValue renderValue (Just v) = renderValue v
 
 
 
-readUiiMonad :: Read a => ElementKey -> ElementValue -> ElementInputResult a
+readUiiMonad :: Read a => ElementValueParser a
 readUiiMonad ek singletonValue =
   maybe
   (Left (ek,InvalidSyntax,Just singletonValue))
@@ -560,10 +573,10 @@ readUiiMonadMaybeString ek s = case s of
 
 -- | Inputer for a mandatory value.
 attrInput :: Bool -- ^ Trim input, and treat an empty string as if a value is missing.
-             -> (UiI.ElementKey -> UiI.ElementValue -> ElementInputResult a)
-             -> AttributeName
-             -> ObjectName
-             -> UiI.Monad (ElementInputResult a)
+          -> ElementValueParser a
+          -> AttributeName
+          -> ObjectName
+          -> UiI.Monad (ElementInputResult a)
 attrInput trimAndEmptyIsMissing parseString attributeName objectName =
   UiI.inInputMedia_raw theLookuper
   where
@@ -576,7 +589,7 @@ attrInput trimAndEmptyIsMissing parseString attributeName objectName =
 
 -- | Inputer for an optional value, in terms of a parser of a mandatory one.
 attrInput_optional :: Bool -- ^ Trim input, and treat an empty string as 'Nothing'.
-                   -> (UiI.ElementKey -> UiI.ElementValue -> ElementInputResult a)
+                   -> ElementValueParser a
                    -> AttributeName
                    -> ObjectName
                    -> UiI.Monad (ElementInputResult (Maybe a))
@@ -592,7 +605,7 @@ attrInput_optional trimAndEmptyNothing parseString attributeName objectName =
 
 -- | Inputer for a mandatory value.
 attrInputInM :: Bool -- ^ Trim input, and treat an empty string as if a value is missing.
-             -> UiI.Monad (UiI.ElementKey -> UiI.ElementValue -> ElementInputResult a)
+             -> UiI.Monad (ElementValueParser a)
              -> AttributeName
              -> ObjectName
              -> UiI.Monad (ElementInputResult a)

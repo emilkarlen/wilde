@@ -16,7 +16,7 @@ module Wilde.Media.UserInteraction.Io
 -------------------------------------------------------------------------------
 
 
-import Wilde.Media.UserInteraction
+import           Wilde.Media.UserInteraction
 import qualified Wilde.Media.UserInteraction.Input as UiI
 import qualified Wilde.Media.UserInteraction.Output as UiO
 

@@ -16,6 +16,7 @@ module Wilde.GenericUi.Widget
 
          -- * Labels for widgets
 
+         LabelString,
          Label(..),
        )
        where
@@ -44,13 +45,15 @@ import Wilde.Media.GenericStringRep
 -------------------------------------------------------------------------------
 
 
+type LabelString = String
+
 -- | A label in a 'Form'.
 --
 -- Typically, describes to the user the role of a 'Widget'.
 data Label = Label
              {
                labelKey    :: ElementKey
-             , labelString :: String
+             , labelString :: LabelString
              }
            deriving (Eq,Show)
 

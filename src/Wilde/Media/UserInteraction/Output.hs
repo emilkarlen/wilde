@@ -56,22 +56,22 @@ module Wilde.Media.UserInteraction.Output
 -------------------------------------------------------------------------------
 
 
-import Control.Monad.Trans
-import Control.Monad.Trans.Except
-import Control.Monad.Trans.Reader
+import           Control.Monad.Trans
+import           Control.Monad.Trans.Except
+import           Control.Monad.Trans.Reader
 
 import qualified Wilde.Utils.ExceptReaderT as ExceptReaderT
 import qualified Wilde.Utils.Logging.Class as Logger
 import qualified Wilde.Utils.Logging.Monad as Logging
 
 import qualified Wilde.Media.ElementSet as ES
-import Wilde.Media.CustomEnvironment
-import Wilde.Media.UserInteraction
+import           Wilde.Media.CustomEnvironment
+import           Wilde.Media.UserInteraction
 import qualified Wilde.Media.Database.Configuration as DbConf
 import qualified Wilde.Media.Database.Monad as DbConn
 import qualified Wilde.Media.Presentation as Presentation
 
-import Wilde.Media.MonadWithInputMedia
+import           Wilde.Media.MonadWithInputMedia
 
 import qualified Wilde.Application.Service.PopUp as PopUp
 import           Wilde.Media.Translations
@@ -83,15 +83,13 @@ import qualified Wilde.Application.StandardServices as StandardServices
 -------------------------------------------------------------------------------
 
 
--- TODO rename: e.g. WidgetConstructorGetter
 type WidgetConstructorGetter defaultType =
   UserInteractionOutputMonad
   (WidgetConstructorForObjectWithDefault defaultType)
 
 -- | Widget constructor for an object.
-type WidgetConstructorForObjectWithDefault defaultType = Maybe defaultType
-                                                         -> ObjectName
-                                                         -> AnyWIDGET
+type WidgetConstructorForObjectWithDefault defaultType =
+  Maybe defaultType -> ObjectName -> AnyWIDGET
 
 
 -------------------------------------------------------------------------------

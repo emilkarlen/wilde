@@ -10,10 +10,10 @@ module Wilde.ApplicationConstruction.UserInteraction.Widgets
 
          -- * Widget with key
 
-         WithWidgetKey(..),
+         WithWidgetKey,
 
          newWidgetWithKey,
-         newAnyWidgetWithKey,
+         newWidgetWithKeyAny,
 
          mkLabelAndWidgetFromInfo,
 
@@ -39,19 +39,18 @@ module Wilde.ApplicationConstruction.UserInteraction.Widgets
 -------------------------------------------------------------------------------
 
 
-import Data.Maybe
+import           Data.Maybe
 
-import Wilde.Render.Html.Types ( Html, HtmlAttr )
+import           Wilde.Render.Html.Types ( Html, HtmlAttr )
 import qualified Wilde.Render.Html.Attribute as HA
 import qualified Wilde.Render.Html.Element as HE
 
-import Wilde.GenericUi.Widget
-import Wilde.GenericUi.Value
+import           Wilde.GenericUi.Widget
+import           Wilde.GenericUi.Value
 
-import Wilde.Media.Element
-import Wilde.Media.UserInteraction (LabelAndWidget)
-
-import Wilde.Media.GenericStringRep
+import           Wilde.Media.Element
+import           Wilde.Media.UserInteraction (LabelAndWidget)
+import           Wilde.Media.GenericStringRep
 
 
 -------------------------------------------------------------------------------
@@ -83,11 +82,11 @@ newWidgetWithKey key theWidgetInfo =
    , widgetInfo = theWidgetInfo
    }
 
-newAnyWidgetWithKey :: WIDGET widgetInfo
+newWidgetWithKeyAny :: WIDGET widgetInfo
                     => ElementKey
                     -> widgetInfo
                     -> AnyWIDGET
-newAnyWidgetWithKey (objectName,attributeName) theWidgetInfo =
+newWidgetWithKeyAny (objectName,attributeName) theWidgetInfo =
   AnyWIDGET $ newWidgetWithKey (objectName,attributeName) theWidgetInfo
 
 -------------------------------------------------------------------------------
@@ -96,7 +95,7 @@ newAnyWidgetWithKey (objectName,attributeName) theWidgetInfo =
 -------------------------------------------------------------------------------
 mkLabelAndWidgetFromInfo :: WIDGET widgetInfo
                          => ElementKey
-                         -> String
+                         -> LabelString
                          -> widgetInfo
                          -> LabelAndWidget
 mkLabelAndWidgetFromInfo key title theWidgetInfo =
