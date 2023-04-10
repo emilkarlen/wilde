@@ -26,7 +26,6 @@ import           Wilde.ObjectModel.ObjectModelUtils as OmUtils
 import qualified Wilde.ObjectModel.UserInteraction as OmUi
 import qualified Wilde.ObjectModel.UserInteraction.Output.CreateCommon as CreateCommon
 import qualified Wilde.ObjectModel.UserInteraction.Output.Common as OutputCommon
-import Wilde.WildeUi.WildeStyle (WildeStyle)
 
 
 -------------------------------------------------------------------------------
@@ -45,8 +44,6 @@ outputerForStdSetup
   => [Any (AttributeType atConf dbTable)]
   -- ^ The attributes that should be input via the form,
   -- and the order they should be displayed in it.
-  -> WildeStyle
-  -- ^ Style of the FormBlock
   -> UiO.ObjectName
   -> UiO.UserInteractionOutputMonad UiO.FormBlock
 outputerForStdSetup = OutputCommon.outputerForSetupConstructor mkAtSetup

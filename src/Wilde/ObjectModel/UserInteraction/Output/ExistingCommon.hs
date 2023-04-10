@@ -1,40 +1,41 @@
+-- | Utilities related to outputers of existing objects.
+
 {-# LANGUAGE ExistentialQuantification #-}
 
--- | Utilities related to outputers of existing objects.
 module Wilde.ObjectModel.UserInteraction.Output.ExistingCommon
-       (
-         AttributeUiDefaultForExisting,
-         UserInteractionOutputerForExisting,
+(
+  AttributeUiDefaultForExisting,
+  UserInteractionOutputerForExisting,
 
-         ATTRIBUTE_OUTPUT_FOR_EXISTING(..),
-         AttributeTypeInfo(..),
+  ATTRIBUTE_OUTPUT_FOR_EXISTING(..),
+  AttributeTypeInfo(..),
 
-         AttributeInfo(..),
+  AttributeInfo(..),
 
-         at2ati,
-         attr2attri,
+  at2ati,
+  attr2attri,
 
-         getMkAttributeOutputFun,
+  getMkAttributeOutputFun,
 
-         -- * Configuration of the input form
+  -- * Configuration of the input form
 
-         AttributeTypeConfiguration(..),
-         AttributeTypeConfigurations,
+  AttributeTypeConfiguration(..),
+  AttributeTypeConfigurations,
 
-         -- ** The role of an 'AttributeType' in an input form.
+  -- ** The role of an 'AttributeType' in an input form.
 
-         AttributeTypeRole(..),
-         atConfigIs,
-         atsWith,
+  AttributeTypeRole(..),
+  atConfigIs,
+  atsWith,
 
-         -- * Re-exporting types used here
+  -- * Re-exporting types used here
 
-         WildeTitle,
-         PresentationOutputer(..),
-         AttributeName,
-         WidgetConstructorGetter(..),
-       )
-       where
+  WildeTitle,
+  PresentationOutputer(..),
+  AttributeName,
+  WidgetConstructorGetter(..),
+)
+where
 
 
 -------------------------------------------------------------------------------
@@ -43,12 +44,12 @@ module Wilde.ObjectModel.UserInteraction.Output.ExistingCommon
 
 
 --import Wilde.Media.UserInteraction.Io
-import Wilde.Media.UserInteraction.Output
+import           Wilde.Media.UserInteraction.Output
 
-import Wilde.ObjectModel.ObjectModelUtils as OmUtils
-import Wilde.ObjectModel.UserInteraction
+import           Wilde.ObjectModel.ObjectModelUtils as OmUtils
+import           Wilde.ObjectModel.UserInteraction
+import           Wilde.ObjectModel.Presentation (ATTRIBUTE_PRESENTATION(..))
 
-import Wilde.ObjectModel.Presentation (ATTRIBUTE_PRESENTATION(..))
 import           Wilde.WildeUi.UiPrimitives
 
 
@@ -65,7 +66,7 @@ data AttributeTypeInfo typeForExisting =
   {
     atiCrossRefKey              :: AttributeName
   , atiTitle                    :: WildeTitle
-  , atiPresentationO            :: PresentationOutputer typeForExisting
+  , atiPresentationO            :: PresentationOutputer               typeForExisting
   , atiOutputerForAttributeName :: UserInteractionOutputerForExisting typeForExisting
   }
 
@@ -151,11 +152,12 @@ getMkAttributeOutputFun (_,
 
 -- | The role of an 'AttributeType' in
 -- an input form.
-data AttributeTypeRole = UserInteraction
-                         -- ^ Widget for user input
-                       | Presentation
-                         -- ^ Just displays the value - no input
-                       deriving (Eq,Enum,Show,Read)
+data AttributeTypeRole
+  = UserInteraction
+    -- ^ Widget for user input
+  | Presentation
+    -- ^ Just displays the value - no input
+  deriving (Eq,Enum,Show,Read)
 
 data AttributeTypeConfiguration atConf dbTable =
   AttributeTypeConfiguration
