@@ -20,6 +20,7 @@ module Wilde.ApplicationConstruction.StandardServices.CreateOne
 import           Wilde.ObjectModel.ObjectModel
 import qualified Wilde.ObjectModel.Database as Database
 import qualified Wilde.ObjectModel.DatabaseAndPresentation as DatabaseAndPresentation
+import qualified Wilde.Media.UserInteraction as UI
 import qualified Wilde.ObjectModel.UserInteraction.Output.ForCreateFrom as OutputForCreateFrom
 import qualified Wilde.ObjectModel.UserInteraction.Output.ForCreate as OutputForCreate
 import qualified Wilde.ObjectModel.UserInteraction.Input.ForCreate as InputForCreate
@@ -96,5 +97,6 @@ createOneMain ot (Config titles attributeTypesOrder) = stepService def
     outputForm' :: UserInteractionOutputMonad FormBlocksAndMetas
     outputForm' =
       do
-        formBlock <- OutputForCreate.outputerForStdSetup attributeTypesOrder style theObjectName
+        formBlock'   <- OutputForCreate.outputerForStdSetup attributeTypesOrder theObjectName
+        let formBlock = UI.formBlock_appendStyle style formBlock'
         pure $ FormBlocksAndMetas [] [formBlock]
