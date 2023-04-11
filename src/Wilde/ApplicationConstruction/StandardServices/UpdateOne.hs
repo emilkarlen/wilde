@@ -35,7 +35,7 @@ import           Wilde.WildeUi.UiPrimitives (WildeTitle)
 
 import qualified Wilde.Media.MonadWithInputMedia as MIIA
 import           Wilde.Media.UserInteraction.Io
-import           Wilde.Media.UserInteraction.Output as UIO
+import           Wilde.Media.UserInteraction.Output as UiO
 
 import           Wilde.ObjectModel.ObjectModel
 import qualified Wilde.ObjectModel.GenericStringRep as OmGsr
@@ -160,7 +160,7 @@ updatableAtsList = OutputForExisting.atsWith OutputForExisting.UserInteraction
 
 
 -- | Configuration for an updatable 'AttributeType'.
-mkUpdatable :: (Any (AttributeType atConf dbTable))
+mkUpdatable :: Any (AttributeType atConf dbTable)
             -> OutputForExisting.AttributeTypeConfiguration atConf dbTable
 mkUpdatable at =
   OutputForExisting.AttributeTypeConfiguration
@@ -171,7 +171,7 @@ mkUpdatable at =
 
 -- | Configuration for an 'AttributeType' that is not updatable,
 -- but displayed in the input form.
-mkDisplayed :: (Any (AttributeType atConf dbTable))
+mkDisplayed :: Any (AttributeType atConf dbTable)
             -> OutputForExisting.AttributeTypeConfiguration atConf dbTable
 mkDisplayed at =
   OutputForExisting.AttributeTypeConfiguration
@@ -236,7 +236,7 @@ objectFormBlock :: OutputForExisting.ATTRIBUTE_OUTPUT_FOR_EXISTING atConf
                 => OutputForExisting.AttributeTypeConfigurations atConf dbTable
                 -> Object otConf atConf dbTable oNative idAtExisting idAtCreate
                 -> ObjectName
-                -> UserInteractionOutputMonad FormBlock
+                -> UiO.Monad FormBlock
 objectFormBlock atConfigs o oName =
   do
     outputer <- OutputForExisting.outputerObj (oType o) atConfigs

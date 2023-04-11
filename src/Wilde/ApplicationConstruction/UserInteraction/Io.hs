@@ -86,7 +86,7 @@ import           Wilde.Utils.Utils
 import           Wilde.GenericUi.Value
 
 import           Wilde.Media.ElementSet as ES
-import           Wilde.Media.UserInteraction.Output
+import qualified Wilde.Media.UserInteraction.Output as UiO
 import qualified Wilde.Media.UserInteraction.Input as UiI
 import           Wilde.Media.UserInteraction.Io
 
@@ -280,7 +280,7 @@ uiIo_optional inputWidth = uiIo_asString_optional inputWidth True show readUiiMo
 uiIo_asStringInM :: forall a.
                     Int  -- ^ Input field width
                  -> Bool -- ^ Trim input, and treat an empty string as if a value is missing.
-                 -> UserInteractionOutputMonad (a -> String)
+                 -> UiO.Monad (a -> String)
                  -> UiI.Monad (ElementValueParser a)
                  -> AttributeTypeUserInteractionIo a a
 uiIo_asStringInM inputWidth trimAndEmptyIsMissing getRenderValue getParseString =
@@ -307,7 +307,7 @@ uiIo_asStringInM inputWidth trimAndEmptyIsMissing getRenderValue getParseString 
     inputter :: AttributeName -> UiI.UserInteractionInputer (ElementInputResult a)
     inputter attributeName = attrInputInM trimAndEmptyIsMissing getParseString attributeName
 
-    output :: (dflt -> String) -> AttributeName -> WidgetConstructorForObjectWithDefault dflt
+    output :: (dflt -> String) -> AttributeName -> UiO.WidgetConstructorForObjectWithDefault dflt
     output renderValue attributeName mbValue objectName = LabelAndWidget.attrOutput_string inputWidth renderValue attributeName mbValue objectName
 
 uiIo_asString_optionalOnCreate :: Int   -- ^ Input field width.
@@ -337,7 +337,7 @@ uiIo_asString_optionalOnCreate inputWidth existingTrimAndEmptyIsMissing createTr
       }
    }
    where
-    output :: (dflt -> String) -> AttributeName -> WidgetConstructorForObjectWithDefault dflt
+    output :: (dflt -> String) -> AttributeName -> UiO.WidgetConstructorForObjectWithDefault dflt
     output renderValue attributeName mbValue objectName =
       LabelAndWidget.attrOutput_string inputWidth renderValue attributeName mbValue objectName
 
@@ -366,10 +366,10 @@ uiIo_asString_optional inputWidth trimAndEmptyNothing renderValue parseString =
       }
    }
   where
-    output :: (dflt -> String) -> AttributeName -> WidgetConstructorForObjectWithDefault dflt
+    output :: (dflt -> String) -> AttributeName -> UiO.WidgetConstructorForObjectWithDefault dflt
     output      renderValue attributeName mbValue objectName = LabelAndWidget.attrOutput_string inputWidth renderValue                    attributeName mbValue objectName
 
-    outputMaybe :: AttributeName -> WidgetConstructorForObjectWithDefault (Maybe a)
+    outputMaybe :: AttributeName -> UiO.WidgetConstructorForObjectWithDefault (Maybe a)
     outputMaybe             attributeName mbValue objectName = LabelAndWidget.attrOutput_string inputWidth (renderMaybeValue renderValue) attributeName mbValue objectName
 
 uiIo_optional_from_mandatory :: AttributeTypeUserInteractionIo a a
@@ -410,8 +410,8 @@ uiIo_optional_from_mandatory
     mkOptionalInp mandatoryInputer objectName =
       inputer_optional_from_mandatory $ mandatoryInputer objectName
 
-    mkOptionalOutp :: UserInteractionOutputMonad (WidgetConstructorForObjectWithDefault a)
-                   -> UserInteractionOutputMonad (WidgetConstructorForObjectWithDefault (Maybe a))
+    mkOptionalOutp :: UiO.Monad (UiO.WidgetConstructorForObjectWithDefault a)
+                   -> UiO.Monad (UiO.WidgetConstructorForObjectWithDefault (Maybe a))
     mkOptionalOutp m =
       do
         mandatory <- m
@@ -507,7 +507,7 @@ uiIo_forStringConvertible attrOutputForDefault trimAndEmptyIsMissing
     where
       output :: (defaultValue -> String)
              -> AttributeName
-             -> WidgetConstructorForObjectWithDefault defaultValue
+             -> UiO.WidgetConstructorForObjectWithDefault defaultValue
       output renderDefault attributeName mbDefault objectName =
         attrOutputForDefault renderDefault attributeName mbDefault objectName
 

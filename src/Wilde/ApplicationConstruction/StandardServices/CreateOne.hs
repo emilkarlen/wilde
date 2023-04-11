@@ -20,6 +20,7 @@ module Wilde.ApplicationConstruction.StandardServices.CreateOne
 import           Wilde.ObjectModel.ObjectModel
 import qualified Wilde.ObjectModel.Database as Database
 import qualified Wilde.ObjectModel.DatabaseAndPresentation as DatabaseAndPresentation
+import qualified Wilde.Media.UserInteraction.Output as UiO
 import qualified Wilde.Media.UserInteraction as UI
 import qualified Wilde.ObjectModel.UserInteraction.Output.ForCreateFrom as OutputForCreateFrom
 import qualified Wilde.ObjectModel.UserInteraction.Output.ForCreate as OutputForCreate
@@ -31,7 +32,7 @@ import           Wilde.ApplicationConstruction.Service.StepService
 import           Wilde.Application.ObjectTypeService
 
 import Wilde.ApplicationConstruction.StandardServices.CreateOneUtils
-    ( UserInteractionOutputMonad, inputFromUi_store_show )
+    ( inputFromUi_store_show )
 import           Wilde.ApplicationConstruction.StandardServices.SingleObjectServiceCommon
 
 import           Wilde.WildeUi.WildeStyle (WildeStyle)
@@ -94,7 +95,7 @@ createOneMain ot (Config titles attributeTypesOrder) = stepService def
     outputForm :: NonLastStep
     outputForm = toServiceMonad outputForm' >>= continue
 
-    outputForm' :: UserInteractionOutputMonad FormBlocksAndMetas
+    outputForm' :: UiO.Monad FormBlocksAndMetas
     outputForm' =
       do
         getFormBlock' <- OutputForCreate.outputerForStdSetup attributeTypesOrder

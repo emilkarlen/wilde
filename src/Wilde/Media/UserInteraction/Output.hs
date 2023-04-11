@@ -1,7 +1,10 @@
-{-# LANGUAGE FlexibleInstances #-}
-
 -- | Monad for generating User Interaction Output - information for producing a
 -- User Interface that lets the user input information to the program.
+--
+-- | Import qualified.
+
+{-# LANGUAGE FlexibleInstances #-}
+
 module Wilde.Media.UserInteraction.Output
        (
          module Wilde.Media.UserInteraction,
@@ -15,7 +18,7 @@ module Wilde.Media.UserInteraction.Output
          WidgetConstructorForObjectWithDefault,
          -- * The monad
 
-         UserInteractionOutputMonad,
+         Monad,
          UserInteractionOutputResult,
          UserInteractionOutputError(..),
          Presentation.Error(..),
@@ -56,6 +59,9 @@ module Wilde.Media.UserInteraction.Output
 -------------------------------------------------------------------------------
 
 
+import           Prelude hiding (Monad(..))
+
+import qualified Control.Monad as M
 import           Control.Monad.Trans
 import           Control.Monad.Trans.Except
 import           Control.Monad.Trans.Reader
@@ -84,7 +90,7 @@ import qualified Wilde.Application.StandardServices as StandardServices
 
 
 type WidgetConstructorGetter defaultType =
-  UserInteractionOutputMonad
+  Monad
   (WidgetConstructorForObjectWithDefault defaultType)
 
 -- | Widget constructor for an object.
@@ -119,8 +125,8 @@ newEnvironment :: ES.ElementSet  -- ^ media
                -> UserInteractionOutputEnvironment
 newEnvironment = UserInteractionOutputEnvironment
 
-withEnv :: (UserInteractionOutputEnvironment -> UserInteractionOutputEnvironment) -> UserInteractionOutputMonad a -> UserInteractionOutputMonad a
-withEnv modifyEnv (UserInteractionOutputMonad m) = UserInteractionOutputMonad $ ExceptReaderT.withEnv modifyEnv m
+withEnv :: (UserInteractionOutputEnvironment -> UserInteractionOutputEnvironment) -> Monad a -> Monad a
+withEnv modifyEnv (Monad m) = Monad $ ExceptReaderT.withEnv modifyEnv m
 
 setLogger :: Logger.AnyLogger -> UserInteractionOutputEnvironment -> UserInteractionOutputEnvironment
 setLogger l env = env { envLogger = l }
@@ -140,13 +146,13 @@ envButtonTexter = trButtonTexter . Presentation.outTranslations . envOutputing
 -- | A function that provides the label for Pop Up Buttons.
 type PopUpButtonTexter = PopUp.Button -> String
 
-newtype UserInteractionOutputMonad a =
-  UserInteractionOutputMonad (ExceptT UserInteractionOutputError (ReaderT UserInteractionOutputEnvironment IO) a)
+newtype Monad a =
+  Monad (ExceptT UserInteractionOutputError (ReaderT UserInteractionOutputEnvironment IO) a)
 
-instance MonadWithInputMedia UserInteractionOutputMonad where
+instance MonadWithInputMedia Monad where
   getInputMedia = fmap envMedia getEnv
 
-instance MonadWithInputMediaAndLookup UserInteractionOutputMonad where
+instance MonadWithInputMediaAndLookup Monad where
   inInputMedia = ES.integrateLookup integration
     where
       integration = ES.ElementSetMonadIntegration
@@ -155,10 +161,10 @@ instance MonadWithInputMediaAndLookup UserInteractionOutputMonad where
         , ES.throwError    = throwElementLookupError
         }
 
-instance MonadWithCustomEnvironment UserInteractionOutputMonad where
+instance MonadWithCustomEnvironment Monad where
   getCustomEnvironment = fmap envCustomEnvironment getEnv
 
-instance MonadWithCustomEnvironmentAndLookup UserInteractionOutputMonad where
+instance MonadWithCustomEnvironmentAndLookup Monad where
   inCustomEnvironment = ES.integrateLookup integration
     where
       integration = ES.ElementSetMonadIntegration
@@ -167,66 +173,66 @@ instance MonadWithCustomEnvironmentAndLookup UserInteractionOutputMonad where
         , ES.throwError    = throwElementLookupError
         }
 
-instance Logging.MonadWithLogging UserInteractionOutputMonad where
+instance Logging.MonadWithLogging Monad where
   getLogger = getEnvs envLogger
   withLogger logger = withEnv (setLogger logger)
 
-throwElementLookupError :: ES.ElementLookupError -> UserInteractionOutputMonad a
+throwElementLookupError :: ES.ElementLookupError -> Monad a
 throwElementLookupError err = throwErr $ Presentation.MediaLookupError err
 
-instance Monad UserInteractionOutputMonad where
-  (UserInteractionOutputMonad m) >>= f = UserInteractionOutputMonad $
-                                         do a <- m
-                                            let UserInteractionOutputMonad m' = f a
-                                            m'
+instance M.Monad Monad where
+  (Monad m) >>= f = Monad $
+                    do a <- m
+                       let Monad m' = f a
+                       m'
 
-instance Applicative UserInteractionOutputMonad where
-  pure = UserInteractionOutputMonad . pure
-  (UserInteractionOutputMonad ma) <*> (UserInteractionOutputMonad mb) =
-    UserInteractionOutputMonad $ ma <*> mb
+instance Applicative Monad where
+  pure = Monad . pure
+  (Monad ma) <*> (Monad mb) =
+    Monad $ ma <*> mb
 
-instance Functor UserInteractionOutputMonad where
-  fmap f (UserInteractionOutputMonad m) = UserInteractionOutputMonad $ fmap f m
+instance Functor Monad where
+  fmap f (Monad m) = Monad $ fmap f m
 
-instance MonadIO UserInteractionOutputMonad where
-  liftIO = UserInteractionOutputMonad . lift . lift
+instance MonadIO Monad where
+  liftIO = Monad . lift . lift
 
 -- | \"Computations\" (e.g. monads) that are instances of this class
--- can be integrated into the 'UserInteractionOutputMonad'.
+-- can be integrated into the 'Monad'.
 class ToUserInteractionOutputMonad m where
-  toUserInteractionOutputMonad :: m a -> UserInteractionOutputMonad a
+  toUserInteractionOutputMonad :: m a -> Monad a
 
--- | Runs a 'UserInteractionOutputMonad' computation.
+-- | Runs a 'Monad' computation.
 run :: UserInteractionOutputEnvironment
-    -> UserInteractionOutputMonad a
+    -> Monad a
     -> IO (UserInteractionOutputResult a)
-run env (UserInteractionOutputMonad errT) = runReaderT (runExceptT errT) env
+run env (Monad errT) = runReaderT (runExceptT errT) env
 
-getEnv :: UserInteractionOutputMonad UserInteractionOutputEnvironment
-getEnv = UserInteractionOutputMonad $ lift ask
+getEnv :: Monad UserInteractionOutputEnvironment
+getEnv = Monad $ lift ask
 
--- | Gets the environment of the 'UserInteractionOutputMonad'.
+-- | Gets the environment of the 'Monad'.
 getEnvs :: (UserInteractionOutputEnvironment -> a)
-        -> UserInteractionOutputMonad a
-getEnvs = UserInteractionOutputMonad . lift . asks
+        -> Monad a
+getEnvs = Monad . lift . asks
 
 -- | Corresponds to 'Control.Monad.Trans.Error's throwError.
 throwErr :: Presentation.ToPresentationError err
          => err
-         -> UserInteractionOutputMonad a
-throwErr err = UserInteractionOutputMonad $ throwE (Presentation.toError err)
+         -> Monad a
+throwErr err = Monad $ throwE (Presentation.toError err)
 
 -- | Corresponds to 'Control.Monad.Trans.Error's catchError.
-catchErr :: UserInteractionOutputMonad a                                 -- ^ The computation that can throw an error.
-         -> (UserInteractionOutputError -> UserInteractionOutputMonad a) -- ^ Error handler
-         -> UserInteractionOutputMonad a
+catchErr :: Monad a                                 -- ^ The computation that can throw an error.
+         -> (UserInteractionOutputError -> Monad a) -- ^ Error handler
+         -> Monad a
 catchErr m handler =
   let
-    (UserInteractionOutputMonad errT) = m
-    handlerErrT err = let (UserInteractionOutputMonad errT) = handler err
+    (Monad errT) = m
+    handlerErrT err = let (Monad errT) = handler err
                       in  errT
   in
-   UserInteractionOutputMonad $ catchE errT handlerErrT
+   Monad $ catchE errT handlerErrT
 
 instance ToUserInteractionOutputMonad Presentation.Monad where
   toUserInteractionOutputMonad m =
@@ -259,10 +265,10 @@ instance Presentation.ToPresentationError err =>
       toUserInteractionOutputMonad res
 
 -- | Integrates monads of type "IO (Either err a)"
--- into the UserInteractionOutputMonad monad
+-- into the Monad monad
 liftIOWithError :: Presentation.ToPresentationError err
                 => IO (Either err a)
-                -> UserInteractionOutputMonad a
+                -> Monad a
 liftIOWithError io =
   do
     res <- liftIO io
@@ -272,14 +278,14 @@ liftIOWithError io =
 
 toUiOMonad_wDefaultDbConn ::
   DbConn.Monad a ->
-  UserInteractionOutputMonad a
+  Monad a
 toUiOMonad_wDefaultDbConn dbm =
   do
     dbConnMonadEnv <- getDbConnMonadEnv
     liftIOWithError $ DbConn.run dbConnMonadEnv dbm
 
   where
-    getDbConnMonadEnv :: UserInteractionOutputMonad DbConn.Environment
+    getDbConnMonadEnv :: Monad DbConn.Environment
     getDbConnMonadEnv = do
       env            <- getEnv
       let dbConf      = envDbConfiguration env

@@ -40,9 +40,16 @@ import           Wilde.WildeUi.UiPrimitives (WildeTitle)
 
 import qualified Wilde.Media.Presentation as Presentation
 
+import qualified Wilde.Media.Database.Monad as DbConn
+import           Wilde.Media.Database
+
+import           Wilde.Media.UserInteraction
+import qualified Wilde.Media.UserInteraction.Io as UiIo
+import qualified Wilde.Media.UserInteraction.Output as Ui
+import           Wilde.Media.GenericStringRep as GenericStringRep
+
 import           Wilde.ObjectModel.ObjectModel
 import qualified Wilde.ObjectModel.Database as Database
-import qualified Wilde.Media.Database.Monad as DbConn
 import qualified Wilde.ObjectModel.Database.JoinUtils as OmDbJ
 import qualified Wilde.ObjectModel.Database.InputExistingSansPresentationInfo as InputExisting
 import qualified Wilde.ObjectModel.Database.Execution.SelectSansPresentationInfo as SelectPlain
@@ -51,12 +58,6 @@ import           Wilde.ObjectModel.UserInteraction.Output.CreateCommon
 import           Wilde.ObjectModel.UserInteraction.OutputTypes (AttributeUiDefaultForExisting(..))
 import qualified Wilde.ObjectModel.GenericStringRep as OmGsr
 import qualified Wilde.ObjectModel.ObjectModelUtils as OmUtils
-
-import Wilde.Media.Database
-import           Wilde.Media.UserInteraction
-import qualified Wilde.Media.UserInteraction.Io as UiIo
-import qualified Wilde.Media.UserInteraction.Output as Ui
-import           Wilde.Media.GenericStringRep as GenericStringRep
 
 import           Wilde.WildeUi.StdValueTypes
 
@@ -119,7 +120,7 @@ type RawMultiItem = (GenericStringRep,MultiItemPresentation)
 --
 -- This is used to check that there exist at least one target Object
 -- for mandatory references.
-type RawValuesChecker = [RawMultiItem] -> Ui.UserInteractionOutputMonad ()
+type RawValuesChecker = [RawMultiItem] -> Ui.Monad ()
 
 -- | A 'RawValuesChecker' for optional values - no check at all.
 rawValuesChecker_optional :: RawValuesChecker
@@ -252,7 +253,7 @@ attributeOutputForReferenceForExisting ::
   -> MultiWidgetConstructor
   -> Ui.WidgetConstructorGetter
      (AttributeUiDefaultForExisting idAtExisting)
-  -- -> Ui.UserInteractionOutputMonad (Maybe idAtExisting
+  -- -> Ui.UiO.Monad (Maybe idAtExisting
   --                                     -> UiIo.ObjectName
   --                                     -> UiIo.LabelAndWidget)
 attributeOutputForReferenceForExisting valuesChecker otRefTarget@(ObjectType {}) refPresSpecTarget attributeName widgetConstructor =
@@ -636,7 +637,7 @@ getAttrOutputForReferenceAttribute :: (Database.DATABASE_TABLE otConf
                                    -> ReferencePresentationSpec otConf atConf dbTable otNative idAtExisting idAtCreate
                                    -> CrossRefIdentifier
                                    -> MultiWidgetConstructor
-                                   -> Ui.UserInteractionOutputMonad (Maybe GenericStringRep
+                                   -> Ui.Monad (Maybe GenericStringRep
                                                                      -> UiIo.ObjectName
                                                                      -> UiIo.AnyWIDGET)
 getAttrOutputForReferenceAttribute valuesChecker otRefTarget@(ObjectType {}) refPresSpecTarget attributeName widgetConstructor =

@@ -150,10 +150,7 @@ mkEnvFix_value = Right
 -- This information is needed for resoving default values from
 -- the "input media".
 type AttributeFixAndDefaultResolver d a =
-  UiO.UserInteractionOutputMonad (
-    AttributeName ->
-    UiO.ObjectName ->
-    FixAndDefault d a)
+  UiO.Monad ( AttributeName -> UiO.ObjectName -> FixAndDefault d a)
 
 
 -------------------------------------------------------------------------------
@@ -196,11 +193,11 @@ resolveAttributeOutputValueSpecification on2Fad objectName =
 --
 -- Helper for 'resolveAttributeOutputValueSpecification'.
 -------------------------------------------------------------------------------
-resolveWidgetDefaultValue :: UiO.UserInteractionOutputMonad (Maybe d)
+resolveWidgetDefaultValue :: UiO.Monad (Maybe d)
                           -- ^ Resolver corresponding to the Application Configuration
-                          -> UiO.UserInteractionOutputMonad (Maybe d)
+                          -> UiO.Monad (Maybe d)
                           -- ^ Resolver for the User Interactino Environment.
-                          -> UiO.UserInteractionOutputMonad (Maybe d)
+                          -> UiO.Monad (Maybe d)
 resolveWidgetDefaultValue resolverForAppConfig resolverForEnvironment =
   do
     mbDefaultFromEnv <- resolverForEnvironment
@@ -268,7 +265,7 @@ data AttributeTypeSetup d a =
 
 attributeOutputer :: forall d a.
                      AttributeTypeSetup d a
-                  -> UiO.UserInteractionOutputMonad (UiO.ObjectName -> UiO.FormBlockRowInfo)
+                  -> UiO.Monad (UiO.ObjectName -> UiO.FormBlockRowInfo)
 attributeOutputer (AttributeTypeSetup atInfo getFadCon) =
   do
     fadCon            <- getFadCon
@@ -320,7 +317,7 @@ outputerForSetupConstructor :: (Any (AttributeType atConf dbTable)
                             -> [Any (AttributeType atConf dbTable)]
                             -- ^ The attributes that should be input via the form,
                             -- and the order they should be displayed in it.
-                            -> UiO.UserInteractionOutputMonad (UiO.ObjectName -> UiO.FormBlock)
+                            -> UiO.Monad (UiO.ObjectName -> UiO.FormBlock)
 outputerForSetupConstructor setupConstructor attributeTypesOrder =
   objectOutputer atSetups_any
   where
@@ -330,7 +327,7 @@ outputerForSetupConstructor setupConstructor attributeTypesOrder =
 -- | Outputs a list of attributes as part of an object.
 -------------------------------------------------------------------------------
 objectOutputer :: [AnyValue2.Container AttributeTypeSetup]
-               -> UiO.UserInteractionOutputMonad (UiO.ObjectName -> UiO.FormBlock)
+               -> UiO.Monad (UiO.ObjectName -> UiO.FormBlock)
 objectOutputer setups =
   do
     attrOutputers <- mapM mkAttrOutputter setups
@@ -343,5 +340,5 @@ objectOutputer setups =
         [attrOutputer objectName | attrOutputer <- attrOutputers]
 
     mkAttrOutputter :: AnyValue2.Container AttributeTypeSetup
-                    -> UiO.UserInteractionOutputMonad (UiO.ObjectName -> UiO.FormBlockRowInfo)
+                    -> UiO.Monad (UiO.ObjectName -> UiO.FormBlockRowInfo)
     mkAttrOutputter (AnyValue2.Container atSetup) = attributeOutputer atSetup

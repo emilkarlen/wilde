@@ -23,7 +23,7 @@ module Wilde.ObjectModel.UserInteraction.Output.ForExistingCreateViaUi
 import qualified Wilde.Utils.AnyValue as AnyValue
 
 import           Wilde.Media.UserInteraction
-import           Wilde.Media.UserInteraction.Output
+import qualified Wilde.Media.UserInteraction.Output as UiO
 
 import           Wilde.ObjectModel.ObjectModelUtils as OmUtils
 import qualified Wilde.ObjectModel.Presentation as OmPres
@@ -45,7 +45,7 @@ outputer :: (ATTRIBUTE_OUTPUT_FOR_EXISTING atConf)
          -- the 'AttributeType's inputers are listed.
          -- The list must be a permutation of all 'AttributeType's of the
          -- 'ObjectType'.
-         -> UserInteractionOutputMonad (ObjectName -> FormBlock)
+         -> UiO.Monad (ObjectName -> FormBlock)
 outputer ot attributeTypesOrder =
   do
     mkAttrOutputList <- sequence mkAttrOutputFunList
@@ -72,7 +72,7 @@ outputer ot attributeTypesOrder =
 -- 'AttributeTypeInfo'.
 -------------------------------------------------------------------------------
 getAttrOutput :: AttributeTypeInfo typeForExisting
-              -> UserInteractionOutputMonad (ObjectName
+              -> UiO.Monad (ObjectName
                                              -> FormBlockRow)
 getAttrOutput ati =
    do

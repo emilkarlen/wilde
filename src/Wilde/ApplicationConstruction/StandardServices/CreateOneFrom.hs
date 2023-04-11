@@ -24,6 +24,7 @@ import           Wilde.Media.UserInteraction.Io
 import           Wilde.ObjectModel.ObjectModel
 import qualified Wilde.ObjectModel.Database as Database
 import qualified Wilde.ObjectModel.DatabaseAndPresentation as DatabaseAndPresentation
+import qualified Wilde.Media.UserInteraction.Output as UiO
 import qualified Wilde.ObjectModel.UserInteraction.Output.ForCreateFrom as OutputForCreateFrom
 import qualified Wilde.ObjectModel.UserInteraction.Input.ForCreate as InputForCreate
 import qualified Wilde.ObjectModel.Presentation as Presentation
@@ -113,7 +114,7 @@ mkFormBlock :: OutputForCreateFrom.ATTRIBUTE_OUTPUT_FOR_CREATE atConf
             => [Any (AttributeType atConf dbTable)]
             -> Object otConf atConf dbTable otNative idAtExisting idAtCreate
             -> ObjectName
-            -> UserInteractionOutputMonad FormBlock
+            -> UiO.Monad FormBlock
 mkFormBlock attributeTypesOrder o oName =
   do
     formBlockForObjectName <- OutputForCreateFrom.outputer attributeTypesOrder o
