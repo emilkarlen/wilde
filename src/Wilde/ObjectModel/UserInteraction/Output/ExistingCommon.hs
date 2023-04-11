@@ -33,7 +33,7 @@ module Wilde.ObjectModel.UserInteraction.Output.ExistingCommon
   WildeTitle,
   PresentationOutputer(..),
   AttributeName,
-  WidgetConstructorGetter(..),
+  UiO.WidgetConstructorGetter(..),
 )
 where
 
@@ -44,7 +44,7 @@ where
 
 
 --import Wilde.Media.UserInteraction.Io
-import           Wilde.Media.UserInteraction.Output
+import qualified Wilde.Media.UserInteraction.Output as UiO
 
 import           Wilde.ObjectModel.ObjectModelUtils as OmUtils
 import           Wilde.ObjectModel.UserInteraction
@@ -114,8 +114,8 @@ attr2attri (Attribute
 -- Output, for a maybe existing value, of a single 'AttributeTypeInfo'.
 -------------------------------------------------------------------------------
 getMkAttributeOutputFun :: (AttributeTypeRole,AttributeTypeInfo a)
-                        -> UserInteractionOutputMonad
-                           (Maybe a -> ObjectName -> FormBlockRow)
+                        -> UiO.Monad
+                           (Maybe a -> UiO.ObjectName -> UiO.FormBlockRow)
 getMkAttributeOutputFun
   ( UserInteraction,
     AttributeTypeInfo
@@ -132,7 +132,7 @@ getMkAttributeOutputFun
       \mbDefault objectName ->
       let
         ek     = (objectName,theCrossRefKey)
-        label  = Label ek (wildeStyled theTitle)
+        label  = UiO.Label ek (wildeStyled theTitle)
         widget = getWidget mbDefault objectName
       in
        Left (label,widget)

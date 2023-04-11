@@ -39,7 +39,7 @@ outputerForStdSetup
   => [Any (AttributeType atConf dbTable)]
   -- ^ The attributes that should be input via the form,
   -- and the order they should be displayed in it.
-  -> UiO.UserInteractionOutputMonad (UiO.ObjectName -> UiO.FormBlock)
+  -> UiO.Monad (UiO.ObjectName -> UiO.FormBlock)
 outputerForStdSetup = OutputCommon.outputerForSetupConstructor mkAtSetup
   where
     mkAtSetup :: OmUi.ATTRIBUTE_OUTPUT_FOR_CREATE atConf

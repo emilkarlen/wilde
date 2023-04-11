@@ -26,7 +26,7 @@ module Wilde.ObjectModel.UserInteraction.Output.ForCreateFrom
 
 
 import           Wilde.Media.UserInteraction
-import           Wilde.Media.UserInteraction.Output
+import qualified Wilde.Media.UserInteraction.Output as UiO
 
 import           Wilde.WildeUi.WildeStyle (WildeStyle)
 
@@ -48,7 +48,7 @@ outputer :: ATTRIBUTE_OUTPUT_FOR_CREATE atConf
          -- The list must be a permutation of all 'AttributeType's of the
          -- 'ObjectType'.
          -> Object otConf atConf dbTable otNative idAtExisting idAtCreate
-         -> UserInteractionOutputMonad (ObjectName -> FormBlock)
+         -> UiO.Monad (ObjectName -> FormBlock)
 outputer = outputerNoClass at2ati
 
 
@@ -60,10 +60,10 @@ outputerNoClass :: (forall e c . AttributeType atConf dbTable e c
                 -- The list must be a permutation of all 'AttributeType's of the
                 -- 'ObjectType'.
                 -> Object otConf atConf dbTable otNative idAtExisting idAtCreate
-                -> UserInteractionOutputMonad (ObjectName -> FormBlock)
+                -> UiO.Monad (ObjectName -> FormBlock)
 outputerNoClass at2ati attributeTypesOrder o@(Object {}) =
   do
-     attributeList         <- toUserInteractionOutputMonad $
+     attributeList         <- UiO.toUserInteractionOutputMonad $
                               OmPres.getAttributesInGivenOrder attributeTypesOrder o
      let mkAttrOutputerList = map (getMkAttrOutputer at2ati) attributeList
      attrOutputerList      <- sequence mkAttrOutputerList
@@ -72,7 +72,7 @@ outputerNoClass at2ati attributeTypesOrder o@(Object {}) =
     getMkAttrOutputer :: (forall e c . AttributeType atConf dbTable e c
                           -> AttributeTypeInfo e c)
                       -> Any (Attribute atConf dbTable)
-                      -> UserInteractionOutputMonad (ObjectName -> FormBlockRowInfo)
+                      -> UiO.Monad (ObjectName -> FormBlockRowInfo)
     getMkAttrOutputer at2ati (Any attr) =
       do
         let ati = (at2ati . attrType) attr

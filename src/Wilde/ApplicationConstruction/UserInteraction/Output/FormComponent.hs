@@ -14,7 +14,7 @@ import qualified Wilde.Render.Html.Types as HT
 import qualified Wilde.Render.Html.Attribute as HA
 import qualified Wilde.Render.Html.Element as HE
 
-import qualified Wilde.Media.UserInteraction.Output as UiOm
+import qualified Wilde.Media.UserInteraction.Output as UiO
 import qualified Wilde.Media.UserInteraction as UI
 import           Wilde.Media.UserInteraction.Output (PopUpButtonTexter)
 import           Wilde.Media.ElementSet (ElementSet, ElementKey, Element, elementKeyRender)
@@ -70,10 +70,10 @@ instance COMPONENT FormBlockComponent where
 
 
 getFormComponent :: UI.Form
-                 -> UiOm.UserInteractionOutputMonad AnyCOMPONENT
+                 -> UiO.Monad AnyCOMPONENT
 getFormComponent form = do
-  custEnv             <- UiOm.getCustomEnvironment
-  buttonTexter        <- UiOm.getEnvs UiOm.envButtonTexter
+  custEnv             <- UiO.getCustomEnvironment
+  buttonTexter        <- UiO.getEnvs UiO.envButtonTexter
   pure $ AnyCOMPONENT $ FormComponent (custEnv, buttonTexter, form)
 
 newtype FormComponent = FormComponent (ElementSet, PopUpButtonTexter, UI.Form)

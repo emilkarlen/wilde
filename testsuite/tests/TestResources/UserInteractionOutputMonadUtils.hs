@@ -60,6 +60,6 @@ withMedia env media = env { envMedia = media }
 
 check :: UserInteractionOutputEnvironment
       -> (UserInteractionOutputResult a -> Assertion)
-      -> UserInteractionOutputMonad a
+      -> UiO.Monad a
       -> Assertion
 check env assertion action = run env action >>= assertion

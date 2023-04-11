@@ -77,7 +77,7 @@ import qualified Wilde.Media.MonadWithInputMedia as MIIA
 import qualified Wilde.Media.ElementSet as ES
 import           Wilde.Media.CustomEnvironment
 import qualified Wilde.Media.Database.Configuration as DbConf
-import qualified Wilde.Media.UserInteraction.Output as UiOM
+import qualified Wilde.Media.UserInteraction.Output as UiO
 import qualified Wilde.Media.UserInteraction.Input as UiI
 import qualified Wilde.Media.Database.Monad as DbConn
 import qualified Wilde.Media.Presentation as Presentation
@@ -129,14 +129,14 @@ data ServiceEnvironment =
   , envCustomEnvironment :: ES.ElementSet
   , envMedia             :: ES.ElementSet
   , envDbConfiguration   :: DbConf.Configuration
-  , envOutputing         :: UiOM.Outputing
+  , envOutputing         :: UiO.Outputing
   , envLogger            :: Logger.AnyLogger
   }
 
 newEnvironment :: ServiceId
                -> ES.ElementSet -- ^ custom environment
                -> ES.ElementSet -- ^ media
-               -> DbConf.Configuration -> UiOM.Outputing
+               -> DbConf.Configuration -> UiO.Outputing
                -> Logger.AnyLogger
                -> ServiceEnvironment
 newEnvironment = ServiceEnvironment
@@ -314,14 +314,14 @@ instance ToServiceMonad Presentation.Monad where
       result     <- liftIO $ Presentation.run presEnv m
       toServiceMonad result
 
-instance ToServiceMonad UiOM.UserInteractionOutputMonad where
+instance ToServiceMonad UiO.Monad where
   toServiceMonad uiom =
     do
       env        <- getEnv
-      let uiomEnv = UiOM.newEnvironment
+      let uiomEnv = UiO.newEnvironment
                     (envMedia env) (envCustomEnvironment env)
                     (envDbConfiguration env) (envOutputing env) (envLogger env)
-      result     <- liftIO $ UiOM.run uiomEnv uiom
+      result     <- liftIO $ UiO.run uiomEnv uiom
       toServiceMonad result
 
 instance ToServiceMonad UiI.Monad where

@@ -50,7 +50,7 @@ import qualified Wilde.Utils.AnyValue as AnyValue
 
 import           Wilde.Media.WildeMedia hiding (otKey)
 import           Wilde.Media.UserInteraction
-import           Wilde.Media.UserInteraction.Output
+import qualified Wilde.Media.UserInteraction.Output as UiO
 
 import           Wilde.ObjectModel.ObjectModelUtils as OmUtils
 import qualified Wilde.ObjectModel.AttributeTypeListSetup.WithAnnotation as ListSetupWithAnnotation
@@ -97,7 +97,7 @@ outputerObj :: ATTRIBUTE_OUTPUT_FOR_EXISTING atConf
             -- the 'AttributeType's inputers are listed.
             -- The list must be a permutation of all 'AttributeType's of the
             -- 'ObjectType'.
-            -> UserInteractionOutputMonad
+            -> UiO.Monad
                (ObjectWithNameFunction otConf atConf dbTable otNative idAtExisting idAtCreate
                 FormBlock)
 outputerObj ot atConfigurations =
@@ -118,10 +118,10 @@ outputerObj ot atConfigurations =
 
     getSetupForRole :: ObjectType otConf atConf dbTable otNative idAtExisting idAtCreate
                     -> AttributeTypeConfigurations atConf dbTable
-                    -> UserInteractionOutputMonad
+                    -> UiO.Monad
                        (ListSetupWithAnnotation.Setup
                         otConf atConf dbTable otNative idAtExisting idAtCreate AttributeTypeRole)
-    getSetupForRole ot atConfigs = toUserInteractionOutputMonad $
+    getSetupForRole ot atConfigs = UiO.toUserInteractionOutputMonad $
                                    ListSetupWithAnnotation.mkGeneral
                                    ot
                                    atAndRoleList
@@ -132,7 +132,7 @@ outputerObj ot atConfigurations =
 
     getMkAttributeOutputForAt :: ATTRIBUTE_OUTPUT_FOR_EXISTING atConf
                               => (Any (AttributeType atConf dbTable),AttributeTypeRole)
-                              -> UserInteractionOutputMonad
+                              -> UiO.Monad
                                  (AnyValue.Container MkAttributeOutput)
     getMkAttributeOutputForAt (Any at,role) =
       getMkAttributeOutput
@@ -192,7 +192,7 @@ attrOutput undefinedForErrMsg objectName
     Just castedValue -> pure $ mkAttributeOutput castedValue objectName
 
 getMkAttributeOutput :: (AttributeTypeRole,AnyValue.Container AttributeTypeInfo)
-                     -> UserInteractionOutputMonad (AnyValue.Container MkAttributeOutput)
+                     -> UiO.Monad (AnyValue.Container MkAttributeOutput)
 getMkAttributeOutput (role,AnyValue.Container ati@(AttributeTypeInfo {})) =
    do
      mkForMaybe <- getMkAttributeOutputFun (role,ati)

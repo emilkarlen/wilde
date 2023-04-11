@@ -151,7 +151,7 @@ attrOutput_oneOfManyAttribute widgetConstructor attributeName values mbKey objec
 -- | A 'WidgetConstructorGetter' defined in terms of a simple outputer.
 --
 -- The simple outputer:
--- * does not use functionality of the 'UiIO.UserInteractionOutputMonad',
+-- * does not use functionality of the 'UiIO.UiO.Monad',
 -- * uses a simpler representation of the default value for-create, that uses the
 -- fact that the type-for-existing and type-for-create are identical.
 -------------------------------------------------------------------------------
