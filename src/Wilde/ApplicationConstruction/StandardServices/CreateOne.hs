@@ -22,9 +22,8 @@ import qualified Wilde.ObjectModel.Database as Database
 import qualified Wilde.ObjectModel.DatabaseAndPresentation as DatabaseAndPresentation
 import qualified Wilde.Media.UserInteraction.Output as UiO
 import qualified Wilde.Media.UserInteraction as UI
-import qualified Wilde.ObjectModel.UserInteraction.Output.ForCreateFrom as OutputForCreateFrom
+import qualified Wilde.ObjectModel.UserInteraction as UserInteraction
 import qualified Wilde.ObjectModel.UserInteraction.Output.ForCreate as OutputForCreate
-import qualified Wilde.ObjectModel.UserInteraction.Input.ForCreate as InputForCreate
 import qualified Wilde.ObjectModel.Presentation as Presentation
 
 import qualified Wilde.ApplicationConstruction.Service.ServiceUtils as ServiceUtils
@@ -57,8 +56,7 @@ data Config (otConf :: * -> * -> * -> * -> *) atConf dbTable otNative idAtExisti
 mkService :: (Database.OBJECT_TYPE_INSERT otConf
              ,Database.DATABASE_IO atConf
              ,DatabaseAndPresentation.ATTRIBUTE_TYPE_INFO atConf
-             ,InputForCreate.ATTRIBUTE_INPUT_FOR_CREATE atConf
-             ,OutputForCreateFrom.ATTRIBUTE_OUTPUT_FOR_CREATE atConf
+             ,UserInteraction.ATTRIBUTE_IO_FOR_CREATE atConf
              )
           => [AnyO (OtServiceOtSetup Config otConf atConf)] -> AnyOtService
 mkService otss = AnyOtService $
@@ -71,8 +69,7 @@ mkService otss = AnyOtService $
 createOneMain :: (Database.OBJECT_TYPE_INSERT otConf
                  ,Database.DATABASE_IO atConf
                  ,DatabaseAndPresentation.ATTRIBUTE_TYPE_INFO atConf
-                 ,InputForCreate.ATTRIBUTE_INPUT_FOR_CREATE atConf
-                 ,OutputForCreateFrom.ATTRIBUTE_OUTPUT_FOR_CREATE atConf
+                 ,UserInteraction.ATTRIBUTE_IO_FOR_CREATE atConf
                  )
               => ObjectTypeServiceMainFunction Config otConf atConf dbTable otNative idAtExisting idAtCreate
 createOneMain ot (Config titles attributeTypesOrder) = stepService def

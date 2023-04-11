@@ -1,59 +1,60 @@
-{-# LANGUAGE ExistentialQuantification #-}
-{-# LANGUAGE Rank2Types #-}
-
 -------------------------------------------------------------------------------
 -- | Defines functionality for User Interaction related to 'ObjectType's.
 --
 -- Names here do not include \"UserInteraction\" - this assumed.
 -------------------------------------------------------------------------------
+
+{-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE Rank2Types #-}
+
 module Wilde.ObjectModel.UserInteraction
-       (
-         -- * Classes for AttributeType
+(
+  -- * Classes for AttributeType
 
-         -- ** Create
+  -- ** Create
 
-         ATTRIBUTE_FOR_CREATE(..),
+  ATTRIBUTE_FOR_CREATE(..),
 
-         AttributeTypeCreateOption(..),
-         UserInteractionCreateDefault,
+  AttributeTypeCreateOption(..),
+  UserInteractionCreateDefault,
 
-         -- *** IO
+  -- *** IO
 
-         ATTRIBUTE_INPUT_FOR_CREATE(..),
+  ATTRIBUTE_INPUT_FOR_CREATE(..),
 
-         ATTRIBUTE_OUTPUT_FOR_CREATE(..),
+  ATTRIBUTE_OUTPUT_FOR_CREATE(..),
 
-         ATTRIBUTE_IO_FOR_CREATE(..),
+  ATTRIBUTE_IO_FOR_CREATE(..),
 
-         -- ** Existing
+  -- ** Existing
 
-         -- *** IO
+  -- *** IO
 
-         ATTRIBUTE_OUTPUT_FOR_EXISTING(..),
+  ATTRIBUTE_OUTPUT_FOR_EXISTING(..),
 
-         ATTRIBUTE_INPUT_FOR_EXISTING(..),
-         AttributeInputer,
+  ATTRIBUTE_INPUT_FOR_EXISTING(..),
+  AttributeInputer,
 
-         ATTRIBUTE_IO_FOR_EXISTING(..),
+  ATTRIBUTE_IO_FOR_EXISTING(..),
 
-         -- * Types
+  -- * Types
 
-         module Wilde.ObjectModel.UserInteraction.OutputTypes,
+  module Wilde.ObjectModel.UserInteraction.OutputTypes,
 
-         -- * Special 'Element' values
+  -- * Special 'Element' values
 
-         elementValueEncodeObjectName,
-         elementValueDecodeObjectName,
-         elementValueEncodeObjectNameList,
-         elementValueDecodeObjectNameList,
+  elementValueEncodeObjectName,
+  elementValueDecodeObjectName,
+  elementValueEncodeObjectNameList,
+  elementValueDecodeObjectNameList,
 
-         -- * Tools
+  -- * Tools
 
-         ObjectInputResult,
+  ObjectInputResult,
 
-         otUiObjectInputErrorInfo,
-       )
-       where
+  otUiObjectInputErrorInfo,
+)
+where
 
 
 -------------------------------------------------------------------------------
@@ -64,16 +65,15 @@ module Wilde.ObjectModel.UserInteraction
 import qualified Data.List.NonEmpty as NonEmpty
 
 import qualified Wilde.Media.ElementSet as ES
-import Wilde.Media.WildeMedia hiding (otKey)
-import Wilde.Media.GenericStringRep
-import Wilde.Media.UserInteraction.Input
-import Wilde.Media.UserInteraction as UI
+import           Wilde.Media.WildeMedia hiding (otKey)
+import           Wilde.Media.GenericStringRep
+import           Wilde.Media.UserInteraction.Input
+import           Wilde.Media.UserInteraction as UI
 
 import           Wilde.ObjectModel.ObjectModelUtils as OmUtils
 import qualified Wilde.ObjectModel.GenericStringRep as OmGsr
-import Wilde.ObjectModel.Presentation (ATTRIBUTE_PRESENTATION(..))
-
-import Wilde.ObjectModel.UserInteraction.OutputTypes
+import           Wilde.ObjectModel.Presentation (ATTRIBUTE_PRESENTATION(..))
+import           Wilde.ObjectModel.UserInteraction.OutputTypes
 
 
 -------------------------------------------------------------------------------

@@ -27,13 +27,13 @@ module Wilde.ObjectModel.UserInteraction.OutputTypes
 -------------------------------------------------------------------------------
 
 
-import Data.List
+import           Data.List
 
-import Wilde.Media.UserInteraction
+import           Wilde.Media.UserInteraction
 import qualified Wilde.Media.GenericStringRep as Gsr
 import qualified Wilde.Media.UserInteraction.Output as UiO
 
-import Wilde.ObjectModel.ObjectModel
+import           Wilde.ObjectModel.ObjectModel
 
 
 -------------------------------------------------------------------------------
