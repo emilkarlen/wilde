@@ -27,7 +27,6 @@ import qualified Wilde.ObjectModel.DatabaseAndPresentation as DatabaseAndPresent
 import qualified Wilde.Media.UserInteraction.Output as UiO
 import qualified Wilde.ObjectModel.UserInteraction.Output.ForCreateFrom as OutputForCreateFrom
 import qualified Wilde.ObjectModel.UserInteraction.Input.ForCreate as InputForCreate
-import qualified Wilde.ObjectModel.Presentation as Presentation
 import qualified Wilde.ObjectModel.GenericStringRep as OmGsr
 
 import           Wilde.Application.ObjectTypeService
@@ -37,6 +36,7 @@ import           Wilde.ApplicationConstruction.Service.StepService
 import qualified Wilde.ApplicationConstruction.Service.ServiceTools as ServiceTools
 import           Wilde.ApplicationConstruction.StandardServices.CreateOneUtils
 import           Wilde.ApplicationConstruction.StandardServices.SingleObjectServiceCommon
+
 
 -------------------------------------------------------------------------------
 -- - implementation -
@@ -55,9 +55,7 @@ data Config (otConf :: * -> * -> * -> * -> *) atConf dbTable otNative idAtExisti
   }
 
 mkService :: (Database.OBJECT_TYPE_INSERT otConf
-             ,Presentation.ATTRIBUTE_PRESENTATION atConf
              ,Database.DATABASE_IO atConf
-             ,Database.COLUMN_NAMES atConf
              ,InputForCreate.ATTRIBUTE_INPUT_FOR_CREATE atConf
              ,OutputForCreateFrom.ATTRIBUTE_OUTPUT_FOR_CREATE atConf
              ,DatabaseAndPresentation.ATTRIBUTE_TYPE_INFO atConf
@@ -72,7 +70,6 @@ mkService otss = AnyOtService $
   }
 
 createOneFromMain :: (Database.OBJECT_TYPE_INSERT otConf
-                     ,Presentation.ATTRIBUTE_PRESENTATION atConf
                      ,Database.DATABASE_IO atConf
                      ,InputForCreate.ATTRIBUTE_INPUT_FOR_CREATE atConf
                      ,OutputForCreateFrom.ATTRIBUTE_OUTPUT_FOR_CREATE atConf

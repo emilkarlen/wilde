@@ -112,10 +112,11 @@ type ObjectTypeServiceMainFunction config otConf atConf dbTable otNative idAtExi
 -- This type makes it possible to make a list of all 'ObjectType's that
 -- the service should be able to work on.
 -------------------------------------------------------------------------------
-data AnyObjectTypeServiceMainFunction config otConf atConf =
+newtype AnyObjectTypeServiceMainFunction config otConf atConf =
   AnyObjectTypeServiceMainFunction (
     forall dbTable otNative idAtExisting idAtCreate .
-    ObjectTypeServiceMainFunction config otConf atConf dbTable otNative idAtExisting idAtCreate)
+    ObjectTypeServiceMainFunction config otConf atConf dbTable otNative idAtExisting idAtCreate
+    )
 
 otServiceAny :: AnyObjectTypeServiceMainFunction config otConf atConf
              -> AnyO (OtServiceOtSetup config otConf atConf)

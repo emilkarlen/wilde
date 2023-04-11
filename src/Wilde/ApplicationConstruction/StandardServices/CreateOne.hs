@@ -56,7 +56,6 @@ data Config (otConf :: * -> * -> * -> * -> *) atConf dbTable otNative idAtExisti
 
 mkService :: (Database.OBJECT_TYPE_INSERT otConf
              ,Database.DATABASE_IO atConf
-             ,Presentation.ATTRIBUTE_PRESENTATION atConf
              ,DatabaseAndPresentation.ATTRIBUTE_TYPE_INFO atConf
              ,InputForCreate.ATTRIBUTE_INPUT_FOR_CREATE atConf
              ,OutputForCreateFrom.ATTRIBUTE_OUTPUT_FOR_CREATE atConf
@@ -71,7 +70,6 @@ mkService otss = AnyOtService $
 
 createOneMain :: (Database.OBJECT_TYPE_INSERT otConf
                  ,Database.DATABASE_IO atConf
-                 ,Presentation.ATTRIBUTE_PRESENTATION atConf
                  ,DatabaseAndPresentation.ATTRIBUTE_TYPE_INFO atConf
                  ,InputForCreate.ATTRIBUTE_INPUT_FOR_CREATE atConf
                  ,OutputForCreateFrom.ATTRIBUTE_OUTPUT_FOR_CREATE atConf
