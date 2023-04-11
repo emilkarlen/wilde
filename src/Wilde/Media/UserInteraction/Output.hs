@@ -90,8 +90,7 @@ import qualified Wilde.Application.StandardServices as StandardServices
 
 
 type WidgetConstructorGetter defaultType =
-  Monad
-  (WidgetConstructorForObjectWithDefault defaultType)
+  Monad (WidgetConstructorForObjectWithDefault defaultType)
 
 -- | Widget constructor for an object.
 type WidgetConstructorForObjectWithDefault defaultType =

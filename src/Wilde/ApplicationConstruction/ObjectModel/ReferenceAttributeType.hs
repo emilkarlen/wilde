@@ -612,7 +612,7 @@ getObjectPresValForExisting :: OmGsr.ATTRIBUTE_OUTPUT_FOR_EXISTING atConf
 getObjectPresValForExisting otTarget pati objIdVal presAtVal =
   mkShowOneLink otTarget objIdVal presStr
   where
-    presStr = (patiShow pati) presAtVal
+    presStr = patiShow pati presAtVal
 
 -------------------------------------------------------------------------------
 -- | Helper to construct, foremost, a widget for an 'AttributeType' that is a
@@ -637,9 +637,7 @@ getAttrOutputForReferenceAttribute :: (Database.DATABASE_TABLE otConf
                                    -> ReferencePresentationSpec otConf atConf dbTable otNative idAtExisting idAtCreate
                                    -> CrossRefIdentifier
                                    -> MultiWidgetConstructor
-                                   -> Ui.Monad (Maybe GenericStringRep
-                                                                     -> UiIo.ObjectName
-                                                                     -> UiIo.AnyWIDGET)
+                                   -> Ui.WidgetConstructorGetter GenericStringRep
 getAttrOutputForReferenceAttribute valuesChecker otRefTarget@(ObjectType {}) refPresSpecTarget attributeName widgetConstructor =
     do
       values <- Ui.toUiOMonad_wDefaultDbConn $
