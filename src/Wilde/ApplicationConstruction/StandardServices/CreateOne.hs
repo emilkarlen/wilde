@@ -97,6 +97,7 @@ createOneMain ot (Config titles attributeTypesOrder) = stepService def
     outputForm' :: UserInteractionOutputMonad FormBlocksAndMetas
     outputForm' =
       do
-        formBlock'   <- OutputForCreate.outputerForStdSetup attributeTypesOrder theObjectName
+        getFormBlock' <- OutputForCreate.outputerForStdSetup attributeTypesOrder
+        let formBlock' = getFormBlock' theObjectName
         let formBlock = UI.formBlock_appendStyle style formBlock'
         pure $ FormBlocksAndMetas [] [formBlock]

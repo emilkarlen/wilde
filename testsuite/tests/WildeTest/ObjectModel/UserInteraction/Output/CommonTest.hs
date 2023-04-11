@@ -17,7 +17,7 @@ import Wilde.Utils.Empty
 import Wilde.WildeUi.WildeStyle
 
 import qualified Wilde.Media.ElementSet as ES
-import qualified Wilde.ObjectModel.UserInteraction.Output.Common as Common
+import qualified Wilde.ObjectModel.UserInteraction.Output.FixAndDefault as Common
 import qualified Wilde.Media.UserInteraction.Output as UiO
 import qualified Wilde.Media.UserInteraction as UserInteraction
 import qualified Wilde.ObjectModel.UserInteraction.Common as UserInteractionCommon
@@ -370,8 +370,8 @@ mkAtSetup :: Common.FixAndDefaultResolver AtDefaultType AtValueType
 mkAtSetup fixAndDefaultResolver =
   Common.AttributeTypeSetup
   {
-    Common.setupInfo = attributeTypeInfo
-  , Common.setupResolverConstructor = \_ _ -> fixAndDefaultResolver
+    Common.setupInfo     = attributeTypeInfo
+  , Common.setupResolver = \_ _ -> fixAndDefaultResolver
   }
 
 attributeTypeInfo :: Common.AttributeTypeInfo AtDefaultType AtValueType
