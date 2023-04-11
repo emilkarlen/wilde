@@ -1,32 +1,35 @@
 -- | Functionallity that is common to output for create.
 module Wilde.ObjectModel.UserInteraction.Common
-       (
-         metaValuesForRole,
+(
+  metaValuesForRole,
 
-         inputValueForRoleFromEnv,
-         Role(..),
+  inputValueForRoleFromEnv,
+  getLookuperOfInputValueForRoleFromEnv,
 
-         inputFixedFromEnv,
-         inputDefaultFromEnv,
+  Role(..),
 
-         elementKeyForRoleIndicator,
-         elementKeyForAttributeValue,
-       )
-       where
+  inputFixedFromEnv,
+  inputDefaultFromEnv,
+
+  elementKeyForRoleIndicator,
+  elementKeyForAttributeValue,
+)
+where
 
 
 -------------------------------------------------------------------------------
 -- - import -
 -------------------------------------------------------------------------------
 
-import Data.Char
+
+import           Data.Char
 
 import qualified Wilde.Media.ElementSet as ES
-import Wilde.Media.MonadWithInputMedia (MonadWithInputMedia(..),inInputMedia_raw)
+import           Wilde.Media.MonadWithInputMedia (MonadWithInputMedia(..))
 import qualified Wilde.Media.UserInteraction.Output as UiO
 import qualified Wilde.Media.GenericStringRep as Gsr
 
-import Wilde.ObjectModel.ObjectModel
+import           Wilde.ObjectModel.ObjectModel
 
 
 -------------------------------------------------------------------------------
@@ -159,12 +162,39 @@ inputValueForRoleFromEnv :: MonadWithInputMedia m
                          -> m (Maybe String)
 inputValueForRoleFromEnv requestedRole attributeName objectName =
   do
-    res <- inInputMedia_raw
-           (lookupStringForRole requestedRole attributeName objectName)
+    inputMedia <- getInputMedia
+    pure $ lookuperOfInputValueForRoleFromEnv inputMedia requestedRole attributeName objectName
+
+getLookuperOfInputValueForRoleFromEnv
+  :: MonadWithInputMedia m
+  => m (Role -> AttributeName -> UiO.ObjectName -> Maybe String)
+getLookuperOfInputValueForRoleFromEnv =
+    lookuperOfInputValueForRoleFromEnv <$> getInputMedia
+
+
+-------------------------------------------------------------------------------
+-- | Gets the Value for a Role, for an attribute.
+--
+-- [@Nothing@] There is no fixed value in environment.
+-- [@Just Nothing@] There is a fixed value, but the actual value is
+--                  empty=missing.
+-- Gives the error 'ValueMissing' if the attribute does not have
+-- fixed value.
+-------------------------------------------------------------------------------
+lookuperOfInputValueForRoleFromEnv
+  :: ES.ElementSet
+  -- ^ input media for the service
+  -> Role
+  -> AttributeName
+  -> UiO.ObjectName
+  -> Maybe String
+lookuperOfInputValueForRoleFromEnv inputMedia requestedRole attributeName objectName =
+  do
+    let res = lookupStringForRole requestedRole attributeName objectName inputMedia
     case res of
       Right x ->
-        pure x
+        x
       Left (_, ES.ValueMissing,_) ->
-        pure Nothing
-      _ ->
-        error "inputValueForRoleFromEnv: Implementation Error"
+        Nothing
+      Left x ->
+        error $ "inputValueForRoleFromEnv: Implementation Error: " <> show x

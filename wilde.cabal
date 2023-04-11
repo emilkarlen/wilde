@@ -273,7 +273,7 @@ Library
     Wilde.ObjectModel.UserInteraction.Input.ForCreate
     Wilde.ObjectModel.UserInteraction.Input.ForExisting
     Wilde.ObjectModel.UserInteraction.OutputTypes
-    Wilde.ObjectModel.UserInteraction.Output.Common
+    Wilde.ObjectModel.UserInteraction.Output.FixAndDefault
     Wilde.ObjectModel.UserInteraction.Output.CreateCommon
     Wilde.ObjectModel.UserInteraction.Output.ExistingCommon
     Wilde.ObjectModel.UserInteraction.Output.ForCreate

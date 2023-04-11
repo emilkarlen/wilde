@@ -1,6 +1,7 @@
 {-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
-module Wilde.ObjectModel.UserInteraction.Output.Common
+module Wilde.ObjectModel.UserInteraction.Output.FixAndDefault
        (
          -- * Handling of fix and default values
 
@@ -12,13 +13,11 @@ module Wilde.ObjectModel.UserInteraction.Output.Common
 
          FixValuePrecedence(..),
 
-         FixAndDefaultResolver(..),
-         FixAndDefaultResolverForEnvironment(..),
-         FixAndDefaultResolverForApplicationConfiguration(..),
+         AttributeFixAndDefaultResolver,
+         FixAndDefault(..),
+         FixAndDefaultForApplicationConfiguration(..),
+         FixAndDefaultForEnvironment(..),
 
-         AttributeFixAndDefaultResolverConstructor,
-         attributeOutputForValue,
-         resolveAttributeOutputValueSpecification,
          FixFromEnv,
          mkEnvFix_gsr,
          mkEnvFix_value,
@@ -100,11 +99,11 @@ data AttributeOutputValueSpecification d a
     -- Otherwise the widget decides itself what value should be
     -- preselected.
 
-data FixAndDefaultResolver d a =
-  FixAndDefaultResolver
+data FixAndDefault d a =
+  FixAndDefault
   {
-    appResolver :: FixAndDefaultResolverForApplicationConfiguration d
-  , envResolver :: FixAndDefaultResolverForEnvironment d a
+    appFad :: FixAndDefaultForApplicationConfiguration d
+  , envFad :: FixAndDefaultForEnvironment d a
   }
 
 -------------------------------------------------------------------------------
@@ -117,11 +116,11 @@ data FixAndDefaultResolver d a =
 -- A default value, on the other hand, is used in widget output, so
 -- it must be present here.
 -------------------------------------------------------------------------------
-data FixAndDefaultResolverForApplicationConfiguration d =
-  FixAndDefaultResolverForApplicationConfiguration
+data FixAndDefaultForApplicationConfiguration d =
+  FixAndDefaultForApplicationConfiguration
   {
-    appFix     :: Maybe FixValuePrecedence
-  , appDefault :: UiO.UserInteractionOutputMonad (Maybe d)
+    appValsFix     :: Maybe FixValuePrecedence
+  , appValsDefault :: Maybe d
   }
 
 -- | Tells which value has precedence if several fix values exist.
@@ -129,11 +128,11 @@ data FixValuePrecedence = FixFromApplicationHasPrecedence
                         | FixFromEnvironmentHasPrecedence
                           deriving (Show,Enum)
 
-data FixAndDefaultResolverForEnvironment d a =
-  FixAndDefaultResolverForEnvironment
+data FixAndDefaultForEnvironment d a =
+  FixAndDefaultForEnvironment
   {
-    envFix     :: UiO.UserInteractionOutputMonad (Maybe (FixFromEnv a))
-  , envDefault :: UiO.UserInteractionOutputMonad (Maybe d)
+    envValsFix     :: Maybe (FixFromEnv a)
+  , envValsDefault :: Maybe d
   }
 
 type FixFromEnv a = Either Gsr.GenericStringRep a
@@ -148,76 +147,48 @@ mkEnvFix_value = Right
 -- | Constructor of a 'FixAndDefaultResolver' for an attribute.
 --
 -- The attribute has a name and is part of an object.
-type AttributeFixAndDefaultResolverConstructor d a =
-  AttributeName ->
-  UiO.ObjectName ->
-  FixAndDefaultResolver d a
+-- This information is needed for resoving default values from
+-- the "input media".
+type AttributeFixAndDefaultResolver d a =
+  UiO.UserInteractionOutputMonad (
+    AttributeName ->
+    UiO.ObjectName ->
+    FixAndDefault d a)
 
--------------------------------------------------------------------------------
--- | Constructs the form output for a single attribute, given setup
--- and \"Output Value Specification\".
--------------------------------------------------------------------------------
-attributeOutputForValue :: AttributeTypeInfo d a
-                        -> AttributeOutputValueSpecification d a
-                        -> UiO.ObjectName
-                        -> UiO.UserInteractionOutputMonad UiO.FormBlockRowInfo
-attributeOutputForValue _ NoOutput _ = pure empty
-attributeOutputForValue (AttributeTypeInfo {
-                            atiGsrOutputer = theGsrOutputer,
-                            atiCrossRefKey = theAttributeName
-                            })
-  (FixValue fixValue)
-  objectName
-  =
-  pure $
-  UiO.mkFormBlockRowInfoForMetas $
-  UiCommon.metaValuesForRole UiCommon.Fix theAttributeName objectName $
-  either id theGsrOutputer fixValue
-
-attributeOutputForValue (AttributeTypeInfo {
-                            atiCrossRefKey    = theAttributeName,
-                            atiTitle          = theTitle,
-                            atiGsrOutputer    = theGsrOutputer,
-                            atiWidgetOutputer = theWidgetOutputerGetter
-                            })
-  (WidgetWithPossibleDefaultValue mbDefaultValue)
-  objectName
-  =
-  do
-    widgetConstructor <- theWidgetOutputerGetter theAttributeName
-    let widget = widgetConstructor mbDefaultValue objectName
-    pure $
-      UiO.mkFormBlockRowInfoForLabelAndWidget (label,widget)
-  where
-    ek          = UiO.elementKey objectName theAttributeName
-    titleString = wildeStyled theTitle
-    label       = UiO.Label ek titleString
 
 -------------------------------------------------------------------------------
 -- | Resolves the \"Attribute Output Value Specification\" using the
 -- standard preferences, given resovlers for fix and default values.
 -------------------------------------------------------------------------------
-resolveAttributeOutputValueSpecification :: FixAndDefaultResolver d a
-                                         -> UiO.UserInteractionOutputMonad
-                                            (AttributeOutputValueSpecification d a)
-resolveAttributeOutputValueSpecification (FixAndDefaultResolver
-                             appConf@(FixAndDefaultResolverForApplicationConfiguration appFix appDefault)
-                             envConf@(FixAndDefaultResolverForEnvironment envFix envDefault))
-  =
-  do
-    mbFixValue <- resolveFixValue appFix envFix
-    maybe
-      outputIsEitherDefaultValueOrNoValue
-      outputIsFixValue
-      mbFixValue
+resolveAttributeOutputValueSpecification
+  :: forall d a.
+     (UiO.ObjectName -> FixAndDefault d a)
+  -> UiO.ObjectName
+  -> AttributeOutputValueSpecification d a
+resolveAttributeOutputValueSpecification on2Fad objectName =
+  resolve (on2Fad objectName)
   where
-    outputIsFixValue Nothing  = pure NoOutput
-    outputIsFixValue (Just x) = pure (FixValue x)
+    resolve :: FixAndDefault d a -> AttributeOutputValueSpecification d a
+    resolve
+      (FixAndDefault
+       appConf@(FixAndDefaultForApplicationConfiguration appFix appDefault)
+       envConf@(FixAndDefaultForEnvironment envFix envDefault))
+      =
+        maybe
+          outputIsEitherDefaultValueOrNoValue
+          outputIsFixValue
+          mbFixValue
+      where
+        mbFixValue = resolveFixValueP appFix envFix
 
-    outputIsEitherDefaultValueOrNoValue =
-      do
-        mbDefaultValue <- resolveWidgetDefaultValue appDefault envDefault
-        pure $ WidgetWithPossibleDefaultValue mbDefaultValue
+        outputIsFixValue Nothing  = NoOutput
+        outputIsFixValue (Just x) = FixValue x
+
+        outputIsEitherDefaultValueOrNoValue =
+            let
+              mbDefaultValue = resolveWidgetDefaultValueP appDefault envDefault
+            in
+              WidgetWithPossibleDefaultValue mbDefaultValue
 
 -------------------------------------------------------------------------------
 -- | Gives the default value for the widget, or no value, if there
@@ -237,6 +208,16 @@ resolveWidgetDefaultValue resolverForAppConfig resolverForEnvironment =
       Nothing -> resolverForAppConfig
       justX   -> pure justX
 
+resolveWidgetDefaultValueP :: Maybe d
+                          -- ^ Resolver corresponding to the Application Configuration
+                          -> Maybe d
+                          -- ^ Resolver for the User Interactino Environment.
+                          -> Maybe d
+resolveWidgetDefaultValueP mbDefaultFromAppConfig mbDefaultFromEnv =
+  case mbDefaultFromEnv of
+    Nothing -> mbDefaultFromAppConfig
+    justX   -> justX
+
 -------------------------------------------------------------------------------
 -- | Gives the fixed value to output in the form, if one should
 -- be output.
@@ -252,29 +233,21 @@ resolveWidgetDefaultValue resolverForAppConfig resolverForEnvironment =
 --
 -- Helper for 'resolveAttributeOutputValueSpecification'.
 -------------------------------------------------------------------------------
-resolveFixValue :: Maybe FixValuePrecedence
+resolveFixValueP :: Maybe FixValuePrecedence
                 -- ^ config from application
-                -> UiO.UserInteractionOutputMonad (Maybe a)
+                -> Maybe a
                 -- ^ config from environment
-                -> UiO.UserInteractionOutputMonad (Maybe (Maybe a))
-resolveFixValue Nothing getEnvFix =
-  do
-    fixValueFromEnv <- getEnvFix
-    pure $ maybe
-      Nothing
-      (Just . Just)
-      fixValueFromEnv
+                -> Maybe (Maybe a)
+resolveFixValueP Nothing fixValueFromEnv = fmap Just fixValueFromEnv
 
-resolveFixValue (Just FixFromApplicationHasPrecedence) getEnvFix =
-  pure (Just Nothing)
+resolveFixValueP (Just FixFromApplicationHasPrecedence) fixValueFromEnv =
+  Just Nothing
 
-resolveFixValue (Just FixFromEnvironmentHasPrecedence) getEnvFix =
-  do
-    fixValueFromEnv <- getEnvFix
-    pure $ maybe
-      (Just Nothing)
-      (Just . Just)
-      fixValueFromEnv
+resolveFixValueP (Just FixFromEnvironmentHasPrecedence) fixValueFromEnv =
+  maybe
+    (Just Nothing)
+    (Just . Just)
+    fixValueFromEnv
 
 
 -------------------------------------------------------------------------------
@@ -289,20 +262,54 @@ resolveFixValue (Just FixFromEnvironmentHasPrecedence) getEnvFix =
 data AttributeTypeSetup d a =
   AttributeTypeSetup
   {
-    setupInfo                :: AttributeTypeInfo d a
-  , setupResolverConstructor :: AttributeFixAndDefaultResolverConstructor d a
+    setupInfo     :: AttributeTypeInfo d a
+  , setupResolver :: AttributeFixAndDefaultResolver d a
   }
 
-attributeOutputer :: AttributeTypeSetup d a
-                  -> UiO.ObjectName
-                  -> UiO.UserInteractionOutputMonad UiO.FormBlockRowInfo
-attributeOutputer (AttributeTypeSetup atInfo resolverCon) objectName =
+attributeOutputer :: forall d a.
+                     AttributeTypeSetup d a
+                  -> UiO.UserInteractionOutputMonad (UiO.ObjectName -> UiO.FormBlockRowInfo)
+attributeOutputer (AttributeTypeSetup atInfo getFadCon) =
   do
-    let resolver       = resolverCon attributeName objectName
-    attrOutputValSpec <- resolveAttributeOutputValueSpecification resolver
-    attributeOutputForValue atInfo attrOutputValSpec objectName
+    fadCon            <- getFadCon
+    widgetConstructor <- atiWidgetOutputer atInfo attributeName
+    let
+      on2fad  :: UiO.ObjectName -> FixAndDefault d a
+      on2fad   = fadCon attributeName
+
+      on2ovs  :: UiO.ObjectName -> AttributeOutputValueSpecification d a
+      on2ovs   = resolveAttributeOutputValueSpecification on2fad
+
+    pure $ retVal on2ovs widgetConstructor
   where
-    attributeName = atiCrossRefKey atInfo
+    attributeName :: AttributeName
+    attributeName  = atiCrossRefKey atInfo
+
+    theGsrOutputer = atiGsrOutputer atInfo
+
+    retVal :: (UiO.ObjectName -> AttributeOutputValueSpecification d a)
+           -> UiO.WidgetConstructorForObjectWithDefault d
+           -> UiO.ObjectName
+           -> UiO.FormBlockRowInfo
+    retVal on2ovs widgetCon objectName = retVal' (on2ovs objectName)
+      where
+        retVal' :: AttributeOutputValueSpecification d a
+                -> UiO.FormBlockRowInfo
+        retVal' NoOutput = empty
+
+        retVal' (FixValue fixValue) =
+          UiO.mkFormBlockRowInfoForMetas $
+          UiCommon.metaValuesForRole UiCommon.Fix attributeName objectName $
+          either id theGsrOutputer fixValue
+
+        retVal' (WidgetWithPossibleDefaultValue mbDefaultValue) =
+          UiO.mkFormBlockRowInfoForLabelAndWidget (label,widget)
+          where
+            widget      = widgetCon mbDefaultValue objectName
+            label       = UiO.Label ek title
+            title       = wildeStyled $ atiTitle atInfo
+            ek          = UiO.elementKey objectName attributeName
+
 
 -------------------------------------------------------------------------------
 -- | Constructs an outputer for 'AttributeType's for a single 'ObjectType'.
@@ -313,8 +320,7 @@ outputerForSetupConstructor :: (Any (AttributeType atConf dbTable)
                             -> [Any (AttributeType atConf dbTable)]
                             -- ^ The attributes that should be input via the form,
                             -- and the order they should be displayed in it.
-                            -> UiO.ObjectName
-                            -> UiO.UserInteractionOutputMonad UiO.FormBlock
+                            -> UiO.UserInteractionOutputMonad (UiO.ObjectName -> UiO.FormBlock)
 outputerForSetupConstructor setupConstructor attributeTypesOrder =
   objectOutputer atSetups_any
   where
@@ -324,12 +330,18 @@ outputerForSetupConstructor setupConstructor attributeTypesOrder =
 -- | Outputs a list of attributes as part of an object.
 -------------------------------------------------------------------------------
 objectOutputer :: [AnyValue2.Container AttributeTypeSetup]
-               -> UiO.ObjectName
-               -> UiO.UserInteractionOutputMonad UiO.FormBlock
-objectOutputer setups objectName =
+               -> UiO.UserInteractionOutputMonad (UiO.ObjectName -> UiO.FormBlock)
+objectOutputer setups =
   do
-    formBlockRowInfos <- mapM
-                         (\(AnyValue2.Container atSetup)
-                          -> attributeOutputer atSetup objectName)
-                         setups
-    pure $ UiO.concatAtFormBlockInfos formBlockRowInfos
+    attrOutputers <- mapM mkAttrOutputter setups
+    pure $ retVal attrOutputers
+  where
+    retVal :: [UiO.ObjectName -> UiO.FormBlockRowInfo]
+           -> UiO.ObjectName -> UiO.FormBlock
+    retVal attrOutputers objectName =
+      UiO.concatAtFormBlockInfos
+        [attrOutputer objectName | attrOutputer <- attrOutputers]
+
+    mkAttrOutputter :: AnyValue2.Container AttributeTypeSetup
+                    -> UiO.UserInteractionOutputMonad (UiO.ObjectName -> UiO.FormBlockRowInfo)
+    mkAttrOutputter (AnyValue2.Container atSetup) = attributeOutputer atSetup

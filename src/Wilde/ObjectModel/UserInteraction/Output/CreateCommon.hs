@@ -1,4 +1,7 @@
 -- | Functionallity that is common to output for create.
+
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Wilde.ObjectModel.UserInteraction.Output.CreateCommon
        (
          AttributeTypeInfo(..),
@@ -35,7 +38,7 @@ import Wilde.ObjectModel.ObjectModel
 import Wilde.ObjectModel.Presentation (ATTRIBUTE_PRESENTATION(..))
 import Wilde.ObjectModel.UserInteraction
 import qualified Wilde.ObjectModel.UserInteraction.Common as UiCommon
-import qualified Wilde.ObjectModel.UserInteraction.Output.Common as OutputCommon
+import qualified Wilde.ObjectModel.UserInteraction.Output.FixAndDefault as OutputCommon
 import qualified Wilde.ObjectModel.GenericStringRep as OmGsr
 import           Wilde.WildeUi.UiPrimitives
 
@@ -112,8 +115,8 @@ mkAttributeTypeSetup :: AttributeTypeInfo typeForExisting typeForCreate
 mkAttributeTypeSetup ati =
   OutputCommon.AttributeTypeSetup
   {
-    OutputCommon.setupInfo                = mkAttributeTypeInfoForOutput ati
-  , OutputCommon.setupResolverConstructor = mkResolverConstructor_std (atiCreateOption ati)
+    OutputCommon.setupInfo     = mkAttributeTypeInfoForOutput ati
+  , OutputCommon.setupResolver = mkResolverConstructor_std (atiCreateOption ati)
   }
 
 mkAttributeTypeInfoForOutput :: AttributeTypeInfo typeForExisting typeForCreate
@@ -137,46 +140,54 @@ mkAttributeTypeInfoForOutput (AttributeTypeInfo {
   , OutputCommon.atiGsrOutputer    = theGsrOutputer
   }
 
-mkResolverConstructor_std :: Maybe (AttributeTypeCreateOption typeForCreate)
-                          -> OutputCommon.AttributeFixAndDefaultResolverConstructor
-                             (AttributeWidgetDefaultValueForCreate typeForExisting typeForCreate)
-                             typeForCreate
-mkResolverConstructor_std mbCreateOption attributeName objectName
-  =
-  OutputCommon.FixAndDefaultResolver
-  {
-    OutputCommon.appResolver = theAppResolver
-  , OutputCommon.envResolver = theEnvResolver
-  }
+mkResolverConstructor_std
+  :: forall typeForExisting typeForCreate.
+     Maybe (AttributeTypeCreateOption typeForCreate)
+  -> OutputCommon.AttributeFixAndDefaultResolver
+     (AttributeWidgetDefaultValueForCreate typeForExisting typeForCreate)
+     typeForCreate
+mkResolverConstructor_std mbCreateOption = do
+  inputMediaLookuper <- UiCommon.getLookuperOfInputValueForRoleFromEnv
+  pure $ retVal inputMediaLookuper
   where
-    theAppResolver =
-      OutputCommon.FixAndDefaultResolverForApplicationConfiguration
+    retVal :: (UiCommon.Role -> AttributeName -> UiO.ObjectName -> Maybe String)
+           -> AttributeName
+           -> UiO.ObjectName
+           -> OutputCommon.FixAndDefault (AttributeWidgetDefaultValueForCreate typeForExisting typeForCreate)
+              typeForCreate
+    retVal inputMediaLookuper attributeName objectName =
+      OutputCommon.FixAndDefault
       {
-        OutputCommon.appFix     = theAppFix
-      , OutputCommon.appDefault = pure theAppDefault
+        OutputCommon.appFad = theAppResolver
+      , OutputCommon.envFad = theEnvResolver
       }
 
-    theEnvResolver =
-      OutputCommon.FixAndDefaultResolverForEnvironment
-      {
-        OutputCommon.envFix     = do mbValue <- inputSpecialValueFromEnv UiCommon.Fix
-                                     pure $ fmap Left mbValue
-      , OutputCommon.envDefault = do mbValue <- inputSpecialValueFromEnv UiCommon.Default
-                                     pure $ fmap DefaultCreateFromUiPreFill mbValue
-      }
+      where
+        theAppResolver :: OutputCommon.FixAndDefaultForApplicationConfiguration (AttributeWidgetDefaultValueForCreate typeForExisting typeForCreate)
+        theAppResolver =
+          OutputCommon.FixAndDefaultForApplicationConfiguration
+          {
+            OutputCommon.appValsFix     = theAppFix
+          , OutputCommon.appValsDefault = theAppDefault
+          }
 
-    theAppFix = case mbCreateOption of
-      Just (AtuicoFixed c) -> Just OutputCommon.FixFromApplicationHasPrecedence
-      _                    -> Nothing
+        theEnvResolver :: OutputCommon.FixAndDefaultForEnvironment (AttributeWidgetDefaultValueForCreate typeForExisting typeForCreate) typeForCreate
+        theEnvResolver =
+          OutputCommon.FixAndDefaultForEnvironment
+          {
+            OutputCommon.envValsFix     = Left <$> inputSpecialValueFromEnv UiCommon.Fix
+          , OutputCommon.envValsDefault = DefaultCreateFromUiPreFill <$> inputSpecialValueFromEnv UiCommon.Default
+          }
 
-    theAppDefault = case mbCreateOption of
-      Just (AtuicoDefault (Left  s)) -> Just $ DefaultCreateFromUiPreFill s
-      Just (AtuicoDefault (Right c)) -> Just $ DefaultCreateFromCreate c
-      _                              -> Nothing
+        theAppFix = case mbCreateOption of
+          Just (AtuicoFixed c) -> Just OutputCommon.FixFromApplicationHasPrecedence
+          _                    -> Nothing
 
-    inputSpecialValueFromEnv :: UiCommon.Role
-                             -> UiO.UserInteractionOutputMonad (Maybe String)
-    inputSpecialValueFromEnv role =
-      do
-           UiCommon.inputValueForRoleFromEnv role
-                    attributeName objectName
+        theAppDefault = case mbCreateOption of
+          Just (AtuicoDefault (Left  s)) -> Just $ DefaultCreateFromUiPreFill s
+          Just (AtuicoDefault (Right c)) -> Just $ DefaultCreateFromCreate c
+          _                              -> Nothing
+
+        inputSpecialValueFromEnv :: UiCommon.Role -> Maybe String
+        inputSpecialValueFromEnv role =
+          inputMediaLookuper role attributeName objectName

@@ -2,6 +2,9 @@
 -- | Resolvment of Fix and Default values from a collection of values for an
 -- object.
 -------------------------------------------------------------------------------
+
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Wilde.ApplicationConstruction.UserInteraction.FixAndDefaultResolver.FixAndDefaultCollection
        (
          -- * Construction of resolver and setup
@@ -39,7 +42,7 @@ import qualified Wilde.Media.UserInteraction.Output as UiO
 import Wilde.ObjectModel.ObjectModel
 
 import Wilde.ObjectModel.UserInteraction
-import qualified Wilde.ObjectModel.UserInteraction.Output.Common as OutputCommon
+import qualified Wilde.ObjectModel.UserInteraction.Output.FixAndDefault as OutputCommon
 
 import qualified Wilde.ObjectModel.UserInteraction.Output.CreateCommon as CreateCommon
 
@@ -58,52 +61,53 @@ mkAttributeTypeSetup :: ATTRIBUTE_OUTPUT_FOR_CREATE atConf
 mkAttributeTypeSetup fixedAndDefaults at =
   OutputCommon.AttributeTypeSetup
   {
-    OutputCommon.setupInfo                = CreateCommon.mkAttributeTypeInfoForOutput .
-                                            CreateCommon.at2ati $
-                                            at
-  , OutputCommon.setupResolverConstructor = mkResolverConstructor fixedAndDefaults at
+    OutputCommon.setupInfo     = CreateCommon.mkAttributeTypeInfoForOutput .
+                                 CreateCommon.at2ati $
+                                 at
+  , OutputCommon.setupResolver = mkResolverConstructor fixedAndDefaults at
   }
 
 -- | A resolver that resolves no values from the \"appliation\", but
 -- values from the environment according to the values given as argument
 -- to the function.
-mkResolverConstructor :: FixedAndDefaultValues atConf dbTable
-                      -> AttributeType atConf dbTable typeForExisting typeForCreate
-                      -> AttributeName
-                      -> UiO.ObjectName
-                      -> OutputCommon.FixAndDefaultResolver
-                         (AttributeWidgetDefaultValueForCreate typeForExisting typeForCreate)
-                         typeForCreate
-mkResolverConstructor fixAndDefaults at
-  attributeName objectName
-  =
-  OutputCommon.FixAndDefaultResolver
-  {
-    OutputCommon.appResolver = theAppResolver
-  , OutputCommon.envResolver = theEnvResolver
-  }
+mkResolverConstructor
+  :: forall atConf dbTable typeForExisting typeForCreate.
+     FixedAndDefaultValues atConf dbTable
+  -> AttributeType atConf dbTable typeForExisting typeForCreate
+  -> OutputCommon.AttributeFixAndDefaultResolver
+     (AttributeWidgetDefaultValueForCreate typeForExisting typeForCreate)
+     typeForCreate
+mkResolverConstructor fixAndDefaults at = pure retVal
   where
-    theAppResolver =
-      OutputCommon.FixAndDefaultResolverForApplicationConfiguration
+    retVal :: AttributeName -> UiO.ObjectName -> OutputCommon.FixAndDefault (AttributeWidgetDefaultValueForCreate typeForExisting typeForCreate) typeForCreate
+    retVal attributeName objectName =
+      OutputCommon.FixAndDefault
       {
-        OutputCommon.appFix     = Nothing
-      , OutputCommon.appDefault = pure Nothing
+        OutputCommon.appFad = theAppResolver
+      , OutputCommon.envFad = theEnvResolver
       }
+      where
+        theAppResolver =
+          OutputCommon.FixAndDefaultForApplicationConfiguration
+          {
+            OutputCommon.appValsFix     = Nothing
+          , OutputCommon.appValsDefault = Nothing
+          }
 
-    theEnvResolver =
-      OutputCommon.FixAndDefaultResolverForEnvironment
-      {
-        OutputCommon.envFix = case fixOrDefault of
-           Just (FixedOrDefaultedIsFixed gsr) -> pure $ Just (Left gsr)
-           _ -> pure Nothing
+        theEnvResolver =
+          OutputCommon.FixAndDefaultForEnvironment
+          {
+            OutputCommon.envValsFix = case fixOrDefault of
+               Just (FixedOrDefaultedIsFixed gsr) -> Just (Left gsr)
+               _ -> Nothing
 
-      , OutputCommon.envDefault = case fixOrDefault of
-           Just (FixedOrDefaultedIsDefaulted genericWidgetDefault) ->
-             pure (Just (DefaultCreateFromUiPreFill genericWidgetDefault))
-           _ -> pure Nothing
-      }
+          , OutputCommon.envValsDefault = case fixOrDefault of
+               Just (FixedOrDefaultedIsDefaulted genericWidgetDefault) ->
+                 Just (DefaultCreateFromUiPreFill genericWidgetDefault)
+               _ -> Nothing
+          }
 
-    fixOrDefault = lookupFixedOrDefaultValue fixAndDefaults attributeName
+        fixOrDefault = lookupFixedOrDefaultValue fixAndDefaults attributeName
 
 
 -------------------------------------------------------------------------------
