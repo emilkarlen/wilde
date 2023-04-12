@@ -38,7 +38,7 @@ import Wilde.ObjectModel.ObjectModel
 import Wilde.ObjectModel.Presentation (ATTRIBUTE_PRESENTATION(..))
 import Wilde.ObjectModel.UserInteraction
 import qualified Wilde.ObjectModel.UserInteraction.Common as UiCommon
-import qualified Wilde.ObjectModel.UserInteraction.Output.FixAndDefault as OutputCommon
+import qualified Wilde.ObjectModel.UserInteraction.Output.Common as OutputCommon
 import qualified Wilde.ObjectModel.GenericStringRep as OmGsr
 import           Wilde.WildeUi.UiPrimitives
 

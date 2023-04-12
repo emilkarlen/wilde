@@ -34,16 +34,14 @@ module Wilde.ApplicationConstruction.UserInteraction.FixAndDefaultResolver.FixAn
 -------------------------------------------------------------------------------
 
 
-import Data.List
+import           Data.List
 
 import qualified Wilde.Media.GenericStringRep as Gsr
 import qualified Wilde.Media.UserInteraction.Output as UiO
 
-import Wilde.ObjectModel.ObjectModel
-
-import Wilde.ObjectModel.UserInteraction
-import qualified Wilde.ObjectModel.UserInteraction.Output.FixAndDefault as OutputCommon
-
+import           Wilde.ObjectModel.ObjectModel
+import           Wilde.ObjectModel.UserInteraction
+import qualified Wilde.ObjectModel.UserInteraction.Output.Common as OutputCommon
 import qualified Wilde.ObjectModel.UserInteraction.Output.CreateCommon as CreateCommon
 
 
@@ -152,8 +150,6 @@ data FixedOrDefaultedValue = FixedOrDefaultedIsFixed     Gsr.GenericStringRep
                            | FixedOrDefaultedIsDefaulted UiO.GenericWidgetDefaultValue
 
 
-
-
 -------------------------------------------------------------------------------
 -- - Widget Default Values -
 -------------------------------------------------------------------------------
@@ -193,10 +189,7 @@ lookupWidgetDefaultValue :: AttributeWidgetDefaultValues atConf dbTable
                          -> AttributeName
                          -> Maybe UiO.GenericWidgetDefaultValue
 lookupWidgetDefaultValue defaults atTargetKey =
-  maybe
-  Nothing
-  (Just . widgetDefaultValue)
-  (find isMatch defaults)
+  widgetDefaultValue <$> find isMatch defaults
   where
     isMatch :: AttributeWidgetDefaultValue atConf dbTable -> Bool
     isMatch (AttributeWidgetDefaultValue at _) =
