@@ -25,7 +25,7 @@ import           Wilde.ObjectModel.ObjectModelUtils as OmUtils
 
 import qualified Wilde.ObjectModel.UserInteraction as OmUi
 import qualified Wilde.ObjectModel.UserInteraction.Output.CreateCommon as CreateCommon
-import qualified Wilde.ObjectModel.UserInteraction.Output.FixAndDefault as OutputCommon
+import qualified Wilde.ObjectModel.UserInteraction.Output.Common as OutputCommon
 
 
 -------------------------------------------------------------------------------
