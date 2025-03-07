@@ -7,6 +7,7 @@ module Main where
 
 
 import qualified Blaze.ByteString.Builder.Char8 as BChar8
+import qualified Blaze.ByteString.Builder.Char.Utf8 as BCharUtf8
 import qualified Data.ByteString.Char8 as Char8
 
 import qualified Data.Text.Encoding as TE
@@ -31,7 +32,7 @@ import           ApplicationConfiguration
 systemConfiguration :: CodingConfiguration
 systemConfiguration = CodingConfiguration
   {
-    contentEncoder  = BChar8.fromString
+    contentEncoder  = BCharUtf8.fromString -- BChar8.fromString
   , queryVarDecoder = Char8.unpack
                       -- , queryVarDecoder = UTF8.toString
   , queryTDecoder   = TE.decodeUtf8
