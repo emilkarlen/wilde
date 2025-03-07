@@ -24,6 +24,8 @@ module Wilde.ApplicationConstruction.ObjectModel.AttributeType
 
          PrimaryKeyType,
 
+         AttributeType_ddl,
+
          PlainAttributeType,
          PlainAttributeType_optional,
          PlainAttributeType_ddl,
@@ -50,6 +52,8 @@ module Wilde.ApplicationConstruction.ObjectModel.AttributeType
          noDefault,
          defaultPreFill,
          defaultValue,
+
+         withDefault,
 
          -- ** Presentation value constructs
 
@@ -213,6 +217,8 @@ type PlainA atConf dbTable a = AttributeType atConf dbTable a a
 type PlainAttributeType     dbTable a = PlainA UiIoAndDbIo.ConfigurationSansAnnotation dbTable a
 type PlainAttributeType_ddl dbTable a = PlainA DdlAtAnnotation.Configuration           dbTable a
 
+type AttributeType_ddl      dbTable a = AttributeType DdlAtAnnotation.Configuration    dbTable a
+
 
 -------------------------------------------------------------------------------
 -- - PlainAttributeType_optional -
@@ -266,6 +272,13 @@ defaultPreFill = Just . UserInteraction.AtuicoDefault . Left
 defaultValue :: a
              -> Maybe (UserInteraction.AttributeTypeCreateOption a)
 defaultValue = Just . UserInteraction.AtuicoDefault . Right
+
+withDefault :: AttributeType_ddl dbTable a a
+            -> Maybe (UserInteraction.AttributeTypeCreateOption a)
+            -> AttributeType_ddl dbTable a a
+withDefault at newDefault = at { atConfiguration = newAtConf }
+  where
+    newAtConf = (atConfiguration at) { UiIoAndDbIo.uiCreateOption = newDefault }
 
 
 -------------------------------------------------------------------------------
