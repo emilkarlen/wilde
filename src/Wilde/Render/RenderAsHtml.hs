@@ -39,6 +39,9 @@ import           Wilde.Render.AbstractTableToHtml
 -------------------------------------------------------------------------------
 
 
+charsetUtf8 :: String
+charsetUtf8 = "UTF-8"
+
 -- | Renders a page title.
 renderPageTitle :: WildeTitle
                    -> Html
@@ -75,10 +78,13 @@ renderPageHtml :: [URL]          -- ^ CSS files
 renderPageHtml cssFiles styleForPage title body =
   HD.document headContents body (applyStyleToHtml styleForPage)
   where
-    headContents = HE.seq [HD.title titleString, hdrCssLink]
+    headContents = HE.seq [hdrMetaCharset, HD.title titleString, hdrCssLink]
     hdrCssLink   = HE.seq $ map cssRefElem cssFiles
     srvcTitle    = renderPageTitle title :: Html
     titleString  = wildeStyled title :: Title
+
+    hdrMetaCharset :: Html
+    hdrMetaCharset = HE.metaCharset charsetUtf8
 
     cssRefElem  :: URL -> Html
     cssRefElem cssFile = HE.link `HE.withAttrs`

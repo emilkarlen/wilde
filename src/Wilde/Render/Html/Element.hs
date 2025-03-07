@@ -27,6 +27,8 @@ module Wilde.Render.Html.Element
 
     withAttrs,
 
+    metaCharset,
+
     div,
     span,
 
@@ -102,6 +104,9 @@ htmlString = H.preEscapedToHtml
 
 withAttrs :: Html -> [HtmlAttr] -> Html
 withAttrs elem = foldl (H.!) elem
+
+metaCharset :: String -> Html
+metaCharset charSet = H.meta `withAttrs` [RHA.charset charSet]
 
 anchor :: Html -> Html
 anchor = H.a

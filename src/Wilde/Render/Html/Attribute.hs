@@ -20,6 +20,8 @@ module Wilde.Render.Html.Attribute
 (
     module Wilde.Render.Html.Types,
 
+    charset,
+    
     class_,
     style,
     domEvent,
@@ -67,6 +69,9 @@ import           Wilde.Render.Html.Types
 -- - implementation -
 -------------------------------------------------------------------------------
 
+
+charset :: String -> HtmlAttr
+charset  = HA.charset . H.stringValue
 
 domEvent :: DomEvent -> JavaScriptProgram -> HtmlAttr
 domEvent OnClick  = HA.onclick . H.stringValue

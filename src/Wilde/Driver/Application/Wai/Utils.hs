@@ -35,7 +35,7 @@ okHtmlResponse contentEncoder html =
 
     headers :: [HttpTypes.Header]
     headers = [(HttpTypes.hContentType, mimeType)
-              -- ,(HttpTypes.hContentEncoding,String.fromString "UTF-8")
+              ,(HttpTypes.hContentEncoding,String.fromString "UTF-8")
               ]
 
     pageContentBuilder :: B.Builder
