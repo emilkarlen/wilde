@@ -22,8 +22,11 @@ module Wilde.ApplicationConstruction.ObjectModel.ObjectType
          StdObject,
 
          StdObjectType_ddl,
+         StdObjectTypeSetup_ddl,
          StdObject_ddl,
 
+         StdObjectTypeToNative,
+         
          -- ** Types with a PK autogen by the database
 
          -- *** Type synonyms helpers
@@ -166,6 +169,8 @@ type StdObjectType_ddl      dbTable native = StdPkO ObjectType      OtDbConfig.C
 type StdObjectTypeSetup     dbTable native = StdPkO ObjectTypeSetup OtDbConfig.Configuration UiIoAndDbIo.ConfigurationSansAnnotation dbTable native
 -- | An 'ObjectTypeSetup' with auto-inc key and DDL info.
 type StdObjectTypeSetup_ddl dbTable native = StdPkO ObjectTypeSetup OtDbConfig.Configuration DdlAtAnnotation.Configuration           dbTable native
+-- | The function that translates a 'StdAutoPkObjectType' to the \"native\" type.
+type StdObjectTypeToNative dbTable native = ObjectToNativeFunction dbTable native PrimaryKeyType PrimaryKeyType
 
 
 -------------------------------------------------------------------------------
