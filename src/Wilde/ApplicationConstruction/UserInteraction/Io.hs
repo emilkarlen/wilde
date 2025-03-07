@@ -446,13 +446,13 @@ uiIo_asDropDown_optional :: (Eq a,Show a,Read a)
                          => [(a,AnyVALUE)] -- ^ values
                          -> AttributeTypeUserInteractionIo (Maybe a) (Maybe a)
 uiIo_asDropDown_optional values =
-  uiIo_forStringConvertible
+  uiIo_forStringConvertible_optional
   attrOutput True
   renderValue parseValue
   where
     attrOutput  = LabelAndWidget.attrOutput_dropDown True options
     options     = [(show key,pres) | (key,pres) <- values]
-    renderValue = maybe "" show
+    renderValue = show
     parseValue  = parseEnum_optional values
 
 parseEnum_optional :: (Eq a,Read a)
@@ -511,6 +511,43 @@ uiIo_forStringConvertible attrOutputForDefault trimAndEmptyIsMissing
       output renderDefault attributeName mbDefault objectName =
         attrOutputForDefault renderDefault attributeName mbDefault objectName
 
+
+uiIo_forStringConvertible_optional
+  ::  (forall defaultValue . LabelAndWidget.AttrOutputAsString defaultValue)
+  -- ^ Creates a widget with possibility to input a "missing" value
+  -> Bool -- ^ Trim input, and treat an empty string as if a value is missing.
+  -> (a -> String)
+  -> ElementValueParser (Maybe a)
+  -> AttributeTypeUserInteractionIo (Maybe a) (Maybe a)
+uiIo_forStringConvertible_optional attrOutputForDefault trimAndEmptyIsMissing
+  renderValue parseString =
+    AttributeTypeUserInteractionIo
+    {
+      atuiioCreateIo =
+         UserInteractionIo
+         { uiOutputer = \attributeName -> pure $ output
+                                          (renderAttributeUiDefaultForCreate_optional renderValue)
+                                          attributeName
+         , uiInputer = \attributeName -> attrInput_optional2 trimAndEmptyIsMissing parseString attributeName
+         },
+
+      atuiioExistingIo =
+        UserInteractionIo
+        { uiOutputer = \attributeName -> pure $ output renderValueMb attributeName
+        , uiInputer  = \attributeName -> attrInput_optional2 trimAndEmptyIsMissing parseString attributeName
+        }
+    }
+    where
+      -- renderValueMb :: Maybe a -> String
+      renderValueMb = maybe "" renderValue
+
+      output :: (defaultValue -> String)
+             -> AttributeName
+             -> UiO.WidgetConstructorForObjectWithDefault defaultValue
+      output renderDefault attributeName mbDefault objectName =
+        attrOutputForDefault renderDefault attributeName mbDefault objectName
+
+
 renderAttributeUiDefaultForCreate :: (a -> String)
                                   -> AttributeWidgetDefaultValueForCreate a a
                                   -> String
@@ -530,6 +567,7 @@ renderAttributeUiDefaultForCreate_optional renderValue =
   renderAttributeUiDefaultForCreate_generic renderOptionalValue renderOptionalValue
   where
     renderOptionalValue = maybe "" renderValue
+
 
 -- | Renders an 'AttributeWidgetDefaultValueForCreate' for unrelated types for existing och for-create.
 renderAttributeUiDefaultForCreate_generic :: (e -> String)
@@ -600,6 +638,27 @@ attrInput_optional trimAndEmptyNothing parseString attributeName objectName =
     theLookuper set = do
       mbSingletonValue <- ESU.lookupSingleton_optional_maybeTrim trimAndEmptyNothing ek set
       maybe (pure Nothing) (fmap Just . parseString ek) mbSingletonValue
+
+    ek = (objectName,attributeName)
+
+-- | Inputer for an optional value, in terms of a parser of an optional one.
+--
+-- A missing value can be represented in two ways:
+--
+-- (1) the value is missing in the UI-input
+-- (2) the value exists in the UI-input but is empty
+attrInput_optional2 :: Bool -- ^ Trim input, and treat an empty string as 'Nothing'.
+                    -> ElementValueParser (Maybe a)
+                    -> AttributeName
+                    -> ObjectName
+                    -> UiI.Monad (ElementInputResult (Maybe a))
+attrInput_optional2 trimAndEmptyNothing parseString attributeName objectName =
+  UiI.inInputMedia_raw theLookuper
+  where
+    -- theLookuper :: ES.Lookuper (Maybe a)
+    theLookuper set = do
+      mbSingletonValue <- ESU.lookupSingleton_optional_maybeTrim trimAndEmptyNothing ek set
+      maybe (pure Nothing) (parseString ek) mbSingletonValue
 
     ek = (objectName,attributeName)
 
