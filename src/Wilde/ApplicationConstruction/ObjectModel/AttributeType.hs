@@ -110,8 +110,8 @@ module Wilde.ApplicationConstruction.ObjectModel.AttributeType
          at_EnumAsDropDown_Word32,
          at_EnumAsDropDown_Word32_optional,
 
-         at_EnumAsDropDown_mandatory,
-         at_EnumAsDropDown_optional,
+         at_Enum_mandatory,
+         at_Enum_optional,
 
          at_GenericWidgetDefaultValue,
          at_GenericWidgetDefaultValue_optional,
@@ -1135,9 +1135,11 @@ at_EnumAsDropDown_Word32 :: SQL_IDENTIFIER dbTable
                          -> Maybe (UserInteraction.AttributeTypeCreateOption Word32)
                          -> WildeTitle
                          -> PlainAttributeType_ddl dbTable Word32
-at_EnumAsDropDown_Word32 = at_EnumAsDropDown_mandatory AtDbInfo.word32 (uiIo_Word32 inputWidth)
+at_EnumAsDropDown_Word32 values =
+  at_Enum_mandatory AtDbInfo.word32 uiIoDropDown values
   where
-    inputWidth = 5
+    uiIoDropDown :: AttributeTypeUserInteractionIo Word32 Word32
+    uiIoDropDown = uiIo_asDropDown values
 
 at_EnumAsDropDown_Word32_optional :: SQL_IDENTIFIER dbTable
                                   => [(Word32,AnyVALUE)]
@@ -1146,20 +1148,20 @@ at_EnumAsDropDown_Word32_optional :: SQL_IDENTIFIER dbTable
                                   -> WildeTitle
                                   -> PlainAttributeType_optional_ddl dbTable Word32
 at_EnumAsDropDown_Word32_optional values =
-  at_EnumAsDropDown_optional
-  AtDbInfo.word32_optional
-  (uiIo_asDropDown_optional values)
-  values
+  at_Enum_optional AtDbInfo.word32_optional uiIoDropDown values
+  where
+    uiIoDropDown :: AttributeTypeUserInteractionIo (Maybe Word32) (Maybe Word32)
+    uiIoDropDown = uiIo_asDropDown_optional values
 
-at_EnumAsDropDown_mandatory :: (Eq a,Typeable a,Show a,Read a,SQL_IDENTIFIER dbTable)
-                            => (dbTable -> AtDbInfo.AttributeTypeDatabaseInfo_same dbTable a)
-                            -> AttributeTypeUserInteractionIo a a
-                            -> [(a,AnyVALUE)]
-                            -> dbTable
-                            -> Maybe (UserInteraction.AttributeTypeCreateOption a)
-                            -> WildeTitle
-                            -> PlainAttributeType_ddl dbTable a
-at_EnumAsDropDown_mandatory mkAtDbInfoForColumn atUiIo values
+at_Enum_mandatory :: (Eq a,Typeable a,Show a,Read a,SQL_IDENTIFIER dbTable)
+                  => (dbTable -> AtDbInfo.AttributeTypeDatabaseInfo_same dbTable a)
+                  -> AttributeTypeUserInteractionIo a a
+                  -> [(a,AnyVALUE)]
+                  -> dbTable
+                  -> Maybe (UserInteraction.AttributeTypeCreateOption a)
+                  -> WildeTitle
+                  -> PlainAttributeType_ddl dbTable a
+at_Enum_mandatory mkAtDbInfoForColumn atUiIo values
   field createOption presSpec
   =
     AttributeType
@@ -1192,15 +1194,15 @@ at_EnumAsDropDown_mandatory mkAtDbInfoForColumn atUiIo values
       }
     lookupPresVal a = maybe (unquotedDropDownValue ("INVALID ENUM: " ++ show a)) id (lookup a values)
 
-at_EnumAsDropDown_optional :: (Eq a,Typeable a,Show a,Read a,SQL_IDENTIFIER dbTable)
-                           => (dbTable -> AtDbInfo.AttributeTypeDatabaseInfo_same dbTable (Maybe a))
-                           -> AttributeTypeUserInteractionIo (Maybe a) (Maybe a)
-                           -> [(a,AnyVALUE)]
-                           -> dbTable
-                           -> Maybe (UserInteraction.AttributeTypeCreateOption (Maybe a))
-                           -> WildeTitle
-                           -> PlainAttributeType_ddl dbTable (Maybe a)
-at_EnumAsDropDown_optional mkAtDbInfoForColumn atUiIo values
+at_Enum_optional :: (Eq a,Typeable a,Show a,Read a,SQL_IDENTIFIER dbTable)
+                 => (dbTable -> AtDbInfo.AttributeTypeDatabaseInfo_same dbTable (Maybe a))
+                 -> AttributeTypeUserInteractionIo (Maybe a) (Maybe a)
+                 -> [(a,AnyVALUE)]
+                 -> dbTable
+                 -> Maybe (UserInteraction.AttributeTypeCreateOption (Maybe a))
+                 -> WildeTitle
+                 -> PlainAttributeType_ddl dbTable (Maybe a)
+at_Enum_optional mkAtDbInfoForColumn atUiIo values
   field createOption presSpec
   =
     AttributeType

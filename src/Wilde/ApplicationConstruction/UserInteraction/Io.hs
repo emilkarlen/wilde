@@ -41,6 +41,7 @@ module Wilde.ApplicationConstruction.UserInteraction.Io
          uiIo_asString_optional,
          uiIo_asString,
          uiIo_asTextArea,
+         uiIo_asDropDown,
          uiIo_asDropDown_optional,
 
          -- * Utilities
@@ -442,6 +443,20 @@ uiIo_asTextArea :: (Int,Int)
                 -> AttributeTypeUserInteractionIo a a
 uiIo_asTextArea size = uiIo_forStringConvertible (LabelAndWidget.attrOutput_textBox size)
 
+
+uiIo_asDropDown :: (Eq a,Show a,Read a)
+                => [(a,AnyVALUE)] -- ^ values
+                -> AttributeTypeUserInteractionIo a a
+uiIo_asDropDown values =
+  uiIo_forStringConvertible
+  attrOutput True
+  renderValue parseValue
+  where
+    attrOutput  = LabelAndWidget.attrOutput_dropDown False options
+    options     = [(show key,pres) | (key,pres) <- values]
+    renderValue = show
+    parseValue  = parseEnum values
+
 uiIo_asDropDown_optional :: (Eq a,Show a,Read a)
                          => [(a,AnyVALUE)] -- ^ values
                          -> AttributeTypeUserInteractionIo (Maybe a) (Maybe a)
@@ -454,6 +469,19 @@ uiIo_asDropDown_optional values =
     options     = [(show key,pres) | (key,pres) <- values]
     renderValue = show
     parseValue  = parseEnum_optional values
+
+parseEnum :: (Eq a,Read a)
+          => [(a,AnyVALUE)]
+             -- ^ values
+          -> ElementValueParser a
+parseEnum values ek "" = Left (ek, ES.ValueMissing, Nothing)
+parseEnum values ek valueAsString =
+  case readCompletelyAndUnambigously valueAsString of
+        Nothing -> Left (ek,InvalidSyntax,Just valueAsString)
+        Just v  -> maybe
+                   (Left (ek,InvalidValue,Just valueAsString))
+                   (const $ pure v)
+                   (lookup v values)
 
 parseEnum_optional :: (Eq a,Read a)
                    => [(a,AnyVALUE)]
