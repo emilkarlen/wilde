@@ -16,6 +16,7 @@ module Wilde.Media.Database
 
          TranslationMonad(..),
          runTranslation,
+         doFail,
        )
        where
 
@@ -111,6 +112,9 @@ instance ME.MonadError TranslationError TranslationMonad where
       handler' e =
         let (TranslationMonad m) = handler e
         in  m
+
+doFail :: TranslationError -> TranslationMonad a
+doFail = ME.throwError
 
 instance Monad TranslationMonad where
   (TranslationMonad m) >>= f = TranslationMonad $
