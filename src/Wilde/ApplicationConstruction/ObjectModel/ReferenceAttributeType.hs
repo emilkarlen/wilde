@@ -1,5 +1,6 @@
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE MonoLocalBinds #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 -------------------------------------------------------------------------------
 -- | AttributeType:s for references/foreign keys.
@@ -132,7 +133,8 @@ rawValuesChecker_optional _ = pure ()
 -------------------------------------------------------------------------------
 
 
-reference_mandatory :: Database.DATABASE_TABLE otConf
+reference_mandatory :: forall otConf dbTableSrc dbTableDst otNativeDst atConf idAtExistingDst idAtCreateDst.
+     Database.DATABASE_TABLE otConf
   => ReferenceAttributeTypeInfo otConf (UiIoAndDbIo.Configuration atConf) dbTableSrc dbTableDst otNativeDst idAtExistingDst idAtCreateDst
   -> (atConf dbTableDst idAtExistingDst idAtCreateDst
       -> dbTableSrc
@@ -149,37 +151,59 @@ reference_mandatory rati@(ReferenceAttributeTypeInfo {
   AttributeType
   {
     atCrossRefKey                 = attributeName
-  , atPresentationO               = presentationOutputer
+  , atPresentationO               = presOutputerDstIdAt
   , atConfiguration =
     UiIoAndDbIo.Configuration
     {
       UiIoAndDbIo.presentationO            = theAtPresentation
     , UiIoAndDbIo.genericStringRepIo       = attributeGenericStringRepIo
-    , UiIoAndDbIo.uiIoForAttributeName     = uiIoExistingForReference valuesChecker rati
+    , UiIoAndDbIo.uiIoForAttributeName     = uiIoForAttributeName
     , UiIoAndDbIo.uiCreateOption           = Nothing
     , UiIoAndDbIo.mediaIoForCreate         = atInfoForCreate
     , UiIoAndDbIo.databaseConfForExisting  = atDbIForExisting
-    , UiIoAndDbIo.dbPresentationInfoGetter = presInfoGetter_mandatory rati fieldSrc
+    , UiIoAndDbIo.dbPresentationInfoGetter = dbPresInfoGetter
     , UiIoAndDbIo.annotation               = translateAnnotation (UiIoAndDbIo.annotation atConfDstIdAt) fieldSrc
     }
   }
   where
+    dbPresInfoGetter      :: AttributeWithPresentationInfoDbInputerInfo dbTableSrc idAtExistingDst
+    dbPresInfoGetter      = presInfoGetter_mandatory rati fieldSrc
+
+    uiIoForAttributeName :: UiIo.AttributeTypeUiIoForExisting idAtExistingDst
+    uiIoForAttributeName  = uiIoExistingForReference valuesChecker rati
+
+    atConfDstIdAt        :: UiIoAndDbIo.Configuration atConf dbTableDst idAtExistingDst idAtCreateDst
     atConfDstIdAt         = atConfiguration atForDstIdAt
+
+    attributeName        :: Sql.SqlIdentifier
     attributeName         = Sql.sqlIdentifier fieldSrc
+
+    atForDstIdAt         :: AttributeType (UiIoAndDbIo.Configuration atConf) dbTableDst idAtExistingDst idAtCreateDst
     atForDstIdAt          = otAttributeTypeForIdAt rati
+
+    atDbIForExisting     :: AtDbInfo.AttributeTypeDatabaseConfigForExisting dbTableSrc idAtExistingDst
     atDbIForExisting      = attributeTypeDatabaseConfigForExisting rati
-    atInfoForCreate       = atInfoForCreate_ref_mandatory valuesChecker rati fieldSrc
-    presentationOutputer  = atPresentationO atForDstIdAt
+
+    atInfoForCreate      :: UiIoAndDbIo.AttributeTypeMediaIoForCreate idAtExistingDst idAtExistingDst
+    atInfoForCreate       = atMediaIoForCreate_ref_mandatory valuesChecker rati fieldSrc
+  
+    presOutputerDstIdAt  :: PresentationOutputer idAtExistingDst
+    presOutputerDstIdAt   = atPresentationO atForDstIdAt
+  
+    theAtPresentation    :: AttributeTypePresentation idAtExistingDst
     theAtPresentation     = AttributeTypePresentation
                             {
-                              atpoOutput = presentationOutputer
+                              atpoOutput = presOutputerDstIdAt
                             , atpoTitle  = title
                             }
-    atPresentationOForRef = atPresentationO atForDstIdAt
+    
+    attributeGenericStringRepIo :: AttributeGenericStringRepIo idAtExistingDst idAtExistingDst
     attributeGenericStringRepIo = atGsrIo_existing_only_forIdAt otRefTarget
+
     valuesChecker :: RawValuesChecker
     valuesChecker [] = Ui.throwErr $ OmUtils.unclassifiedError errMsg
     valuesChecker _  = pure ()
+
     errMsg = wildeStyled title ++ ": No objects for reference to " ++ targetObjectTypeName
     targetObjectTypeName = wildeStyled . StandardServices.titleWithStyle $ otSetupRefTarget
 
@@ -267,12 +291,13 @@ attributeOutputForReferenceForExisting valuesChecker otRefTarget@(ObjectType {})
     pure $ attrOutputFunForMaybe .
              fmap (OmGsr.gsrOutputer $ OmGsr.otIoForIdAtForExisting otRefTarget)
 
-atInfoForCreate_ref_mandatory :: Database.DATABASE_TABLE otConf
-                              => RawValuesChecker
-                              -> ReferenceAttributeTypeInfo otConf (UiIoAndDbIo.Configuration atConf) dbTableSrc dbTableDst otNativeDst idAtExistingDst typeForCreate'
-                              -> dbTableSrc
-                              -> UiIoAndDbIo.AttributeTypeMediaIoForCreate idAtExistingDst idAtExistingDst
-atInfoForCreate_ref_mandatory valuesChecker
+atMediaIoForCreate_ref_mandatory :: forall otConf dbTableSrc dbTableDst otNativeDst atConf idAtExistingDst typeForCreate'.
+     Database.DATABASE_TABLE otConf
+  => RawValuesChecker
+  -> ReferenceAttributeTypeInfo otConf (UiIoAndDbIo.Configuration atConf) dbTableSrc dbTableDst otNativeDst idAtExistingDst typeForCreate'
+  -> dbTableSrc
+  -> UiIoAndDbIo.AttributeTypeMediaIoForCreate idAtExistingDst idAtExistingDst
+atMediaIoForCreate_ref_mandatory valuesChecker
   rati@(ReferenceAttributeTypeInfo {
            ratiRefDst = otSetupRefTarget@(StandardServices.ObjectTypeSetup {
                                              StandardServices.objectType = otRefTarget@(ObjectType {})
@@ -280,8 +305,13 @@ atInfoForCreate_ref_mandatory valuesChecker
            })
   field =
   let
+    attributeName              :: Sql.SqlIdentifier
     attributeName               = Sql.sqlIdentifier field
+
+    dbIoForExistingForRefTarget :: AtDbInfo.AttributeTypeDatabaseConfigForExisting dbTableSrc idAtExistingDst
     dbIoForExistingForRefTarget = attributeTypeDatabaseConfigForExisting rati
+
+    uiIoForExistingForRefTarget :: UiIo.AttributeTypeUiIoForExisting idAtExistingDst
     uiIoForExistingForRefTarget = uiIoForAttibuteName rati
   in
    UiIoAndDbIo.AttributeTypeMediaIoForCreate
@@ -320,7 +350,7 @@ atInfoForCreate_ref_optional :: Database.DATABASE_TABLE otConf
 atInfoForCreate_ref_optional rati@(ReferenceAttributeTypeInfo {}) field =
   let
     UiIoAndDbIo.AttributeTypeMediaIoForCreate dbOutputer (UiIo.UserInteractionIo _ uiInputer_mandatory)
-      = atInfoForCreate_ref_mandatory rawValuesChecker_optional rati field
+      = atMediaIoForCreate_ref_mandatory rawValuesChecker_optional rati field
     dbOutputer_o = maybe (pure [SqlNull]) dbOutputer
     uiInputer_o  = inputerForObjectName_optional_from_mandatory uiInputer_mandatory
     uiOutputer_o = uiOutputForCreate_optional rati
